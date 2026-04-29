@@ -51,7 +51,12 @@ export default async function DashboardPage() {
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 py-8 sm:px-6 sm:py-12">
       {showWelcome && (
-        <WelcomeCard copy={copy.welcomeCard} name={displayName} />
+        <WelcomeCard
+          title={copy.welcomeCard.title(displayName)}
+          sub={copy.welcomeCard.sub}
+          cta={copy.welcomeCard.cta}
+          submitting={copy.welcomeCard.submitting}
+        />
       )}
       <DashboardGreeting copy={copy} name={displayName} />
     </main>

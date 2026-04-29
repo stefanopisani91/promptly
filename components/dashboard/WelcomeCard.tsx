@@ -1,16 +1,17 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import type { AuthCopy } from "@/lib/i18n/auth";
 import { cn } from "@/lib/utils";
 import { dismissWelcome } from "@/app/(app)/dashboard/actions";
 
 interface Props {
-  copy: AuthCopy["dashboard"]["welcomeCard"];
-  name: string;
+  title: string;
+  sub: string;
+  cta: string;
+  submitting: string;
 }
 
-export function WelcomeCard({ copy, name }: Props) {
+export function WelcomeCard({ title, sub, cta, submitting }: Props) {
   const [hidden, setHidden] = useState(false);
   const [pending, startTransition] = useTransition();
 
@@ -35,9 +36,9 @@ export function WelcomeCard({ copy, name }: Props) {
     >
       <div className="flex flex-col gap-1.5">
         <h2 className="font-heading text-xl font-semibold text-text-primary">
-          {copy.title(name)}
+          {title}
         </h2>
-        <p className="text-sm text-text-secondary">{copy.sub}</p>
+        <p className="text-sm text-text-secondary">{sub}</p>
       </div>
 
       <button
@@ -49,7 +50,7 @@ export function WelcomeCard({ copy, name }: Props) {
           pending && "cursor-not-allowed opacity-60",
         )}
       >
-        {pending ? copy.submitting : copy.cta}
+        {pending ? submitting : cta}
       </button>
     </section>
   );
