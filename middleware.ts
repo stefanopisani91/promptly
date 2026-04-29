@@ -1,6 +1,13 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { isLang, type Lang } from "./types";
+
+// Inlined here to keep the Edge middleware bundle self-contained.
+// Same definitions live in /types/index.ts for app code.
+type Lang = "en" | "it";
+
+function isLang(value: unknown): value is Lang {
+  return value === "en" || value === "it";
+}
 
 const LOCALE_COOKIE = "NEXT_LOCALE";
 
