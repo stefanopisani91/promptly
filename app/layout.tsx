@@ -2,8 +2,12 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import { headers } from "next/headers";
 import "./globals.css";
-import type { Lang } from "@/types";
-import { isLang } from "@/types";
+
+type Lang = "en" | "it";
+
+function isLang(value: unknown): value is Lang {
+  return value === "en" || value === "it";
+}
 
 const inter = Inter({
   subsets: ["latin"],
@@ -41,9 +45,16 @@ export const viewport: Viewport = {
 };
 
 function langFromHeaders(): Lang {
-  const pathname = headers().get("x-pathname") ?? "/";
-  const seg = pathname.split("/")[1];
-  return isLang(seg) ? seg : "it";
+  // Prefer Accept-Language header for the <html lang> attribute.
+  // The actual route-bound language is set in the [lang] segment;
+  // this is just for the root <html> in the rare case of pages outside [lang]
+  // (root redirect, error pages). Defaults to 'it'.
+  const acceptLanguage = headers().get("accept-language") ?? "";
+  const lower = acceptLanguage.toLowerCase();
+  if (lower.startsWith("en")) return "en";
+  if (lower.startsWith("it")) return "it";
+  // Fallback
+  return isLang(lower.split("-")[0]) ? (lower.split("-")[0] as Lang) : "it";
 }
 
 export default function RootLayout({
