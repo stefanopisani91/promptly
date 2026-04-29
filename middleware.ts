@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { isLang, type Lang } from "@/types";
+import { isLang, type Lang } from "./types";
 
 const LOCALE_COOKIE = "NEXT_LOCALE";
 
