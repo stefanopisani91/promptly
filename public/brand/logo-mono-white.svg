@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <!-- P silhouette with counter + brain shape cut out (single path, even-odd fill) -->
+  <path fill="white" fill-rule="evenodd" d="
+    M 50 50 Q 50 25 75 25 L 130 25 Q 175 25 175 85 Q 175 145 130 145 L 108 145 L 108 175 Q 108 185 98 185 L 65 185 Q 50 185 50 165 Z
+    M 95 85 Q 95 55 123 55 Q 150 55 150 85 Q 150 115 123 115 Q 95 115 95 85 Z
+  "/>
+  <!-- Two small dots inside the cutout to suggest brain hemispheres -->
+  <circle cx="115" cy="85" r="3.5" fill="white"/>
+  <circle cx="131" cy="85" r="3.5" fill="white"/>
+</svg>

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Rounded square background (orange) -->
+  <rect x="0" y="0" width="64" height="64" rx="14" fill="#E8703F"/>
+
+  <!-- Simplified P glyph (white) -->
+  <path d="M 18 14 L 18 50 L 26 50 L 26 38 L 36 38 Q 50 38 50 26 Q 50 14 36 14 Z M 26 22 L 36 22 Q 42 22 42 26 Q 42 30 36 30 L 26 30 Z" fill="white"/>
+
+  <!-- Tiny brain dot in the counter (signals "thinking") -->
+  <circle cx="36" cy="26" r="2.2" fill="#E8703F"/>
+</svg>

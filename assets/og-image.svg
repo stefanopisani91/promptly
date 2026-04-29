@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none">
+  <!-- Background: warm off-white -->
+  <rect width="1200" height="630" fill="#F8F7F4"/>
+
+  <!-- Subtle decorative accent: pale orange circle in top-right -->
+  <circle cx="1100" cy="-50" r="280" fill="#FFF1EB"/>
+  <circle cx="80" cy="680" r="220" fill="#FFF1EB"/>
+
+  <!-- Symbol on the left -->
+  <g transform="translate(110, 165) scale(1.5)">
+    <!-- P body -->
+    <path d="M 50 50 Q 50 25 75 25 L 130 25 Q 175 25 175 85 Q 175 145 130 145 L 108 145 L 108 175 Q 108 185 98 185 L 65 185 Q 50 185 50 165 Z" fill="#E8703F"/>
+    <!-- Brain -->
+    <g transform="translate(123, 85)">
+      <path d="M 0 -32 Q -14 -34 -24 -24 Q -34 -14 -32 -2 Q -38 4 -34 14 Q -32 26 -22 30 Q -12 34 -2 32 Q 8 34 18 30 Q 28 26 30 14 Q 34 4 28 -2 Q 30 -14 20 -24 Q 10 -34 0 -32 Z" fill="white"/>
+      <g stroke="#E8703F" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none">
+        <path d="M 0 -28 Q 2 -16 -2 -8 Q 2 0 -2 10 Q 2 18 0 28"/>
+        <path d="M -22 -16 Q -14 -12 -18 -6 Q -22 -2 -16 4"/>
+        <path d="M 22 -16 Q 14 -12 18 -6 Q 22 -2 16 4"/>
+        <path d="M 8 22 Q 16 28 26 22" stroke-width="3"/>
+      </g>
+    </g>
+  </g>
+
+  <!-- Wordmark + tagline on the right -->
+  <g transform="translate(490, 230)">
+    <text x="0" y="0"
+          font-family="'Plus Jakarta Sans', 'Inter', sans-serif"
+          font-weight="700"
+          font-size="96"
+          fill="#1F2937"
+          letter-spacing="2">PROMPTLY</text>
+    <text x="0" y="60"
+          font-family="'Inter', sans-serif"
+          font-weight="500"
+          font-size="34"
+          fill="#4B5563">Learn to build with words, not code.</text>
+    <!-- Underline accent -->
+    <rect x="0" y="100" width="120" height="6" rx="3" fill="#E8703F"/>
+  </g>
+</svg>

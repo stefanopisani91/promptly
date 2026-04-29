@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+  <!-- Path 5 — Ship: rocket -->
+  <path d="M 24 4 Q 32 12 32 22 L 32 32 L 16 32 L 16 22 Q 16 12 24 4 Z" fill="#FFF1EB" stroke="#E8703F" stroke-width="2"/>
+  <circle cx="24" cy="18" r="3.5" fill="#E8703F"/>
+  <!-- Fins -->
+  <path d="M 16 26 L 10 36 L 16 32 Z" fill="#E8703F" stroke="#E8703F" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M 32 26 L 38 36 L 32 32 Z" fill="#E8703F" stroke="#E8703F" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Flame -->
+  <path d="M 20 32 Q 22 40 24 44 Q 26 40 28 32 Z" fill="#F59E0B" stroke="#DC2626" stroke-width="1.5" stroke-linejoin="round"/>
+</svg>

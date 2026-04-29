@@ -1,0 +1,105 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Backgrounds */
+  --background: #f8f7f4;
+  --surface: #ffffff;
+  --surface-muted: #f1f0ed;
+  --border: #e4e2dc;
+
+  /* Brand — orange (from logo) */
+  --primary: #e8703f;
+  --primary-hover: #c8521f;
+  --primary-light: #fff1eb;
+  --primary-deep: #a23e12;
+
+  /* Feedback */
+  --success: #16a34a;
+  --success-light: #f0fdf4;
+  --warning: #d97706;
+  --warning-light: #fffbeb;
+  --error: #dc2626;
+
+  /* Gamification */
+  --xp-gold: #eab308;
+  --streak-fire: #dc2626;
+  --streak-freeze: #38bdf8;
+
+  /* Text */
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --text-muted: #9ca3af;
+
+  /* Prompt exercise area */
+  --prompt-bg: #1e293b;
+  --prompt-text: #e2e8f0;
+  --prompt-fill: #f59e0b;
+  --prompt-fill-done: #86efac;
+
+  /* Pro tier */
+  --pro-accent: #7c3aed;
+  --pro-light: #f5f3ff;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html,
+body {
+  background: var(--background);
+  color: var(--text-primary);
+  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .animate-xp-toast {
+    animation: none;
+  }
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-jakarta), var(--font-inter), system-ui, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Hero mockup XP toast — repeats every 4s */
+@keyframes xp-toast {
+  0%,
+  10% {
+    opacity: 0;
+    transform: translate(0.5rem, 1rem);
+  }
+  20%,
+  60% {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+  75%,
+  100% {
+    opacity: 0;
+    transform: translate(0, -0.5rem);
+  }
+}
+
+.animate-xp-toast {
+  animation: xp-toast 4s ease-in-out infinite;
+}

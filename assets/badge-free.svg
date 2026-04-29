@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 36" fill="none">
+  <!-- Pill background (orange brand) -->
+  <rect width="120" height="36" rx="18" fill="#FFF1EB"/>
+  <rect x="0.5" y="0.5" width="119" height="35" rx="17.5" stroke="#E8703F" stroke-width="1"/>
+  <!-- Free label -->
+  <text x="60" y="24"
+        font-family="'Plus Jakarta Sans', 'Inter', sans-serif"
+        font-weight="700"
+        font-size="15"
+        fill="#A23E12"
+        text-anchor="middle"
+        letter-spacing="1.5">FREE</text>
+</svg>

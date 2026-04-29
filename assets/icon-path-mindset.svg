@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+  <!-- Path 1 — Mindset: a lightbulb/idea icon -->
+  <circle cx="24" cy="20" r="11" fill="#FFF1EB" stroke="#E8703F" stroke-width="2"/>
+  <path d="M 18 30 L 30 30 M 19 34 L 29 34 M 21 38 L 27 38" stroke="#E8703F" stroke-width="2" stroke-linecap="round"/>
+  <path d="M 20 16 Q 24 12 28 16" stroke="#E8703F" stroke-width="2" stroke-linecap="round" fill="none"/>
+</svg>

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+  <!-- Path 3 — Build: stacked blocks -->
+  <rect x="8" y="28" width="14" height="14" rx="2" fill="#FFF1EB" stroke="#E8703F" stroke-width="2"/>
+  <rect x="26" y="28" width="14" height="14" rx="2" fill="#FFF1EB" stroke="#E8703F" stroke-width="2"/>
+  <rect x="17" y="10" width="14" height="14" rx="2" fill="#E8703F" stroke="#E8703F" stroke-width="2"/>
+</svg>

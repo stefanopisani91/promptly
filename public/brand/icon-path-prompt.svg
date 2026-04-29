@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+  <!-- Path 2 — Prompt: a chat bubble with cursor -->
+  <path d="M 8 10 Q 8 6 12 6 L 36 6 Q 40 6 40 10 L 40 28 Q 40 32 36 32 L 22 32 L 14 40 L 14 32 L 12 32 Q 8 32 8 28 Z" fill="#FFF1EB" stroke="#E8703F" stroke-width="2"/>
+  <line x1="20" y1="14" x2="20" y2="24" stroke="#E8703F" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M 16 18 L 24 18 M 16 22 L 28 22 M 16 26 L 22 26" stroke="#E8703F" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+</svg>
