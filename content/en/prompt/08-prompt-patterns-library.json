@@ -1,0 +1,55 @@
+{
+  "id": "prompt-08",
+  "path_slug": "prompt",
+  "order": 8,
+  "title": "Prompt patterns library",
+  "difficulty": "intermediate",
+  "estimated_minutes": 7,
+  "base_xp": 150,
+  "difficulty_bonus_xp": 50,
+  "icon": "/brand/lessons/prompt-08.svg",
+  "theory": [
+    {
+      "type": "paragraph",
+      "text": "After a few weeks of vibe coding, you'll notice the same prompts work over and over. The plan-first prompt. The security-review prompt. The 'show me three approaches' prompt. Don't rewrite them every time — save them."
+    },
+    {
+      "type": "example",
+      "label": "Five patterns worth keeping",
+      "text": "1. PLAN: 'Before writing code, outline files, signatures, and data flow. Wait for my approval.'\n2. REVIEW: 'Review this code for security, performance, edge cases. Be specific.'\n3. COMPARE: 'Show me three approaches with tradeoffs in maintainability and complexity.'\n4. EXPLAIN: 'Explain this error in plain language. Root cause first, then 2-3 fixes.'\n5. REFACTOR: 'Refactor for readability. Same behavior. Smaller functions. Better names.'"
+    },
+    {
+      "type": "paragraph",
+      "text": "Keep them in a notes file, a Raycast snippet, or a Cursor rules block. After a while, ask the AI itself: 'Summarize what we just did and write me a reusable prompt for the same task in another project.' Your library grows on its own."
+    },
+    {
+      "type": "callout",
+      "variant": "key",
+      "text": "Great vibe coders aren't great because they think faster. They're great because they don't start from scratch."
+    }
+  ],
+  "exercise": {
+    "format": "fill_blank",
+    "prompt_template": "Save the prompts that work as reusable [BLANK], and ask the AI to help you build the [BLANK] over time.",
+    "blanks": [
+      {
+        "index": 0,
+        "correct_answers": ["templates", "patterns", "snippets", "blueprints"],
+        "hint_1": "Pre-made forms you can drop in?",
+        "hint_2": "They're the prompt skeletons — fill the blanks, send.",
+        "explanation": "The answer is 'templates' (or 'patterns'). Templates turn one-off wins into repeatable workflow."
+      },
+      {
+        "index": 1,
+        "correct_answers": ["library", "collection", "set", "toolkit"],
+        "hint_1": "A growing personal stash of these — what is it?",
+        "hint_2": "It's the place you keep all your reusable prompts together.",
+        "explanation": "The answer is 'library' (or 'collection'). Your library is a long-term asset that compounds — every new pattern you add saves time forever."
+      }
+    ]
+  },
+  "outro": {
+    "recap": "You finished Path 2. You know the anatomy of a prompt, how to set roles and constraints, how to chain, how to handle versions, and how to build a library.",
+    "next_prompt": "More paths are coming. For now: go vibe-code something real."
+  }
+}

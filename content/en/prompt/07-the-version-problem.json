@@ -1,0 +1,55 @@
+{
+  "id": "prompt-07",
+  "path_slug": "prompt",
+  "order": 7,
+  "title": "The version problem",
+  "difficulty": "intermediate",
+  "estimated_minutes": 6,
+  "base_xp": 150,
+  "difficulty_bonus_xp": 50,
+  "icon": "/brand/lessons/prompt-07.svg",
+  "theory": [
+    {
+      "type": "paragraph",
+      "text": "The AI was trained on a snapshot of the world. That snapshot has a date — the knowledge cutoff. Anything that changed after it doesn't exist as far as the model knows: new framework versions, new APIs, deprecated methods, fresh syntax."
+    },
+    {
+      "type": "paragraph",
+      "text": "When you don't pin a version, the AI averages across years. You get code that looks plausible but uses Next.js 13 patterns in a Next.js 15 project, or a library API that was renamed last quarter. The build breaks, you waste an hour, you blame the AI. The real fix is upstream: tell it the version."
+    },
+    {
+      "type": "example",
+      "label": "Pin the version, save the hour",
+      "text": "❌ 'Add a server action.'\n✅ 'Add a Next.js 15 server action using async/await syntax. App Router. The form should call it directly via the action prop.'"
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "text": "If something the AI suggests doesn't exist or doesn't work, suspect the version before you suspect yourself. Then re-prompt with the exact version pinned."
+    }
+  ],
+  "exercise": {
+    "format": "fill_blank",
+    "prompt_template": "Always pin the [BLANK] of your stack, because the AI has a knowledge [BLANK] and may not know recent changes.",
+    "blanks": [
+      {
+        "index": 0,
+        "correct_answers": ["version", "release", "edition"],
+        "hint_1": "Next.js 13? Next.js 15? Which one are you on?",
+        "hint_2": "It's the number after the framework name — '15', '4.6', etc.",
+        "explanation": "The answer is 'version' (or 'release'). Naming the version cuts the AI's guessing space dramatically."
+      },
+      {
+        "index": 1,
+        "correct_answers": ["cutoff", "limit", "date", "boundary", "deadline"],
+        "hint_1": "What ends the AI's awareness of the world?",
+        "hint_2": "It's the date after which nothing in the model's training exists.",
+        "explanation": "The answer is 'cutoff' (or 'date'). After the cutoff, the AI is genuinely guessing — and confidently."
+      }
+    ]
+  },
+  "outro": {
+    "recap": "You learned to pin versions and to suspect the cutoff when something looks plausible but breaks.",
+    "next_prompt": "Last lesson: build your own personal library of prompts you can reuse."
+  }
+}

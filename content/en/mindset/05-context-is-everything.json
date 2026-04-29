@@ -1,0 +1,55 @@
+{
+  "id": "mindset-05",
+  "path_slug": "mindset",
+  "order": 5,
+  "title": "Context is everything",
+  "difficulty": "beginner",
+  "estimated_minutes": 5,
+  "base_xp": 100,
+  "difficulty_bonus_xp": 0,
+  "icon": "/brand/lessons/mindset-05.svg",
+  "theory": [
+    {
+      "type": "paragraph",
+      "text": "The same prompt, sent to the same AI, produces wildly different results depending on what surrounds it. That surrounding matter is the context: the files in your project, the rules you've set, the examples it can see, the conversation so far."
+    },
+    {
+      "type": "paragraph",
+      "text": "Prompt engineering is about writing the right sentence. Context engineering is about shaping the entire room — so the AI walks in already half-prepared. A well-set room makes mediocre prompts work. A bare room makes brilliant prompts fail."
+    },
+    {
+      "type": "example",
+      "label": "What context looks like",
+      "text": "A short rules file ('we use Next.js 15, Tailwind, no any types'), example components the AI can mirror, the current file open in the editor, recent commits, the design tokens. None of that is a 'prompt' — but all of it shapes the answer."
+    },
+    {
+      "type": "callout",
+      "variant": "key",
+      "text": "Set the room before you speak. The best vibe coders spend more time on context than on prompts."
+    }
+  ],
+  "exercise": {
+    "format": "fill_blank",
+    "prompt_template": "Great results come from a great [BLANK] — not just a clever [BLANK].",
+    "blanks": [
+      {
+        "index": 0,
+        "correct_answers": ["context", "environment", "setup", "setting"],
+        "hint_1": "What surrounds the prompt — files, rules, examples?",
+        "hint_2": "It's the room the AI walks into before you say a word.",
+        "explanation": "The answer is 'context' (or 'environment'). Context shapes what's even possible for the AI to produce."
+      },
+      {
+        "index": 1,
+        "correct_answers": ["prompt", "question", "request", "instruction"],
+        "hint_1": "What's the single sentence you type into the chat?",
+        "hint_2": "It's the visible part — but it's only one piece.",
+        "explanation": "The answer is 'prompt'. A clever prompt in a barren context still produces weak output. Context first, prompt second."
+      }
+    ]
+  },
+  "outro": {
+    "recap": "You learned that context is the room, the prompt is the question. Set the room well and even simple questions yield strong answers.",
+    "next_prompt": "Next: a checklist you can keep in your back pocket for every session."
+  }
+}

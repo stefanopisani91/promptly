@@ -1,0 +1,55 @@
+{
+  "id": "prompt-06",
+  "path_slug": "prompt",
+  "order": 6,
+  "title": "Concatenare i prompt",
+  "difficulty": "intermediate",
+  "estimated_minutes": 6,
+  "base_xp": 150,
+  "difficulty_bonus_xp": 50,
+  "icon": "/brand/lessons/prompt-06.svg",
+  "theory": [
+    {
+      "type": "paragraph",
+      "text": "Alcune feature sono troppo grandi per un prompt solo, anche se ben scritto. La soluzione non è stipare di più nella frase — è spezzare il lavoro in una catena, dove ogni prompt costruisce sul precedente e tu controlli l'output prima di andare avanti."
+    },
+    {
+      "type": "example",
+      "label": "Una catena in quattro anelli",
+      "text": "1. 'Abbozza il modello dati e le signature delle funzioni per un sistema di notifiche. Niente codice ancora.'\n2. 'Bene. Ora spiegami in parole come funziona il flusso publish/subscribe.'\n3. 'Approvato. Implementa solo il publisher, con i test.'\n4. 'Adesso il subscriber. Poi collegali.'"
+    },
+    {
+      "type": "paragraph",
+      "text": "Il primo anello è sempre uguale: chiedi un piano, non codice. Un piano di due minuti che puoi correggere batte venti minuti di codice da buttare. Una volta che il piano è giusto, la generazione è quasi meccanica."
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "text": "Il plan-first prompting è l'abitudine con la leva più alta del path. È quello che separa i vibe coder veloci da quelli frustrati."
+    }
+  ],
+  "exercise": {
+    "format": "fill_blank",
+    "prompt_template": "Per feature complesse, [BLANK] i prompt e chiedi sempre un [BLANK] prima di scrivere una sola riga di codice.",
+    "blanks": [
+      {
+        "index": 0,
+        "correct_answers": ["concatena", "spezza", "incatena", "collega", "dividi"],
+        "hint_1": "Lavoro grande, suddiviso in serie — quale verbo?",
+        "hint_2": "Ogni prompt alimenta il successivo, come anelli di una... cosa?",
+        "explanation": "La risposta è 'concatena' (o 'spezza'). I prompt concatenati ti permettono di verificare ogni passo prima di impegnarti col successivo."
+      },
+      {
+        "index": 1,
+        "correct_answers": ["piano", "abbozzo", "schema", "outline", "approccio"],
+        "hint_1": "Lo schema di alto livello, prima di una sola riga di codice?",
+        "hint_2": "Nomina file, signature delle funzioni e flusso dati — ma niente implementazione.",
+        "explanation": "La risposta è 'piano' (o 'abbozzo'). Il piano è la tua ultima occasione economica per cambiare direzione prima che venga scritto il codice."
+      }
+    ]
+  },
+  "outro": {
+    "recap": "Hai imparato a concatenare i prompt e a iniziare ogni catena con un piano. Due abitudini, un grosso salto di qualità.",
+    "next_prompt": "Prossima: la trappola della versione — perché l'AI potrebbe suggerirti codice di due anni fa."
+  }
+}

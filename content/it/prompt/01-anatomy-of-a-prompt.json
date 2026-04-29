@@ -1,0 +1,73 @@
+{
+  "id": "prompt-01",
+  "path_slug": "prompt",
+  "order": 1,
+  "title": "Anatomia di un buon prompt",
+  "difficulty": "beginner",
+  "estimated_minutes": 6,
+  "base_xp": 100,
+  "difficulty_bonus_xp": 0,
+  "icon": "/brand/lessons/prompt-01.svg",
+  "theory": [
+    {
+      "type": "paragraph",
+      "text": "Un buon prompt non è una formula magica. È un brief — del tipo che daresti a un designer junior o a uno sviluppatore freelance che non ha mai visto il tuo progetto. Se a loro daresti più contesto di 'costruisci un CRM', anche all'AI dovresti darne di più."
+    },
+    {
+      "type": "paragraph",
+      "text": "Ogni prompt produttivo contiene quattro ingredienti: identità (cosa stai costruendo), pubblico (per chi è), funzione (cosa fa), vibe (come deve sembrare). Saltane uno e l'output diventa sfocato esattamente in quella dimensione."
+    },
+    {
+      "type": "example",
+      "label": "I quattro ingredienti",
+      "text": "Identità: 'un'app di budgeting per freelance'.\nPubblico: 'persone che odiano i fogli Excel ma devono tracciare le spese per le tasse'.\nFunzione: 'registra entrate, registra spese, mostra il totale mensile, esporta in CSV'.\nVibe: 'caldo, amichevole, calmo — non intimidatorio come un'app di finanza'."
+    },
+    {
+      "type": "comparison_table",
+      "bad": {
+        "label": "Salta la vibe",
+        "content": "Ottieni una UI generica, default, fredda e corporate."
+      },
+      "good": {
+        "label": "Includi tutti e quattro",
+        "content": "Ottieni qualcosa che sembra giusto già alla prima generazione."
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "key",
+      "text": "Tratta il prompt come un brief creativo, non come una query di ricerca. Tono, pubblico e vincoli contano quanto la lista feature."
+    }
+  ],
+  "exercise": {
+    "format": "fill_blank",
+    "prompt_template": "Un buon prompt nomina il [BLANK] che stai costruendo, il [BLANK] per cui è, e la [BLANK] che deve trasmettere.",
+    "blanks": [
+      {
+        "index": 0,
+        "correct_answers": ["prodotto", "progetto", "app", "oggetto"],
+        "hint_1": "Che tipo di cosa stai effettivamente creando?",
+        "hint_2": "È il sostantivo — un'app, uno strumento, una dashboard, un gioco.",
+        "explanation": "La risposta è 'prodotto' (o 'app'). Nominare il prodotto àncora ogni scelta successiva dell'AI."
+      },
+      {
+        "index": 1,
+        "correct_answers": ["pubblico", "utente", "utenti", "target", "destinatario"],
+        "hint_1": "Chi userà davvero questa cosa?",
+        "hint_2": "Nominare il pubblico — bambini, trader, freelance — cambia istantaneamente UI e copy.",
+        "explanation": "La risposta è 'pubblico' (o 'utente'). 'Per bambini di 5 anni' produce bottoni grandi; 'per trader' produce dati densi."
+      },
+      {
+        "index": 2,
+        "correct_answers": ["vibe", "estetica", "atmosfera", "tono", "sensazione"],
+        "hint_1": "Calma? Cyberpunk? Giocosa? Minimale?",
+        "hint_2": "È il registro emotivo e visivo che il prodotto deve colpire.",
+        "explanation": "La risposta è 'vibe' (o 'estetica'). Saltala e ti ritrovi col grigio Tailwind di default in ogni progetto."
+      }
+    ]
+  },
+  "outro": {
+    "recap": "Hai imparato i quattro ingredienti di un prompt produttivo: identità, pubblico, funzione, vibe. Non saltarne nessuno.",
+    "next_prompt": "Prossima: come dare un ruolo all'AI cambia tutto."
+  }
+}

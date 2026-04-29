@@ -1,0 +1,62 @@
+{
+  "id": "mindset-06",
+  "path_slug": "mindset",
+  "order": 6,
+  "title": "The vibe coder's checklist",
+  "difficulty": "beginner",
+  "estimated_minutes": 5,
+  "base_xp": 100,
+  "difficulty_bonus_xp": 0,
+  "icon": "/brand/lessons/mindset-06.svg",
+  "theory": [
+    {
+      "type": "paragraph",
+      "text": "Mindset is what you carry into every session. Here's a five-step checklist that turns the ideas from this path into a routine. Run through it before you write your next prompt — it takes thirty seconds and saves hours."
+    },
+    {
+      "type": "example",
+      "label": "Before each session",
+      "text": "1. Intent — what am I building, for whom, and what does done look like?\n2. Slice — what's the smallest piece I can ship next?\n3. Context — does the AI have the rules, files, and examples it needs?\n4. Plan — ask the AI to outline its approach before writing code.\n5. Review — read the diff, click through the feature, commit if it works."
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "text": "Skip step 1 and you build the wrong thing. Skip step 4 and you debug rewrites. Skip step 5 and you ship surprises."
+    },
+    {
+      "type": "paragraph",
+      "text": "The checklist isn't about discipline for its own sake. It's about pushing the small decisions to the front, where they're cheap to change, instead of leaving them buried in code where they're expensive."
+    }
+  ],
+  "exercise": {
+    "format": "fill_blank",
+    "prompt_template": "The five-step checklist: define [BLANK], pick a slice, set context, ask for a [BLANK], then [BLANK] the result.",
+    "blanks": [
+      {
+        "index": 0,
+        "correct_answers": ["intent", "the goal", "goal", "the outcome", "outcome"],
+        "hint_1": "What are you actually trying to achieve?",
+        "hint_2": "It's the *what* and *why* — the very first thing to nail down.",
+        "explanation": "The answer is 'intent' (or 'the goal'). Without a clear intent, every later step bends in the wrong direction."
+      },
+      {
+        "index": 1,
+        "correct_answers": ["plan", "outline", "approach", "strategy"],
+        "hint_1": "What does a good builder draw before laying bricks?",
+        "hint_2": "It's a short outline of files, functions, and flow — before any code is written.",
+        "explanation": "The answer is 'plan' (or 'outline'). A two-minute plan from the AI prevents twenty-minute rewrites later."
+      },
+      {
+        "index": 2,
+        "correct_answers": ["review", "test", "check", "verify", "inspect"],
+        "hint_1": "What do you do before you commit?",
+        "hint_2": "Read the diff, click through the feature, make sure it actually works.",
+        "explanation": "The answer is 'review' (or 'test'). The accept-all-and-pray approach is how vibe-coded projects break in production."
+      }
+    ]
+  },
+  "outro": {
+    "recap": "You finished Path 1 with a routine: intent → slice → context → plan → review. That's vibe coding with a steering wheel.",
+    "next_prompt": "Path 2 is unlocked. Time to learn how to actually write the prompts."
+  }
+}

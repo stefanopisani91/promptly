@@ -1,0 +1,55 @@
+{
+  "id": "prompt-08",
+  "path_slug": "prompt",
+  "order": 8,
+  "title": "Libreria di pattern",
+  "difficulty": "intermediate",
+  "estimated_minutes": 7,
+  "base_xp": 150,
+  "difficulty_bonus_xp": 50,
+  "icon": "/brand/lessons/prompt-08.svg",
+  "theory": [
+    {
+      "type": "paragraph",
+      "text": "Dopo qualche settimana di vibe coding, noterai che gli stessi prompt funzionano e tornano utili più e più volte. Il prompt 'piano-prima'. Il prompt di security review. Il prompt 'mostrami tre approcci'. Non riscriverli ogni volta — salvali."
+    },
+    {
+      "type": "example",
+      "label": "Cinque pattern da tenere",
+      "text": "1. PIANO: 'Prima di scrivere codice, abbozza file, signature e flusso dati. Aspetta la mia approvazione.'\n2. REVIEW: 'Rivedi questo codice per sicurezza, performance, edge case. Sii specifico.'\n3. CONFRONTO: 'Mostrami tre approcci con tradeoff su manutenibilità e complessità.'\n4. SPIEGA: 'Spiegami questo errore in parole semplici. Prima la causa, poi 2-3 fix.'\n5. REFACTOR: 'Rifattorizza per leggibilità. Stesso comportamento. Funzioni più piccole. Naming migliore.'"
+    },
+    {
+      "type": "paragraph",
+      "text": "Tienili in un file di note, in uno snippet di Raycast, o in un blocco di rules di Cursor. Dopo un po', chiedi alla stessa AI: 'Riassumi cosa abbiamo appena fatto e generami un prompt riutilizzabile per fare la stessa cosa in un altro progetto.' La tua libreria cresce da sola."
+    },
+    {
+      "type": "callout",
+      "variant": "key",
+      "text": "I grandi vibe coder non sono grandi perché pensano più veloce. Sono grandi perché non partono da zero ogni volta."
+    }
+  ],
+  "exercise": {
+    "format": "fill_blank",
+    "prompt_template": "Salva i prompt che funzionano come [BLANK] riutilizzabili e fatti aiutare dall'AI a costruire la tua [BLANK] nel tempo.",
+    "blanks": [
+      {
+        "index": 0,
+        "correct_answers": ["template", "modelli", "schemi", "snippet"],
+        "hint_1": "Forme già pronte da riutilizzare?",
+        "hint_2": "Sono gli scheletri di prompt — riempi gli spazi, manda.",
+        "explanation": "La risposta è 'template' (o 'modelli'). I template trasformano vittorie singole in workflow ripetibili."
+      },
+      {
+        "index": 1,
+        "correct_answers": ["libreria", "raccolta", "collezione", "biblioteca"],
+        "hint_1": "Una scorta personale che cresce — cos'è?",
+        "hint_2": "È il posto dove tieni insieme tutti i tuoi prompt riutilizzabili.",
+        "explanation": "La risposta è 'libreria' (o 'raccolta'). La tua libreria è un asset di lungo periodo che si accumula — ogni nuovo pattern che aggiungi ti farà risparmiare tempo per sempre."
+      }
+    ]
+  },
+  "outro": {
+    "recap": "Hai chiuso il Path 2. Conosci l'anatomia di un prompt, sai impostare ruoli e vincoli, sai concatenare, sai gestire le versioni, e sai costruire una libreria.",
+    "next_prompt": "Altri path stanno arrivando. Per ora: vai a vibe-codare qualcosa di vero."
+  }
+}

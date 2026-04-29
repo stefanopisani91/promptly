@@ -1,0 +1,66 @@
+{
+  "id": "prompt-04",
+  "path_slug": "prompt",
+  "order": 4,
+  "title": "Descrivi il formato dell'output",
+  "difficulty": "intermediate",
+  "estimated_minutes": 6,
+  "base_xp": 150,
+  "difficulty_bonus_xp": 50,
+  "icon": "/brand/lessons/prompt-04.svg",
+  "theory": [
+    {
+      "type": "paragraph",
+      "text": "Se non dici all'AI che forma deve avere la risposta, ti ritrovi con qualunque forma le venga di produrre — a volte un blocco di codice, a volte un saggio di seicento parole con il codice sepolto dentro, a volte una lista numerata di suggerimenti. Inconsistente. Difficile da consumare."
+    },
+    {
+      "type": "paragraph",
+      "text": "Il rimedio è meccanico: descrivi il formato. Specifica la struttura, il numero di file, il linguaggio, se vuoi commenti, se vuoi prima un piano o subito il codice. Più sei esplicito, più l'output diventa prevedibile."
+    },
+    {
+      "type": "comparison_table",
+      "bad": {
+        "label": "Formato non specificato",
+        "content": "'Aiutami con il flusso di auth.' Output: un saggio di 600 parole con tre pattern diversi e nessuna scelta chiara."
+      },
+      "good": {
+        "label": "Formato specificato",
+        "content": "'Output: un solo file TypeScript, niente commenti, un solo default export, sotto le 80 righe.' Output: esattamente questo."
+      }
+    },
+    {
+      "type": "example",
+      "label": "Leve di formato che vale la pena tirare",
+      "text": "Numero e nomi dei file. Linguaggio e versione. Singola funzione vs modulo intero. Piano-prima vs codice-prima. Commenti sì o no. Import in cima, type inline, export named o default. Forma JSON, tabella Markdown, lista puntata."
+    },
+    {
+      "type": "callout",
+      "variant": "key",
+      "text": "Formato prevedibile = iterazione prevedibile. Non puoi raffinare un output che non sai paragonare con quello della volta prima."
+    }
+  ],
+  "exercise": {
+    "format": "fill_blank",
+    "prompt_template": "Descrivi sempre il [BLANK] dell'output e la [BLANK] che ti aspetti.",
+    "blanks": [
+      {
+        "index": 0,
+        "correct_answers": ["formato", "tipo", "stile", "forma"],
+        "hint_1": "JSON, tabella Markdown, codice puro — quale di questi è?",
+        "hint_2": "È il contenitore — il modo in cui la risposta è disposta.",
+        "explanation": "La risposta è 'formato' (o 'forma'). Specificare il formato rende paragonabili gli output tra iterazioni."
+      },
+      {
+        "index": 1,
+        "correct_answers": ["struttura", "organizzazione", "schema", "impalcatura"],
+        "hint_1": "Qual è l'organizzazione interna della risposta?",
+        "hint_2": "È la suddivisione — sezioni, campi, intestazioni, lo scheletro.",
+        "explanation": "La risposta è 'struttura' (o 'schema'). Il formato è il contenitore; la struttura è quello che c'è dentro."
+      }
+    ]
+  },
+  "outro": {
+    "recap": "Hai imparato a specificare formato e struttura in modo esplicito. Entrambi trasformano output vago in qualcosa su cui puoi iterare.",
+    "next_prompt": "Prossima: lo stesso obiettivo, due prompt — uno cattivo, uno buono."
+  }
+}

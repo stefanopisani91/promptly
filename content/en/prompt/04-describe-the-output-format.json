@@ -1,0 +1,66 @@
+{
+  "id": "prompt-04",
+  "path_slug": "prompt",
+  "order": 4,
+  "title": "Describe the output format",
+  "difficulty": "intermediate",
+  "estimated_minutes": 6,
+  "base_xp": 150,
+  "difficulty_bonus_xp": 50,
+  "icon": "/brand/lessons/prompt-04.svg",
+  "theory": [
+    {
+      "type": "paragraph",
+      "text": "If you don't tell the AI what shape the answer should take, you'll get whatever shape it feels like producing — sometimes a code block, sometimes a long essay with code buried inside, sometimes a numbered list of suggestions. Inconsistent. Hard to consume."
+    },
+    {
+      "type": "paragraph",
+      "text": "The fix is mechanical: describe the format. Specify the structure, the file count, the language, whether comments are wanted, whether you want a plan first or code first. The more explicit, the more predictable the output."
+    },
+    {
+      "type": "comparison_table",
+      "bad": {
+        "label": "Format unspecified",
+        "content": "'Help me with the auth flow.' Output: a 600-word essay with three different patterns and no clear pick."
+      },
+      "good": {
+        "label": "Format specified",
+        "content": "'Output: one TypeScript file, no comments, single default export, under 80 lines.' Output: exactly that."
+      }
+    },
+    {
+      "type": "example",
+      "label": "Format levers worth pulling",
+      "text": "File count and names. Language and version. Single function vs full module. Plan-first vs code-first. Comments allowed or not. Imports at the top, types inline, named or default export. JSON shape, Markdown table, bulleted list."
+    },
+    {
+      "type": "callout",
+      "variant": "key",
+      "text": "Predictable format = predictable iteration. You can't refine output you can't compare to last time's output."
+    }
+  ],
+  "exercise": {
+    "format": "fill_blank",
+    "prompt_template": "Always describe the [BLANK] of the output and the [BLANK] you expect it in.",
+    "blanks": [
+      {
+        "index": 0,
+        "correct_answers": ["format", "shape", "form", "layout"],
+        "hint_1": "JSON, Markdown table, plain code — which is it?",
+        "hint_2": "It's the container — the way the answer is laid out.",
+        "explanation": "The answer is 'format' (or 'shape'). Specifying the format makes outputs comparable across iterations."
+      },
+      {
+        "index": 1,
+        "correct_answers": ["structure", "form", "schema", "template"],
+        "hint_1": "What's the inner organization of the answer?",
+        "hint_2": "It's the breakdown — sections, fields, headers, the skeleton.",
+        "explanation": "The answer is 'structure' (or 'schema'). Format is the container; structure is what's inside it."
+      }
+    ]
+  },
+  "outro": {
+    "recap": "You learned to specify format and structure explicitly. Both turn vague output into something you can iterate on.",
+    "next_prompt": "Next: a side-by-side of a bad prompt and a good one — same goal, very different result."
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "id": "prompt-01",
+  "path_slug": "prompt",
+  "order": 1,
+  "title": "Anatomy of a great prompt",
+  "difficulty": "beginner",
+  "estimated_minutes": 6,
+  "base_xp": 100,
+  "difficulty_bonus_xp": 0,
+  "icon": "/brand/lessons/prompt-01.svg",
+  "theory": [
+    {
+      "type": "paragraph",
+      "text": "A great prompt isn't a magic spell. It's a brief — the kind you'd hand to a junior designer or a freelance developer who's never seen your project. If you'd give them more context than just 'build a CRM', you should give the AI more too."
+    },
+    {
+      "type": "paragraph",
+      "text": "Every productive prompt contains four ingredients: identity (what you're building), audience (who it's for), function (what it does), and vibe (how it should feel). Drop one and the output gets fuzzy in exactly that dimension."
+    },
+    {
+      "type": "example",
+      "label": "The four ingredients",
+      "text": "Identity: 'a budgeting app for freelancers'.\nAudience: 'people who hate spreadsheets but track expenses for taxes'.\nFunction: 'log income, log expenses, see a running monthly total, export CSV'.\nVibe: 'warm, friendly, calm — not finance-app intimidating'."
+    },
+    {
+      "type": "comparison_table",
+      "bad": {
+        "label": "Skip the vibe",
+        "content": "You get a generic, default-styled, cold-corporate UI."
+      },
+      "good": {
+        "label": "Include all four",
+        "content": "You get something that feels right on the first generation."
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "key",
+      "text": "Treat your prompt like a creative brief, not a search query. Tone, audience, and constraints matter as much as the feature list."
+    }
+  ],
+  "exercise": {
+    "format": "fill_blank",
+    "prompt_template": "A great prompt names the [BLANK] you're building, the [BLANK] it's for, and the [BLANK] it should feel like.",
+    "blanks": [
+      {
+        "index": 0,
+        "correct_answers": ["product", "thing", "app", "project", "identity"],
+        "hint_1": "What kind of object are you actually creating?",
+        "hint_2": "It's the noun — an app, a tool, a dashboard, a game.",
+        "explanation": "The answer is 'product' (or 'app'). Naming the product anchors every later choice the AI makes."
+      },
+      {
+        "index": 1,
+        "correct_answers": ["audience", "user", "users", "people", "person"],
+        "hint_1": "Who's going to actually use this thing?",
+        "hint_2": "Naming them — kids, traders, freelancers — instantly changes UI and copy.",
+        "explanation": "The answer is 'audience' (or 'user'). 'For five-year-olds' produces big buttons; 'for traders' produces dense data."
+      },
+      {
+        "index": 2,
+        "correct_answers": ["vibe", "aesthetic", "feeling", "tone", "mood"],
+        "hint_1": "Calm? Cyberpunk? Playful? Minimal?",
+        "hint_2": "It's the emotional and visual register the product should hit.",
+        "explanation": "The answer is 'vibe' (or 'aesthetic'). Skip it and you get default Tailwind grey on every project."
+      }
+    ]
+  },
+  "outro": {
+    "recap": "You learned the four ingredients of a productive prompt: identity, audience, function, vibe. Skip none.",
+    "next_prompt": "Next: how giving the AI a role changes everything."
+  }
+}

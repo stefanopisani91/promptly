@@ -1,0 +1,61 @@
+{
+  "id": "mindset-04",
+  "path_slug": "mindset",
+  "order": 4,
+  "title": "Scomponi il problema",
+  "difficulty": "beginner",
+  "estimated_minutes": 5,
+  "base_xp": 100,
+  "difficulty_bonus_xp": 0,
+  "icon": "/brand/lessons/mindset-04.svg",
+  "theory": [
+    {
+      "type": "paragraph",
+      "text": "L'errore più comune dei principianti del vibe coding: stipare un intero prodotto in un solo prompt. 'Costruiscimi un'app di e-commerce con login, carrello, pagamenti, admin e supporto mobile.' L'AI produrrà qualcosa. Sembrerà impressionante. Sarà anche un casino quasi impossibile da debuggare."
+    },
+    {
+      "type": "paragraph",
+      "text": "Ambizioni grandi, prompt piccoli. Scegli una fettina sottile — una sola feature, una sola schermata — e spediscila. Poi passi alla prossima. Ogni commit è un punto di salvataggio a cui tornare quando qualcosa si rompe."
+    },
+    {
+      "type": "comparison_table",
+      "bad": {
+        "label": "Un mega-prompt",
+        "content": "Crea un'app to-do completa con login, dark mode, categorie, condivisione e sync con Google Calendar."
+      },
+      "good": {
+        "label": "Fetta dopo fetta",
+        "content": "1. Homepage con lista vuota. 2. Aggiungi e completa task. 3. Raggruppa per categoria. 4. Mostra il contatore in alto."
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "text": "Se un singolo prompt potrebbe rompere il tuo progetto, stai promptando troppo grosso. Taglialo a metà. Poi a metà ancora."
+    }
+  ],
+  "exercise": {
+    "format": "fill_blank",
+    "prompt_template": "Costruisci cose complesse lavorando in passi [BLANK], spedendo [BLANK] feature alla volta.",
+    "blanks": [
+      {
+        "index": 0,
+        "correct_answers": ["piccoli", "minimi", "brevi", "incrementali"],
+        "hint_1": "Grandi o piccoli?",
+        "hint_2": "Ogni passo deve essere abbastanza piccolo da poterlo verificare in un minuto o due.",
+        "explanation": "La risposta è 'piccoli' (o 'minimi'). Passi piccoli = bug piccoli. Passi grandi = bug aggrovigliati che non riesci a sciogliere."
+      },
+      {
+        "index": 1,
+        "correct_answers": ["una", "una sola", "1"],
+        "hint_1": "Quante feature dovresti affrontare in un prompt?",
+        "hint_2": "Quanto basta per costruire, testare e committare prima di passare avanti.",
+        "explanation": "La risposta è 'una'. Una feature per prompt, un commit per feature. Quel ritmo ti tiene al volante."
+      }
+    ]
+  },
+  "outro": {
+    "recap": "Hai imparato il principio del piccolo passo. Affetta il lavoro, spedisci un pezzo, committa, ripeti.",
+    "next_prompt": "Prossima: perché il contesto conta più del prompt stesso."
+  }
+}

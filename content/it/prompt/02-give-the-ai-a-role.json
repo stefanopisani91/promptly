@@ -1,0 +1,55 @@
+{
+  "id": "prompt-02",
+  "path_slug": "prompt",
+  "order": 2,
+  "title": "Dai un ruolo all'AI",
+  "difficulty": "beginner",
+  "estimated_minutes": 5,
+  "base_xp": 100,
+  "difficulty_bonus_xp": 0,
+  "icon": "/brand/lessons/prompt-02.svg",
+  "theory": [
+    {
+      "type": "paragraph",
+      "text": "L'AI si comporta in modi diversi a seconda di chi pensa di essere. 'Scrivimi una funzione' produce codice nella media. 'Comportati come un senior backend engineer che la sta rivedendo per la produzione' produce qualcosa con validazione degli input, gestione errori e test."
+    },
+    {
+      "type": "paragraph",
+      "text": "Il ruolo non è decorazione — è un volante. Nominare un esperto con una specifica seniority e un focus chiaro spinge l'AI verso i pattern che quell'esperto userebbe: architettura più pulita, codice più difensivo, naming più stretto."
+    },
+    {
+      "type": "simulated_output",
+      "prompt": "Comportati come un senior frontend engineer che cura l'accessibilità. Rivedi questo componente bottone.",
+      "output": "Tre problemi:\n1. Manca aria-label quando ha solo l'icona — gli screen reader sentono solo 'button'.\n2. Manca il focus ring nella navigazione da tastiera.\n3. Lo stato disabled in alcuni browser fa comunque scattare l'handler del click.\n\nDi seguito i fix proposti."
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "text": "Sii specifico. 'Senior engineer' va bene. 'Senior engineer che ha spedito app React per cinque anni e ha la fissa per le performance' è meglio."
+    }
+  ],
+  "exercise": {
+    "format": "fill_blank",
+    "prompt_template": "Apri il prompt con 'Comportati come un [BLANK]' e specifica il livello di [BLANK] così l'AI applica gli standard giusti.",
+    "blanks": [
+      {
+        "index": 0,
+        "correct_answers": ["ruolo", "esperto", "professionista", "specialista", "persona"],
+        "hint_1": "Quale cappello vuoi che l'AI si metta?",
+        "hint_2": "È il titolo o la specializzazione — engineer, designer, copywriter, avvocato.",
+        "explanation": "La risposta è 'ruolo' (o 'esperto'). Nominare un ruolo attiva i pattern che quel ruolo userebbe naturalmente."
+      },
+      {
+        "index": 1,
+        "correct_answers": ["seniority", "esperienza", "competenza", "anzianità"],
+        "hint_1": "Junior, mid, senior, principal — quale?",
+        "hint_2": "È la manopola degli anni di esperienza.",
+        "explanation": "La risposta è 'seniority' (o 'esperienza'). 'Senior' dà un output più rigoroso di 'junior' a parità di task."
+      }
+    ]
+  },
+  "outro": {
+    "recap": "Hai imparato a impostare un ruolo con una seniority specifica. L'AI rispecchia poi i pattern di quell'esperto.",
+    "next_prompt": "Prossima: perché i vincoli rendono l'AI migliore, non peggiore."
+  }
+}

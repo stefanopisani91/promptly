@@ -1,0 +1,61 @@
+{
+  "id": "prompt-05",
+  "path_slug": "prompt",
+  "order": 5,
+  "title": "Bad prompt vs good prompt",
+  "difficulty": "intermediate",
+  "estimated_minutes": 6,
+  "base_xp": 150,
+  "difficulty_bonus_xp": 50,
+  "icon": "/brand/lessons/prompt-05.svg",
+  "theory": [
+    {
+      "type": "paragraph",
+      "text": "Theory only goes so far. Here's the same goal, written two ways. Read both, then notice what's actually different — not just longer, but more decided."
+    },
+    {
+      "type": "comparison_table",
+      "bad": {
+        "label": "Vague",
+        "content": "Build me a CRM for real estate agents."
+      },
+      "good": {
+        "label": "Specific",
+        "content": "Build a CRM for real estate agents. Two roles: agents (manage their own leads) and managers (see all leads). Lead has: name, phone, email, status (new/contacted/showing/closed/lost), assigned agent, notes, source. Stack: Next.js + Supabase + Tailwind. Auth: magic link. Show leads in a kanban grouped by status."
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "The vague version forces the AI to guess on every dimension: schema, auth, UI pattern, stack. Some guesses will be wrong, and you'll spend an hour undoing them. The specific version locks the boring decisions and frees the AI to do the actual work — generating clean, well-structured code that matches what you wanted."
+    },
+    {
+      "type": "callout",
+      "variant": "key",
+      "text": "Specificity isn't bureaucracy. Every decision you don't make, the AI makes for you — and you'll have to live with it."
+    }
+  ],
+  "exercise": {
+    "format": "fill_blank",
+    "prompt_template": "A [BLANK] prompt forces the AI to guess; a [BLANK] prompt locks the boring decisions so it can focus on building.",
+    "blanks": [
+      {
+        "index": 0,
+        "correct_answers": ["vague", "generic", "fuzzy", "unclear", "ambiguous"],
+        "hint_1": "Loose, hand-wavy, low on detail?",
+        "hint_2": "It's the kind that fits in one sentence with no concrete fields or stack.",
+        "explanation": "The answer is 'vague' (or 'generic'). Vague prompts produce generic output — and the AI's defaults are rarely yours."
+      },
+      {
+        "index": 1,
+        "correct_answers": ["specific", "detailed", "precise", "concrete", "explicit"],
+        "hint_1": "The opposite of vague — what is it?",
+        "hint_2": "It names roles, fields, stack, expected behavior.",
+        "explanation": "The answer is 'specific' (or 'detailed'). Specific prompts get specific code that actually fits your project."
+      }
+    ]
+  },
+  "outro": {
+    "recap": "You saw the difference: vague prompts force guesses, specific prompts unlock real work.",
+    "next_prompt": "Next: when one prompt isn't enough — chaining for complex features."
+  }
+}

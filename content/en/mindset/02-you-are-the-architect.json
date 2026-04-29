@@ -1,0 +1,66 @@
+{
+  "id": "mindset-02",
+  "path_slug": "mindset",
+  "order": 2,
+  "title": "You are the architect",
+  "difficulty": "beginner",
+  "estimated_minutes": 5,
+  "base_xp": 100,
+  "difficulty_bonus_xp": 0,
+  "icon": "/brand/lessons/mindset-02.svg",
+  "theory": [
+    {
+      "type": "quote",
+      "text": "I won't commit any code to my repository if I couldn't explain exactly what it does to somebody else.",
+      "attribution": "Simon Willison"
+    },
+    {
+      "type": "paragraph",
+      "text": "Vibe coding doesn't make you a passenger. It makes you the architect. The AI is your builder — fast, tireless, surprisingly good at syntax — but it has no taste, no business sense, and no idea what you actually need. That part is your job."
+    },
+    {
+      "type": "paragraph",
+      "text": "Your value isn't in typing. It's in deciding: what to build, who it's for, what good looks like, and when something is done. Skip those decisions and the AI will make them for you — and they'll almost always be wrong."
+    },
+    {
+      "type": "comparison_table",
+      "bad": {
+        "label": "Old role",
+        "content": "Write every line. Memorize syntax. Optimize the code."
+      },
+      "good": {
+        "label": "New role",
+        "content": "Direct the build. Hold the vision. Optimize the outcome."
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "key",
+      "text": "You don't have to write the code. But you have to own it. If you can't explain what it does, it isn't ready to ship."
+    }
+  ],
+  "exercise": {
+    "format": "fill_blank",
+    "prompt_template": "In vibe coding, your job is to focus on the [BLANK], not the [BLANK].",
+    "blanks": [
+      {
+        "index": 0,
+        "correct_answers": ["intent", "outcome", "goal", "vision", "product"],
+        "hint_1": "What is it that you're actually trying to achieve?",
+        "hint_2": "It's the *what* and the *why*, not the *how*.",
+        "explanation": "The answer is 'intent' (or 'outcome'). Your role is to hold the goal — what good looks like, who it's for. The AI fills in the rest."
+      },
+      {
+        "index": 1,
+        "correct_answers": ["syntax", "code", "implementation", "lines of code", "details"],
+        "hint_1": "What does a junior dev spend most of their time worrying about?",
+        "hint_2": "It's the typing part — semicolons, brackets, exact function signatures.",
+        "explanation": "The answer is 'syntax' (or 'code'). The AI handles syntax beautifully. You handle direction. That's the trade."
+      }
+    ]
+  },
+  "outro": {
+    "recap": "You learned that vibe coding doesn't remove your responsibility — it shifts it. You direct, the AI builds. You own the outcome.",
+    "next_prompt": "Next: how to think in outcomes instead of step-by-step instructions."
+  }
+}

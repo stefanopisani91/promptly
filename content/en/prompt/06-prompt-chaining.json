@@ -1,0 +1,55 @@
+{
+  "id": "prompt-06",
+  "path_slug": "prompt",
+  "order": 6,
+  "title": "Prompt chaining",
+  "difficulty": "intermediate",
+  "estimated_minutes": 6,
+  "base_xp": 150,
+  "difficulty_bonus_xp": 50,
+  "icon": "/brand/lessons/prompt-06.svg",
+  "theory": [
+    {
+      "type": "paragraph",
+      "text": "Some features are too big for one prompt, even a well-written one. The fix isn't to cram more into the sentence — it's to break the work into a chain, where each prompt builds on the last and you check the output before moving on."
+    },
+    {
+      "type": "example",
+      "label": "A four-link chain",
+      "text": "1. 'Sketch the data model and function signatures for a notification system. No code yet.'\n2. 'Looks good. Now explain how the publish/subscribe flow works in plain words.'\n3. 'Approved. Implement just the publisher, with tests.'\n4. 'Now the subscriber. Then connect the two.'"
+    },
+    {
+      "type": "paragraph",
+      "text": "The first link is always the same: ask for a plan, not code. A two-minute plan you can correct beats twenty minutes of code you have to throw away. Once the plan is right, generation is almost mechanical."
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "text": "Plan-first prompting is the single highest-leverage habit in the path. It's what separates fast vibe coders from frustrated ones."
+    }
+  ],
+  "exercise": {
+    "format": "fill_blank",
+    "prompt_template": "For complex features, [BLANK] your prompts and always ask for a [BLANK] before any code is written.",
+    "blanks": [
+      {
+        "index": 0,
+        "correct_answers": ["chain", "link", "sequence", "split", "break"],
+        "hint_1": "Big work, broken into a series — what verb?",
+        "hint_2": "Each prompt feeds the next, like links in a... what?",
+        "explanation": "The answer is 'chain' (or 'sequence'). Chained prompts let you verify each step before committing to the next."
+      },
+      {
+        "index": 1,
+        "correct_answers": ["plan", "outline", "approach", "sketch", "design"],
+        "hint_1": "The high-level sketch, before any line of code?",
+        "hint_2": "It names files, function signatures, and data flow — but no implementation.",
+        "explanation": "The answer is 'plan' (or 'outline'). The plan is your last cheap chance to redirect before code is written."
+      }
+    ]
+  },
+  "outro": {
+    "recap": "You learned to chain prompts and to start every chain with a plan. Two habits, one big leap in quality.",
+    "next_prompt": "Next: the version trap — why the AI might suggest code from two years ago."
+  }
+}

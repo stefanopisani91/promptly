@@ -1,0 +1,62 @@
+{
+  "id": "mindset-06",
+  "path_slug": "mindset",
+  "order": 6,
+  "title": "La checklist del vibe coder",
+  "difficulty": "beginner",
+  "estimated_minutes": 5,
+  "base_xp": 100,
+  "difficulty_bonus_xp": 0,
+  "icon": "/brand/lessons/mindset-06.svg",
+  "theory": [
+    {
+      "type": "paragraph",
+      "text": "Il mindset è quello che porti dentro ogni sessione. Ecco una checklist in cinque passi che trasforma le idee di questo path in una routine. Falla scorrere prima del prossimo prompt — sono trenta secondi e ti risparmiano ore."
+    },
+    {
+      "type": "example",
+      "label": "Prima di ogni sessione",
+      "text": "1. Intento — cosa sto costruendo, per chi, com'è 'fatto'?\n2. Fetta — qual è il pezzo più piccolo che posso spedire adesso?\n3. Contesto — l'AI ha le regole, i file e gli esempi che le servono?\n4. Piano — chiedile di abbozzare l'approccio prima di scrivere codice.\n5. Review — leggi il diff, clicca la feature, committa se funziona."
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "text": "Salta il punto 1 e costruirai la cosa sbagliata. Salta il punto 4 e debugherai riscritture. Salta il punto 5 e spedirai sorprese."
+    },
+    {
+      "type": "paragraph",
+      "text": "La checklist non è disciplina fine a sé stessa. Spinge le piccole decisioni in avanti, dove costano poco cambiarle, invece di lasciarle sepolte nel codice, dove costano molto."
+    }
+  ],
+  "exercise": {
+    "format": "fill_blank",
+    "prompt_template": "La checklist in cinque passi: definisci l'[BLANK], scegli una fetta, prepara il contesto, chiedi un [BLANK], poi fai la [BLANK] del risultato.",
+    "blanks": [
+      {
+        "index": 0,
+        "correct_answers": ["intento", "obiettivo", "scopo", "intenzione"],
+        "hint_1": "Cosa stai davvero cercando di ottenere?",
+        "hint_2": "È il *cosa* e il *perché* — la primissima cosa da fissare.",
+        "explanation": "La risposta è 'intento' (o 'obiettivo'). Senza un intento chiaro ogni passo successivo si piega nella direzione sbagliata."
+      },
+      {
+        "index": 1,
+        "correct_answers": ["piano", "outline", "abbozzo", "schema", "approccio"],
+        "hint_1": "Cosa disegna un buon costruttore prima di posare i mattoni?",
+        "hint_2": "È un breve schema di file, funzioni e flusso — prima che venga scritta una sola riga.",
+        "explanation": "La risposta è 'piano' (o 'abbozzo'). Un piano di due minuti dall'AI evita venti minuti di riscritture dopo."
+      },
+      {
+        "index": 2,
+        "correct_answers": ["review", "revisione", "verifica", "controllo", "ispezione"],
+        "hint_1": "Cosa fai prima di committare?",
+        "hint_2": "Leggere il diff, cliccare la feature, accertarti che funzioni davvero.",
+        "explanation": "La risposta è 'review' (o 'revisione'). L'approccio 'accept-all e prega' è il modo classico in cui i progetti vibe-coded si rompono in produzione."
+      }
+    ]
+  },
+  "outro": {
+    "recap": "Hai chiuso il Path 1 con una routine: intento → fetta → contesto → piano → review. È vibe coding con il volante in mano.",
+    "next_prompt": "Path 2 sbloccato. È ora di imparare a scrivere davvero i prompt."
+  }
+}

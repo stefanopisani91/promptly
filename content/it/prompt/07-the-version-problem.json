@@ -1,0 +1,55 @@
+{
+  "id": "prompt-07",
+  "path_slug": "prompt",
+  "order": 7,
+  "title": "Il problema della versione",
+  "difficulty": "intermediate",
+  "estimated_minutes": 6,
+  "base_xp": 150,
+  "difficulty_bonus_xp": 50,
+  "icon": "/brand/lessons/prompt-07.svg",
+  "theory": [
+    {
+      "type": "paragraph",
+      "text": "L'AI è stata addestrata su uno snapshot del mondo. Quello snapshot ha una data — il knowledge cutoff. Tutto ciò che è cambiato dopo, per il modello non esiste: nuove versioni dei framework, nuove API, metodi deprecati, sintassi fresca."
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando non fissi una versione, l'AI fa una media tra anni diversi. Ti ritrovi codice che sembra plausibile ma usa pattern di Next.js 13 in un progetto Next.js 15, oppure un'API di libreria rinominata l'ultimo trimestre. La build si rompe, ci perdi un'ora, dài la colpa all'AI. Il vero fix è a monte: dichiarare la versione."
+    },
+    {
+      "type": "example",
+      "label": "Fissa la versione, risparmia l'ora",
+      "text": "❌ 'Aggiungi una server action.'\n✅ 'Aggiungi una server action di Next.js 15 con sintassi async/await. App Router. Il form la chiama direttamente tramite la prop action.'"
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "text": "Se qualcosa che l'AI suggerisce non esiste o non funziona, sospetta della versione prima che di te. Poi ri-prompta con la versione esatta fissata."
+    }
+  ],
+  "exercise": {
+    "format": "fill_blank",
+    "prompt_template": "Fissa sempre la [BLANK] del tuo stack, perché l'AI ha un knowledge [BLANK] e potrebbe non conoscere i cambiamenti recenti.",
+    "blanks": [
+      {
+        "index": 0,
+        "correct_answers": ["versione", "release", "edizione"],
+        "hint_1": "Next.js 13? Next.js 15? Quale stai usando?",
+        "hint_2": "È il numero dopo il nome del framework — '15', '4.6', ecc.",
+        "explanation": "La risposta è 'versione' (o 'release'). Nominare la versione riduce drasticamente lo spazio di indovinare per l'AI."
+      },
+      {
+        "index": 1,
+        "correct_answers": ["cutoff", "limite", "data", "confine"],
+        "hint_1": "Cosa termina la consapevolezza dell'AI sul mondo?",
+        "hint_2": "È la data dopo la quale nulla del training del modello esiste.",
+        "explanation": "La risposta è 'cutoff' (o 'data'). Dopo il cutoff l'AI sta davvero indovinando — e con grande sicurezza."
+      }
+    ]
+  },
+  "outro": {
+    "recap": "Hai imparato a fissare la versione e a sospettare del cutoff quando qualcosa sembra plausibile ma si rompe.",
+    "next_prompt": "Ultima lezione: costruisci la tua libreria personale di prompt da riutilizzare."
+  }
+}

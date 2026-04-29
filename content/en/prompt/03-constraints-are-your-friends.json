@@ -1,0 +1,55 @@
+{
+  "id": "prompt-03",
+  "path_slug": "prompt",
+  "order": 3,
+  "title": "Constraints are your friends",
+  "difficulty": "beginner",
+  "estimated_minutes": 5,
+  "base_xp": 100,
+  "difficulty_bonus_xp": 0,
+  "icon": "/brand/lessons/prompt-03.svg",
+  "theory": [
+    {
+      "type": "paragraph",
+      "text": "Without rails, the AI invents. It picks libraries you don't use, patterns you don't follow, files in places you don't store them. Constraints aren't a cage — they're the lane lines that keep the output on your road."
+    },
+    {
+      "type": "paragraph",
+      "text": "Two flavors matter: positive constraints ('use React Hook Form, store dates as ISO strings, keep functions under 30 lines') and negative constraints ('do not add new dependencies, do not modify the auth flow, do not use Tailwind arbitrary values'). Negative constraints are often more powerful — they prevent whole categories of unwanted output."
+    },
+    {
+      "type": "example",
+      "label": "Layered constraints",
+      "text": "Use Next.js 15 App Router, TypeScript strict, Tailwind, no external form libraries. Do not edit anything in /components/ui. Do not introduce new env variables. Output a single file."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "text": "Telling the AI what *not* to do is one of the highest-leverage things you can write. It cuts off entire wrong branches before they grow."
+    }
+  ],
+  "exercise": {
+    "format": "fill_blank",
+    "prompt_template": "Use [BLANK] constraints to lock in the rules to follow, and [BLANK] constraints to rule out wrong paths.",
+    "blanks": [
+      {
+        "index": 0,
+        "correct_answers": ["positive", "do", "must", "required"],
+        "hint_1": "The kind that says 'do this'?",
+        "hint_2": "It's the rule that points at the thing you want — 'use Zod', 'store as ISO'.",
+        "explanation": "The answer is 'positive' (or 'do'). Positive constraints say what the AI should pick when it has options."
+      },
+      {
+        "index": 1,
+        "correct_answers": ["negative", "don't", "do not", "forbidden", "no"],
+        "hint_1": "The kind that says 'do NOT do this'?",
+        "hint_2": "It's the rule that explicitly forbids — 'no new dependencies', 'do not modify X'.",
+        "explanation": "The answer is 'negative' (or 'don't'). Negative constraints prune entire branches the AI would otherwise explore."
+      }
+    ]
+  },
+  "outro": {
+    "recap": "You learned to layer positive and negative constraints. Both keep the output inside your project's lane.",
+    "next_prompt": "Next: why describing the output format matters as much as the input."
+  }
+}

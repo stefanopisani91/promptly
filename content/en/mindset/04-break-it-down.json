@@ -1,0 +1,61 @@
+{
+  "id": "mindset-04",
+  "path_slug": "mindset",
+  "order": 4,
+  "title": "Break it down",
+  "difficulty": "beginner",
+  "estimated_minutes": 5,
+  "base_xp": 100,
+  "difficulty_bonus_xp": 0,
+  "icon": "/brand/lessons/mindset-04.svg",
+  "theory": [
+    {
+      "type": "paragraph",
+      "text": "The most common rookie mistake in vibe coding: stuffing an entire product into a single prompt. 'Build me an e-commerce app with login, cart, payments, admin, and mobile support.' The AI will produce something. It will look impressive. It will also be a mess that's almost impossible to debug."
+    },
+    {
+      "type": "paragraph",
+      "text": "Big ambitions, small prompts. Pick one thin slice — a single feature, a single screen — and ship it. Then move to the next. Each commit is a save point you can fall back to when something breaks."
+    },
+    {
+      "type": "comparison_table",
+      "bad": {
+        "label": "One mega-prompt",
+        "content": "Build a full to-do app with login, dark mode, categories, sharing, and Google Calendar sync."
+      },
+      "good": {
+        "label": "Slice by slice",
+        "content": "1. Homepage with empty list. 2. Add + complete tasks. 3. Group by category. 4. Show counter at top."
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "text": "If a single prompt could break your project, you're prompting too big. Cut it in half. Then in half again."
+    }
+  ],
+  "exercise": {
+    "format": "fill_blank",
+    "prompt_template": "Build complex things by working in [BLANK] steps, shipping [BLANK] feature at a time.",
+    "blanks": [
+      {
+        "index": 0,
+        "correct_answers": ["small", "tiny", "little", "incremental", "short"],
+        "hint_1": "Big or little?",
+        "hint_2": "Each step should be small enough to verify in a minute or two.",
+        "explanation": "The answer is 'small' (or 'tiny'). Small steps mean small bugs. Big steps mean tangled bugs you can't unwind."
+      },
+      {
+        "index": 1,
+        "correct_answers": ["one", "a single", "single", "1"],
+        "hint_1": "How many features should you tackle in one prompt?",
+        "hint_2": "Just enough to build, test, and commit before moving on.",
+        "explanation": "The answer is 'one'. One feature per prompt, one commit per feature. That rhythm keeps you in control."
+      }
+    ]
+  },
+  "outro": {
+    "recap": "You learned the small-step principle. Slice the work, ship one piece, commit, repeat.",
+    "next_prompt": "Next: why context matters more than the prompt itself."
+  }
+}

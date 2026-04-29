@@ -1,0 +1,55 @@
+{
+  "id": "mindset-05",
+  "path_slug": "mindset",
+  "order": 5,
+  "title": "Il contesto è tutto",
+  "difficulty": "beginner",
+  "estimated_minutes": 5,
+  "base_xp": 100,
+  "difficulty_bonus_xp": 0,
+  "icon": "/brand/lessons/mindset-05.svg",
+  "theory": [
+    {
+      "type": "paragraph",
+      "text": "Lo stesso prompt, mandato alla stessa AI, produce risultati molto diversi a seconda di cosa lo circonda. Quel 'cosa' è il contesto: i file del progetto, le regole che hai impostato, gli esempi che l'AI può vedere, la conversazione fino a quel momento."
+    },
+    {
+      "type": "paragraph",
+      "text": "Il prompt engineering è l'arte di scrivere la frase giusta. Il context engineering è l'arte di sistemare l'intera stanza — così l'AI entra già preparata a metà. Una stanza ben sistemata fa funzionare anche prompt mediocri. Una stanza vuota fa fallire anche prompt brillanti."
+    },
+    {
+      "type": "example",
+      "label": "Cos'è il contesto, in pratica",
+      "text": "Un breve file di regole ('usiamo Next.js 15, Tailwind, niente type any'), componenti d'esempio che l'AI può imitare, il file aperto nell'editor, i commit recenti, i design token. Niente di tutto questo è un 'prompt' — ma tutto questo plasma la risposta."
+    },
+    {
+      "type": "callout",
+      "variant": "key",
+      "text": "Sistema la stanza prima di parlare. I migliori vibe coder spendono più tempo sul contesto che sui prompt."
+    }
+  ],
+  "exercise": {
+    "format": "fill_blank",
+    "prompt_template": "I grandi risultati nascono da un grande [BLANK] — non solo da un [BLANK] brillante.",
+    "blanks": [
+      {
+        "index": 0,
+        "correct_answers": ["contesto", "ambiente", "setup", "ecosistema"],
+        "hint_1": "Cosa circonda il prompt — file, regole, esempi?",
+        "hint_2": "È la stanza in cui l'AI entra ancora prima che tu apra bocca.",
+        "explanation": "La risposta è 'contesto' (o 'ambiente'). Il contesto definisce cosa è anche solo possibile produrre per l'AI."
+      },
+      {
+        "index": 1,
+        "correct_answers": ["prompt", "messaggio", "comando", "richiesta"],
+        "hint_1": "Qual è la singola frase che digiti in chat?",
+        "hint_2": "È la parte visibile — ma è solo un pezzo.",
+        "explanation": "La risposta è 'prompt'. Un prompt brillante in un contesto desolato dà comunque output debole. Prima il contesto, poi il prompt."
+      }
+    ]
+  },
+  "outro": {
+    "recap": "Hai imparato che il contesto è la stanza, il prompt è la domanda. Sistema bene la stanza e anche domande semplici producono risposte forti.",
+    "next_prompt": "Prossima: una checklist da portare in tasca per ogni sessione."
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "id": "prompt-02",
+  "path_slug": "prompt",
+  "order": 2,
+  "title": "Give the AI a role",
+  "difficulty": "beginner",
+  "estimated_minutes": 5,
+  "base_xp": 100,
+  "difficulty_bonus_xp": 0,
+  "icon": "/brand/lessons/prompt-02.svg",
+  "theory": [
+    {
+      "type": "paragraph",
+      "text": "The AI behaves differently depending on who it thinks it is. 'Write me a function' produces average code. 'Act as a senior backend engineer reviewing this for production' produces something with input validation, error handling, and tests."
+    },
+    {
+      "type": "paragraph",
+      "text": "The role isn't decoration — it's a steering wheel. Naming an expert with a specific seniority and focus pushes the AI toward the patterns that expert would use: cleaner architecture, more defensive code, tighter naming."
+    },
+    {
+      "type": "simulated_output",
+      "prompt": "Act as a senior frontend engineer who cares about accessibility. Review this button component.",
+      "output": "Three issues:\n1. No aria-label when icon-only — screen readers see 'button'.\n2. Focus ring is missing on keyboard navigation.\n3. Disabled state still triggers click handler in some browsers.\n\nSuggested fixes below."
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "text": "Be specific. 'Senior engineer' is fine. 'Senior engineer who's shipped React apps for five years and obsesses about performance' is better."
+    }
+  ],
+  "exercise": {
+    "format": "fill_blank",
+    "prompt_template": "Start your prompt with 'Act as a [BLANK]' and specify the [BLANK] level so the AI matches the right standards.",
+    "blanks": [
+      {
+        "index": 0,
+        "correct_answers": ["role", "persona", "specialist", "expert", "professional"],
+        "hint_1": "What hat do you want the AI to wear?",
+        "hint_2": "It's the job title or specialization — engineer, designer, copywriter, lawyer.",
+        "explanation": "The answer is 'role' (or 'expert'). Naming a role activates the patterns that role would naturally use."
+      },
+      {
+        "index": 1,
+        "correct_answers": ["seniority", "experience", "expertise", "skill"],
+        "hint_1": "Junior, mid, senior, principal — which one?",
+        "hint_2": "It's the years-of-experience dial.",
+        "explanation": "The answer is 'seniority' (or 'experience'). 'Senior' produces more rigorous output than 'junior' on the same task."
+      }
+    ]
+  },
+  "outro": {
+    "recap": "You learned to set a role with a specific seniority. The AI then mirrors the patterns of that expert.",
+    "next_prompt": "Next: why constraints make the AI better, not worse."
+  }
+}

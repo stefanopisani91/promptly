@@ -1,0 +1,66 @@
+{
+  "id": "mindset-03",
+  "path_slug": "mindset",
+  "order": 3,
+  "title": "Think in outcomes, not steps",
+  "difficulty": "beginner",
+  "estimated_minutes": 5,
+  "base_xp": 100,
+  "difficulty_bonus_xp": 0,
+  "icon": "/brand/lessons/mindset-03.svg",
+  "theory": [
+    {
+      "type": "paragraph",
+      "text": "When most people first try vibe coding, they instinctively prescribe steps: 'create a function, add a parameter, then loop through the array...' They're still thinking like they're writing the code themselves. That's the trap."
+    },
+    {
+      "type": "paragraph",
+      "text": "The shift is to describe the destination, not the route. You tell the AI what good looks like, and let it figure out how to get there. If the route is wrong, you correct it. But you don't draw the map upfront."
+    },
+    {
+      "type": "comparison_table",
+      "bad": {
+        "label": "Step-thinking",
+        "content": "Create a useState for email. Add an onChange. Validate with regex. Submit to /api/login..."
+      },
+      "good": {
+        "label": "Outcome-thinking",
+        "content": "I need a login form. Email + password. Show a friendly error if the credentials are wrong. Redirect to /dashboard on success."
+      }
+    },
+    {
+      "type": "example",
+      "label": "Before you prompt, answer 4 things",
+      "text": "Who is this for? What goes in, what comes out? What constraints exist (stack, performance)? What edge cases matter? Write that down — even one line each — before you open the chat."
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "text": "If you can describe the result clearly, the AI will usually find a reasonable path to it. If you can't, no amount of prompting will save you."
+    }
+  ],
+  "exercise": {
+    "format": "fill_blank",
+    "prompt_template": "Vibe coding works best when you describe the [BLANK] you want, not the [BLANK] to get there.",
+    "blanks": [
+      {
+        "index": 0,
+        "correct_answers": ["outcome", "result", "goal", "destination", "outcomes"],
+        "hint_1": "Where do you want to end up?",
+        "hint_2": "It's the finish line — what 'done' looks like for the user.",
+        "explanation": "The answer is 'outcome' (or 'result'). You describe the destination. The AI picks the route."
+      },
+      {
+        "index": 1,
+        "correct_answers": ["steps", "instructions", "process", "path", "route"],
+        "hint_1": "What does a recipe spell out one by one?",
+        "hint_2": "It's the sequential 'first do this, then do that' breakdown.",
+        "explanation": "The answer is 'steps' (or 'instructions'). Step-by-step prescriptions over-constrain the AI and slow you down."
+      }
+    ]
+  },
+  "outro": {
+    "recap": "You learned to lead with outcomes. Describe the destination clearly, then let the AI navigate.",
+    "next_prompt": "Next: how to break a big outcome into bite-sized prompts."
+  }
+}

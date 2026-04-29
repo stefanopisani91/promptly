@@ -1,0 +1,55 @@
+{
+  "id": "prompt-03",
+  "path_slug": "prompt",
+  "order": 3,
+  "title": "I vincoli sono tuoi amici",
+  "difficulty": "beginner",
+  "estimated_minutes": 5,
+  "base_xp": 100,
+  "difficulty_bonus_xp": 0,
+  "icon": "/brand/lessons/prompt-03.svg",
+  "theory": [
+    {
+      "type": "paragraph",
+      "text": "Senza paletti, l'AI inventa. Sceglie librerie che non usi, pattern che non segui, file in posti dove non li tieni. I vincoli non sono una gabbia — sono le linee della corsia che tengono l'output sulla tua strada."
+    },
+    {
+      "type": "paragraph",
+      "text": "Due gusti contano: vincoli positivi ('usa React Hook Form, salva le date come stringhe ISO, tieni le funzioni sotto le 30 righe') e vincoli negativi ('non aggiungere nuove dipendenze, non modificare il flusso di auth, non usare valori arbitrari di Tailwind'). I negativi sono spesso più potenti — tagliano interi rami di output indesiderato."
+    },
+    {
+      "type": "example",
+      "label": "Vincoli a strati",
+      "text": "Usa Next.js 15 App Router, TypeScript strict, Tailwind, niente librerie di form esterne. Non toccare nulla in /components/ui. Non introdurre nuove env variables. Output: un singolo file."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "text": "Dire all'AI cosa *non* deve fare è una delle cose con la massima leva che puoi scrivere. Tronca intere categorie di output sbagliato prima ancora che nasca."
+    }
+  ],
+  "exercise": {
+    "format": "fill_blank",
+    "prompt_template": "Usa vincoli [BLANK] per fissare le regole da seguire, e vincoli [BLANK] per escludere percorsi sbagliati.",
+    "blanks": [
+      {
+        "index": 0,
+        "correct_answers": ["positivi", "espliciti", "diretti"],
+        "hint_1": "Quelli che dicono 'fai questo'?",
+        "hint_2": "Sono le regole che indicano la cosa da scegliere — 'usa Zod', 'salva come ISO'.",
+        "explanation": "La risposta è 'positivi'. I vincoli positivi dicono cosa l'AI dovrebbe scegliere quando ha più opzioni."
+      },
+      {
+        "index": 1,
+        "correct_answers": ["negativi", "esclusivi", "proibitivi"],
+        "hint_1": "Quelli che dicono 'NON fare questo'?",
+        "hint_2": "Sono le regole che vietano esplicitamente — 'niente nuove dipendenze', 'non modificare X'.",
+        "explanation": "La risposta è 'negativi'. I vincoli negativi tagliano interi rami che l'AI esplorerebbe altrimenti."
+      }
+    ]
+  },
+  "outro": {
+    "recap": "Hai imparato a stratificare vincoli positivi e negativi. Insieme tengono l'output dentro la corsia del tuo progetto.",
+    "next_prompt": "Prossima: perché descrivere il formato dell'output conta quanto descrivere l'input."
+  }
+}

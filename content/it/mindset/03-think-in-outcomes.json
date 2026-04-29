@@ -1,0 +1,66 @@
+{
+  "id": "mindset-03",
+  "path_slug": "mindset",
+  "order": 3,
+  "title": "Pensa in risultati, non in passi",
+  "difficulty": "beginner",
+  "estimated_minutes": 5,
+  "base_xp": 100,
+  "difficulty_bonus_xp": 0,
+  "icon": "/brand/lessons/mindset-03.svg",
+  "theory": [
+    {
+      "type": "paragraph",
+      "text": "Quando si inizia col vibe coding, l'istinto è prescrivere passi: 'crea una funzione, aggiungi un parametro, poi cicla sull'array...' È pensare ancora come se stessi scrivendo tu il codice. È la trappola."
+    },
+    {
+      "type": "paragraph",
+      "text": "Il salto è descrivere la destinazione, non il percorso. Spieghi all'AI come deve essere il risultato, e lasci che capisca lei come arrivarci. Se il percorso è sbagliato, lo correggi. Ma non disegni la mappa in anticipo."
+    },
+    {
+      "type": "comparison_table",
+      "bad": {
+        "label": "Pensiero a passi",
+        "content": "Crea uno useState per l'email. Aggiungi un onChange. Valida con regex. Manda a /api/login..."
+      },
+      "good": {
+        "label": "Pensiero a risultato",
+        "content": "Mi serve un form di login. Email + password. Mostra un errore amichevole se le credenziali sono sbagliate. Redirect su /dashboard se va a buon fine."
+      }
+    },
+    {
+      "type": "example",
+      "label": "Prima di promptare, rispondi a 4 cose",
+      "text": "Per chi è? Cosa entra, cosa esce? Quali vincoli ci sono (stack, performance)? Quali edge case contano? Buttalo giù — anche una riga ciascuno — prima di aprire la chat."
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "text": "Se sai descrivere il risultato chiaramente, l'AI di solito trova un percorso ragionevole. Se non sai, nessun prompt ti salverà."
+    }
+  ],
+  "exercise": {
+    "format": "fill_blank",
+    "prompt_template": "Il vibe coding funziona meglio quando descrivi i [BLANK] che vuoi, non i [BLANK] per arrivarci.",
+    "blanks": [
+      {
+        "index": 0,
+        "correct_answers": ["risultati", "obiettivi", "risultato", "esiti", "traguardi"],
+        "hint_1": "Dove vuoi arrivare?",
+        "hint_2": "È il traguardo — com'è fatto 'fatto' per l'utente.",
+        "explanation": "La risposta è 'risultati' (o 'obiettivi'). Tu descrivi la destinazione. Il percorso lo sceglie l'AI."
+      },
+      {
+        "index": 1,
+        "correct_answers": ["passi", "step", "passaggi", "istruzioni", "passo passo"],
+        "hint_1": "Cosa elenca una ricetta uno alla volta?",
+        "hint_2": "È la sequenza 'prima fai questo, poi fai quello'.",
+        "explanation": "La risposta è 'passi' (o 'passaggi'). Le istruzioni passo-passo sovravincolano l'AI e ti rallentano."
+      }
+    ]
+  },
+  "outro": {
+    "recap": "Hai imparato a partire dai risultati. Descrivi chiaramente la destinazione, poi lascia navigare l'AI.",
+    "next_prompt": "Prossima: come spezzare un grande risultato in prompt piccoli."
+  }
+}

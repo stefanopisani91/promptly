@@ -1,0 +1,61 @@
+{
+  "id": "prompt-05",
+  "path_slug": "prompt",
+  "order": 5,
+  "title": "Prompt cattivo vs prompt buono",
+  "difficulty": "intermediate",
+  "estimated_minutes": 6,
+  "base_xp": 150,
+  "difficulty_bonus_xp": 50,
+  "icon": "/brand/lessons/prompt-05.svg",
+  "theory": [
+    {
+      "type": "paragraph",
+      "text": "La teoria arriva fino a un certo punto. Ecco lo stesso obiettivo, scritto in due modi. Leggili entrambi, poi nota cosa è davvero diverso — non solo più lungo, ma più deciso."
+    },
+    {
+      "type": "comparison_table",
+      "bad": {
+        "label": "Vago",
+        "content": "Costruiscimi un CRM per agenti immobiliari."
+      },
+      "good": {
+        "label": "Specifico",
+        "content": "Costruisci un CRM per agenti immobiliari. Due ruoli: agenti (gestiscono i propri lead) e manager (vedono tutti i lead). Lead: nome, telefono, email, status (nuovo/contattato/visita/chiuso/perso), agente assegnato, note, fonte. Stack: Next.js + Supabase + Tailwind. Auth: magic link. Mostra i lead in una kanban raggruppata per status."
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "La versione vaga costringe l'AI a tirare a indovinare su ogni dimensione: schema, auth, pattern UI, stack. Alcune scelte saranno sbagliate e ci passerai un'ora a disfarle. La versione specifica blocca le decisioni noiose e libera l'AI per il vero lavoro — generare codice pulito e ben strutturato che corrisponde a quello che volevi."
+    },
+    {
+      "type": "callout",
+      "variant": "key",
+      "text": "Specificità non è burocrazia. Ogni decisione che non prendi tu, la prende l'AI per te — e te la dovrai tenere."
+    }
+  ],
+  "exercise": {
+    "format": "fill_blank",
+    "prompt_template": "Un prompt [BLANK] costringe l'AI a tirare a indovinare; un prompt [BLANK] blocca le decisioni noiose così l'AI si concentra sul costruire.",
+    "blanks": [
+      {
+        "index": 0,
+        "correct_answers": ["vago", "generico", "ambiguo", "fumoso", "sfumato"],
+        "hint_1": "Largo, sfumato, povero di dettagli?",
+        "hint_2": "È il tipo che sta in una frase senza campi concreti né stack.",
+        "explanation": "La risposta è 'vago' (o 'generico'). I prompt vaghi producono output generico — e i default dell'AI raramente sono i tuoi."
+      },
+      {
+        "index": 1,
+        "correct_answers": ["specifico", "dettagliato", "preciso", "concreto", "esplicito"],
+        "hint_1": "L'opposto di vago — qual è?",
+        "hint_2": "Nomina ruoli, campi, stack, comportamento atteso.",
+        "explanation": "La risposta è 'specifico' (o 'dettagliato'). I prompt specifici ottengono codice specifico che entra davvero nel tuo progetto."
+      }
+    ]
+  },
+  "outro": {
+    "recap": "Hai visto la differenza: i prompt vaghi forzano l'indovinare, quelli specifici sbloccano lavoro vero.",
+    "next_prompt": "Prossima: quando un prompt non basta — concatenare per feature complesse."
+  }
+}
