@@ -4,13 +4,15 @@ import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { ArrowRight } from "lucide-react";
 import { track } from "@/lib/analytics/posthog";
+import type { Lang } from "@/types";
 import type { LandingCopy } from "@/lib/i18n/landing";
 
 interface Props {
   copy: LandingCopy["closingCta"];
+  lang: Lang;
 }
 
-export function ClosingCTA({ copy }: Props) {
+export function ClosingCTA({ copy, lang }: Props) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const viewedRef = useRef(false);
 
@@ -59,7 +61,7 @@ export function ClosingCTA({ copy }: Props) {
         <p className="mt-4 text-base text-white/85 sm:text-lg">{copy.sub}</p>
 
         <Link
-          href="/signup?source=closing"
+          href={`/auth?source=closing&lang=${lang}`}
           onClick={onClick}
           className="mt-8 inline-flex items-center gap-2 rounded-md bg-white px-7 py-3.5 text-base font-semibold text-primary-deep shadow-lg shadow-primary-deep/20 transition-transform duration-150 hover:scale-[1.02] hover:bg-white/95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:text-lg"
         >

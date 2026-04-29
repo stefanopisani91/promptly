@@ -3,15 +3,17 @@
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { ArrowRight } from "lucide-react";
+import type { Lang } from "@/types";
 import type { LandingCopy } from "@/lib/i18n/landing";
 import { track } from "@/lib/analytics/posthog";
 import { HeroMockup } from "./HeroMockup";
 
 interface Props {
   copy: LandingCopy["hero"];
+  lang: Lang;
 }
 
-export function HeroSection({ copy }: Props) {
+export function HeroSection({ copy, lang }: Props) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const viewedRef = useRef(false);
 
@@ -70,7 +72,7 @@ export function HeroSection({ copy }: Props) {
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
               <Link
-                href="/signup?source=hero_primary"
+                href={`/auth?source=hero_primary&lang=${lang}`}
                 onClick={onPrimary}
                 className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-6 py-3 text-base font-semibold text-white shadow-sm transition-colors hover:bg-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-deep"
               >

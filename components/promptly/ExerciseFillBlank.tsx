@@ -44,7 +44,7 @@ async function fireConfetti(): Promise<void> {
 export function ExerciseFillBlank({
   copy,
   standalone = false,
-  ctaHref = "/signup?completed_demo=true",
+  ctaHref = "/auth?source=hero_secondary&completed_demo=true",
   onComplete,
 }: Props) {
   const blankCount = copy.blanks.length;

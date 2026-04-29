@@ -23,14 +23,14 @@ export default function LandingPage({ params }: { params: { lang: string } }) {
         name={copy.meta.title}
         description={copy.meta.description}
       />
-      <HeroSection copy={copy.hero} />
+      <HeroSection copy={copy.hero} lang={lang} />
       <ProblemSection copy={copy.problem} />
       <SolutionSection copy={copy.solution} />
-      <InteractiveExerciseDemo copy={copy.exercise} />
+      <InteractiveExerciseDemo copy={copy.exercise} lang={lang} />
       <CurriculumPreview copy={copy.curriculum} />
       <SocialProofSection copy={copy.socialProof} />
       <FAQSection copy={copy.faq} />
-      <ClosingCTA copy={copy.closingCta} />
+      <ClosingCTA copy={copy.closingCta} lang={lang} />
     </>
   );
 }

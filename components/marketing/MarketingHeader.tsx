@@ -69,13 +69,13 @@ export function MarketingHeader({ lang, copy }: Props) {
         <nav className="hidden items-center gap-3 md:flex">
           <LangSwitcher current={lang} />
           <Link
-            href="/login"
+            href={`/auth?source=header_login&lang=${lang}`}
             className="rounded-md px-3 py-2 text-sm font-medium text-text-secondary transition-colors hover:text-text-primary"
           >
             {copy.login}
           </Link>
           <Link
-            href="/signup?source=header"
+            href={`/auth?source=header&lang=${lang}`}
             className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-primary-hover"
           >
             {copy.cta}
@@ -99,14 +99,14 @@ export function MarketingHeader({ lang, copy }: Props) {
         <div className="border-t border-border bg-surface md:hidden">
           <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-4 sm:px-6">
             <Link
-              href="/login"
+              href={`/auth?source=header_login&lang=${lang}`}
               onClick={() => setOpen(false)}
               className="rounded-md px-2 py-2 text-base font-medium text-text-primary"
             >
               {copy.login}
             </Link>
             <Link
-              href="/signup?source=header"
+              href={`/auth?source=header&lang=${lang}`}
               onClick={() => setOpen(false)}
               className="rounded-md bg-primary px-4 py-3 text-center text-base font-semibold text-white"
             >

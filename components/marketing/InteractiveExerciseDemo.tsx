@@ -1,11 +1,13 @@
+import type { Lang } from "@/types";
 import type { LandingCopy } from "@/lib/i18n/landing";
 import { ExerciseFillBlank } from "@/components/promptly/ExerciseFillBlank";
 
 interface Props {
   copy: LandingCopy["exercise"];
+  lang: Lang;
 }
 
-export function InteractiveExerciseDemo({ copy }: Props) {
+export function InteractiveExerciseDemo({ copy, lang }: Props) {
   return (
     <section
       id="exercise-demo"
@@ -30,7 +32,11 @@ export function InteractiveExerciseDemo({ copy }: Props) {
       </div>
 
       <div className="mx-auto mt-10 max-w-2xl px-4 sm:px-6">
-        <ExerciseFillBlank copy={copy} standalone />
+        <ExerciseFillBlank
+          copy={copy}
+          standalone
+          ctaHref={`/auth?source=hero_secondary&completed_demo=true&lang=${lang}`}
+        />
       </div>
     </section>
   );

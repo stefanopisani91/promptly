@@ -2,7 +2,19 @@
 
 > Read this file BEFORE touching any other file in the project.
 > This is the single source of truth for vision, design, data model, and UI language.
-> Version 2.0 — Updated after MVP scoping pass.
+> Version 2.2 — Updated after first deploy.
+
+---
+
+## Hosting & URLs
+
+| Environment | URL | Provider | Notes |
+|---|---|---|---|
+| **Production** | `https://fancy-arithmetic-a6dc27.netlify.app/` | Netlify | Active. Renamed to a stable domain when `promptly.app` (or chosen TLD) is acquired. |
+| Repository | `https://github.com/stefanopisani91/promptly` | GitHub | Private. Deploys auto-trigger from `main`. |
+| Vercel (deprecated) | `project-ikucx.vercel.app` | Vercel | Abandoned: Edge Runtime middleware bundling issues. Kept inactive in case we need to compare. |
+
+When configuring OAuth redirect URIs, Stripe webhooks, Resend domain verification, etc., use the Netlify URL above (or the eventual custom domain).
 
 ---
 
