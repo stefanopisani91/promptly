@@ -16,8 +16,9 @@ export function isDailyGoal(value: unknown): value is DailyGoal {
   return value === "trivial" || value === "easy" || value === "pro";
 }
 
-// Round 1 — slim profile. Streak / XP / freeze / Pro / push / consent
-// fields are appended in later migrations as features ship.
+// Round 2 — slim profile + onboarding & permission-prompt state.
+// Streak / XP / freeze / Pro / push subscription / GDPR consent fields
+// are appended in later migrations as those features ship.
 export interface UserProfile {
   id: string;
   email: string;
@@ -26,6 +27,9 @@ export interface UserProfile {
   daily_goal: DailyGoal;
   onboarding_completed_at: string | null;
   signup_source: string | null;
+  welcome_seen_at: string | null;
+  push_prompted_at: string | null;
+  ai_eval_prompted_at: string | null;
   created_at: string;
   updated_at: string;
 }

@@ -1,6 +1,6 @@
-// Generated-style Database type stub. Kept minimal in Round 1 — covers only
-// the `public.users` table that exists today. Regenerate with the Supabase
-// CLI (`supabase gen types typescript`) once more tables ship.
+// Generated-style Database type stub. Kept hand-maintained while the schema
+// is small. Regenerate with the Supabase CLI (`supabase gen types typescript`)
+// once more tables ship.
 
 export type Json =
   | string
@@ -22,6 +22,9 @@ export type Database = {
           daily_goal: "trivial" | "easy" | "pro";
           onboarding_completed_at: string | null;
           signup_source: string | null;
+          welcome_seen_at: string | null;
+          push_prompted_at: string | null;
+          ai_eval_prompted_at: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -33,6 +36,9 @@ export type Database = {
           daily_goal?: "trivial" | "easy" | "pro";
           onboarding_completed_at?: string | null;
           signup_source?: string | null;
+          welcome_seen_at?: string | null;
+          push_prompted_at?: string | null;
+          ai_eval_prompted_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -44,6 +50,9 @@ export type Database = {
           daily_goal?: "trivial" | "easy" | "pro";
           onboarding_completed_at?: string | null;
           signup_source?: string | null;
+          welcome_seen_at?: string | null;
+          push_prompted_at?: string | null;
+          ai_eval_prompted_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };

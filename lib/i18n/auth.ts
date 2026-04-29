@@ -1,10 +1,19 @@
-import type { Lang } from "@/types";
+import type { DailyGoal, Lang } from "@/types";
+
+export interface OnboardingGoalCard {
+  goal: DailyGoal;
+  emoji: string;
+  title: string;
+  description: string;
+}
 
 export interface AuthCopy {
   meta: {
     titleAuth: string;
     titleCheckEmail: string;
     titleExpired: string;
+    titleOnboarding: string;
+    titleDashboard: string;
     description: string;
   };
   shell: {
@@ -53,6 +62,55 @@ export interface AuthCopy {
       generic: string;
     };
   };
+  onboarding: {
+    progressLabel: (step: number, total: number) => string;
+    continueCta: string;
+    finalCta: string;
+    submitting: string;
+    genericError: string;
+    step1: {
+      eyebrow: string;
+      title: string;
+      sub: string;
+      label: string;
+      placeholder: string;
+      errors: {
+        empty: string;
+        tooLong: string;
+        invalidChars: string;
+      };
+    };
+    step2: {
+      eyebrow: string;
+      title: string;
+      sub: string;
+      optionIt: string;
+      optionEn: string;
+    };
+    step3: {
+      eyebrow: string;
+      title: string;
+      sub: string;
+      cards: OnboardingGoalCard[];
+    };
+  };
+  dashboard: {
+    greeting: (name: string) => string;
+    placeholderHeading: string;
+    placeholderSub: string;
+    stats: {
+      xp: string;
+      streak: string;
+      lessons: string;
+    };
+    logoutCta: string;
+    welcomeCard: {
+      title: (name: string) => string;
+      sub: string;
+      cta: string;
+      submitting: string;
+    };
+  };
 }
 
 const it: AuthCopy = {
@@ -60,6 +118,8 @@ const it: AuthCopy = {
     titleAuth: "Accedi a Promptly",
     titleCheckEmail: "Controlla la tua email",
     titleExpired: "Link scaduto",
+    titleOnboarding: "Iniziamo — Promptly",
+    titleDashboard: "Dashboard — Promptly",
     description:
       "Accedi a Promptly e inizia a costruire con le parole, non col codice.",
   },
@@ -111,6 +171,75 @@ const it: AuthCopy = {
       generic: "Qualcosa è andato storto. Riprova tra un attimo.",
     },
   },
+  onboarding: {
+    progressLabel: (step, total) => `Passo ${step} di ${total}`,
+    continueCta: "Continua →",
+    finalCta: "Inizia a imparare →",
+    submitting: "Sto preparando tutto...",
+    genericError: "Qualcosa è andato storto. Riprova tra un attimo.",
+    step1: {
+      eyebrow: "STEP 1 DI 3",
+      title: "Come ti chiamiamo?",
+      sub: "Vediamo il tuo nome quando torni. Niente di formale.",
+      label: "Nome",
+      placeholder: "Es. Stefano",
+      errors: {
+        empty: "Scrivi il tuo nome per continuare.",
+        tooLong: "Massimo 40 caratteri.",
+        invalidChars: "Usa solo lettere, numeri, spazi e trattini.",
+      },
+    },
+    step2: {
+      eyebrow: "STEP 2 DI 3",
+      title: "In che lingua vuoi imparare?",
+      sub: "Puoi cambiarla in qualsiasi momento dalle impostazioni.",
+      optionIt: "🇮🇹  Italiano",
+      optionEn: "🇬🇧  English",
+    },
+    step3: {
+      eyebrow: "STEP 3 DI 3",
+      title: "Quanto tempo vuoi dedicarci ogni giorno?",
+      sub: "Le streak partono da qui. Tranquillo, puoi cambiarla quando vuoi.",
+      cards: [
+        {
+          goal: "trivial",
+          emoji: "🌱",
+          title: "Solo un assaggio",
+          description: "5 minuti al giorno · ~1 lezione breve",
+        },
+        {
+          goal: "easy",
+          emoji: "📘",
+          title: "Progresso costante",
+          description: "10 minuti al giorno · ~1-2 lezioni",
+        },
+        {
+          goal: "pro",
+          emoji: "🚀",
+          title: "Massima concentrazione",
+          description: "15 minuti al giorno · ~2-3 lezioni",
+        },
+      ],
+    },
+  },
+  dashboard: {
+    greeting: (name: string) => `Bentornato, ${name}`,
+    placeholderHeading: "Le lezioni arrivano presto",
+    placeholderSub:
+      "Stiamo finendo di scrivere il primo path. Ti avvisiamo appena è pronto.",
+    stats: {
+      xp: "XP totali",
+      streak: "Streak attuale",
+      lessons: "Lezioni completate",
+    },
+    logoutCta: "Esci",
+    welcomeCard: {
+      title: (name: string) => `🎉 Benvenuto in Promptly, ${name}!`,
+      sub: "Inizia con la prima lezione: \"Cos'è il vibe coding?\"",
+      cta: "Inizia →",
+      submitting: "Un attimo...",
+    },
+  },
 };
 
 const en: AuthCopy = {
@@ -118,6 +247,8 @@ const en: AuthCopy = {
     titleAuth: "Sign in to Promptly",
     titleCheckEmail: "Check your email",
     titleExpired: "Link expired",
+    titleOnboarding: "Let's get started — Promptly",
+    titleDashboard: "Dashboard — Promptly",
     description:
       "Sign in to Promptly and start building with words, not code.",
   },
@@ -167,6 +298,75 @@ const en: AuthCopy = {
       invalid: "That doesn't look like a valid email.",
       rateLimit: "Too many attempts, try again in a minute.",
       generic: "Something went wrong. Try again in a moment.",
+    },
+  },
+  onboarding: {
+    progressLabel: (step, total) => `Step ${step} of ${total}`,
+    continueCta: "Continue →",
+    finalCta: "Start learning →",
+    submitting: "Setting things up...",
+    genericError: "Something went wrong. Try again in a moment.",
+    step1: {
+      eyebrow: "STEP 1 OF 3",
+      title: "What should we call you?",
+      sub: "We'll greet you by name when you come back. Nothing formal.",
+      label: "Name",
+      placeholder: "e.g. Stefano",
+      errors: {
+        empty: "Type your name to continue.",
+        tooLong: "Maximum 40 characters.",
+        invalidChars: "Use only letters, numbers, spaces and hyphens.",
+      },
+    },
+    step2: {
+      eyebrow: "STEP 2 OF 3",
+      title: "What language do you want to learn in?",
+      sub: "You can change it any time from settings.",
+      optionIt: "🇮🇹  Italiano",
+      optionEn: "🇬🇧  English",
+    },
+    step3: {
+      eyebrow: "STEP 3 OF 3",
+      title: "How much time can you dedicate daily?",
+      sub: "Your streak starts here. Don't worry, you can change it anytime.",
+      cards: [
+        {
+          goal: "trivial",
+          emoji: "🌱",
+          title: "Just a taste",
+          description: "5 min/day · ~1 short lesson",
+        },
+        {
+          goal: "easy",
+          emoji: "📘",
+          title: "Steady progress",
+          description: "10 min/day · ~1-2 lessons",
+        },
+        {
+          goal: "pro",
+          emoji: "🚀",
+          title: "Full focus",
+          description: "15 min/day · ~2-3 lessons",
+        },
+      ],
+    },
+  },
+  dashboard: {
+    greeting: (name: string) => `Welcome back, ${name}`,
+    placeholderHeading: "Lessons are coming soon",
+    placeholderSub:
+      "We're finishing the first path. We'll let you know the moment it's ready.",
+    stats: {
+      xp: "Total XP",
+      streak: "Current streak",
+      lessons: "Lessons completed",
+    },
+    logoutCta: "Log out",
+    welcomeCard: {
+      title: (name: string) => `🎉 Welcome to Promptly, ${name}!`,
+      sub: "Start with the first lesson: \"What is vibe coding?\"",
+      cta: "Start →",
+      submitting: "One moment...",
     },
   },
 };
