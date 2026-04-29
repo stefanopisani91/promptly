@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { isLang, type Lang } from "@/types";
 import { resolveLangFromRequest } from "@/lib/i18n/server-lang";
-import { getAuthCopy } from "@/lib/i18n/auth";
 import { getLessonsCopy } from "@/lib/i18n/lessons";
 import { createClient } from "@/lib/supabase/server";
 import { getUserProfile } from "@/lib/supabase/queries";
@@ -11,9 +10,13 @@ import {
   getLessonNeighbors,
   isPathUnlocked,
 } from "@/lib/lessons/progress";
+import { calculateLessonXp } from "@/lib/xp";
 import { LessonShell } from "@/components/lessons/LessonShell";
 import { TheoryRenderer } from "@/components/lessons/TheoryRenderer";
-import { ExerciseFillBlank } from "@/components/lessons/ExerciseFillBlank";
+import {
+  ExerciseFillBlank,
+  type ExerciseFillBlankStrings,
+} from "@/components/lessons/ExerciseFillBlank";
 import { LessonNavigator } from "@/components/lessons/LessonNavigator";
 
 export const dynamic = "force-dynamic";
@@ -21,6 +24,8 @@ export const dynamic = "force-dynamic";
 interface PageProps {
   params: { id: string };
 }
+
+const MAX_ATTEMPTS = 3;
 
 export function generateMetadata({ params }: PageProps): Metadata {
   return {
@@ -49,9 +54,6 @@ export default async function LessonPage({ params }: PageProps) {
   if (!unlocked) redirect(`/path/${lesson.path_slug}`);
 
   const lessonsCopy = getLessonsCopy(lang);
-  const authCopy = getAuthCopy(lang);
-  void authCopy; // header copy is rendered by the (app) layout
-
   const available = await loadAvailableLessonsInPath(lesson.path_slug, lang);
   const { prev, next, positionLabel } = getLessonNeighbors(available, lesson);
 
@@ -61,6 +63,48 @@ export default async function LessonPage({ params }: PageProps) {
     positionLabel.current || lesson.order,
     Math.max(positionLabel.total, lesson.order),
   );
+
+  // Pre-resolve every string crossing into client components. The i18n copy
+  // object contains arrow functions that React cannot serialize across the
+  // server/client boundary — see Round 2 fix (commit 09d78a2) and the
+  // Round 3a regression with digest 293253662.
+  const xpFull = calculateLessonXp(
+    lesson.base_xp,
+    lesson.difficulty_bonus_xp,
+    1,
+  );
+  const xpHalved = calculateLessonXp(
+    lesson.base_xp,
+    lesson.difficulty_bonus_xp,
+    MAX_ATTEMPTS,
+  );
+
+  const exerciseStrings: ExerciseFillBlankStrings = {
+    promptLabel: lessonsCopy.lessonPage.promptLabel,
+    checkAnswer: lessonsCopy.lessonPage.checkAnswer,
+    showHint: lessonsCopy.lessonPage.showHint,
+    hintLabel: lessonsCopy.lessonPage.hintLabel,
+    revealLabel: lessonsCopy.lessonPage.revealLabel,
+    revealedNotice: lessonsCopy.lessonPage.revealedNotice,
+    blankPlaceholder: lessonsCopy.lessonPage.blankPlaceholder,
+    wrongInline: lessonsCopy.lessonPage.wrongInline,
+    attemptLabels: Array.from({ length: MAX_ATTEMPTS }, (_, i) =>
+      lessonsCopy.lessonPage.attemptOf(i + 1, MAX_ATTEMPTS),
+    ),
+    blankAriaLabels: lesson.exercise.blanks.map((_, i) =>
+      lessonsCopy.lessonPage.blankAriaLabel(i + 1),
+    ),
+    xpLabelFull: lessonsCopy.outro.xpEarned(xpFull),
+    xpLabelHalved: lessonsCopy.outro.xpEarned(xpHalved),
+    toastLabelFull: lessonsCopy.toast.xpLabel(xpFull),
+    toastLabelHalved: lessonsCopy.toast.xpLabel(xpHalved),
+  };
+
+  const outroStrings = {
+    title: lessonsCopy.outro.title,
+    nextLessonCta: lessonsCopy.outro.nextLessonCta,
+    backToPathCta: lessonsCopy.outro.backToPathCta,
+  };
 
   return (
     <LessonShell
@@ -84,8 +128,8 @@ export default async function LessonPage({ params }: PageProps) {
         <ExerciseFillBlank
           lesson={lesson}
           exercise={lesson.exercise}
-          copy={lessonsCopy}
-          pathTitle={pathDisplay.title}
+          strings={exerciseStrings}
+          outroStrings={outroStrings}
           nextLesson={next}
           pathHref={pathHref}
         />
