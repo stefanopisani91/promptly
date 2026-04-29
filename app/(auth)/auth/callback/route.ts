@@ -2,13 +2,19 @@ import { NextResponse, type NextRequest } from "next/server";
 import { isLang, type Lang } from "@/types";
 import { createClient } from "@/lib/supabase/server";
 import { getOnboardingGate } from "@/lib/supabase/queries";
+import { getCanonicalOrigin } from "@/lib/site";
 
 function pickLang(value: string | null): Lang {
   return isLang(value) ? value : "it";
 }
 
 export async function GET(request: NextRequest) {
-  const { searchParams, origin } = new URL(request.url);
+  const { searchParams } = new URL(request.url);
+
+  // Always build redirect targets from the canonical origin — request.url
+  // can resolve to a Netlify deploy-preview host even when the user
+  // arrived via canonical, leaking previews into the location header.
+  const canonical = getCanonicalOrigin();
 
   const code = searchParams.get("code");
   const errorParam = searchParams.get("error");
@@ -19,7 +25,7 @@ export async function GET(request: NextRequest) {
 
   // Supabase reports magic-link issues as ?error=access_denied&error_code=otp_expired.
   if (errorParam || errorCode) {
-    const expiredUrl = new URL("/auth/expired", origin);
+    const expiredUrl = new URL("/auth/expired", canonical);
     expiredUrl.searchParams.set("lang", lang);
     if (source) expiredUrl.searchParams.set("source", source);
     if (completedDemo) expiredUrl.searchParams.set("completed_demo", "true");
@@ -27,7 +33,7 @@ export async function GET(request: NextRequest) {
   }
 
   if (!code) {
-    const expiredUrl = new URL("/auth/expired", origin);
+    const expiredUrl = new URL("/auth/expired", canonical);
     expiredUrl.searchParams.set("lang", lang);
     return NextResponse.redirect(expiredUrl);
   }
@@ -36,7 +42,7 @@ export async function GET(request: NextRequest) {
   const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
   if (error || !data.session) {
-    const expiredUrl = new URL("/auth/expired", origin);
+    const expiredUrl = new URL("/auth/expired", canonical);
     expiredUrl.searchParams.set("lang", lang);
     if (source) expiredUrl.searchParams.set("source", source);
     if (completedDemo) expiredUrl.searchParams.set("completed_demo", "true");
@@ -51,13 +57,13 @@ export async function GET(request: NextRequest) {
   //   2. profile exists, onboarding pending  → /onboarding
   //   3. profile + onboarding done           → /dashboard
   if (!gate.exists || !gate.completedAt) {
-    const target = new URL("/onboarding", origin);
+    const target = new URL("/onboarding", canonical);
     target.searchParams.set("lang", lang);
     if (source) target.searchParams.set("source", source);
     if (completedDemo) target.searchParams.set("completed_demo", "true");
     return NextResponse.redirect(target);
   }
 
-  const target = new URL("/dashboard", origin);
+  const target = new URL("/dashboard", canonical);
   return NextResponse.redirect(target);
 }

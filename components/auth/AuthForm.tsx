@@ -5,6 +5,7 @@ import { useMemo, useState, type FormEvent } from "react";
 import type { Lang } from "@/types";
 import type { AuthCopy } from "@/lib/i18n/auth";
 import { createClient } from "@/lib/supabase/client";
+import { getCanonicalOrigin } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
 // RFC-5321 caps the local part at 64 chars + the whole address at 254.
@@ -57,12 +58,9 @@ export function AuthForm({
   const showInvalidHint = touched && email.length > 0 && !looksValid;
 
   function buildRedirectUrl(): string {
-    const origin =
-      typeof window !== "undefined"
-        ? window.location.origin
-        : (process.env.NEXT_PUBLIC_SITE_URL ?? "");
-
-    const url = new URL("/auth/callback", origin);
+    // Always use canonical SITE_URL to avoid OAuth landing on Netlify
+    // deploy-preview domains that aren't in Supabase's allowlist.
+    const url = new URL("/auth/callback", getCanonicalOrigin());
     if (source) url.searchParams.set("source", source);
     if (completedDemo) url.searchParams.set("completed_demo", "true");
     url.searchParams.set("lang", lang);
