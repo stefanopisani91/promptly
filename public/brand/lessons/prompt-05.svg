@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Lesson: Bad prompt vs good prompt — two bubbles compared -->
+  <!-- Bad bubble (top-left, dashed, with X) -->
+  <path d="M 6 14 Q 4 12 6 10 L 26 10 Q 28 10 28 12 L 28 28 Q 28 30 26 30 L 14 30 L 10 36 L 10 30 L 6 30 Q 4 30 4 28 Z" fill="none" stroke="#E8703F" stroke-width="2" stroke-dasharray="3 2"/>
+  <line x1="10" y1="16" x2="22" y2="16" stroke="#E8703F" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+  <line x1="10" y1="22" x2="18" y2="22" stroke="#E8703F" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+  <circle cx="22" cy="20" r="6" fill="white" stroke="#E8703F" stroke-width="2"/>
+  <path d="M 19 17 L 25 23 M 25 17 L 19 23" stroke="#E8703F" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Good bubble (bottom-right, solid, with check) -->
+  <path d="M 36 30 Q 36 28 38 28 L 58 28 Q 60 28 60 30 L 60 48 Q 60 50 58 50 L 50 50 L 46 56 L 46 50 L 38 50 Q 36 50 36 48 Z" fill="#E8703F"/>
+  <line x1="42" y1="36" x2="56" y2="36" stroke="white" stroke-width="2" stroke-linecap="round"/>
+  <line x1="42" y1="42" x2="54" y2="42" stroke="white" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="42" cy="40" r="6" fill="white"/>
+  <path d="M 39 40 L 41 42 L 45 38" stroke="#E8703F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg>

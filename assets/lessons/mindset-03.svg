@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Lesson: Think in outcomes, not steps — direct arrow to flag, dashed winding path is the rejected one -->
+  <!-- Rejected winding path -->
+  <path d="M 8 52 Q 16 52 16 42 Q 16 32 26 32 Q 36 32 36 22 Q 36 16 44 16" stroke="#E8703F" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.35" fill="none"/>
+  <!-- Direct arrow -->
+  <line x1="8" y1="52" x2="44" y2="16" stroke="#E8703F" stroke-width="3" stroke-linecap="round"/>
+  <path d="M 38 14 L 46 14 L 46 22" stroke="#E8703F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <!-- Flag at destination -->
+  <line x1="48" y1="12" x2="48" y2="38" stroke="#E8703F" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M 48 12 L 60 18 L 48 22 Z" fill="#E8703F"/>
+</svg>

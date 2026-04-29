@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Lesson: What is vibe coding? — speech bubble containing code symbols -->
+  <path d="M 8 12 Q 8 8 12 8 L 52 8 Q 56 8 56 12 L 56 36 Q 56 40 52 40 L 28 40 L 22 48 L 22 40 L 12 40 Q 8 40 8 36 Z" fill="#FFF1EB" stroke="#E8703F" stroke-width="2"/>
+  <path d="M 22 18 L 18 24 L 22 30" stroke="#E8703F" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 42 18 L 46 24 L 42 30" stroke="#E8703F" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <line x1="36" y1="16" x2="28" y2="32" stroke="#E8703F" stroke-width="2.5" stroke-linecap="round"/>
+</svg>

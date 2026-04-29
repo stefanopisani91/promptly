@@ -1,0 +1,65 @@
+{
+  "id": "mindset-01",
+  "path_slug": "mindset",
+  "order": 1,
+  "title": "What is vibe coding?",
+  "difficulty": "beginner",
+  "estimated_minutes": 5,
+  "base_xp": 100,
+  "difficulty_bonus_xp": 0,
+  "icon": "/brand/lessons/mindset-01.svg",
+  "theory": [
+    {
+      "type": "quote",
+      "text": "The hottest new programming language is English.",
+      "attribution": "Andrej Karpathy, 2023"
+    },
+    {
+      "type": "paragraph",
+      "text": "Vibe coding is the practice of building real software by talking to AI in natural language, instead of writing code by hand. You describe what you want, the AI writes it, and you iterate until it works."
+    },
+    {
+      "type": "paragraph",
+      "text": "The term was coined by Andrej Karpathy in February 2025. It describes a workflow where you give in to the vibes, embrace the speed of modern models, and stop worrying about every line of code that gets produced."
+    },
+    {
+      "type": "example",
+      "label": "Example",
+      "text": "Instead of typing 'function loginUser(email, password) { ... }', you say: 'create a login form with email and password, and connect it to my database'."
+    },
+    {
+      "type": "simulated_output",
+      "prompt": "Build a contact form that emails me on submit.",
+      "output": "✓ Created /app/contact/page.tsx\n✓ Added Resend integration\n✓ Form validates email + message\n\nReady to test on /contact"
+    },
+    {
+      "type": "callout",
+      "variant": "key",
+      "text": "In short: you describe the outcome, not the steps. Your job is to think clearly — the AI handles the syntax."
+    }
+  ],
+  "exercise": {
+    "format": "fill_blank",
+    "prompt_template": "Vibe coding is the practice of building [BLANK] using [BLANK] instead of writing code manually.",
+    "blanks": [
+      {
+        "index": 0,
+        "correct_answers": ["software", "applications", "apps", "real software", "programs"],
+        "hint_1": "Think about what the end result of development is.",
+        "hint_2": "It's a general term for what developers build — programs, apps, digital tools.",
+        "explanation": "The answer is 'software' (or 'applications'). Vibe coding produces real, working software — not just code samples or snippets."
+      },
+      {
+        "index": 1,
+        "correct_answers": ["natural language", "plain language", "words", "natural language prompts", "english"],
+        "hint_1": "What language does a non-programmer speak?",
+        "hint_2": "It's not Python or JavaScript. It's what you'd use to talk with a friend.",
+        "explanation": "The answer is 'natural language' (or 'words'). You describe what you want in plain English — that's why Karpathy called English 'the hottest new programming language'."
+      }
+    ]
+  },
+  "outro": {
+    "recap": "You learned what vibe coding is: building software through natural language, not code. The shift is from typing syntax to describing outcomes.",
+    "next_prompt": "Next: who's really in charge — you or the AI?"
+  }
+}

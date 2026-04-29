@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Lesson: The vibe coder's checklist — clipboard with checkmarks -->
+  <rect x="12" y="10" width="40" height="48" rx="3" fill="#FFF1EB" stroke="#E8703F" stroke-width="2"/>
+  <!-- Clipboard top clip -->
+  <rect x="22" y="6" width="20" height="8" rx="2" fill="#E8703F"/>
+  <!-- Item 1: checked -->
+  <circle cx="20" cy="24" r="3" fill="#E8703F"/>
+  <path d="M 18.4 24 L 19.7 25.4 L 21.8 22.8" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <line x1="26" y1="24" x2="46" y2="24" stroke="#E8703F" stroke-width="2" stroke-linecap="round"/>
+  <!-- Item 2: checked -->
+  <circle cx="20" cy="34" r="3" fill="#E8703F"/>
+  <path d="M 18.4 34 L 19.7 35.4 L 21.8 32.8" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <line x1="26" y1="34" x2="46" y2="34" stroke="#E8703F" stroke-width="2" stroke-linecap="round"/>
+  <!-- Item 3: empty -->
+  <circle cx="20" cy="44" r="3" stroke="#E8703F" stroke-width="2" fill="none"/>
+  <line x1="26" y1="44" x2="42" y2="44" stroke="#E8703F" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+</svg>

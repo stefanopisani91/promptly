@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Lesson: Prompt patterns library — 2x2 grid of reusable templates -->
+  <rect x="6" y="6" width="24" height="24" rx="3" fill="#FFF1EB" stroke="#E8703F" stroke-width="2"/>
+  <line x1="10" y1="14" x2="22" y2="14" stroke="#E8703F" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="10" y1="20" x2="20" y2="20" stroke="#E8703F" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="10" y1="26" x2="22" y2="26" stroke="#E8703F" stroke-width="1.5" stroke-linecap="round"/>
+
+  <rect x="34" y="6" width="24" height="24" rx="3" fill="#E8703F"/>
+  <line x1="38" y1="14" x2="50" y2="14" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="38" y1="20" x2="48" y2="20" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="38" y1="26" x2="50" y2="26" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+
+  <rect x="6" y="34" width="24" height="24" rx="3" fill="#FFF1EB" stroke="#E8703F" stroke-width="2"/>
+  <line x1="10" y1="42" x2="22" y2="42" stroke="#E8703F" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="10" y1="48" x2="20" y2="48" stroke="#E8703F" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="10" y1="54" x2="22" y2="54" stroke="#E8703F" stroke-width="1.5" stroke-linecap="round"/>
+
+  <rect x="34" y="34" width="24" height="24" rx="3" fill="#FFF1EB" stroke="#E8703F" stroke-width="2"/>
+  <line x1="38" y1="42" x2="50" y2="42" stroke="#E8703F" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="38" y1="48" x2="48" y2="48" stroke="#E8703F" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="38" y1="54" x2="50" y2="54" stroke="#E8703F" stroke-width="1.5" stroke-linecap="round"/>
+</svg>

@@ -96,8 +96,6 @@ export interface AuthCopy {
   };
   dashboard: {
     greeting: (name: string) => string;
-    placeholderHeading: string;
-    placeholderSub: string;
     stats: {
       xp: string;
       streak: string;
@@ -224,9 +222,6 @@ const it: AuthCopy = {
   },
   dashboard: {
     greeting: (name: string) => `Bentornato, ${name}`,
-    placeholderHeading: "Le lezioni arrivano presto",
-    placeholderSub:
-      "Stiamo finendo di scrivere il primo path. Ti avvisiamo appena è pronto.",
     stats: {
       xp: "XP totali",
       streak: "Streak attuale",
@@ -353,9 +348,6 @@ const en: AuthCopy = {
   },
   dashboard: {
     greeting: (name: string) => `Welcome back, ${name}`,
-    placeholderHeading: "Lessons are coming soon",
-    placeholderSub:
-      "We're finishing the first path. We'll let you know the moment it's ready.",
     stats: {
       xp: "Total XP",
       streak: "Current streak",

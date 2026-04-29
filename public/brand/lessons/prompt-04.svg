@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Lesson: Describe the output format — table/grid visualization -->
+  <rect x="8" y="12" width="48" height="40" rx="3" fill="#FFF1EB" stroke="#E8703F" stroke-width="2"/>
+  <!-- Header row -->
+  <path d="M 8 15 Q 8 12 11 12 L 53 12 Q 56 12 56 15 L 56 22 L 8 22 Z" fill="#E8703F"/>
+  <!-- Header text bars -->
+  <line x1="14" y1="17" x2="20" y2="17" stroke="white" stroke-width="2" stroke-linecap="round"/>
+  <line x1="28" y1="17" x2="36" y2="17" stroke="white" stroke-width="2" stroke-linecap="round"/>
+  <line x1="44" y1="17" x2="52" y2="17" stroke="white" stroke-width="2" stroke-linecap="round"/>
+  <!-- Column dividers -->
+  <line x1="24" y1="22" x2="24" y2="52" stroke="#E8703F" stroke-width="1.5"/>
+  <line x1="40" y1="22" x2="40" y2="52" stroke="#E8703F" stroke-width="1.5"/>
+  <!-- Row dividers -->
+  <line x1="8" y1="32" x2="56" y2="32" stroke="#E8703F" stroke-width="1.5"/>
+  <line x1="8" y1="42" x2="56" y2="42" stroke="#E8703F" stroke-width="1.5"/>
+</svg>

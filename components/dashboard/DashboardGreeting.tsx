@@ -3,13 +3,22 @@ import type { AuthCopy } from "@/lib/i18n/auth";
 interface Props {
   copy: AuthCopy["dashboard"];
   name: string;
+  totalXp: number;
+  currentStreak: number;
+  lessonsCompleted: number;
 }
 
-export function DashboardGreeting({ copy, name }: Props) {
+export function DashboardGreeting({
+  copy,
+  name,
+  totalXp,
+  currentStreak,
+  lessonsCompleted,
+}: Props) {
   const stats: Array<{ label: string; value: string }> = [
-    { label: copy.stats.xp, value: "0" },
-    { label: copy.stats.streak, value: "0" },
-    { label: copy.stats.lessons, value: "0" },
+    { label: copy.stats.xp, value: totalXp.toLocaleString() },
+    { label: copy.stats.streak, value: currentStreak.toLocaleString() },
+    { label: copy.stats.lessons, value: lessonsCompleted.toLocaleString() },
   ];
 
   return (
@@ -33,15 +42,6 @@ export function DashboardGreeting({ copy, name }: Props) {
           </div>
         ))}
       </dl>
-
-      <section className="rounded-2xl border border-dashed border-border bg-surface-muted p-6">
-        <h2 className="font-heading text-lg font-semibold text-text-primary">
-          {copy.placeholderHeading}
-        </h2>
-        <p className="mt-1.5 text-sm text-text-secondary">
-          {copy.placeholderSub}
-        </p>
-      </section>
     </section>
   );
 }

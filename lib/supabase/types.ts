@@ -25,6 +25,10 @@ export type Database = {
           welcome_seen_at: string | null;
           push_prompted_at: string | null;
           ai_eval_prompted_at: string | null;
+          total_xp: number;
+          current_streak: number;
+          longest_streak: number;
+          last_activity_date: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -39,6 +43,10 @@ export type Database = {
           welcome_seen_at?: string | null;
           push_prompted_at?: string | null;
           ai_eval_prompted_at?: string | null;
+          total_xp?: number;
+          current_streak?: number;
+          longest_streak?: number;
+          last_activity_date?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -53,6 +61,49 @@ export type Database = {
           welcome_seen_at?: string | null;
           push_prompted_at?: string | null;
           ai_eval_prompted_at?: string | null;
+          total_xp?: number;
+          current_streak?: number;
+          longest_streak?: number;
+          last_activity_date?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      user_progress: {
+        Row: {
+          id: string;
+          user_id: string;
+          lesson_id: string;
+          path_slug: string;
+          completed: boolean;
+          attempts: number;
+          xp_earned: number;
+          completed_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          lesson_id: string;
+          path_slug: string;
+          completed?: boolean;
+          attempts?: number;
+          xp_earned?: number;
+          completed_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          lesson_id?: string;
+          path_slug?: string;
+          completed?: boolean;
+          attempts?: number;
+          xp_earned?: number;
+          completed_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };

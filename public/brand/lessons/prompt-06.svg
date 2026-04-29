@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Lesson: Prompt chaining — three numbered pills connected sequentially -->
+  <rect x="6" y="14" width="16" height="12" rx="6" fill="#FFF1EB" stroke="#E8703F" stroke-width="2"/>
+  <text x="14" y="24" font-family="sans-serif" font-size="9" font-weight="bold" fill="#E8703F" text-anchor="middle">1</text>
+
+  <rect x="24" y="26" width="16" height="12" rx="6" fill="#E8703F"/>
+  <text x="32" y="36" font-family="sans-serif" font-size="9" font-weight="bold" fill="white" text-anchor="middle">2</text>
+
+  <rect x="42" y="38" width="16" height="12" rx="6" fill="#FFF1EB" stroke="#E8703F" stroke-width="2"/>
+  <text x="50" y="48" font-family="sans-serif" font-size="9" font-weight="bold" fill="#E8703F" text-anchor="middle">3</text>
+
+  <!-- Connectors -->
+  <line x1="20" y1="22" x2="26" y2="28" stroke="#E8703F" stroke-width="2" stroke-linecap="round"/>
+  <line x1="38" y1="34" x2="44" y2="40" stroke="#E8703F" stroke-width="2" stroke-linecap="round"/>
+</svg>

@@ -41,7 +41,32 @@
       "Bash(lsof -iTCP:3007 -sTCP:LISTEN -n -P)",
       "Bash(sips -g pixelWidth -g pixelHeight -g format -g hasAlpha -g profile /Users/stefanopisani/DEV/01_Progetti/PROMPTLY/assets/og-image.png)",
       "Bash(awk '{print $5 \" bytes \\(\" $5/1024 \" kb\\)\"}')",
-      "Bash(curl -sL \"http://localhost:3007/it\")"
+      "Bash(curl -sL \"http://localhost:3007/it\")",
+      "mcp__9cebeca0-d74b-4968-9931-9c00b41eae96__list_projects",
+      "mcp__9cebeca0-d74b-4968-9931-9c00b41eae96__list_tables",
+      "mcp__9cebeca0-d74b-4968-9931-9c00b41eae96__apply_migration",
+      "mcp__9cebeca0-d74b-4968-9931-9c00b41eae96__get_advisors",
+      "Bash(npm run *)",
+      "Bash(git add *)",
+      "Bash(git push *)",
+      "Bash(git commit -m ' *)",
+      "mcp__9cebeca0-d74b-4968-9931-9c00b41eae96__execute_sql",
+      "Bash(npx next *)",
+      "Bash(netlify --version)",
+      "Bash(npx --yes netlify-cli@latest --version)",
+      "Bash(env)",
+      "Bash(npx --yes netlify-cli@latest status)",
+      "Bash(curl -sI https://fancy-arithmetic-a6dc27.netlify.app/)",
+      "Bash(curl -sI -L --max-redirs 0 https://fancy-arithmetic-a6dc27.netlify.app/dashboard)",
+      "Bash(curl -sL https://fancy-arithmetic-a6dc27.netlify.app/it)",
+      "Bash(curl -sL --max-time 8 https://fancy-arithmetic-a6dc27.netlify.app/it)",
+      "Bash(curl -sI --max-time 8 https://fancy-arithmetic-a6dc27.netlify.app/dashboard)",
+      "Bash(gh api *)",
+      "Bash(curl -s --max-time 10 https://api.github.com/repos/stefanopisani91/promptly/commits/09d78a2/status)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('state:',d.get\\('state'\\)\\); [print\\(' -', s.get\\('context'\\),'|',s.get\\('state'\\),'|',s.get\\('description'\\),'|',s.get\\('target_url'\\)\\) for s in d.get\\('statuses',[]\\)]\")",
+      "Bash(curl -sI --max-time 10 https://api.github.com/repos/stefanopisani91/promptly)",
+      "Bash(curl -s --max-time 10 https://api.github.com/repos/stefanopisani91/promptly)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('private:',d.get\\('private'\\),'| message:',d.get\\('message','-'\\)\\)\")"
     ]
   }
 }
