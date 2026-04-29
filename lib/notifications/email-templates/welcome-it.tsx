@@ -5,12 +5,14 @@ import {
   Head,
   Hr,
   Html,
+  Img,
   Link,
   Preview,
   Section,
   Text,
 } from "@react-email/components";
 import * as React from "react";
+import { SITE_URL } from "@/lib/site";
 
 interface WelcomeEmailProps {
   name: string;
@@ -51,21 +53,18 @@ export function WelcomeEmailIt({ name, ctaUrl }: WelcomeEmailProps) {
             padding: "32px",
           }}
         >
-          <Section>
-            <Text
-              style={{
-                color: COLORS.primary,
-                fontSize: 22,
-                fontWeight: 700,
-                letterSpacing: "-0.01em",
-                margin: 0,
-              }}
-            >
-              Promptly
-            </Text>
-          </Section>
+          <Img
+            src={`${SITE_URL}/brand/logo-horizontal.png`}
+            width={180}
+            height={50}
+            alt="Promptly"
+            style={{
+              display: "block",
+              margin: "0 auto 32px",
+            }}
+          />
 
-          <Section style={{ marginTop: 24 }}>
+          <Section>
             <Text style={{ fontSize: 16, lineHeight: "24px", margin: 0 }}>
               Ciao {name},
             </Text>
