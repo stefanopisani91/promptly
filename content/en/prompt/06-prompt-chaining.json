@@ -4,52 +4,97 @@
   "order": 6,
   "title": "Prompt chaining",
   "difficulty": "intermediate",
-  "estimated_minutes": 6,
+  "estimated_minutes": 5,
   "base_xp": 150,
   "difficulty_bonus_xp": 50,
   "icon": "/brand/lessons/prompt-06.svg",
   "theory": [
     {
       "type": "paragraph",
-      "text": "Some features are too big for one prompt, even a well-written one. The fix isn't to cram more into the sentence — it's to break the work into a chain, where each prompt builds on the last and you check the output before moving on."
-    },
-    {
-      "type": "example",
-      "label": "A four-link chain",
-      "text": "1. 'Sketch the data model and function signatures for a notification system. No code yet.'\n2. 'Looks good. Now explain how the publish/subscribe flow works in plain words.'\n3. 'Approved. Implement just the publisher, with tests.'\n4. 'Now the subscriber. Then connect the two.'"
+      "text": "You have a complex feature to implement. You could write one giant prompt with every detail — and get 300 lines of code that contain the right logic and ten hidden bugs. Or you can chain: four prompts in sequence, each built on the output of the previous one. It's not slower — it's more precise. And every step is verifiable before moving to the next."
     },
     {
       "type": "paragraph",
-      "text": "The first link is always the same: ask for a plan, not code. A two-minute plan you can correct beats twenty minutes of code you have to throw away. Once the plan is right, generation is almost mechanical."
+      "text": "The classic pattern has four layers. First: schema and contracts — \"Define the data structures and function signatures, without writing the implementation.\" Second: approach — \"Describe in plain words how you'd implement the main logic. Wait for my approval.\" Third: implementation — \"Implement the first piece.\" Fourth: expansion — \"Add error handling\" or \"Add tests.\" Each layer is small, verifiable, reversible."
+    },
+    {
+      "type": "simulated_output",
+      "prompt": "We're building a booking system. Layer 1: define only the TypeScript structure of the main entities (Booking, User, Service) and the CRUD function signatures. Zero implementation.",
+      "output": "type Booking = {\n  id: string;\n  userId: string;\n  serviceId: string;\n  date: Date;\n  status: 'pending' | 'confirmed' | 'cancelled';\n};\n\n// Signatures only:\nfunction createBooking(data: Omit<Booking, 'id'>): Promise<Booking>;\nfunction cancelBooking(id: string): Promise<void>;\nfunction getUserBookings(userId: string): Promise<Booking[]>;\n\nConfirm this contract before I implement?"
     },
     {
       "type": "callout",
       "variant": "tip",
-      "text": "Plan-first prompting is the single highest-leverage habit in the path. It's what separates fast vibe coders from frustrated ones."
+      "text": "💡 The approval act between one layer and the next is the heart of chaining. Every \"confirm?\" or \"go ahead\" is a checkpoint where you're still the one deciding — not the AI."
+    },
+    {
+      "type": "paragraph",
+      "text": "When chaining becomes complex enough, or when steps need to run in parallel, you enter the territory of AI agents: systems where each step is handled by a specialized agent that receives the previous step's output as input. It's the natural evolution of manual prompt chaining — and it represents one of the most active frontiers in software development today."
+    },
+    {
+      "type": "paragraph",
+      "text": "Chaining isn't needed for every task. Simple features, small fixes, style changes — a single well-written prompt is the right call. Chaining becomes necessary when a task has more than one distinct phase, when you want to approve the approach before the implementation, or when you've already wasted time on the same type of task with a single prompt."
+    },
+    {
+      "type": "callout",
+      "variant": "key",
+      "text": "🔑 Every layer in the chain should be small enough to verify in under a minute. If you can't verify it quickly, it's still too big — break it down further."
     }
   ],
   "exercise": {
     "format": "fill_blank",
-    "prompt_template": "For complex features, [BLANK] your prompts and always ask for a [BLANK] before any code is written.",
+    "prompt_template": "In prompt chaining, the output of each [BLANK] becomes the [BLANK] for the next step — building the solution layer by layer.",
     "blanks": [
       {
         "index": 0,
-        "correct_answers": ["chain", "link", "sequence", "split", "break"],
-        "hint_1": "Big work, broken into a series — what verb?",
-        "hint_2": "Each prompt feeds the next, like links in a... what?",
-        "explanation": "The answer is 'chain' (or 'sequence'). Chained prompts let you verify each step before committing to the next."
+        "correct_answers": [
+          "step",
+          "a step",
+          "the step",
+          "layer",
+          "a layer",
+          "the layer",
+          "stage",
+          "a stage",
+          "the stage",
+          "phase",
+          "a phase",
+          "the phase",
+          "prompt",
+          "a prompt",
+          "the prompt"
+        ],
+        "hint_1": "What do you call each individual request inside a chain of prompts?",
+        "hint_2": "It's what you compose one after another to build the full solution.",
+        "explanation": "The answer is 'step' (or 'layer', 'phase'). In chaining, each step is autonomous and verifiable — that's what makes the entire chain reliable."
       },
       {
         "index": 1,
-        "correct_answers": ["plan", "outline", "approach", "sketch", "design"],
-        "hint_1": "The high-level sketch, before any line of code?",
-        "hint_2": "It names files, function signatures, and data flow — but no implementation.",
-        "explanation": "The answer is 'plan' (or 'outline'). The plan is your last cheap chance to redirect before code is written."
+        "correct_answers": [
+          "context",
+          "the context",
+          "input",
+          "the input",
+          "an input",
+          "foundation",
+          "the foundation",
+          "starting point",
+          "the starting point",
+          "basis",
+          "the basis",
+          "material",
+          "the material",
+          "premise",
+          "the premise"
+        ],
+        "hint_1": "What does each new prompt carry from the previous step?",
+        "hint_2": "It's what the AI uses to know where you left off — starts with 'c'.",
+        "explanation": "The answer is 'context'. Each step enriches the available context for the next one: the AI doesn't start from scratch but builds on what's already been approved."
       }
     ]
   },
   "outro": {
-    "recap": "You learned to chain prompts and to start every chain with a plan. Two habits, one big leap in quality.",
-    "next_prompt": "Next: the version trap — why the AI might suggest code from two years ago."
+    "recap": "Prompt chaining breaks a complex feature into verifiable layers: schema, approach, implementation, expansion. Every checkpoint is a moment where you're still in control.",
+    "next_prompt": "Next lesson: the version problem — how to handle shifting tech stacks and keep the AI up to date."
   }
 }

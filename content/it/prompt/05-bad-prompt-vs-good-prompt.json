@@ -4,58 +4,104 @@
   "order": 5,
   "title": "Prompt cattivo vs prompt buono",
   "difficulty": "intermediate",
-  "estimated_minutes": 6,
+  "estimated_minutes": 5,
   "base_xp": 150,
   "difficulty_bonus_xp": 50,
   "icon": "/brand/lessons/prompt-05.svg",
   "theory": [
     {
       "type": "paragraph",
-      "text": "La teoria arriva fino a un certo punto. Ecco lo stesso obiettivo, scritto in due modi. Leggili entrambi, poi nota cosa è davvero diverso — non solo più lungo, ma più deciso."
+      "text": "Finora abbiamo parlato dei quattro ingredienti separatamente. Qui li vediamo all'opera insieme — o assenti insieme. La differenza tra un prompt che funziona e uno che spreca mezz'ora non è mai un singolo elemento: è la combinazione di imprecisioni che si sommano fino a rendere il risultato inutilizzabile."
     },
     {
       "type": "comparison_table",
       "bad": {
-        "label": "Vago",
-        "content": "Costruiscimi un CRM per agenti immobiliari."
+        "label": "🚧 Prompt cattivo",
+        "content": "\"Fai un sistema di autenticazione\"\nNessun contesto sul progetto\nStack non specificato\nNessun vincolo su cosa non toccare\nNessuna indicazione sul formato"
       },
       "good": {
-        "label": "Specifico",
-        "content": "Costruisci un CRM per agenti immobiliari. Due ruoli: agenti (gestiscono i propri lead) e manager (vedono tutti i lead). Lead: nome, telefono, email, status (nuovo/contattato/visita/chiuso/perso), agente assegnato, note, fonte. Stack: Next.js + Supabase + Tailwind. Auth: magic link. Mostra i lead in una kanban raggruppata per status."
+        "label": "🏛️ Prompt buono",
+        "content": "\"Implementa autenticazione con magic link\"\n\"Stack: Next.js 15 + Supabase Auth\"\n\"Redirect a /dashboard dopo il login\"\n\"NON toccare il layout in /app/layout.tsx\"\n\"Solo codice, commento ogni funzione\""
       }
     },
     {
       "type": "paragraph",
-      "text": "La versione vaga costringe l'AI a tirare a indovinare su ogni dimensione: schema, auth, pattern UI, stack. Alcune scelte saranno sbagliate e ci passerai un'ora a disfarle. La versione specifica blocca le decisioni noiose e libera l'AI per il vero lavoro — generare codice pulito e ben strutturato che corrisponde a quello che volevi."
+      "text": "Il prompt cattivo non è sbagliato — è incompleto. L'AI produrrà qualcosa, probabilmente con JWT scritto da zero, uno schema database inventato e un flusso di redirect che non ha nulla a che fare con il tuo progetto. Non perché abbia fallito: ha riempito tutti i vuoti che le hai lasciato. Il prompt buono non lascia vuoti su nessuna delle dimensioni che contano."
+    },
+    {
+      "type": "simulated_output",
+      "prompt": "Implementa autenticazione con magic link. Stack: Next.js 15 + Supabase Auth. Redirect a /dashboard dopo il login. NON toccare il layout esistente in /app/layout.tsx. Solo il codice, un commento per ogni funzione.",
+      "output": "Ho creato tre file:\n- /app/login/page.tsx — form con campo email e bottone di invio\n- /app/auth/callback/route.ts — route handler per il redirect post-login\n- /lib/supabase/client.ts — client Supabase già configurato\n\nNon ho modificato /app/layout.tsx. Tutto il flusso usa Supabase Auth nativo — nessuna libreria aggiuntiva."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "text": "⚠️ Il prompt cattivo non produce un errore — produce qualcosa di plausibile ma sbagliato. È il tipo di output più pericoloso: sembra funzionare, poi si scopre che non si integra con nulla di quello che hai già."
+    },
+    {
+      "type": "paragraph",
+      "text": "C'è una versione ancora più potente di questo approccio: invece di scrivere un unico prompt buono, si costruisce una catena di prompt buoni in sequenza, dove l'output di ciascuno diventa il contesto del successivo. È la tecnica che sblocca i task davvero complessi — e la vedremo nella prossima lezione."
     },
     {
       "type": "callout",
       "variant": "key",
-      "text": "Specificità non è burocrazia. Ogni decisione che non prendi tu, la prende l'AI per te — e te la dovrai tenere."
+      "text": "🔑 Un prompt buono ha contesto, task preciso, vincoli e formato. Mancarne uno è tollerabile. Mancarne tre significa riscrivere da capo."
     }
   ],
   "exercise": {
     "format": "fill_blank",
-    "prompt_template": "Un prompt [BLANK] costringe l'AI a tirare a indovinare; un prompt [BLANK] blocca le decisioni noiose così l'AI si concentra sul costruire.",
+    "prompt_template": "Un prompt [BLANK] non produce un errore — produce qualcosa di plausibile ma [BLANK]. È il tipo di output più difficile da riconoscere.",
     "blanks": [
       {
         "index": 0,
-        "correct_answers": ["vago", "generico", "ambiguo", "fumoso", "sfumato"],
-        "hint_1": "Largo, sfumato, povero di dettagli?",
-        "hint_2": "È il tipo che sta in una frase senza campi concreti né stack.",
-        "explanation": "La risposta è 'vago' (o 'generico'). I prompt vaghi producono output generico — e i default dell'AI raramente sono i tuoi."
+        "correct_answers": [
+          "vago",
+          "incompleto",
+          "impreciso",
+          "generico",
+          "superficiale",
+          "povero",
+          "scarso",
+          "approssimativo",
+          "insufficiente",
+          "carente",
+          "debole",
+          "lacunoso",
+          "indefinito",
+          "grezzo",
+          "mal scritto"
+        ],
+        "hint_1": "Come si chiama un prompt a cui mancano contesto, vincoli e formato?",
+        "hint_2": "L'opposto di 'preciso' o 'completo'.",
+        "explanation": "La risposta è 'vago' (o 'incompleto'). Un prompt vago non fallisce in modo ovvio — genera output che sembra corretto ma non si integra col progetto reale."
       },
       {
         "index": 1,
-        "correct_answers": ["specifico", "dettagliato", "preciso", "concreto", "esplicito"],
-        "hint_1": "L'opposto di vago — qual è?",
-        "hint_2": "Nomina ruoli, campi, stack, comportamento atteso.",
-        "explanation": "La risposta è 'specifico' (o 'dettagliato'). I prompt specifici ottengono codice specifico che entra davvero nel tuo progetto."
+        "correct_answers": [
+          "sbagliato",
+          "inutilizzabile",
+          "incompatibile",
+          "inadatto",
+          "non allineato",
+          "errato",
+          "non pertinente",
+          "fuori contesto",
+          "inappropriato",
+          "non integrato",
+          "incoerente",
+          "non utilizzabile",
+          "irrilevante",
+          "fuori bersaglio",
+          "fuori target"
+        ],
+        "hint_1": "Come si chiama un output che sembra funzionare ma non si integra con nulla?",
+        "hint_2": "Non è rotto — è semplicemente non quello di cui hai bisogno.",
+        "explanation": "La risposta è 'sbagliato' (o 'inutilizzabile'). L'AI ha fatto il suo lavoro — ma senza le informazioni giuste ha lavorato verso un obiettivo diverso dal tuo."
       }
     ]
   },
   "outro": {
-    "recap": "Hai visto la differenza: i prompt vaghi forzano l'indovinare, quelli specifici sbloccano lavoro vero.",
-    "next_prompt": "Prossima: quando un prompt non basta — concatenare per feature complesse."
+    "recap": "La differenza tra prompt cattivo e buono non è un singolo ingrediente: è la somma di imprecisioni che rendono l'output plausibile ma inutilizzabile.",
+    "next_prompt": "Prossima lezione: il prompt chaining — come concatenare prompt in sequenza per costruire feature complesse passo dopo passo."
   }
 }

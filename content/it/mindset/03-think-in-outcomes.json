@@ -11,56 +11,109 @@
   "theory": [
     {
       "type": "paragraph",
-      "text": "Quando si inizia col vibe coding, l'istinto è prescrivere passi: 'crea una funzione, aggiungi un parametro, poi cicla sull'array...' È pensare ancora come se stessi scrivendo tu il codice. È la trappola."
+      "text": "Vuoi aggiungere il login con Google alla tua app. Come lo descrivi all'AI? Hai due strade davanti, e una delle due non funziona.\n\nLa prima: \"Crea un file login.tsx, importa la libreria di Supabase, chiama signInWithOAuth con provider 'google', gestisci la risposta, salva il token nel localStorage, reindirizza alla dashboard.\"\n\nLa seconda: \"Aggiungi il login con Google. Dopo l'accesso l'utente deve atterrare su /dashboard. Mostra un errore se qualcosa va storto.\"\n\nQuale delle due otterrà un risultato migliore? Quasi sempre la seconda. E il motivo è interessante."
     },
     {
       "type": "paragraph",
-      "text": "Il salto è descrivere la destinazione, non il percorso. Spieghi all'AI come deve essere il risultato, e lasci che capisca lei come arrivarci. Se il percorso è sbagliato, lo correggi. Ma non disegni la mappa in anticipo."
-    },
-    {
-      "type": "comparison_table",
-      "bad": {
-        "label": "Pensiero a passi",
-        "content": "Crea uno useState per l'email. Aggiungi un onChange. Valida con regex. Manda a /api/login..."
-      },
-      "good": {
-        "label": "Pensiero a risultato",
-        "content": "Mi serve un form di login. Email + password. Mostra un errore amichevole se le credenziali sono sbagliate. Redirect su /dashboard se va a buon fine."
-      }
-    },
-    {
-      "type": "example",
-      "label": "Prima di promptare, rispondi a 4 cose",
-      "text": "Per chi è? Cosa entra, cosa esce? Quali vincoli ci sono (stack, performance)? Quali edge case contano? Buttalo giù — anche una riga ciascuno — prima di aprire la chat."
+      "text": "La prima descrizione è una sequenza di passi. Dice all'AI COME fare le cose. Il problema è che tu non sei un esperto del COME — quindi i tuoi passi saranno spesso sbagliati, incompleti, o banalmente diversi da come l'AI li avrebbe fatti meglio.\n\nLa seconda descrizione è un risultato. Dice COSA deve essere vero quando il lavoro è finito. Sul COSA tu sei l'unico esperto: sai cosa vuoi che succeda. Sul COME, l'AI di solito sa più di te."
     },
     {
       "type": "callout",
       "variant": "tip",
-      "text": "Se sai descrivere il risultato chiaramente, l'AI di solito trova un percorso ragionevole. Se non sai, nessun prompt ti salverà."
+      "text": "💡 La regola del COSA vs COME. Tu descrivi il COSA. L'AI gestisce il COME. Inverti i due e ti perdi."
+    },
+    {
+      "type": "comparison_table",
+      "bad": {
+        "label": "🚫 Pensare in passi (evita)",
+        "content": "\"Crea il file X.\"\n\"Importa la libreria Y.\"\n\"Chiama il metodo Z.\"\n\"Salva il token, reindirizza, ...\"\n30 secondi a leggerlo"
+      },
+      "good": {
+        "label": "✅ Pensare in risultati",
+        "content": "\"Aggiungi il login Google.\"\n\"L'utente atterra su /dashboard.\"\n\"Mostra errore se fallisce.\"\n\n3 secondi a leggerlo"
+      }
+    },
+    {
+      "type": "simulated_output",
+      "prompt": "Crea login.tsx, importa Supabase, chiama signInWithOAuth, gestisci la risposta, salva token...",
+      "output": "Procedo. Hmm — aspetta, stai usando Supabase Auth o NextAuth?\nE vuoi davvero salvare il token nel localStorage? Con Supabase\ndi solito si usa il loro session manager...\n\n(L'AI sta disambiguando i tuoi PASSI. Avresti potuto evitarlo\ndescrivendo direttamente il RISULTATO.)"
+    },
+    {
+      "type": "paragraph",
+      "text": "C'è un'eccezione importante: quando i passi contano davvero. Se stai facendo qualcosa dove l'ordine specifico è critico — tipo una migrazione database in tre fasi — descrivere i passi è giusto. Ma quel caso è raro. Per il 90% delle richieste, descrivi il risultato."
+    },
+    {
+      "type": "callout",
+      "variant": "key",
+      "text": "🎯 In pratica: prima di scrivere un prompt, chiediti \"se questo funzionasse, cosa sarebbe vero?\". Quella è la frase che devi promptare."
     }
   ],
   "exercise": {
     "format": "fill_blank",
-    "prompt_template": "Il vibe coding funziona meglio quando descrivi i [BLANK] che vuoi, non i [BLANK] per arrivarci.",
+    "prompt_template": "Un buon prompt descrive il [BLANK] che vuoi, non i [BLANK] per arrivarci. L'AI è esperta del COME; tu del COSA.",
     "blanks": [
       {
         "index": 0,
-        "correct_answers": ["risultati", "obiettivi", "risultato", "esiti", "traguardi"],
-        "hint_1": "Dove vuoi arrivare?",
-        "hint_2": "È il traguardo — com'è fatto 'fatto' per l'utente.",
-        "explanation": "La risposta è 'risultati' (o 'obiettivi'). Tu descrivi la destinazione. Il percorso lo sceglie l'AI."
+        "correct_answers": [
+          "risultato",
+          "il risultato",
+          "esito",
+          "l'esito",
+          "obiettivo",
+          "l'obiettivo",
+          "fine",
+          "il fine",
+          "traguardo",
+          "il traguardo",
+          "destinazione",
+          "la destinazione",
+          "scopo",
+          "lo scopo",
+          "goal",
+          "il goal",
+          "outcome",
+          "l'outcome",
+          "cosa",
+          "il cosa",
+          "risultato finale",
+          "stato finale",
+          "what"
+        ],
+        "hint_1": "È quello che diventa vero quando il lavoro è finito.",
+        "hint_2": "Pensa al COSA, non al COME. È la parte di cui sei tu l'esperto.",
+        "explanation": "La risposta è 'risultato' (o 'esito' / 'obiettivo'). Tu sei l'esperto del cosa deve essere vero alla fine — l'AI è l'esperta di come arrivarci."
       },
       {
         "index": 1,
-        "correct_answers": ["passi", "step", "passaggi", "istruzioni", "passo passo"],
-        "hint_1": "Cosa elenca una ricetta uno alla volta?",
-        "hint_2": "È la sequenza 'prima fai questo, poi fai quello'.",
-        "explanation": "La risposta è 'passi' (o 'passaggi'). Le istruzioni passo-passo sovravincolano l'AI e ti rallentano."
+        "correct_answers": [
+          "passi",
+          "i passi",
+          "passaggi",
+          "i passaggi",
+          "step",
+          "gli step",
+          "istruzioni",
+          "le istruzioni",
+          "dettagli",
+          "i dettagli",
+          "i passi tecnici",
+          "il come",
+          "come fare",
+          "la sequenza",
+          "sequenza",
+          "il percorso",
+          "percorso",
+          "le mosse",
+          "mosse"
+        ],
+        "hint_1": "È la sequenza dettagliata di mosse che la lezione ci dice di NON descrivere.",
+        "hint_2": "Pensa al COME. È la parte che lasci all'AI.",
+        "explanation": "La risposta è 'passi' (o 'passaggi' / 'step'). Sui passi sei tu spesso fuori contesto — l'AI ne sa di più. Lascia che decida lei come arrivare al risultato che descrivi."
       }
     ]
   },
   "outro": {
-    "recap": "Hai imparato a partire dai risultati. Descrivi chiaramente la destinazione, poi lascia navigare l'AI.",
-    "next_prompt": "Prossima: come spezzare un grande risultato in prompt piccoli."
+    "recap": "Hai imparato a invertire la prospettiva: il COSA è tuo, il COME è dell'AI. Descrivi cosa deve essere vero alla fine, non come arrivarci.",
+    "next_prompt": "Prossima lezione: cosa fare quando il risultato che vuoi è troppo grande per stare in un solo prompt."
   }
 }

@@ -10,52 +10,111 @@
   "icon": "/brand/lessons/mindset-04.svg",
   "theory": [
     {
-      "type": "paragraph",
-      "text": "The most common rookie mistake in vibe coding: stuffing an entire product into a single prompt. 'Build me an e-commerce app with login, cart, payments, admin, and mobile support.' The AI will produce something. It will look impressive. It will also be a mess that's almost impossible to debug."
+      "type": "quote",
+      "text": "Divide each difficulty into as many parts as is feasible and necessary to resolve it.",
+      "attribution": "René Descartes, 1637"
     },
     {
       "type": "paragraph",
-      "text": "Big ambitions, small prompts. Pick one thin slice — a single feature, a single screen — and ship it. Then move to the next. Each commit is a save point you can fall back to when something breaks."
-    },
-    {
-      "type": "comparison_table",
-      "bad": {
-        "label": "One mega-prompt",
-        "content": "Build a full to-do app with login, dark mode, categories, sharing, and Google Calendar sync."
-      },
-      "good": {
-        "label": "Slice by slice",
-        "content": "1. Homepage with empty list. 2. Add + complete tasks. 3. Group by category. 4. Show counter at top."
-      }
+      "text": "You have an idea: an app to share photos with friends. You open Cursor and write: \"Build me an app where people sign up, post photos, comment, and like things.\"\n\nThe AI takes off. 30 seconds later, it hands you 800 lines of code, 12 files, and something vaguely working that, however: skips signup, doesn't know how to handle image upload, put likes in weird places, and didn't think about what happens when a user isn't logged in.\n\nThe problem isn't the AI. The problem is the size of the prompt."
     },
     {
       "type": "callout",
       "variant": "warning",
-      "text": "If a single prompt could break your project, you're prompting too big. Cut it in half. Then in half again."
+      "text": "⚠️ The bigger the prompt, the more likely you'll get a confused result. The AI struggles to hold too many things together at once — exactly like you would."
+    },
+    {
+      "type": "paragraph",
+      "text": "Break it down. The same idea, split into 5 small prompts, produces a much better result:\n\n1. \"Set up authentication with Google login.\"\n2. \"Add a page where users upload a photo with a caption.\"\n3. \"On the home page, show all photos sorted by newest first.\"\n4. \"Add comments under each photo.\"\n5. \"Add the 'like' button.\"\n\nYou run the first. You verify it works. Only then you move to the second. You're still the architect, but you build like a bricklayer — one brick at a time."
+    },
+    {
+      "type": "comparison_table",
+      "bad": {
+        "label": "❌ One big prompt",
+        "content": "800 lines of code at once\n12 files generated together\nError? Good luck finding it\nTesting in pieces? Impossible\nA week to debug"
+      },
+      "good": {
+        "label": "✅ Five small prompts",
+        "content": "~150 lines per prompt\n1-3 files at a time\nErrors isolated and identifiable\nTest feature by feature\nGo live in a day"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "There's another hidden advantage to breaking it down: it hands you back control. When the AI dumps 800 lines at once, you're forced to trust — you don't have time to read everything. When it arrives 150 lines at a time, you actually read it, you understand it, you decide if it's right before moving to the next piece. It's the difference between being the director and being a spectator."
+    },
+    {
+      "type": "simulated_output",
+      "prompt": "Build me a complete e-commerce site.",
+      "output": "Sure, but that's a big app. Want me to break it down, or will you?\n\nPossible phases:\n  1. Product catalog (list + detail page)\n  2. Cart (add/remove items)\n  3. Checkout (form + payment)\n  4. User account (order history)\n\nWhich one first?\n\n(The AI is breaking it down FOR you. Learning to do it yourself saves time.)"
+    },
+    {
+      "type": "paragraph",
+      "text": "A note: breaking it down doesn't mean making everything trivial. You can have complex prompts, as long as they're coherent — like \"add comments with nested replies up to 3 levels, sorted by date\". That's fine: it's one feature, even with nuance. The only rule is: one feature per prompt, not five at once."
+    },
+    {
+      "type": "callout",
+      "variant": "key",
+      "text": "🔑 The practical rule: if your prompt is describing more than ONE feature, break it down. One feature per prompt — always."
     }
   ],
   "exercise": {
     "format": "fill_blank",
-    "prompt_template": "Build complex things by working in [BLANK] steps, shipping [BLANK] feature at a time.",
+    "prompt_template": "When the goal feels too big, [BLANK] it into smaller pieces and build [BLANK] at a time.",
     "blanks": [
       {
         "index": 0,
-        "correct_answers": ["small", "tiny", "little", "incremental", "short"],
-        "hint_1": "Big or little?",
-        "hint_2": "Each step should be small enough to verify in a minute or two.",
-        "explanation": "The answer is 'small' (or 'tiny'). Small steps mean small bugs. Big steps mean tangled bugs you can't unwind."
+        "correct_answers": [
+          "break",
+          "break it",
+          "split",
+          "split it",
+          "divide",
+          "divide it",
+          "decompose",
+          "decompose it",
+          "chunk",
+          "chunk it",
+          "slice",
+          "slice it",
+          "segment",
+          "segment it",
+          "partition",
+          "partition it",
+          "fragment",
+          "fragment it"
+        ],
+        "hint_1": "What do you do when something is too big to handle in one go?",
+        "hint_2": "A verb that means to split into smaller pieces.",
+        "explanation": "The answer is 'break it' (or 'split' / 'divide'). Breaking down problems is a core vibe coding skill: it turns one impossible prompt into five easy ones."
       },
       {
         "index": 1,
-        "correct_answers": ["one", "a single", "single", "1"],
-        "hint_1": "How many features should you tackle in one prompt?",
-        "hint_2": "Just enough to build, test, and commit before moving on.",
-        "explanation": "The answer is 'one'. One feature per prompt, one commit per feature. That rhythm keeps you in control."
+        "correct_answers": [
+          "one",
+          "1",
+          "a piece",
+          "a piece at a time",
+          "one piece",
+          "one at a time",
+          "one by one",
+          "a feature",
+          "one feature",
+          "one feature at a time",
+          "a task",
+          "one task",
+          "a brick",
+          "one brick",
+          "a chunk",
+          "one chunk"
+        ],
+        "hint_1": "How many pieces can you build well at once without making a mess?",
+        "hint_2": "The smallest possible number greater than zero.",
+        "explanation": "The answer is 'one'. One piece per prompt. That's how you get focused code, isolatable errors, and quick progress — instead of 800 confused lines to debug."
       }
     ]
   },
   "outro": {
-    "recap": "You learned the small-step principle. Slice the work, ship one piece, commit, repeat.",
-    "next_prompt": "Next: why context matters more than the prompt itself."
+    "recap": "You learned the principle of decomposition: small prompts, building one piece at a time. It's how pros vibe code without drowning in chaos.",
+    "next_prompt": "Next lesson: the secret ingredient most beginners forget in their prompts — context."
   }
 }

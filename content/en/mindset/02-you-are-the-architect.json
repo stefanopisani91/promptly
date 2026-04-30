@@ -10,57 +10,106 @@
   "icon": "/brand/lessons/mindset-02.svg",
   "theory": [
     {
-      "type": "quote",
-      "text": "I won't commit any code to my repository if I couldn't explain exactly what it does to somebody else.",
-      "attribution": "Simon Willison"
+      "type": "paragraph",
+      "text": "When you start using AI to build, there's a sneaky temptation: treat it like a self-driving car. You say \"build me an app\", it takes off, and you wait for the result like a passenger. Does it work? Rarely. And when it does, you've built something you know nothing about — which is like owning a house without holding the keys."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "text": "⚠️ The passenger trap. If the AI decides everything for you, you'll build things you can't even fix when they break. And they will break."
     },
     {
       "type": "paragraph",
-      "text": "Vibe coding doesn't make you a passenger. It makes you the architect. The AI is your builder — fast, tireless, surprisingly good at syntax — but it has no taste, no business sense, and no idea what you actually need. That part is your job."
-    },
-    {
-      "type": "paragraph",
-      "text": "Your value isn't in typing. It's in deciding: what to build, who it's for, what good looks like, and when something is done. Skip those decisions and the AI will make them for you — and they'll almost always be wrong."
+      "text": "Here's the right mindset: you're the architect, the AI is the construction crew. You decide what to build, where the door goes, how many rooms. The crew executes, you check. You don't lay every brick yourself, but you're the one accountable for how the building stands."
     },
     {
       "type": "comparison_table",
       "bad": {
-        "label": "Old role",
-        "content": "Write every line. Memorize syntax. Optimize the code."
+        "label": "🚧 Bricklayer",
+        "content": "\"How do I write this function?\"\nThinks in lines of code\nExecutes the request\nGets lost in details"
       },
       "good": {
-        "label": "New role",
-        "content": "Direct the build. Hold the vision. Optimize the outcome."
+        "label": "🏛️ Architect",
+        "content": "\"What problem am I solving?\"\nThinks in outcomes and systems\nDecides the request\nHolds the big picture"
       }
+    },
+    {
+      "type": "simulated_output",
+      "prompt": "Build me a contact form.",
+      "output": "Sure. First though — who'll use it, and for what?\n  • Just visitor email, or also a message?\n  • Should it reach you via email, or save to a database?\n  • Want spam protection?\n\n(The AI isn't wasting time. It's handing back the decisions only YOU can make.)"
     },
     {
       "type": "callout",
       "variant": "key",
-      "text": "You don't have to write the code. But you have to own it. If you can't explain what it does, it isn't ready to ship."
+      "text": "🔑 The golden rule: decide first, prompt second. If you don't know what you really want, no prompt in the world can read your mind."
+    },
+    {
+      "type": "quote",
+      "text": "If an LLM wrote every line of your code, but you've reviewed, tested, and understood it all, that's not vibe coding. That's using an LLM as a typing assistant.",
+      "attribution": "Simon Willison"
     }
   ],
   "exercise": {
     "format": "fill_blank",
-    "prompt_template": "In vibe coding, your job is to focus on the [BLANK], not the [BLANK].",
+    "prompt_template": "When using AI to build software, my role is to be [BLANK], not the typist. I decide [BLANK], the AI executes.",
     "blanks": [
       {
         "index": 0,
-        "correct_answers": ["intent", "outcome", "goal", "vision", "product"],
-        "hint_1": "What is it that you're actually trying to achieve?",
-        "hint_2": "It's the *what* and the *why*, not the *how*.",
-        "explanation": "The answer is 'intent' (or 'outcome'). Your role is to hold the goal — what good looks like, who it's for. The AI fills in the rest."
+        "correct_answers": [
+          "the architect",
+          "architect",
+          "an architect",
+          "the designer",
+          "designer",
+          "a designer",
+          "the decision maker",
+          "decision maker",
+          "the decision-maker",
+          "decision-maker",
+          "the director",
+          "director",
+          "the lead",
+          "lead",
+          "the boss",
+          "the chief",
+          "the planner",
+          "planner"
+        ],
+        "hint_1": "Think about who designs a building vs. who lays the bricks.",
+        "hint_2": "It's the role that holds the vision and makes the big decisions.",
+        "explanation": "The answer is 'the architect'. You hold the vision, the AI executes. It's the role shift that separates a vibe coder from a passenger."
       },
       {
         "index": 1,
-        "correct_answers": ["syntax", "code", "implementation", "lines of code", "details"],
-        "hint_1": "What does a junior dev spend most of their time worrying about?",
-        "hint_2": "It's the typing part — semicolons, brackets, exact function signatures.",
-        "explanation": "The answer is 'syntax' (or 'code'). The AI handles syntax beautifully. You handle direction. That's the trade."
+        "correct_answers": [
+          "what to build",
+          "the outcome",
+          "outcome",
+          "the goal",
+          "goal",
+          "the result",
+          "result",
+          "the destination",
+          "destination",
+          "the what",
+          "what i want",
+          "what we want",
+          "the target",
+          "target",
+          "the objective",
+          "objective",
+          "the end goal",
+          "where to go",
+          "the direction"
+        ],
+        "hint_1": "Which decision can ONLY you make before prompting?",
+        "hint_2": "It's not about code. It's about the destination.",
+        "explanation": "The answer is 'what to build' (or 'the outcome'). Defining the destination is your non-negotiable job. The AI can figure out how to get there, not where to go."
       }
     ]
   },
   "outro": {
-    "recap": "You learned that vibe coding doesn't remove your responsibility — it shifts it. You direct, the AI builds. You own the outcome.",
-    "next_prompt": "Next: how to think in outcomes instead of step-by-step instructions."
+    "recap": "You learned the role shift: the AI executes, you decide. Without you at the helm, you'll build things you can't control.",
+    "next_prompt": "Next lesson: how to think in outcomes instead of steps (and why it works better)."
   }
 }

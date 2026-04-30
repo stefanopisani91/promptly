@@ -11,45 +11,91 @@
   "theory": [
     {
       "type": "paragraph",
-      "text": "The AI behaves differently depending on who it thinks it is. 'Write me a function' produces average code. 'Act as a senior backend engineer reviewing this for production' produces something with input validation, error handling, and tests."
+      "text": "\"Create a React component for a login form.\" The AI produces something that works — but it's generic, with questionable patterns, no type safety, and minimal error handling. Add one line before: \"You are a senior React developer with experience in TypeScript and accessibility.\" Same task, completely different response: typed interfaces, correct aria-labels, errors handled professionally. The role doesn't change the task — it changes the level at which the AI executes it."
     },
     {
       "type": "paragraph",
-      "text": "The role isn't decoration — it's a steering wheel. Naming an expert with a specific seniority and focus pushes the AI toward the patterns that expert would use: cleaner architecture, more defensive code, tighter naming."
-    },
-    {
-      "type": "simulated_output",
-      "prompt": "Act as a senior frontend engineer who cares about accessibility. Review this button component.",
-      "output": "Three issues:\n1. No aria-label when icon-only — screen readers see 'button'.\n2. Focus ring is missing on keyboard navigation.\n3. Disabled state still triggers click handler in some browsers.\n\nSuggested fixes below."
+      "text": "When you assign a role, the AI automatically calibrates its choices: the technical vocabulary, the patterns it prefers, the things it takes for granted. A senior developer won't use deprecated APIs or known antipatterns. A code reviewer will tell you what's wrong instead of rewriting everything. A technical writer will structure the response to be read, not just executed. The role is a compact way to convey a set of implicit expectations you'd otherwise have to list one by one."
     },
     {
       "type": "callout",
       "variant": "tip",
-      "text": "Be specific. 'Senior engineer' is fine. 'Senior engineer who's shipped React apps for five years and obsesses about performance' is better."
+      "text": "💡 The most effective format: \"You are a [role] with experience in [specific domain].\" The more precise the domain, the better the AI can calibrate. \"You are a Next.js developer with experience in performance optimization\" produces more targeted results than \"you are a web expert\"."
+    },
+    {
+      "type": "simulated_output",
+      "prompt": "You are a senior developer with experience in web security. Review this login function and tell me what could go wrong.",
+      "output": "I found three issues:\n1. The password is logged in plain text in the error handler (line 24) — remove it immediately.\n2. There's no rate limiting: an attacker can brute-force without any obstacle.\n3. The error message distinguishes \"user not found\" from \"wrong password\" — it gives useful information to an attacker. Merge it into a single generic message."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "text": "⚠️ Vague or exaggerated roles produce vague or exaggerated responses. \"You are the best programmer in the world\" does nothing — the AI has no \"cosmic programmer\" register. Use real, recognizable roles: senior developer, code reviewer, technical writer, UX designer."
+    },
+    {
+      "type": "paragraph",
+      "text": "A role isn't necessary for every prompt. On simple tasks or inside an already active session, adding one is just noise. It's worth using when you want the AI to adopt a specific perspective — especially for code reviews, architecture decisions, documentation, or when the quality level of the output really matters."
+    },
+    {
+      "type": "callout",
+      "variant": "key",
+      "text": "🔑 \"You are a [specific role] with experience in [domain].\" One line that's worth more than a paragraph of instructions — because it carries an entire set of implicit standards."
     }
   ],
   "exercise": {
     "format": "fill_blank",
-    "prompt_template": "Start your prompt with 'Act as a [BLANK]' and specify the [BLANK] level so the AI matches the right standards.",
+    "prompt_template": "Assigning a [BLANK] to the AI is a compact way to give it a set of implicit [BLANK] without having to list them one by one.",
     "blanks": [
       {
         "index": 0,
-        "correct_answers": ["role", "persona", "specialist", "expert", "professional"],
-        "hint_1": "What hat do you want the AI to wear?",
-        "hint_2": "It's the job title or specialization — engineer, designer, copywriter, lawyer.",
-        "explanation": "The answer is 'role' (or 'expert'). Naming a role activates the patterns that role would naturally use."
+        "correct_answers": [
+          "role",
+          "a role",
+          "the role",
+          "persona",
+          "a persona",
+          "profile",
+          "a profile",
+          "identity",
+          "an identity",
+          "character",
+          "a character",
+          "title",
+          "a title",
+          "position",
+          "a position"
+        ],
+        "hint_1": "What do you give the AI when you say 'you are a senior developer'?",
+        "hint_2": "Starts with 'r' — it's what an actor takes on when they step onto the stage.",
+        "explanation": "The answer is 'role'. Defining it orients the AI on specific standards, patterns and technical vocabulary — without you having to explain them one by one."
       },
       {
         "index": 1,
-        "correct_answers": ["seniority", "experience", "expertise", "skill"],
-        "hint_1": "Junior, mid, senior, principal — which one?",
-        "hint_2": "It's the years-of-experience dial.",
-        "explanation": "The answer is 'seniority' (or 'experience'). 'Senior' produces more rigorous output than 'junior' on the same task."
+        "correct_answers": [
+          "expectations",
+          "the expectations",
+          "standards",
+          "the standards",
+          "instructions",
+          "the instructions",
+          "criteria",
+          "the criteria",
+          "guidelines",
+          "the guidelines",
+          "requirements",
+          "the requirements",
+          "assumptions",
+          "the assumptions",
+          "preferences"
+        ],
+        "hint_1": "What does a professional role implicitly communicate to whoever hears it?",
+        "hint_2": "What does someone hiring a senior developer have in mind that they don't have for a junior?",
+        "explanation": "The answer is 'expectations'. A role carries quality standards, conventions and approaches that the AI applies automatically — without you having to spell them out."
       }
     ]
   },
   "outro": {
-    "recap": "You learned to set a role with a specific seniority. The AI then mirrors the patterns of that expert.",
-    "next_prompt": "Next: why constraints make the AI better, not worse."
+    "recap": "Giving the AI a role is the most cost-effective way to raise output quality: one line that calibrates vocabulary, patterns and implicit standards.",
+    "next_prompt": "Next lesson: the third ingredient of a great prompt — constraints, and why defining what NOT to do is often more useful than saying what to do."
   }
 }

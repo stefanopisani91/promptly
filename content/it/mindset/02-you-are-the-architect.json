@@ -10,57 +10,111 @@
   "icon": "/brand/lessons/mindset-02.svg",
   "theory": [
     {
-      "type": "quote",
-      "text": "I won't commit any code to my repository if I couldn't explain exactly what it does to somebody else.",
-      "attribution": "Simon Willison"
+      "type": "paragraph",
+      "text": "Quando inizi a usare l'AI per costruire, c'è una tentazione subdola: trattarla come un'auto a guida autonoma. Le dici \"fammi un'app\", lei parte, e tu aspetti il risultato come un passeggero. Funziona? Raramente. E quando funziona, hai costruito qualcosa di cui non sai nulla — il che è come avere una casa di cui non possiedi le chiavi."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "text": "⚠️ La trappola del passeggero. Se l'AI decide tutto al posto tuo, costruirai cose che non riesci nemmeno a riparare quando si rompono. E si romperanno."
     },
     {
       "type": "paragraph",
-      "text": "Il vibe coding non ti rende un passeggero. Ti rende l'architetto. L'AI è il tuo costruttore — veloce, instancabile, sorprendentemente brava con la sintassi — ma non ha gusto, non ha intuito di business, e non ha la più pallida idea di cosa ti serva davvero. Quella parte è il tuo lavoro."
-    },
-    {
-      "type": "paragraph",
-      "text": "Il tuo valore non sta nel digitare. Sta nel decidere: cosa costruire, per chi, com'è fatto un buon risultato, quando una cosa è finita. Salta queste decisioni e l'AI le prenderà per te — e saranno quasi sempre sbagliate."
+      "text": "La mentalità giusta è un'altra: tu sei l'architetto, l'AI è la squadra di muratori. Tu decidi cosa costruire, dove va la porta, quante stanze. La squadra realizza, tu controlli. Non scrivi tu ogni mattone, ma sei tu il responsabile di come l'edificio sta in piedi."
     },
     {
       "type": "comparison_table",
       "bad": {
-        "label": "Vecchio ruolo",
-        "content": "Scrivere ogni riga. Memorizzare la sintassi. Ottimizzare il codice."
+        "label": "🚧 Muratore",
+        "content": "\"Come scrivo questa funzione?\"\nPensa in righe di codice\nEsegue la richiesta\nSi perde nei dettagli"
       },
       "good": {
-        "label": "Nuovo ruolo",
-        "content": "Dirigere la build. Tenere la visione. Ottimizzare il risultato."
+        "label": "🏛️ Architetto",
+        "content": "\"Quale problema sto risolvendo?\"\nPensa in risultati e sistemi\nDecide la richiesta\nTiene la visione d'insieme"
       }
+    },
+    {
+      "type": "simulated_output",
+      "prompt": "Costruiscimi un form di contatto.",
+      "output": "Certo. Prima però — chi lo userà, e per cosa?\n  • Solo email del visitatore, o anche un messaggio?\n  • Deve arrivarti via email, o salvarsi in un database?\n  • Vuoi protezione antispam?\n\n(L'AI non sta perdendo tempo. Ti sta restituendo le decisioni che SOLO TU puoi prendere.)"
     },
     {
       "type": "callout",
       "variant": "key",
-      "text": "Non devi scrivere il codice. Ma devi farlo tuo. Se non sai spiegare cosa fa, non è pronto per andare in produzione."
+      "text": "🔑 La regola d'oro: decidi prima, prompta poi. Se non sai cosa vuoi davvero, nessun prompt al mondo riuscirà a leggerti nel pensiero."
+    },
+    {
+      "type": "quote",
+      "text": "Se un LLM ha scritto ogni riga del tuo codice, ma tu l'hai revisionato, testato e capito tutto — quello non è vibe coding. È usare un LLM come dattilografo.",
+      "attribution": "Simon Willison"
     }
   ],
   "exercise": {
     "format": "fill_blank",
-    "prompt_template": "Nel vibe coding il tuo lavoro è concentrarti sull'[BLANK], non sulla [BLANK].",
+    "prompt_template": "Quando uso l'AI per costruire software, il mio ruolo è essere [BLANK], non il dattilografo. Decido [BLANK], l'AI esegue.",
     "blanks": [
       {
         "index": 0,
-        "correct_answers": ["intento", "obiettivo", "risultato", "scopo", "intenzione"],
-        "hint_1": "Cos'è che stai davvero cercando di ottenere?",
-        "hint_2": "È il *cosa* e il *perché*, non il *come*.",
-        "explanation": "La risposta è 'intento' (o 'obiettivo'). Il tuo ruolo è tenere lo scopo — cosa significa 'fatto bene', per chi è. Al resto pensa l'AI."
+        "correct_answers": [
+          "l'architetto",
+          "architetto",
+          "un architetto",
+          "il designer",
+          "designer",
+          "un designer",
+          "il progettista",
+          "progettista",
+          "un progettista",
+          "il decisore",
+          "decisore",
+          "il direttore",
+          "direttore",
+          "il regista",
+          "regista",
+          "il capo",
+          "capo",
+          "la guida",
+          "guida"
+        ],
+        "hint_1": "Pensa a chi progetta un edificio rispetto a chi posa i mattoni.",
+        "hint_2": "È il ruolo che tiene la visione d'insieme e prende le decisioni grandi.",
+        "explanation": "La risposta è 'l'architetto'. Tu hai la visione, l'AI esegue. È il cambio di ruolo che fa la differenza tra un vibe coder e un passeggero."
       },
       {
         "index": 1,
-        "correct_answers": ["sintassi", "implementazione", "scrittura", "tastiera", "stesura"],
-        "hint_1": "A cosa pensa di più un junior dev mentre scrive?",
-        "hint_2": "È la parte di digitazione — punti e virgola, parentesi, signature esatte.",
-        "explanation": "La risposta è 'sintassi' (o 'implementazione'). L'AI gestisce la sintassi a meraviglia. Tu gestisci la direzione. È lo scambio."
+        "correct_answers": [
+          "cosa costruire",
+          "il cosa",
+          "il risultato",
+          "risultato",
+          "l'obiettivo",
+          "obiettivo",
+          "cosa voglio",
+          "cosa vogliamo",
+          "la destinazione",
+          "destinazione",
+          "lo scopo",
+          "scopo",
+          "il fine",
+          "fine",
+          "il target",
+          "target",
+          "cosa fare",
+          "il traguardo",
+          "traguardo",
+          "il goal",
+          "goal",
+          "dove andare",
+          "il cosa e il dove"
+        ],
+        "hint_1": "Qual è l'unica decisione che SOLO tu puoi prendere prima di promptare?",
+        "hint_2": "Non riguarda il codice. Riguarda la destinazione.",
+        "explanation": "La risposta è 'cosa costruire' (o 'il risultato'). Definire la destinazione è il tuo lavoro irrinunciabile. L'AI può capire come arrivarci, non dove andare."
       }
     ]
   },
   "outro": {
-    "recap": "Hai imparato che il vibe coding non toglie la responsabilità — la sposta. Tu dirigi, l'AI costruisce. Il risultato è tuo.",
-    "next_prompt": "Prossima: come pensare in risultati, non in passi prescrittivi."
+    "recap": "Hai imparato il cambio di ruolo: l'AI esegue, tu decidi. Senza di te al timone, costruirai cose che non controlli.",
+    "next_prompt": "Prossima lezione: come pensare in risultati invece che in passi (e perché funziona meglio)."
   }
 }

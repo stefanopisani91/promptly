@@ -4,58 +4,104 @@
   "order": 5,
   "title": "Bad prompt vs good prompt",
   "difficulty": "intermediate",
-  "estimated_minutes": 6,
+  "estimated_minutes": 5,
   "base_xp": 150,
   "difficulty_bonus_xp": 50,
   "icon": "/brand/lessons/prompt-05.svg",
   "theory": [
     {
       "type": "paragraph",
-      "text": "Theory only goes so far. Here's the same goal, written two ways. Read both, then notice what's actually different — not just longer, but more decided."
+      "text": "So far we've talked about the four ingredients separately. Here we see them at work together — or missing together. The difference between a prompt that works and one that wastes half an hour is never a single element: it's the combination of imprecisions that add up until the result is unusable."
     },
     {
       "type": "comparison_table",
       "bad": {
-        "label": "Vague",
-        "content": "Build me a CRM for real estate agents."
+        "label": "🚧 Bad prompt",
+        "content": "\"Build an authentication system\"\nNo context about the project\nStack not specified\nNo constraint on what not to touch\nNo indication of output format"
       },
       "good": {
-        "label": "Specific",
-        "content": "Build a CRM for real estate agents. Two roles: agents (manage their own leads) and managers (see all leads). Lead has: name, phone, email, status (new/contacted/showing/closed/lost), assigned agent, notes, source. Stack: Next.js + Supabase + Tailwind. Auth: magic link. Show leads in a kanban grouped by status."
+        "label": "🏛️ Good prompt",
+        "content": "\"Implement magic link authentication\"\n\"Stack: Next.js 15 + Supabase Auth\"\n\"Redirect to /dashboard after login\"\n\"DO NOT touch layout in /app/layout.tsx\"\n\"Code only, one comment per function\""
       }
     },
     {
       "type": "paragraph",
-      "text": "The vague version forces the AI to guess on every dimension: schema, auth, UI pattern, stack. Some guesses will be wrong, and you'll spend an hour undoing them. The specific version locks the boring decisions and frees the AI to do the actual work — generating clean, well-structured code that matches what you wanted."
+      "text": "The bad prompt isn't wrong — it's incomplete. The AI will produce something, probably with JWT written from scratch, an invented database schema, and a redirect flow that has nothing to do with your project. Not because it failed: it filled every gap you left open. The good prompt leaves no gaps on any of the dimensions that matter."
+    },
+    {
+      "type": "simulated_output",
+      "prompt": "Implement magic link authentication. Stack: Next.js 15 + Supabase Auth. Redirect to /dashboard after login. DO NOT touch the existing layout in /app/layout.tsx. Code only, one comment per function.",
+      "output": "I've created three files:\n- /app/login/page.tsx — form with email field and submit button\n- /app/auth/callback/route.ts — route handler for the post-login redirect\n- /lib/supabase/client.ts — pre-configured Supabase client\n\nI did not modify /app/layout.tsx. The entire flow uses native Supabase Auth — no additional libraries."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "text": "⚠️ A bad prompt doesn't produce an error — it produces something plausible but wrong. That's the most dangerous kind of output: it looks like it works, then you discover it doesn't integrate with anything you already have."
+    },
+    {
+      "type": "paragraph",
+      "text": "There's an even more powerful version of this approach: instead of writing a single good prompt, you build a chain of good prompts in sequence, where the output of each becomes the context for the next. It's the technique that unlocks truly complex tasks — and we'll see it in the next lesson."
     },
     {
       "type": "callout",
       "variant": "key",
-      "text": "Specificity isn't bureaucracy. Every decision you don't make, the AI makes for you — and you'll have to live with it."
+      "text": "🔑 A good prompt has context, precise task, constraints and format. Missing one is tolerable. Missing three means starting over."
     }
   ],
   "exercise": {
     "format": "fill_blank",
-    "prompt_template": "A [BLANK] prompt forces the AI to guess; a [BLANK] prompt locks the boring decisions so it can focus on building.",
+    "prompt_template": "A [BLANK] prompt doesn't produce an error — it produces something plausible but [BLANK]. It's the hardest kind of output to catch.",
     "blanks": [
       {
         "index": 0,
-        "correct_answers": ["vague", "generic", "fuzzy", "unclear", "ambiguous"],
-        "hint_1": "Loose, hand-wavy, low on detail?",
-        "hint_2": "It's the kind that fits in one sentence with no concrete fields or stack.",
-        "explanation": "The answer is 'vague' (or 'generic'). Vague prompts produce generic output — and the AI's defaults are rarely yours."
+        "correct_answers": [
+          "vague",
+          "incomplete",
+          "imprecise",
+          "generic",
+          "weak",
+          "poor",
+          "shallow",
+          "underspecified",
+          "rough",
+          "insufficient",
+          "loose",
+          "unclear",
+          "underdefined",
+          "thin",
+          "sloppy"
+        ],
+        "hint_1": "What do you call a prompt that's missing context, constraints and format?",
+        "hint_2": "The opposite of 'precise' or 'complete'.",
+        "explanation": "The answer is 'vague' (or 'incomplete'). A vague prompt doesn't fail obviously — it generates output that looks correct but doesn't fit the real project."
       },
       {
         "index": 1,
-        "correct_answers": ["specific", "detailed", "precise", "concrete", "explicit"],
-        "hint_1": "The opposite of vague — what is it?",
-        "hint_2": "It names roles, fields, stack, expected behavior.",
-        "explanation": "The answer is 'specific' (or 'detailed'). Specific prompts get specific code that actually fits your project."
+        "correct_answers": [
+          "wrong",
+          "unusable",
+          "incompatible",
+          "misaligned",
+          "off-target",
+          "irrelevant",
+          "incoherent",
+          "incorrect",
+          "unfit",
+          "out of context",
+          "not integrated",
+          "not usable",
+          "off the mark",
+          "beside the point",
+          "not what you need"
+        ],
+        "hint_1": "What do you call output that looks like it works but doesn't integrate with anything?",
+        "hint_2": "Not broken — just not what you needed.",
+        "explanation": "The answer is 'wrong' (or 'unusable'). The AI did its job — but without the right information, it worked toward a different goal than yours."
       }
     ]
   },
   "outro": {
-    "recap": "You saw the difference: vague prompts force guesses, specific prompts unlock real work.",
-    "next_prompt": "Next: when one prompt isn't enough — chaining for complex features."
+    "recap": "The difference between a bad and a good prompt isn't a single ingredient: it's the sum of imprecisions that make the output plausible but unusable.",
+    "next_prompt": "Next lesson: prompt chaining — how to link prompts in sequence to build complex features step by step."
   }
 }

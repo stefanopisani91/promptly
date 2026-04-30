@@ -11,45 +11,91 @@
   "theory": [
     {
       "type": "paragraph",
-      "text": "L'AI si comporta in modi diversi a seconda di chi pensa di essere. 'Scrivimi una funzione' produce codice nella media. 'Comportati come un senior backend engineer che la sta rivedendo per la produzione' produce qualcosa con validazione degli input, gestione errori e test."
+      "text": "\"Crea un componente React per un form di login.\" L'AI produce qualcosa di funzionante — ma generico, con pattern discutibili, senza type safety, con gestione degli errori minima. Aggiungi una sola riga prima: \"Sei uno sviluppatore React senior con esperienza in TypeScript e accessibilità.\" Stesso task, risposta completamente diversa: interfacce tipizzate, aria-label corretti, errori gestiti in modo professionale. Il ruolo non cambia il task — cambia il livello a cui l'AI lo esegue."
     },
     {
       "type": "paragraph",
-      "text": "Il ruolo non è decorazione — è un volante. Nominare un esperto con una specifica seniority e un focus chiaro spinge l'AI verso i pattern che quell'esperto userebbe: architettura più pulita, codice più difensivo, naming più stretto."
-    },
-    {
-      "type": "simulated_output",
-      "prompt": "Comportati come un senior frontend engineer che cura l'accessibilità. Rivedi questo componente bottone.",
-      "output": "Tre problemi:\n1. Manca aria-label quando ha solo l'icona — gli screen reader sentono solo 'button'.\n2. Manca il focus ring nella navigazione da tastiera.\n3. Lo stato disabled in alcuni browser fa comunque scattare l'handler del click.\n\nDi seguito i fix proposti."
+      "text": "Quando assegni un ruolo, l'AI calibra automaticamente le sue scelte: il vocabolario tecnico, i pattern che preferisce, le cose che dà per scontate. Un senior developer non userà API deprecate o antipattern noti. Un code reviewer ti dirà cosa non va invece di riscrivere tutto. Un technical writer strutturerà la risposta per essere letta, non solo eseguita. Il ruolo è un modo compatto per trasmettere un set di aspettative implicite che altrimenti dovresti elencare una ad una."
     },
     {
       "type": "callout",
       "variant": "tip",
-      "text": "Sii specifico. 'Senior engineer' va bene. 'Senior engineer che ha spedito app React per cinque anni e ha la fissa per le performance' è meglio."
+      "text": "💡 Il formato più efficace: \"Sei [ruolo] con esperienza in [dominio specifico].\" Più il dominio è preciso, più l'AI può calibrare. \"Sei uno sviluppatore Next.js con esperienza in ottimizzazione delle performance\" produce risultati più mirati di \"sei un esperto di web\"."
+    },
+    {
+      "type": "simulated_output",
+      "prompt": "Sei un senior developer con esperienza in sicurezza web. Rivedi questa funzione di login e dimmi cosa può andare storto.",
+      "output": "Ho trovato tre problemi:\n1. La password viene loggata in chiaro nell'error handler (riga 24) — rimuovila subito.\n2. Non c'è rate limiting: un attaccante può fare brute force senza ostacoli.\n3. Il messaggio di errore distingue \"utente non trovato\" da \"password errata\" — fornisce informazioni utili a chi attacca. Unificalo in un messaggio generico."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "text": "⚠️ I ruoli vaghi o esagerati producono risposte vaghe o esagerate. \"Sei il miglior programmatore del mondo\" non serve a nulla — l'AI non ha un registro di \"programmatore cosmico\". Usa ruoli reali e riconoscibili: senior developer, code reviewer, technical writer, UX designer."
+    },
+    {
+      "type": "paragraph",
+      "text": "Il ruolo non è necessario per ogni prompt. Su task semplici o dentro una sessione già avviata, aggiungerlo è rumore. Vale la pena usarlo quando vuoi che l'AI adotti una prospettiva specifica — in particolare su code review, architettura, documentazione, o quando il livello qualitativo dell'output conta davvero."
+    },
+    {
+      "type": "callout",
+      "variant": "key",
+      "text": "🔑 \"Sei [ruolo specifico] con esperienza in [dominio].\" Una riga che vale più di un paragrafo di istruzioni — perché porta con sé un intero set di standard impliciti."
     }
   ],
   "exercise": {
     "format": "fill_blank",
-    "prompt_template": "Apri il prompt con 'Comportati come un [BLANK]' e specifica il livello di [BLANK] così l'AI applica gli standard giusti.",
+    "prompt_template": "Assegnare un [BLANK] all'AI è un modo compatto per trasmetterle un set di [BLANK] implicite senza doverle elencare una ad una.",
     "blanks": [
       {
         "index": 0,
-        "correct_answers": ["ruolo", "esperto", "professionista", "specialista", "persona"],
-        "hint_1": "Quale cappello vuoi che l'AI si metta?",
-        "hint_2": "È il titolo o la specializzazione — engineer, designer, copywriter, avvocato.",
-        "explanation": "La risposta è 'ruolo' (o 'esperto'). Nominare un ruolo attiva i pattern che quel ruolo userebbe naturalmente."
+        "correct_answers": [
+          "ruolo",
+          "un ruolo",
+          "il ruolo",
+          "profilo",
+          "un profilo",
+          "il profilo",
+          "persona",
+          "una persona",
+          "identità",
+          "un'identità",
+          "figura",
+          "una figura",
+          "carattere",
+          "un personaggio",
+          "specializzazione"
+        ],
+        "hint_1": "Cosa assegni all'AI quando le dici 'sei uno sviluppatore senior'?",
+        "hint_2": "Inizia per 'r' — è quello che recita un attore quando sale sul palco.",
+        "explanation": "La risposta è 'ruolo'. Definirlo orienta l'AI su standard, pattern e vocabolario tecnico specifici, senza doverli spiegare uno ad uno."
       },
       {
         "index": 1,
-        "correct_answers": ["seniority", "esperienza", "competenza", "anzianità"],
-        "hint_1": "Junior, mid, senior, principal — quale?",
-        "hint_2": "È la manopola degli anni di esperienza.",
-        "explanation": "La risposta è 'seniority' (o 'esperienza'). 'Senior' dà un output più rigoroso di 'junior' a parità di task."
+        "correct_answers": [
+          "aspettative",
+          "le aspettative",
+          "standard",
+          "gli standard",
+          "istruzioni",
+          "le istruzioni",
+          "criteri",
+          "i criteri",
+          "linee guida",
+          "le linee guida",
+          "requisiti",
+          "i requisiti",
+          "attese",
+          "le attese",
+          "preferenze"
+        ],
+        "hint_1": "Cosa trasmette implicitamente un ruolo professionale a chi lo ascolta?",
+        "hint_2": "Cosa ha in mente chi assume un senior developer rispetto a un junior?",
+        "explanation": "La risposta è 'aspettative'. Un ruolo porta con sé standard di qualità, convenzioni e approcci che l'AI applica automaticamente — senza che tu debba spiegarli."
       }
     ]
   },
   "outro": {
-    "recap": "Hai imparato a impostare un ruolo con una seniority specifica. L'AI rispecchia poi i pattern di quell'esperto.",
-    "next_prompt": "Prossima: perché i vincoli rendono l'AI migliore, non peggiore."
+    "recap": "Dare un ruolo all'AI è il gesto più economico per alzare la qualità dell'output: una riga che calibra vocabolario, pattern e standard impliciti.",
+    "next_prompt": "Prossima lezione: il terzo ingrediente di un buon prompt — i vincoli, e perché definire cosa NON fare è spesso più utile di dire cosa fare."
   }
 }

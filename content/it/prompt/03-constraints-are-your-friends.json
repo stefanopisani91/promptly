@@ -11,45 +11,90 @@
   "theory": [
     {
       "type": "paragraph",
-      "text": "Senza paletti, l'AI inventa. Sceglie librerie che non usi, pattern che non segui, file in posti dove non li tieni. I vincoli non sono una gabbia — sono le linee della corsia che tengono l'output sulla tua strada."
+      "text": "Quando descrivi cosa vuoi all'AI, l'istinto è concentrarsi su quello che deve fare. Ma spesso la parte più utile del prompt è l'opposta: dire cosa non deve fare. Non questa libreria. Non toccare quel file. Non aggiungere dipendenze esterne. Non spiegarmi il codice, dammi solo l'implementazione. I vincoli non limitano l'AI — la indirizzano. Senza di essi, riempie i gradi di libertà con le sue preferenze, che potrebbero non essere le tue."
     },
     {
-      "type": "paragraph",
-      "text": "Due gusti contano: vincoli positivi ('usa React Hook Form, salva le date come stringhe ISO, tieni le funzioni sotto le 30 righe') e vincoli negativi ('non aggiungere nuove dipendenze, non modificare il flusso di auth, non usare valori arbitrari di Tailwind'). I negativi sono spesso più potenti — tagliano interi rami di output indesiderato."
-    },
-    {
-      "type": "example",
-      "label": "Vincoli a strati",
-      "text": "Usa Next.js 15 App Router, TypeScript strict, Tailwind, niente librerie di form esterne. Non toccare nulla in /components/ui. Non introdurre nuove env variables. Output: un singolo file."
+      "type": "simulated_output",
+      "prompt": "Aggiungi la validazione al form di registrazione. Usa Zod. NON usare React Hook Form — ho già una soluzione custom. NON modificare il componente padre, solo il form interno.",
+      "output": "Ho aggiunto la validazione Zod direttamente nel form interno, senza toccare il componente padre e senza introdurre React Hook Form. Lo schema valida email, password (min 8 caratteri) e conferma password.\n\nVuoi che aggiunga anche un messaggio di errore per ogni campo?"
     },
     {
       "type": "callout",
-      "variant": "warning",
-      "text": "Dire all'AI cosa *non* deve fare è una delle cose con la massima leva che puoi scrivere. Tronca intere categorie di output sbagliato prima ancora che nasca."
+      "variant": "tip",
+      "text": "💡 I vincoli più utili sono quelli negativi: \"NON usare X\", \"NON toccare Y\", \"NON aggiungere Z\". Un vincolo negativo vale spesso più di tre istruzioni positive — blocca esattamente la categoria di errori più frequente."
+    },
+    {
+      "type": "paragraph",
+      "text": "Ci sono quattro tipi di vincolo che vale sempre la pena esplicitare: lo stack (\"Next.js 15, non creare un progetto nuovo\"), le librerie escluse (\"NON usare Axios, usiamo fetch nativo\"), il perimetro (\"modifica solo questo componente, non toccare il resto\") e il formato (\"niente spiegazioni, solo il codice\"). Non tutti servono in ogni prompt — ma quando uno manca ed è rilevante, l'AI lo decide da sola."
+    },
+    {
+      "type": "paragraph",
+      "text": "Questo principio diventa ancora più potente quando si lavora con sistemi multi-agente: ogni agente del workflow riceve un set di vincoli precisi che definiscono cosa può e non può fare, esattamente come un collaboratore con un mansionario chiaro. Ne parleremo quando affronteremo il prompt chaining e i workflow avanzati — ma l'intuizione è già tutta qui."
+    },
+    {
+      "type": "paragraph",
+      "text": "Un eccesso di vincoli può bloccare l'AI su soluzioni subottimali. Se definisci troppi \"NON fare\" su un task esplorativo — dove stai ancora capendo quale approccio è giusto — rischi di escludere la soluzione migliore. I vincoli sono più utili quando sai già cosa non vuoi; meno utili quando stai ancora scoprendo cosa vuoi."
+    },
+    {
+      "type": "callout",
+      "variant": "key",
+      "text": "🔑 Ogni grado di libertà che lasci aperto nel prompt è una scelta che fa l'AI al posto tuo. Definisci i vincoli — specialmente quelli negativi — prima che lo faccia lei."
     }
   ],
   "exercise": {
     "format": "fill_blank",
-    "prompt_template": "Usa vincoli [BLANK] per fissare le regole da seguire, e vincoli [BLANK] per escludere percorsi sbagliati.",
+    "prompt_template": "I vincoli [BLANK] — 'NON usare X', 'NON toccare Y' — sono spesso più utili di quelli positivi perché bloccano esattamente la [BLANK] di errori più frequente.",
     "blanks": [
       {
         "index": 0,
-        "correct_answers": ["positivi", "espliciti", "diretti"],
-        "hint_1": "Quelli che dicono 'fai questo'?",
-        "hint_2": "Sono le regole che indicano la cosa da scegliere — 'usa Zod', 'salva come ISO'.",
-        "explanation": "La risposta è 'positivi'. I vincoli positivi dicono cosa l'AI dovrebbe scegliere quando ha più opzioni."
+        "correct_answers": [
+          "negativi",
+          "i negativi",
+          "in negativo",
+          "espressi in negativo",
+          "formulati in negativo",
+          "di esclusione",
+          "esclusivi",
+          "proibitivi",
+          "restrittivi",
+          "di divieto",
+          "che escludono",
+          "che vietano",
+          "di tipo negativo",
+          "nella forma negativa",
+          "di tipo proibitivo"
+        ],
+        "hint_1": "Come si chiamano i vincoli che dicono cosa NON fare, invece di cosa fare?",
+        "hint_2": "L'opposto di 'positivi'.",
+        "explanation": "La risposta è 'negativi'. Dire esplicitamente cosa escludere è spesso più preciso che descrivere cosa includere — perché blocca direttamente la categoria di scelte indesiderate."
       },
       {
         "index": 1,
-        "correct_answers": ["negativi", "esclusivi", "proibitivi"],
-        "hint_1": "Quelli che dicono 'NON fare questo'?",
-        "hint_2": "Sono le regole che vietano esplicitamente — 'niente nuove dipendenze', 'non modificare X'.",
-        "explanation": "La risposta è 'negativi'. I vincoli negativi tagliano interi rami che l'AI esplorerebbe altrimenti."
+        "correct_answers": [
+          "categoria",
+          "la categoria",
+          "classe",
+          "la classe",
+          "tipo",
+          "il tipo",
+          "famiglia",
+          "la famiglia",
+          "insieme",
+          "gruppo",
+          "il gruppo",
+          "casistica",
+          "la casistica",
+          "tipologia",
+          "la tipologia"
+        ],
+        "hint_1": "Cosa raggruppa errori simili sotto un'unica etichetta?",
+        "hint_2": "Inizia per 'c' — è quello che un vincolo negativo esclude in blocco.",
+        "explanation": "La risposta è 'categoria'. Un vincolo negativo non blocca un singolo errore, ma un'intera classe di output indesiderati — ed è per questo che è così efficiente."
       }
     ]
   },
   "outro": {
-    "recap": "Hai imparato a stratificare vincoli positivi e negativi. Insieme tengono l'output dentro la corsia del tuo progetto.",
-    "next_prompt": "Prossima: perché descrivere il formato dell'output conta quanto descrivere l'input."
+    "recap": "I vincoli non limitano l'AI — la indirizzano. Quelli negativi ('NON usare X', 'NON toccare Y') sono i più potenti: bloccano categorie intere di scelte indesiderate.",
+    "next_prompt": "Prossima lezione: il quarto ingrediente — descrivere il formato dell'output e ottenere esattamente la forma di risposta che ti serve."
   }
 }

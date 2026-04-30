@@ -10,46 +10,117 @@
   "icon": "/brand/lessons/mindset-05.svg",
   "theory": [
     {
-      "type": "paragraph",
-      "text": "Lo stesso prompt, mandato alla stessa AI, produce risultati molto diversi a seconda di cosa lo circonda. Quel 'cosa' è il contesto: i file del progetto, le regole che hai impostato, gli esempi che l'AI può vedere, la conversazione fino a quel momento."
+      "type": "quote",
+      "text": "L'arte di fornire tutto il contesto perché il task sia plausibilmente risolvibile dal modello.",
+      "attribution": "Tobi Lutke, CEO Shopify"
     },
     {
       "type": "paragraph",
-      "text": "Il prompt engineering è l'arte di scrivere la frase giusta. Il context engineering è l'arte di sistemare l'intera stanza — così l'AI entra già preparata a metà. Una stanza ben sistemata fa funzionare anche prompt mediocri. Una stanza vuota fa fallire anche prompt brillanti."
+      "text": "Ogni volta che apri una nuova chat con l'AI, lei riparte da zero. Non ricorda il tuo progetto, non sa che stack usi, non conosce le scelte che hai fatto la settimana scorsa. Quello che produce dipende quasi interamente da quello che le metti nel prompt.\n\nSe scrivi \"aggiungi un bottone di login\", l'AI deve prendere decisioni: che framework stai usando? Il bottone apre un modal o reindirizza a una pagina? C'è già un sistema di autenticazione attivo? Senza queste informazioni, sceglie per te — ma non è detto che scelga come sceglieresti tu."
     },
     {
-      "type": "example",
-      "label": "Cos'è il contesto, in pratica",
-      "text": "Un breve file di regole ('usiamo Next.js 15, Tailwind, niente type any'), componenti d'esempio che l'AI può imitare, il file aperto nell'editor, i commit recenti, i design token. Niente di tutto questo è un 'prompt' — ma tutto questo plasma la risposta."
+      "type": "callout",
+      "variant": "warning",
+      "text": "⚠️ Senza contesto, l'AI non sbaglia perché è stupida — sbaglia perché non sa abbastanza. Più il progetto è avanzato, più questa differenza pesa."
+    },
+    {
+      "type": "paragraph",
+      "text": "Sara sta costruendo un'app di prenotazioni con Next.js e Supabase. Scrive: \"aggiungi la funzione per inviare email di conferma.\" L'AI risponde con un'implementazione che usa Nodemailer — ma Sara aveva già configurato Resend nel progetto, con un sistema di template personalizzati in /emails/.\n\nBastava aggiungere una riga di contesto: \"Usiamo Resend per le email, configurazione in /lib/email.ts, template base in /emails/base.tsx.\" Con quella riga, l'AI avrebbe integrato esattamente quello che serviva, senza inventare nulla."
+    },
+    {
+      "type": "comparison_table",
+      "bad": {
+        "label": "🚫 Senza contesto",
+        "content": "AI sceglie librerie a caso\nIgnora i file già esistenti\nOutput incompatibile col codebase\nTre iterazioni per avvicinarsi al risultato\nDevi riscrivere buona parte del codice"
+      },
+      "good": {
+        "label": "✅ Con contesto",
+        "content": "AI usa le stesse librerie del progetto\nSegue i pattern e i template già pronti\nOutput integrato al primo tentativo\nUna iterazione e si va avanti\nPiù tempo per costruire, meno per correggere"
+      }
+    },
+    {
+      "type": "simulated_output",
+      "prompt": "Crea un form di contatto. Stack: Next.js 15, Tailwind, Resend per le email, validazione con Zod.",
+      "output": "Ecco il form. Ho usato Resend come indicato, validazione Zod client-side e server-side, e ho mantenuto le classi Tailwind coerenti con il naming del resto del progetto.\n\nVuoi che aggiunga anche una notifica toast dopo l'invio?"
+    },
+    {
+      "type": "paragraph",
+      "text": "Una buona pratica quando cominci un nuovo progetto è farsi aiutare dall'AI stessa a creare un file di specifiche: lo stack scelto, le convenzioni di codice, i vincoli, le decisioni già prese. Basta chiedere: \"Crea un file PROJECT.md con le specifiche di questo progetto\" e compilarlo insieme nella prima sessione. Da quel momento, invece di ripetere ogni volta chi sei e cosa stai costruendo, incolli quel file nel primo prompt. L'AI parte già orientata — e il contesto utile non si spreca in ripetizioni. Strumenti come Cursor e Claude Code supportano questa idea con file dedicati (.cursorrules, CLAUDE.md) che vengono letti automaticamente ad ogni sessione."
+    },
+    {
+      "type": "paragraph",
+      "text": "C'è però un equilibrio da trovare. Troppo contesto è quasi peggio di nessuno: se incolli 400 righe di codice non pertinenti, l'AI fatica a trovare l'informazione che conta davvero. Il contesto utile è quello pertinente al task specifico — lo stack, i file rilevanti, i vincoli da rispettare. Non l'intero progetto. Impara a selezionare, non a riversare."
     },
     {
       "type": "callout",
       "variant": "key",
-      "text": "Sistema la stanza prima di parlare. I migliori vibe coder spendono più tempo sul contesto che sui prompt."
+      "text": "🔑 Prima di premere invio, chiediti: \"L'AI ha abbastanza informazioni per non dover indovinare?\" Se la risposta è no, aggiungi quella riga in più. È il gesto più piccolo col maggiore impatto."
     }
   ],
   "exercise": {
     "format": "fill_blank",
-    "prompt_template": "I grandi risultati nascono da un grande [BLANK] — non solo da un [BLANK] brillante.",
+    "prompt_template": "Più [BLANK] fornisci all'AI, meno sarà costretta a [BLANK] — e più il risultato sarà vicino a quello che hai in testa.",
     "blanks": [
       {
         "index": 0,
-        "correct_answers": ["contesto", "ambiente", "setup", "ecosistema"],
-        "hint_1": "Cosa circonda il prompt — file, regole, esempi?",
-        "hint_2": "È la stanza in cui l'AI entra ancora prima che tu apra bocca.",
-        "explanation": "La risposta è 'contesto' (o 'ambiente'). Il contesto definisce cosa è anche solo possibile produrre per l'AI."
+        "correct_answers": [
+          "contesto",
+          "il contesto",
+          "informazioni",
+          "le informazioni",
+          "dettagli",
+          "i dettagli",
+          "specifiche",
+          "le specifiche",
+          "dati",
+          "i dati",
+          "background",
+          "il background",
+          "elementi",
+          "info",
+          "le info",
+          "riferimenti",
+          "i riferimenti",
+          "indicazioni",
+          "le indicazioni",
+          "istruzioni"
+        ],
+        "hint_1": "Cosa manca all'AI quando non sa nulla del tuo progetto?",
+        "hint_2": "Una parola sola, inizia per 'c' — è quello che rende un prompt utile invece di generico.",
+        "explanation": "La risposta è 'contesto'. Senza di esso, l'AI lavora nel vuoto e deve fare supposizioni. Con il contesto giusto, produce output che si integra direttamente nel tuo progetto."
       },
       {
         "index": 1,
-        "correct_answers": ["prompt", "messaggio", "comando", "richiesta"],
-        "hint_1": "Qual è la singola frase che digiti in chat?",
-        "hint_2": "È la parte visibile — ma è solo un pezzo.",
-        "explanation": "La risposta è 'prompt'. Un prompt brillante in un contesto desolato dà comunque output debole. Prima il contesto, poi il prompt."
+        "correct_answers": [
+          "indovinare",
+          "tirare a indovinare",
+          "assumere",
+          "inventare",
+          "improvvisare",
+          "fare supposizioni",
+          "supporre",
+          "ipotizzare",
+          "presumere",
+          "fare ipotesi",
+          "fare assunzioni",
+          "immaginare",
+          "fare inferenze",
+          "intuire",
+          "interpretare",
+          "scegliere al posto tuo",
+          "decidere da sola",
+          "inventarsi qualcosa",
+          "inventarsi dettagli",
+          "compensare"
+        ],
+        "hint_1": "Cosa fa l'AI quando le mancano le informazioni?",
+        "hint_2": "Verbo che descrive il riempire i vuoti senza dati certi — quello che fa chiunque quando non sa abbastanza.",
+        "explanation": "La risposta è 'indovinare' (o 'assumere'). Quando l'AI non ha contesto, riempie i buchi con le sue scelte — che potrebbero non essere le tue."
       }
     ]
   },
   "outro": {
-    "recap": "Hai imparato che il contesto è la stanza, il prompt è la domanda. Sistema bene la stanza e anche domande semplici producono risposte forti.",
-    "next_prompt": "Prossima: una checklist da portare in tasca per ogni sessione."
+    "recap": "Il contesto non è optional — è la differenza tra un'AI che lavora per te e una che lavora nel vuoto. Poche righe in più nel prompt, o un file di specifiche ben tenuto, possono cambiare radicalmente il risultato.",
+    "next_prompt": "Prossima lezione: una checklist pratica per non dimenticare nulla prima di lanciare i tuoi prompt."
   }
 }

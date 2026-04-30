@@ -11,56 +11,105 @@
   "theory": [
     {
       "type": "paragraph",
-      "text": "When most people first try vibe coding, they instinctively prescribe steps: 'create a function, add a parameter, then loop through the array...' They're still thinking like they're writing the code themselves. That's the trap."
+      "text": "You want to add Google login to your app. How do you describe it to the AI? You have two paths in front of you, and one of them doesn't work.\n\nThe first: \"Create a login.tsx file, import the Supabase library, call signInWithOAuth with provider 'google', handle the response, save the token to localStorage, redirect to the dashboard.\"\n\nThe second: \"Add Google login. After signing in, the user should land on /dashboard. Show an error if something goes wrong.\"\n\nWhich one will get the better result? Almost always the second. And the reason is interesting."
     },
     {
       "type": "paragraph",
-      "text": "The shift is to describe the destination, not the route. You tell the AI what good looks like, and let it figure out how to get there. If the route is wrong, you correct it. But you don't draw the map upfront."
-    },
-    {
-      "type": "comparison_table",
-      "bad": {
-        "label": "Step-thinking",
-        "content": "Create a useState for email. Add an onChange. Validate with regex. Submit to /api/login..."
-      },
-      "good": {
-        "label": "Outcome-thinking",
-        "content": "I need a login form. Email + password. Show a friendly error if the credentials are wrong. Redirect to /dashboard on success."
-      }
-    },
-    {
-      "type": "example",
-      "label": "Before you prompt, answer 4 things",
-      "text": "Who is this for? What goes in, what comes out? What constraints exist (stack, performance)? What edge cases matter? Write that down — even one line each — before you open the chat."
+      "text": "The first description is a sequence of steps. It tells the AI HOW to do things. The problem is you're not an expert on the HOW — so your steps will often be wrong, incomplete, or simply different from how the AI would have done them better.\n\nThe second description is a result. It says WHAT must be true when the work is done. On the WHAT you're the only expert: you know what you want to happen. On the HOW, the AI usually knows more than you."
     },
     {
       "type": "callout",
       "variant": "tip",
-      "text": "If you can describe the result clearly, the AI will usually find a reasonable path to it. If you can't, no amount of prompting will save you."
+      "text": "💡 The WHAT vs HOW rule. You describe the WHAT. The AI handles the HOW. Flip them and you get lost."
+    },
+    {
+      "type": "comparison_table",
+      "bad": {
+        "label": "🚫 Step-thinking (avoid)",
+        "content": "\"Create file X.\"\n\"Import library Y.\"\n\"Call method Z.\"\n\"Save the token, redirect, ...\"\n30 seconds to read"
+      },
+      "good": {
+        "label": "✅ Outcome-thinking",
+        "content": "\"Add Google login.\"\n\"User lands on /dashboard.\"\n\"Show error if it fails.\"\n\n3 seconds to read"
+      }
+    },
+    {
+      "type": "simulated_output",
+      "prompt": "Create login.tsx, import Supabase, call signInWithOAuth, handle the response, save token...",
+      "output": "Sure thing. Hmm — wait, are you using Supabase Auth or NextAuth?\nAnd do you really want to save the token in localStorage? With\nSupabase, you usually use their session manager...\n\n(The AI is disambiguating your STEPS. You could have skipped this\nby describing the RESULT directly.)"
+    },
+    {
+      "type": "paragraph",
+      "text": "There's an important exception: when the steps actually matter. If you're doing something where the specific order is critical — like a database migration in three phases — describing the steps is correct. But that case is rare. For 90% of requests, describe the result."
+    },
+    {
+      "type": "callout",
+      "variant": "key",
+      "text": "🎯 In practice: before writing a prompt, ask yourself \"if this worked, what would be true?\". That's the sentence you have to prompt."
     }
   ],
   "exercise": {
     "format": "fill_blank",
-    "prompt_template": "Vibe coding works best when you describe the [BLANK] you want, not the [BLANK] to get there.",
+    "prompt_template": "A good prompt describes the [BLANK] you want, not the [BLANK] to get there. The AI is the expert on HOW; you on WHAT.",
     "blanks": [
       {
         "index": 0,
-        "correct_answers": ["outcome", "result", "goal", "destination", "outcomes"],
-        "hint_1": "Where do you want to end up?",
-        "hint_2": "It's the finish line — what 'done' looks like for the user.",
-        "explanation": "The answer is 'outcome' (or 'result'). You describe the destination. The AI picks the route."
+        "correct_answers": [
+          "outcome",
+          "the outcome",
+          "result",
+          "the result",
+          "goal",
+          "the goal",
+          "destination",
+          "the destination",
+          "what",
+          "the what",
+          "end goal",
+          "the end goal",
+          "objective",
+          "the objective",
+          "final result",
+          "end state",
+          "the end state",
+          "target",
+          "the target"
+        ],
+        "hint_1": "It's what becomes true when the work is done.",
+        "hint_2": "Think WHAT, not HOW. It's the part you're the expert on.",
+        "explanation": "The answer is 'outcome' (or 'result' / 'goal'). You're the expert on what must be true at the end — the AI is the expert on how to get there."
       },
       {
         "index": 1,
-        "correct_answers": ["steps", "instructions", "process", "path", "route"],
-        "hint_1": "What does a recipe spell out one by one?",
-        "hint_2": "It's the sequential 'first do this, then do that' breakdown.",
-        "explanation": "The answer is 'steps' (or 'instructions'). Step-by-step prescriptions over-constrain the AI and slow you down."
+        "correct_answers": [
+          "steps",
+          "the steps",
+          "stages",
+          "the stages",
+          "instructions",
+          "the instructions",
+          "details",
+          "the details",
+          "the technical steps",
+          "how",
+          "the how",
+          "path",
+          "the path",
+          "sequence",
+          "the sequence",
+          "moves",
+          "the moves",
+          "process",
+          "the process"
+        ],
+        "hint_1": "It's the detailed sequence of moves the lesson tells us NOT to describe.",
+        "hint_2": "Think HOW. It's the part you leave to the AI.",
+        "explanation": "The answer is 'steps' (or 'instructions'). On the steps you're often out of context — the AI knows more. Let it figure out how to reach the result you describe."
       }
     ]
   },
   "outro": {
-    "recap": "You learned to lead with outcomes. Describe the destination clearly, then let the AI navigate.",
-    "next_prompt": "Next: how to break a big outcome into bite-sized prompts."
+    "recap": "You learned to flip the perspective: the WHAT is yours, the HOW is the AI's. Describe what must be true at the end, not how to get there.",
+    "next_prompt": "Next lesson: what to do when the result you want is too big to fit in a single prompt."
   }
 }

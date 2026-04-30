@@ -4,52 +4,97 @@
   "order": 8,
   "title": "Libreria di pattern",
   "difficulty": "intermediate",
-  "estimated_minutes": 7,
+  "estimated_minutes": 5,
   "base_xp": 150,
   "difficulty_bonus_xp": 50,
   "icon": "/brand/lessons/prompt-08.svg",
   "theory": [
     {
       "type": "paragraph",
-      "text": "Dopo qualche settimana di vibe coding, noterai che gli stessi prompt funzionano e tornano utili più e più volte. Il prompt 'piano-prima'. Il prompt di security review. Il prompt 'mostrami tre approcci'. Non riscriverli ogni volta — salvali."
-    },
-    {
-      "type": "example",
-      "label": "Cinque pattern da tenere",
-      "text": "1. PIANO: 'Prima di scrivere codice, abbozza file, signature e flusso dati. Aspetta la mia approvazione.'\n2. REVIEW: 'Rivedi questo codice per sicurezza, performance, edge case. Sii specifico.'\n3. CONFRONTO: 'Mostrami tre approcci con tradeoff su manutenibilità e complessità.'\n4. SPIEGA: 'Spiegami questo errore in parole semplici. Prima la causa, poi 2-3 fix.'\n5. REFACTOR: 'Rifattorizza per leggibilità. Stesso comportamento. Funzioni più piccole. Naming migliore.'"
+      "text": "Ogni volta che risolvi un problema interessante con l'AI, stai per perdere qualcosa. L'approccio che hai trovato — il prompt preciso, la struttura che ha funzionato, la sequenza che ha prodotto il risultato giusto — svanisce nella chat. La prossima volta che incontri lo stesso problema, ricomincia da capo. I vibe coder più produttivi non lavorano così: accumulano pattern. Ogni soluzione funzionante diventa un template riutilizzabile per il progetto successivo."
     },
     {
       "type": "paragraph",
-      "text": "Tienili in un file di note, in uno snippet di Raycast, o in un blocco di rules di Cursor. Dopo un po', chiedi alla stessa AI: 'Riassumi cosa abbiamo appena fatto e generami un prompt riutilizzabile per fare la stessa cosa in un altro progetto.' La tua libreria cresce da sola."
+      "text": "Il modo più rapido per costruire la libreria è il reverse meta-prompting: dopo aver risolto un problema, chiedi all'AI di astrarlo. \"Riassumi cosa abbiamo fatto e generami un prompt template riutilizzabile per fare la stessa cosa in un altro progetto.\" L'AI produce un template con placeholder — [STACK], [ENTITÀ], [VINCOLO] — che incolli nella libreria e adatti in secondi. Non devi pensarci tu: lo fa lei."
+    },
+    {
+      "type": "simulated_output",
+      "prompt": "Abbiamo appena implementato l'autenticazione magic link con Supabase. Generami un prompt template riutilizzabile per fare la stessa cosa in futuri progetti, con placeholder per le variabili.",
+      "output": "Prompt template — Auth magic link:\n\n\"Implementa autenticazione con magic link. Stack: [FRAMEWORK] + [AUTH_PROVIDER]. Redirect a [REDIRECT_PATH] dopo il login. NON toccare [FILE_DA_NON_TOCCARE]. Solo il codice, un commento per ogni funzione.\"\n\nPlaceholder: FRAMEWORK, AUTH_PROVIDER, REDIRECT_PATH, FILE_DA_NON_TOCCARE."
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "text": "💡 Organizza la libreria per categoria, non per progetto: Setup iniziale, Debug, Refactor, Code review, Documentazione, Test. Le categorie trasversali si riusano su ogni codebase — quelle legate a un singolo progetto, quasi mai."
+    },
+    {
+      "type": "paragraph",
+      "text": "Nel 2025-2026 su YouTube è esploso un fenomeno inaspettato: le persone hanno iniziato a vendere le proprie librerie di prompt e file AGENTS.md come prodotti. Canali dedicati confrontano cursor rules come se fossero preset per sintetizzatori — alcuni pacchetti di pattern collaudati arrivano a migliaia di download. Non è solo un trend: è la conferma che una buona libreria di pattern ha un valore reale e trasferibile. Il tempo che investi a costruirla non serve solo a te."
+    },
+    {
+      "type": "paragraph",
+      "text": "Una libreria mal tenuta è peggio di nessuna libreria. Pattern scritti frettolosamente, mai testati su un secondo progetto, danno un falso senso di sicurezza. Tienila piccola e verificata: meglio dieci template che funzionano sempre che cinquanta che funzionano a volte. Ogni pattern che aggiungi dovrebbe aver già salvato almeno mezz'ora su un progetto reale."
     },
     {
       "type": "callout",
       "variant": "key",
-      "text": "I grandi vibe coder non sono grandi perché pensano più veloce. Sono grandi perché non partono da zero ogni volta."
+      "text": "🔑 Dopo ogni problema risolto in modo interessante, trenta secondi: \"Generami un prompt template riutilizzabile per questo.\" È il gesto con il miglior rapporto sforzo/rendimento dell'intero corso."
     }
   ],
   "exercise": {
     "format": "fill_blank",
-    "prompt_template": "Salva i prompt che funzionano come [BLANK] riutilizzabili e fatti aiutare dall'AI a costruire la tua [BLANK] nel tempo.",
+    "prompt_template": "Il [BLANK] meta-prompting consiste nel chiedere all'AI di astrarre una soluzione appena trovata in un [BLANK] riutilizzabile per progetti futuri.",
     "blanks": [
       {
         "index": 0,
-        "correct_answers": ["template", "modelli", "schemi", "snippet"],
-        "hint_1": "Forme già pronte da riutilizzare?",
-        "hint_2": "Sono gli scheletri di prompt — riempi gli spazi, manda.",
-        "explanation": "La risposta è 'template' (o 'modelli'). I template trasformano vittorie singole in workflow ripetibili."
+        "correct_answers": [
+          "reverse",
+          "il reverse",
+          "inverso",
+          "l'inverso",
+          "contrario",
+          "al contrario",
+          "opposto",
+          "retrospettivo",
+          "a ritroso",
+          "di ritorno",
+          "retroattivo",
+          "post-hoc",
+          "a posteriori",
+          "retrospective",
+          "backward"
+        ],
+        "hint_1": "La tecnica inverte il flusso: invece di usare un template per scrivere, usi la soluzione già scritta per generare il template. In quale direzione vai?",
+        "hint_2": "Parola inglese che significa 'al contrario' — si dice anche della marcia dell'auto.",
+        "explanation": "La risposta è 'reverse'. Il reverse meta-prompting inverte il flusso: non si parte dal template per arrivare al codice, ma dal codice funzionante per arrivare al template."
       },
       {
         "index": 1,
-        "correct_answers": ["libreria", "raccolta", "collezione", "biblioteca"],
-        "hint_1": "Una scorta personale che cresce — cos'è?",
-        "hint_2": "È il posto dove tieni insieme tutti i tuoi prompt riutilizzabili.",
-        "explanation": "La risposta è 'libreria' (o 'raccolta'). La tua libreria è un asset di lungo periodo che si accumula — ogni nuovo pattern che aggiungi ti farà risparmiare tempo per sempre."
+        "correct_answers": [
+          "template",
+          "un template",
+          "il template",
+          "pattern",
+          "un pattern",
+          "il pattern",
+          "modello",
+          "un modello",
+          "il modello",
+          "schema",
+          "uno schema",
+          "lo schema",
+          "struttura",
+          "una struttura",
+          "la struttura"
+        ],
+        "hint_1": "Cosa ottieni alla fine — un file con placeholder da riempire la prossima volta?",
+        "hint_2": "Parola inglese entrata nel lessico tech — è il modello da cui partirai ogni volta.",
+        "explanation": "La risposta è 'template'. Il risultato del reverse meta-prompting è un prompt con placeholder che puoi adattare rapidamente — il mattone base della tua libreria di pattern."
       }
     ]
   },
   "outro": {
-    "recap": "Hai chiuso il Path 2. Conosci l'anatomia di un prompt, sai impostare ruoli e vincoli, sai concatenare, sai gestire le versioni, e sai costruire una libreria.",
-    "next_prompt": "Altri path stanno arrivando. Per ora: vai a vibe-codare qualcosa di vero."
+    "recap": "Una libreria di pattern è il moltiplicatore di produttività più sottovalutato del vibe coding: ogni template costruito oggi risparmia tempo su tutti i progetti futuri.",
+    "next_prompt": "Hai completato Path 2. Ora hai gli strumenti per costruire qualsiasi cosa — un prompt alla volta."
   }
 }

@@ -1,0 +1,101 @@
+{
+  "id": "prompt-01",
+  "path_slug": "prompt",
+  "order": 1,
+  "title": "Anatomia di un buon prompt",
+  "difficulty": "beginner",
+  "estimated_minutes": 5,
+  "base_xp": 100,
+  "difficulty_bonus_xp": 0,
+  "icon": "/brand/lessons/prompt-01.svg",
+  "theory": [
+    {
+      "type": "paragraph",
+      "text": "Un prompt non è una ricerca su Google. Non è nemmeno un comando da terminale. È più vicino a un brief che daresti a un collaboratore esperto: più è preciso su cosa vuoi, per chi, con quali limiti, più quello che ricevi è utilizzabile senza correzioni. I prompt vaghi non sono sbagliati in assoluto — ma costringono l'AI a inventare le parti che hai lasciato in bianco. E le parti inventate sono esattamente quelle che poi devi riscrivere."
+    },
+    {
+      "type": "paragraph",
+      "text": "Un prompt ben costruito ha quattro ingredienti. Il primo è il contesto: cosa stai costruendo e in quale progetto si inserisce questo task. Il secondo è il task preciso: non \"aggiungi l'autenticazione\" ma \"implementa il login con Google usando Supabase Auth, redirect a /dashboard dopo il login\". Il terzo è il vincolo: stack tecnologico, librerie già in uso, e — crucialmente — cosa non deve essere toccato. Il quarto è il formato dell'output: vuoi codice pronto da incollare? Un piano prima dell'implementazione? Una spiegazione per ogni sezione? L'AI non lo sa se non glielo dici."
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "text": "💡 Pensa al prompt come a un brief per un collaboratore molto capace ma senza memoria. Includi il contesto che lui non può avere — non solo le istruzioni meccaniche."
+    },
+    {
+      "type": "simulated_output",
+      "prompt": "Aggiungi un form di iscrizione alla newsletter. Stack: Next.js 15, Resend per le email, Zod per la validazione. Solo il componente frontend — la route API la gestisco io. Metti una riga di commento per ogni sezione del codice.",
+      "output": "Ecco il componente. Ho usato Zod per la validazione client-side come indicato, rimosso qualsiasi logica di invio (gestita dalla tua route), e commentato ogni sezione.\n\nUna cosa: non ho aggiunto un messaggio di errore personalizzato per l'email non valida — te lo inserisco se vuoi."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "text": "⚠️ Non tutti i prompt hanno bisogno di tutti e quattro gli ingredienti. Ma ogni ingrediente che manca è una decisione che prende l'AI al posto tuo — e che potresti non condividere."
+    },
+    {
+      "type": "paragraph",
+      "text": "Prompt corti funzionano benissimo quando il contesto è già stabilito: dentro una sessione attiva, con un file di specifiche caricato, o per correzioni piccole. L'anatomia completa serve quando apri una sessione nuova su qualcosa di non banale. Il test pratico è semplice: c'è qualcosa che l'AI dovrà inventare perché non glielo ho detto? Se sì, aggiungilo."
+    },
+    {
+      "type": "callout",
+      "variant": "key",
+      "text": "🔑 Quattro domande per ogni prompt che conta: cosa sto costruendo, cosa deve fare con precisione, cosa non può toccare, come voglio che mi risponda."
+    }
+  ],
+  "exercise": {
+    "format": "fill_blank",
+    "prompt_template": "Prima di inviare un prompt, verifica che ci siano: il [BLANK] del progetto, il task preciso, i [BLANK] tecnologici e il formato dell'output.",
+    "blanks": [
+      {
+        "index": 0,
+        "correct_answers": [
+          "contesto",
+          "il contesto",
+          "background",
+          "il background",
+          "scenario",
+          "lo scenario",
+          "quadro",
+          "il quadro",
+          "riferimento",
+          "il riferimento",
+          "inquadramento",
+          "situazione",
+          "la situazione",
+          "cornice",
+          "la cornice"
+        ],
+        "hint_1": "Cosa deve sapere l'AI sul tuo progetto prima ancora di capire cosa gli chiedi?",
+        "hint_2": "Inizia per 'c' — è quello che manca sempre ai prompt scritti di fretta.",
+        "explanation": "La risposta è 'contesto'. Senza di esso, l'AI non sa dove si inserisce il task e deve fare supposizioni sul progetto circostante."
+      },
+      {
+        "index": 1,
+        "correct_answers": [
+          "vincoli",
+          "i vincoli",
+          "limiti",
+          "i limiti",
+          "restrizioni",
+          "le restrizioni",
+          "paletti",
+          "i paletti",
+          "parametri",
+          "i parametri",
+          "requisiti",
+          "i requisiti",
+          "regole",
+          "le regole",
+          "condizioni"
+        ],
+        "hint_1": "Come si chiamano le cose che l'AI non deve fare o le librerie che deve usare?",
+        "hint_2": "Inizia per 'v' — sono i confini entro cui l'AI deve lavorare.",
+        "explanation": "La risposta è 'vincoli'. Definirli esplicitamente — stack, librerie, cosa non toccare — riduce drasticamente gli output incompatibili con il progetto."
+      }
+    ]
+  },
+  "outro": {
+    "recap": "Un prompt efficace ha quattro ingredienti: contesto, task preciso, vincoli e formato dell'output. Ogni elemento che manca diventa una scelta dell'AI al posto tuo.",
+    "next_prompt": "Prossima lezione: il primo ingrediente da padroneggiare — dare un ruolo all'AI e cambiare la qualità delle risposte."
+  }
+}

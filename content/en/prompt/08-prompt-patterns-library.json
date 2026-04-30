@@ -4,52 +4,97 @@
   "order": 8,
   "title": "Prompt patterns library",
   "difficulty": "intermediate",
-  "estimated_minutes": 7,
+  "estimated_minutes": 5,
   "base_xp": 150,
   "difficulty_bonus_xp": 50,
   "icon": "/brand/lessons/prompt-08.svg",
   "theory": [
     {
       "type": "paragraph",
-      "text": "After a few weeks of vibe coding, you'll notice the same prompts work over and over. The plan-first prompt. The security-review prompt. The 'show me three approaches' prompt. Don't rewrite them every time — save them."
-    },
-    {
-      "type": "example",
-      "label": "Five patterns worth keeping",
-      "text": "1. PLAN: 'Before writing code, outline files, signatures, and data flow. Wait for my approval.'\n2. REVIEW: 'Review this code for security, performance, edge cases. Be specific.'\n3. COMPARE: 'Show me three approaches with tradeoffs in maintainability and complexity.'\n4. EXPLAIN: 'Explain this error in plain language. Root cause first, then 2-3 fixes.'\n5. REFACTOR: 'Refactor for readability. Same behavior. Smaller functions. Better names.'"
+      "text": "Every time you solve an interesting problem with the AI, you're about to lose something. The approach you found — the precise prompt, the structure that worked, the sequence that produced the right result — vanishes into the chat. Next time you hit the same problem, you start from scratch. The most productive vibe coders don't work that way: they accumulate patterns. Every working solution becomes a reusable template for the next project."
     },
     {
       "type": "paragraph",
-      "text": "Keep them in a notes file, a Raycast snippet, or a Cursor rules block. After a while, ask the AI itself: 'Summarize what we just did and write me a reusable prompt for the same task in another project.' Your library grows on its own."
+      "text": "The fastest way to build the library is reverse meta-prompting: after solving a problem, ask the AI to abstract it. \"Summarize what we did and generate a reusable prompt template for doing the same thing in another project.\" The AI produces a template with placeholders — [STACK], [ENTITY], [CONSTRAINT] — that you paste into your library and adapt in seconds. You don't have to think about it: it does it for you."
+    },
+    {
+      "type": "simulated_output",
+      "prompt": "We just implemented magic link authentication with Supabase. Generate a reusable prompt template for doing the same thing in future projects, with placeholders for the variables.",
+      "output": "Prompt template — Magic link auth:\n\n\"Implement magic link authentication. Stack: [FRAMEWORK] + [AUTH_PROVIDER]. Redirect to [REDIRECT_PATH] after login. DO NOT touch [FILE_NOT_TO_TOUCH]. Code only, one comment per function.\"\n\nPlaceholders: FRAMEWORK, AUTH_PROVIDER, REDIRECT_PATH, FILE_NOT_TO_TOUCH."
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "text": "💡 Organize the library by category, not by project: Initial setup, Debug, Refactor, Code review, Documentation, Tests. Cross-cutting categories work on any codebase — project-specific ones almost never do."
+    },
+    {
+      "type": "paragraph",
+      "text": "In 2025-2026, an unexpected phenomenon exploded on YouTube: people started selling their prompt libraries and AGENTS.md files as products. Dedicated channels compare cursor rules like synthesizer presets — some battle-tested pattern packs rack up thousands of downloads. It's not just a trend: it's confirmation that a good pattern library has real, transferable value. The time you invest in building it doesn't just help you."
+    },
+    {
+      "type": "paragraph",
+      "text": "A poorly maintained library is worse than no library at all. Templates written in a rush, never tested on a second project, give a false sense of security. Keep it small and verified: ten templates that always work beat fifty that sometimes do. Every pattern you add should have already saved at least half an hour on a real project."
     },
     {
       "type": "callout",
       "variant": "key",
-      "text": "Great vibe coders aren't great because they think faster. They're great because they don't start from scratch."
+      "text": "🔑 After every interesting problem solved, thirty seconds: \"Generate a reusable prompt template for this.\" It's the highest effort-to-return ratio action in the entire course."
     }
   ],
   "exercise": {
     "format": "fill_blank",
-    "prompt_template": "Save the prompts that work as reusable [BLANK], and ask the AI to help you build the [BLANK] over time.",
+    "prompt_template": "[BLANK] meta-prompting means asking the AI to abstract a solution you just found into a reusable [BLANK] for future projects.",
     "blanks": [
       {
         "index": 0,
-        "correct_answers": ["templates", "patterns", "snippets", "blueprints"],
-        "hint_1": "Pre-made forms you can drop in?",
-        "hint_2": "They're the prompt skeletons — fill the blanks, send.",
-        "explanation": "The answer is 'templates' (or 'patterns'). Templates turn one-off wins into repeatable workflow."
+        "correct_answers": [
+          "reverse",
+          "the reverse",
+          "backward",
+          "inverse",
+          "retrospective",
+          "inverted",
+          "backwards",
+          "reversed",
+          "back",
+          "opposite",
+          "contrary",
+          "post-hoc",
+          "retroactive",
+          "in reverse",
+          "going back"
+        ],
+        "hint_1": "The technique reverses the flow: instead of using a template to write, you use the written solution to generate the template. Which direction does that suggest?",
+        "hint_2": "The word means 'in the opposite direction' — like a car gear.",
+        "explanation": "The answer is 'reverse'. Reverse meta-prompting inverts the flow: you don't start from a template to reach code, but from working code to reach the template."
       },
       {
         "index": 1,
-        "correct_answers": ["library", "collection", "set", "toolkit"],
-        "hint_1": "A growing personal stash of these — what is it?",
-        "hint_2": "It's the place you keep all your reusable prompts together.",
-        "explanation": "The answer is 'library' (or 'collection'). Your library is a long-term asset that compounds — every new pattern you add saves time forever."
+        "correct_answers": [
+          "template",
+          "a template",
+          "the template",
+          "pattern",
+          "a pattern",
+          "the pattern",
+          "model",
+          "a model",
+          "the model",
+          "schema",
+          "a schema",
+          "framework",
+          "a framework",
+          "structure",
+          "a structure"
+        ],
+        "hint_1": "What do you get at the end — a file with placeholders to fill in next time?",
+        "hint_2": "It's the 'mould' you'll start from every time — often used as an English loanword.",
+        "explanation": "The answer is 'template'. The output of reverse meta-prompting is a prompt with placeholders you can quickly adapt — the building block of your pattern library."
       }
     ]
   },
   "outro": {
-    "recap": "You finished Path 2. You know the anatomy of a prompt, how to set roles and constraints, how to chain, how to handle versions, and how to build a library.",
-    "next_prompt": "More paths are coming. For now: go vibe-code something real."
+    "recap": "A pattern library is the most underrated productivity multiplier in vibe coding: every template you build today saves time on every future project.",
+    "next_prompt": "You've completed Path 2. You now have the tools to build anything — one prompt at a time."
   }
 }

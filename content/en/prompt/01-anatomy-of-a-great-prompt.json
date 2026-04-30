@@ -1,0 +1,101 @@
+{
+  "id": "prompt-01",
+  "path_slug": "prompt",
+  "order": 1,
+  "title": "Anatomy of a great prompt",
+  "difficulty": "beginner",
+  "estimated_minutes": 5,
+  "base_xp": 100,
+  "difficulty_bonus_xp": 0,
+  "icon": "/brand/lessons/prompt-01.svg",
+  "theory": [
+    {
+      "type": "paragraph",
+      "text": "A prompt isn't a Google search. It isn't a terminal command either. It's closer to a brief you'd give a skilled collaborator: the more precise it is about what you want, for whom, and with what constraints, the more usable the result — without corrections. Vague prompts aren't inherently wrong, but they force the AI to invent the parts you left blank. And the invented parts are exactly what you'll end up rewriting."
+    },
+    {
+      "type": "paragraph",
+      "text": "A well-built prompt has four ingredients. The first is context: what you're building and where this task fits in the project. The second is the precise task: not \"add authentication\" but \"implement Google login using Supabase Auth, redirect to /dashboard after login\". The third is the constraint: tech stack, libraries already in use, and — crucially — what must not be touched. The fourth is the output format: do you want code ready to paste? A plan before implementation? A comment on each section? The AI doesn't know unless you say so."
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "text": "💡 Think of the prompt as a brief for a very capable collaborator with no memory. Include the context they can't have — not just the mechanical instructions."
+    },
+    {
+      "type": "simulated_output",
+      "prompt": "Add a newsletter signup form. Stack: Next.js 15, Resend for emails, Zod for validation. Frontend component only — I'll handle the API route myself. Add one comment line per code section.",
+      "output": "Here's the component. I used Zod for client-side validation as specified, removed any sending logic (handled by your route), and commented each section.\n\nOne thing: I didn't add a custom error message for invalid email — I can add it if you want."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "text": "⚠️ Not every prompt needs all four ingredients. But every missing ingredient is a decision the AI makes for you — one you might not agree with."
+    },
+    {
+      "type": "paragraph",
+      "text": "Short prompts work great when context is already established: inside an active session, with a specs file loaded, or for small fixes. The full anatomy is most useful when you open a new session on something non-trivial. The practical test is simple: is there anything the AI will have to invent because I didn't tell it? If yes, add it."
+    },
+    {
+      "type": "callout",
+      "variant": "key",
+      "text": "🔑 Four questions for every prompt that matters: what am I building, what exactly does it need to do, what can't it touch, how do I want it to respond."
+    }
+  ],
+  "exercise": {
+    "format": "fill_blank",
+    "prompt_template": "Before sending a prompt, make sure it includes: the [BLANK] of the project, the precise task, the technical [BLANK], and the expected output format.",
+    "blanks": [
+      {
+        "index": 0,
+        "correct_answers": [
+          "context",
+          "the context",
+          "background",
+          "the background",
+          "scenario",
+          "the scenario",
+          "framing",
+          "the framing",
+          "overview",
+          "the overview",
+          "situation",
+          "the situation",
+          "setting",
+          "the setting",
+          "picture"
+        ],
+        "hint_1": "What does the AI need to know about your project before it can understand what you're asking?",
+        "hint_2": "Starts with 'c' — it's what's always missing from prompts written in a hurry.",
+        "explanation": "The answer is 'context'. Without it, the AI doesn't know where the task fits and has to make assumptions about the surrounding project."
+      },
+      {
+        "index": 1,
+        "correct_answers": [
+          "constraints",
+          "the constraints",
+          "limits",
+          "the limits",
+          "restrictions",
+          "the restrictions",
+          "boundaries",
+          "the boundaries",
+          "parameters",
+          "the parameters",
+          "requirements",
+          "the requirements",
+          "rules",
+          "the rules",
+          "conditions"
+        ],
+        "hint_1": "What do you call the things the AI must not do, or the libraries it must use?",
+        "hint_2": "Starts with 'c' — they're the boundaries within which the AI must work.",
+        "explanation": "The answer is 'constraints'. Defining them explicitly — stack, libraries, what not to touch — dramatically reduces output that's incompatible with your project."
+      }
+    ]
+  },
+  "outro": {
+    "recap": "An effective prompt has four ingredients: context, precise task, constraints, and output format. Every missing element becomes a decision the AI makes instead of you.",
+    "next_prompt": "Next lesson: the first ingredient to master — giving the AI a role and changing the quality of its responses."
+  }
+}

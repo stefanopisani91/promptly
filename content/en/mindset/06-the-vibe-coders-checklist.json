@@ -1,0 +1,100 @@
+{
+  "id": "mindset-06",
+  "path_slug": "mindset",
+  "order": 6,
+  "title": "The vibe coder's checklist",
+  "difficulty": "beginner",
+  "estimated_minutes": 5,
+  "base_xp": 100,
+  "difficulty_bonus_xp": 0,
+  "icon": "/brand/lessons/mindset-06.svg",
+  "theory": [
+    {
+      "type": "paragraph",
+      "text": "Beginners tend to skip straight to the prompt. Open the editor, type, wait. Sometimes it works. More often it doesn't — and the reason isn't the model, it's the process. Vibe coders who get reliable results carry a small mental checklist: three questions to answer before writing, two things to do after receiving the response. It's not bureaucracy — it's how you avoid wasting ten sessions on something that could have gone right on the first try."
+    },
+    {
+      "type": "paragraph",
+      "text": "Before every new session, pause on three questions: What exactly does this feature need to do? — not vaguely, but with a precise input and output. Are there constraints the AI can't know on its own? — stack, libraries already in use, patterns already adopted. What should it not touch? — the parts that already work and must not be rewritten. If you can answer all three before opening the prompt, what you write will already be far more targeted."
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "text": "💡 Before generating code, ask for a plan. \"Describe how you'd structure this feature — files involved, main logic. Don't write code yet.\" A 10-line text plan saves hours of debugging."
+    },
+    {
+      "type": "simulated_output",
+      "prompt": "Before implementing: describe how you'd structure an email notification system for new orders. Files involved, main logic. Wait before writing code.",
+      "output": "Proposed structure:\n- /lib/emails/order-notification.ts → template and sending logic\n- /api/webhooks/new-order.ts → trigger after order creation\n- Would use Resend, already configured in the project\n\nKey detail: the notification should only fire if payment is confirmed, not at the moment the order is created. Shall I confirm before proceeding?"
+    },
+    {
+      "type": "paragraph",
+      "text": "When the AI returns code, the checklist isn't done — it's halfway. Before moving on: test immediately, don't put it off. Skim the diff, even just diagonally — you're looking for something unexpected, a file that wasn't supposed to be touched, a dependency quietly added. If everything holds up, commit. One commit per working step is the safety net that lets you take bigger risks on the next one."
+    },
+    {
+      "type": "paragraph",
+      "text": "The checklist is a tool, not a ritual. For small corrections — \"move this button to the right\", \"change the color of this text\" — skipping it is the right call. It's worth pausing only when a session has real scope: a new feature, a refactor, an integration. Not every single prompt."
+    },
+    {
+      "type": "callout",
+      "variant": "key",
+      "text": "🔑 Before every session that matters: what it needs to do, what it must not touch, show me the plan first. After: test, skim the diff, commit. That's all."
+    }
+  ],
+  "exercise": {
+    "format": "fill_blank",
+    "prompt_template": "Before asking the AI to write code, always ask for a [BLANK] first — it saves you hours of [BLANK].",
+    "blanks": [
+      {
+        "index": 0,
+        "correct_answers": [
+          "plan",
+          "a plan",
+          "the plan",
+          "blueprint",
+          "a blueprint",
+          "outline",
+          "an outline",
+          "draft",
+          "a draft",
+          "structure",
+          "a structure",
+          "proposal",
+          "a proposal",
+          "overview",
+          "an overview"
+        ],
+        "hint_1": "What do you ask for before someone starts building something complex?",
+        "hint_2": "One word, starts with 'p' — it's what you do before you act.",
+        "explanation": "The answer is 'plan'. Asking for a plan before code is the single most effective move in the loop: it stops misunderstandings before they become bugs."
+      },
+      {
+        "index": 1,
+        "correct_answers": [
+          "debugging",
+          "debug",
+          "rewrites",
+          "corrections",
+          "iterations",
+          "attempts",
+          "rework",
+          "fixes",
+          "back-and-forth",
+          "wasted time",
+          "time",
+          "revisions",
+          "adjustments",
+          "troubleshooting",
+          "headaches"
+        ],
+        "hint_1": "What's waiting for you if you skip the plan and the code goes wrong?",
+        "hint_2": "The activity you do when something doesn't work and you're hunting for the reason.",
+        "explanation": "The answer is 'debugging' (or 'rewrites', 'corrections'). A preventive plan dramatically reduces the time spent chasing errors in generated code."
+      }
+    ]
+  },
+  "outro": {
+    "recap": "The vibe coder's checklist is simple: three questions before every session, a plan before the code, test and commit after every step that works.",
+    "next_prompt": "Path 1 complete. Next stop: Path 2 — we start building truly effective prompts, beginning with what makes them work from the inside."
+  }
+}

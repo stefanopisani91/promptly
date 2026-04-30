@@ -1,0 +1,100 @@
+{
+  "id": "mindset-06",
+  "path_slug": "mindset",
+  "order": 6,
+  "title": "La checklist del vibe coder",
+  "difficulty": "beginner",
+  "estimated_minutes": 5,
+  "base_xp": 100,
+  "difficulty_bonus_xp": 0,
+  "icon": "/brand/lessons/mindset-06.svg",
+  "theory": [
+    {
+      "type": "paragraph",
+      "text": "Chi inizia con il vibe coding tende a saltare tutto direttamente al prompt. Apre l'editor, scrive, aspetta. A volte funziona. Più spesso no — e il motivo non è il modello, è il processo. I vibe coder che ottengono risultati affidabili hanno in testa una piccola checklist: tre domande da farsi prima di scrivere, due cose da fare dopo aver ricevuto la risposta. Non è burocrazia — è il modo in cui si evita di sprecare dieci sessioni su qualcosa che poteva andare dritto al primo colpo."
+    },
+    {
+      "type": "paragraph",
+      "text": "Prima di ogni sessione nuova, fermati un minuto su tre domande: Cosa deve fare esattamente questa funzionalità? — non in modo vago, ma con un input e un output precisi. Ci sono vincoli che l'AI non può sapere da sola? — stack, librerie in uso, pattern già adottati. Cosa non deve toccare? — i pezzi che già funzionano e non devono essere riscritti. Se riesci a rispondere a tutte e tre prima di aprire il prompt, quello che scriverai sarà già molto più mirato."
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "text": "💡 Prima di generare codice, chiedi un piano. \"Descrivimi come struttureresti questa funzionalità — file coinvolti, logica principale. Aspetta prima di scrivere codice.\" Un piano da 10 righe di testo ti fa risparmiare ore di debug."
+    },
+    {
+      "type": "simulated_output",
+      "prompt": "Prima di implementare: descrivimi come struttureresti un sistema di notifiche email per i nuovi ordini. File coinvolti, logica principale. Aspetta prima di scrivere codice.",
+      "output": "Struttura proposta:\n- /lib/emails/order-notification.ts → template e logica di invio\n- /api/webhooks/new-order.ts → trigger dopo la creazione ordine\n- Userebbe Resend, già configurato nel progetto\n\nNodo critico: la notifica va inviata solo se il pagamento è confermato, non al momento dell'ordine. Confermo prima di procedere?"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando l'AI ti restituisce il codice, la checklist non è finita — è a metà. Prima di andare avanti: testa subito, non rimandare. Scorri il diff, anche solo in diagonale — cerchi qualcosa di inatteso, un file che non doveva essere toccato, una dipendenza aggiunta di nascosto. Se tutto regge, fai un commit. Un commit per ogni passo funzionante è la rete di sicurezza che ti permette di osare di più nel passo successivo."
+    },
+    {
+      "type": "paragraph",
+      "text": "La checklist è uno strumento, non un rito. Per correzioni piccole — \"sposta questo bottone a destra\", \"cambia il colore di questo testo\" — saltarla è la scelta giusta. Vale la pena fermarsi solo quando la sessione ha una portata reale: una funzionalità nuova, un refactor, un'integrazione. Non ogni singolo prompt."
+    },
+    {
+      "type": "callout",
+      "variant": "key",
+      "text": "🔑 Prima di ogni sessione che conta: cosa deve fare, cosa non deve toccare, mostrami prima il piano. Dopo: testa, scorri il diff, committa. È tutto."
+    }
+  ],
+  "exercise": {
+    "format": "fill_blank",
+    "prompt_template": "Prima di chiedere all'AI di scrivere codice, chiedi sempre un [BLANK]: ti fa risparmiare ore di [BLANK].",
+    "blanks": [
+      {
+        "index": 0,
+        "correct_answers": [
+          "piano",
+          "un piano",
+          "il piano",
+          "plan",
+          "un plan",
+          "bozza",
+          "una bozza",
+          "schema",
+          "uno schema",
+          "struttura",
+          "una struttura",
+          "outline",
+          "un outline",
+          "proposta",
+          "una proposta"
+        ],
+        "hint_1": "Cosa chiedi prima che qualcuno inizi a costruire qualcosa di complesso?",
+        "hint_2": "Una parola sola, inizia per 'p' — è quello che fai prima di agire.",
+        "explanation": "La risposta è 'piano'. Chiedere un piano prima del codice è il singolo gesto più efficace del loop: blocca i malintesi prima che diventino bug."
+      },
+      {
+        "index": 1,
+        "correct_answers": [
+          "debug",
+          "riscritture",
+          "correzioni",
+          "iterazioni",
+          "tentativi",
+          "problemi",
+          "errori",
+          "lavoro inutile",
+          "tempo",
+          "lavoro sprecato",
+          "revisioni",
+          "aggiustamenti",
+          "fix",
+          "riparazioni",
+          "interventi"
+        ],
+        "hint_1": "Cosa ti aspetta se salti il piano e il codice va storto?",
+        "hint_2": "Attività che fai quando qualcosa non funziona e cerchi il perché.",
+        "explanation": "La risposta è 'debug' (o 'riscritture', 'correzioni'). Un piano preventivo riduce drasticamente il tempo passato a cercare errori nel codice generato."
+      }
+    ]
+  },
+  "outro": {
+    "recap": "La checklist del vibe coder è semplice: tre domande prima di ogni sessione, un piano prima del codice, test e commit dopo ogni passo che funziona.",
+    "next_prompt": "Path 1 completato. Prossima fermata: Path 2 — iniziamo a costruire prompt davvero efficaci, partendo da come sono fatti dentro."
+  }
+}

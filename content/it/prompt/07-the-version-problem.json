@@ -4,52 +4,101 @@
   "order": 7,
   "title": "Il problema della versione",
   "difficulty": "intermediate",
-  "estimated_minutes": 6,
+  "estimated_minutes": 5,
   "base_xp": 150,
   "difficulty_bonus_xp": 50,
   "icon": "/brand/lessons/prompt-07.svg",
   "theory": [
     {
       "type": "paragraph",
-      "text": "L'AI è stata addestrata su uno snapshot del mondo. Quello snapshot ha una data — il knowledge cutoff. Tutto ciò che è cambiato dopo, per il modello non esiste: nuove versioni dei framework, nuove API, metodi deprecati, sintassi fresca."
+      "text": "Chiedi all'AI di aggiungere una route in Next.js. Lei scrive il codice usando il Pages Router — tu stai usando l'App Router di Next.js 15. Chiedi di configurare Tailwind: lei usa la sintassi di v3, tu hai già v4. L'AI non ha sbagliato — ha usato quello che conosce meglio, che spesso è la versione più diffusa al momento del suo training, non quella che usi tu. È il problema della versione, e si risolve con una parola."
     },
     {
       "type": "paragraph",
-      "text": "Quando non fissi una versione, l'AI fa una media tra anni diversi. Ti ritrovi codice che sembra plausibile ma usa pattern di Next.js 13 in un progetto Next.js 15, oppure un'API di libreria rinominata l'ultimo trimestre. La build si rompe, ci perdi un'ora, dài la colpa all'AI. Il vero fix è a monte: dichiarare la versione."
-    },
-    {
-      "type": "example",
-      "label": "Fissa la versione, risparmia l'ora",
-      "text": "❌ 'Aggiungi una server action.'\n✅ 'Aggiungi una server action di Next.js 15 con sintassi async/await. App Router. Il form la chiama direttamente tramite la prop action.'"
+      "text": "Ogni modello AI ha una data di cutoff: il punto oltre cui il suo training non va. Le librerie che escono o cambiano significativamente dopo quella data sono zone grigie — l'AI può produrre codice plausibile ma sbagliato, a volte con API che non esistono o che sono state deprecate. Non è un difetto di attenzione: è il limite strutturale di qualsiasi modello addestrato su dati storici."
     },
     {
       "type": "callout",
       "variant": "warning",
-      "text": "Se qualcosa che l'AI suggerisce non esiste o non funziona, sospetta della versione prima che di te. Poi ri-prompta con la versione esatta fissata."
+      "text": "⚠️ Con release molto recenti — uscite negli ultimi 6-12 mesi — il rischio di API hallucinate è alto. L'AI riempie i buchi con pattern simili a quelli che conosce. Il codice compila, ma chiama funzioni che non esistono."
+    },
+    {
+      "type": "simulated_output",
+      "prompt": "Crea una route API per ricevere webhook di Stripe. Stack: Next.js 15 App Router, file in /app/api/webhooks/stripe/route.ts. Usa la sintassi moderna con Request/Response nativo.",
+      "output": "Ecco il route handler con sintassi App Router corretta:\n\nexport async function POST(request: Request) {\n  const body = await request.text();\n  const sig = request.headers.get('stripe-signature');\n  // verifica firma Stripe...\n  return Response.json({ received: true });\n}"
+    },
+    {
+      "type": "paragraph",
+      "text": "La soluzione base è specificare sempre la versione esatta nel prompt: \"Next.js 15\", non \"Next.js\". \"Tailwind v4\", non \"Tailwind\". \"React 19\", non \"React\". Per librerie cambiate di recente puoi anche incollare un estratto della documentazione ufficiale direttamente nel prompt — l'AI lo legge come contesto e usa la sintassi corretta. Non serve incollare tutto: bastano le signature delle funzioni o un esempio minimo."
+    },
+    {
+      "type": "paragraph",
+      "text": "C'è però un modo più elegante di risolvere il problema alla radice: connettere l'AI a documentazione aggiornata in tempo reale tramite MCP server — Model Context Protocol. Invece di incollare docs nel prompt, l'AI le consulta direttamente al momento del bisogno. È una delle evoluzioni più significative del vibe coding nel 2025-2026, e torneremo su questo argomento nelle lezioni avanzate."
+    },
+    {
+      "type": "paragraph",
+      "text": "Per librerie stabili e consolidate — Node.js core, SQL standard, pattern REST classici — il problema è trascurabile. La versione conta soprattutto su framework che evolvono velocemente e hanno introdotto breaking change recenti: Next.js, React, Tailwind, Vite, shadcn/ui. Su questi, specificarla è un riflesso da acquisire."
+    },
+    {
+      "type": "callout",
+      "variant": "key",
+      "text": "🔑 Specifica sempre la versione esatta dei framework che cambiano velocemente. \"Next.js 15 App Router\" fa più lavoro di \"Next.js\" — costa una parola e ti evita di debuggare sintassi deprecata."
     }
   ],
   "exercise": {
     "format": "fill_blank",
-    "prompt_template": "Fissa sempre la [BLANK] del tuo stack, perché l'AI ha un knowledge [BLANK] e potrebbe non conoscere i cambiamenti recenti.",
+    "prompt_template": "L'AI usa quello che conosce meglio dal suo [BLANK] — specificare la versione esatta è il modo più semplice per evitare codice [BLANK].",
     "blanks": [
       {
         "index": 0,
-        "correct_answers": ["versione", "release", "edizione"],
-        "hint_1": "Next.js 13? Next.js 15? Quale stai usando?",
-        "hint_2": "È il numero dopo il nome del framework — '15', '4.6', ecc.",
-        "explanation": "La risposta è 'versione' (o 'release'). Nominare la versione riduce drasticamente lo spazio di indovinare per l'AI."
+        "correct_answers": [
+          "training",
+          "il training",
+          "addestramento",
+          "l'addestramento",
+          "training data",
+          "dataset",
+          "il dataset",
+          "knowledge base",
+          "la knowledge base",
+          "base di conoscenza",
+          "dati di training",
+          "corpus",
+          "il corpus",
+          "memoria",
+          "la memoria"
+        ],
+        "hint_1": "Su quali dati si basa la conoscenza dell'AI?",
+        "hint_2": "Parola inglese ormai entrata nel lessico tech — descrive il processo con cui l'AI ha imparato.",
+        "explanation": "La risposta è 'training'. Il training dell'AI ha una data di cutoff: tutto ciò che è cambiato dopo rimane una zona grigia dove l'AI può sbagliare."
       },
       {
         "index": 1,
-        "correct_answers": ["cutoff", "limite", "data", "confine"],
-        "hint_1": "Cosa termina la consapevolezza dell'AI sul mondo?",
-        "hint_2": "È la data dopo la quale nulla del training del modello esiste.",
-        "explanation": "La risposta è 'cutoff' (o 'data'). Dopo il cutoff l'AI sta davvero indovinando — e con grande sicurezza."
+        "correct_answers": [
+          "obsoleto",
+          "deprecato",
+          "sbagliato",
+          "outdated",
+          "vecchio",
+          "non aggiornato",
+          "datato",
+          "superato",
+          "incompatibile",
+          "non compatibile",
+          "errato",
+          "fuori data",
+          "non valido",
+          "sorpassato",
+          "fuori aggiornamento"
+        ],
+        "hint_1": "Come si chiama il codice che usa API o sintassi di una versione precedente?",
+        "hint_2": "Inizia per 'o' — si dice anche di un oggetto che non si usa più.",
+        "explanation": "La risposta è 'obsoleto' (o 'deprecato'). Specificare la versione riduce drasticamente la probabilità di ricevere codice con sintassi superata o API non più disponibili."
       }
     ]
   },
   "outro": {
-    "recap": "Hai imparato a fissare la versione e a sospettare del cutoff quando qualcosa sembra plausibile ma si rompe.",
-    "next_prompt": "Ultima lezione: costruisci la tua libreria personale di prompt da riutilizzare."
+    "recap": "L'AI non conosce il futuro del suo training: specifica sempre la versione esatta dei framework che evolvono velocemente — è il gesto più semplice per evitare ore di debug inutile.",
+    "next_prompt": "Ultima lezione: come costruire e usare una libreria di prompt collaudati — i tuoi pattern riutilizzabili per qualsiasi progetto."
   }
 }

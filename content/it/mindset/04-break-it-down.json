@@ -10,52 +10,113 @@
   "icon": "/brand/lessons/mindset-04.svg",
   "theory": [
     {
-      "type": "paragraph",
-      "text": "L'errore più comune dei principianti del vibe coding: stipare un intero prodotto in un solo prompt. 'Costruiscimi un'app di e-commerce con login, carrello, pagamenti, admin e supporto mobile.' L'AI produrrà qualcosa. Sembrerà impressionante. Sarà anche un casino quasi impossibile da debuggare."
+      "type": "quote",
+      "text": "Suddividi ogni difficoltà nel maggior numero possibile di parti, quante sono necessarie per risolverla al meglio.",
+      "attribution": "René Descartes, 1637"
     },
     {
       "type": "paragraph",
-      "text": "Ambizioni grandi, prompt piccoli. Scegli una fettina sottile — una sola feature, una sola schermata — e spediscila. Poi passi alla prossima. Ogni commit è un punto di salvataggio a cui tornare quando qualcosa si rompe."
-    },
-    {
-      "type": "comparison_table",
-      "bad": {
-        "label": "Un mega-prompt",
-        "content": "Crea un'app to-do completa con login, dark mode, categorie, condivisione e sync con Google Calendar."
-      },
-      "good": {
-        "label": "Fetta dopo fetta",
-        "content": "1. Homepage con lista vuota. 2. Aggiungi e completa task. 3. Raggruppa per categoria. 4. Mostra il contatore in alto."
-      }
+      "text": "Hai un'idea: un'app per condividere foto con gli amici. Apri Cursor e scrivi: \"Costruiscimi un'app dove le persone si registrano, postano foto, commentano e mettono like.\"\n\nL'AI parte. 30 secondi dopo, ti restituisce 800 righe di codice, 12 file, e qualcosa di vagamente funzionante che però: salta la registrazione, non sa come gestire l'upload delle immagini, ha messo i like in posti strani, e non ha previsto quando un utente non è loggato.\n\nIl problema non è l'AI. Il problema è la dimensione del prompt."
     },
     {
       "type": "callout",
       "variant": "warning",
-      "text": "Se un singolo prompt potrebbe rompere il tuo progetto, stai promptando troppo grosso. Taglialo a metà. Poi a metà ancora."
+      "text": "⚠️ Più grande è il prompt, più probabile è che esca un risultato confuso. L'AI fa fatica a tenere insieme troppe cose in un colpo solo — esattamente come faresti tu."
+    },
+    {
+      "type": "paragraph",
+      "text": "Scomponi. La stessa idea, divisa in 5 prompt piccoli, produce un risultato molto migliore:\n\n1. \"Imposta l'autenticazione con Google login.\"\n2. \"Aggiungi una pagina dove gli utenti caricano una foto con didascalia.\"\n3. \"Nella home page, mostra tutte le foto ordinate dalla più recente.\"\n4. \"Aggiungi i commenti sotto ogni foto.\"\n5. \"Aggiungi il bottone 'mi piace'.\"\n\nLanci il primo. Verifichi che funzioni. Solo dopo passi al secondo. Sei sempre l'architetto, ma costruisci come un muratore — un mattone per volta."
+    },
+    {
+      "type": "comparison_table",
+      "bad": {
+        "label": "❌ Un prompt grande",
+        "content": "800 righe di codice in un colpo\n12 file generati insieme\nErrore? Buona fortuna trovarlo\nTest impossibile per pezzi\nUna settimana per debuggare"
+      },
+      "good": {
+        "label": "✅ Cinque prompt piccoli",
+        "content": "~150 righe per prompt\n1-3 file alla volta\nErrori isolati e identificabili\nTest feature per feature\nVai live in giornata"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "C'è un altro vantaggio nascosto della scomposizione: ti riprende il controllo. Quando l'AI sputa fuori 800 righe in un colpo, sei costretto a fidarti — non hai tempo di leggere tutto. Quando arriva 150 righe alla volta, le leggi davvero, capisci, decidi se sono giuste prima di passare al pezzo successivo. È la differenza tra essere il regista e essere uno spettatore."
+    },
+    {
+      "type": "simulated_output",
+      "prompt": "Fammi un sito di e-commerce completo.",
+      "output": "Procedo, ma è un'app grossa. La spezzo io o vuoi farlo tu?\n\nLe fasi possibili:\n  1. Catalogo prodotti (lista + scheda dettaglio)\n  2. Carrello (aggiungi/rimuovi articoli)\n  3. Checkout (form + pagamento)\n  4. Account utente (storico ordini)\n\nDa quale partiamo?\n\n(L'AI sta scomponendo PER TE. Imparare a farlo da solo ti fa risparmiare tempo.)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Una nota: scomporre non significa fare tutto banale. Puoi avere prompt complessi, se sono coerenti — tipo \"aggiungi commenti con risposte annidate fino a 3 livelli, ordinati per data\". Va bene: è una sola funzionalità, anche se ha sfumature. L'unico vincolo è: una funzionalità per prompt, non cinque insieme."
+    },
+    {
+      "type": "callout",
+      "variant": "key",
+      "text": "🔑 La regola pratica: se il tuo prompt sta descrivendo più di UNA funzionalità, scomponilo. Una funzionalità per prompt — sempre."
     }
   ],
   "exercise": {
     "format": "fill_blank",
-    "prompt_template": "Costruisci cose complesse lavorando in passi [BLANK], spedendo [BLANK] feature alla volta.",
+    "prompt_template": "Quando l'obiettivo sembra troppo grande, [BLANK] in pezzi più piccoli e costruisci [BLANK] alla volta.",
     "blanks": [
       {
         "index": 0,
-        "correct_answers": ["piccoli", "minimi", "brevi", "incrementali"],
-        "hint_1": "Grandi o piccoli?",
-        "hint_2": "Ogni passo deve essere abbastanza piccolo da poterlo verificare in un minuto o due.",
-        "explanation": "La risposta è 'piccoli' (o 'minimi'). Passi piccoli = bug piccoli. Passi grandi = bug aggrovigliati che non riesci a sciogliere."
+        "correct_answers": [
+          "scomponilo",
+          "spezzalo",
+          "dividilo",
+          "rompilo",
+          "frammentalo",
+          "suddividilo",
+          "spezzettalo",
+          "smontalo",
+          "scomponi",
+          "dividi",
+          "spezza",
+          "rompi",
+          "smonta",
+          "suddividi",
+          "frammenta",
+          "spezzettta",
+          "spezzettare",
+          "scomporlo",
+          "dividerlo",
+          "spezzare"
+        ],
+        "hint_1": "Cosa fai quando una cosa è troppo grande per essere maneggiata in una volta sola?",
+        "hint_2": "Verbo che inizia per 's' o 'd', e significa rompere in pezzi più piccoli.",
+        "explanation": "La risposta è 'scomponilo' (o 'spezzalo' / 'dividilo'). La scomposizione è una skill chiave del vibe coding: trasforma un prompt impossibile in cinque prompt facili."
       },
       {
         "index": 1,
-        "correct_answers": ["una", "una sola", "1"],
-        "hint_1": "Quante feature dovresti affrontare in un prompt?",
-        "hint_2": "Quanto basta per costruire, testare e committare prima di passare avanti.",
-        "explanation": "La risposta è 'una'. Una feature per prompt, un commit per feature. Quel ritmo ti tiene al volante."
+        "correct_answers": [
+          "uno",
+          "1",
+          "una",
+          "uno per uno",
+          "uno alla volta",
+          "uno per volta",
+          "un pezzo",
+          "un pezzo alla volta",
+          "una funzionalità",
+          "una funzionalità alla volta",
+          "un task",
+          "un task alla volta",
+          "una cosa",
+          "una cosa alla volta",
+          "un mattone",
+          "un mattone alla volta"
+        ],
+        "hint_1": "Quanti pezzi alla volta riesci a costruire bene senza fare casino?",
+        "hint_2": "Il numero più piccolo possibile, maggiore di zero.",
+        "explanation": "La risposta è 'uno'. Un pezzo per prompt. È così che ottieni codice focalizzato, errori isolabili e progressi rapidi — invece di 800 righe confuse da debuggare."
       }
     ]
   },
   "outro": {
-    "recap": "Hai imparato il principio del piccolo passo. Affetta il lavoro, spedisci un pezzo, committa, ripeti.",
-    "next_prompt": "Prossima: perché il contesto conta più del prompt stesso."
+    "recap": "Hai imparato il principio di scomposizione: prompt piccoli, costruzione un pezzo alla volta. È il modo in cui i pro vibe codano senza affondare nel caos.",
+    "next_prompt": "Prossima lezione: l'ingrediente segreto che la maggior parte dei principianti dimentica nei prompt — il contesto."
   }
 }

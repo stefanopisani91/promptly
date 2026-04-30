@@ -4,63 +4,97 @@
   "order": 4,
   "title": "Descrivi il formato dell'output",
   "difficulty": "intermediate",
-  "estimated_minutes": 6,
+  "estimated_minutes": 5,
   "base_xp": 150,
   "difficulty_bonus_xp": 50,
   "icon": "/brand/lessons/prompt-04.svg",
   "theory": [
     {
       "type": "paragraph",
-      "text": "Se non dici all'AI che forma deve avere la risposta, ti ritrovi con qualunque forma le venga di produrre — a volte un blocco di codice, a volte un saggio di seicento parole con il codice sepolto dentro, a volte una lista numerata di suggerimenti. Inconsistente. Difficile da consumare."
+      "text": "Hai chiesto all'AI di spiegarti come funziona un certo pezzo di codice. Lei ti risponde con 400 parole di prosa tecnica. Quello che volevi erano tre bullet, il più breve possibile. Il codice era giusto — il formato era sbagliato. Non per colpa sua: non glielo avevi detto.\n\nIl formato dell'output è l'ingrediente più dimenticato di un prompt. Eppure è uno dei più facili da specificare e uno dei più impattanti sul tempo che passi a elaborare la risposta."
     },
     {
       "type": "paragraph",
-      "text": "Il rimedio è meccanico: descrivi il formato. Specifica la struttura, il numero di file, il linguaggio, se vuoi commenti, se vuoi prima un piano o subito il codice. Più sei esplicito, più l'output diventa prevedibile."
+      "text": "Ci sono sei formati che tornano continuamente nel vibe coding. Solo il codice, senza spiegazioni — quando sei in modalità costruzione e non hai bisogno di didattica. Piano prima del codice — quando vuoi capire l'approccio prima di accettare l'implementazione. Codice commentato sezione per sezione — quando devi leggere e capire, non solo incollare. Lista numerata — per istruzioni sequenziali o opzioni da confrontare. Risposta breve, max N righe — per domande veloci dentro sessioni lunghe. JSON strutturato — quando l'output serve come input a un altro sistema."
     },
     {
-      "type": "comparison_table",
-      "bad": {
-        "label": "Formato non specificato",
-        "content": "'Aiutami con il flusso di auth.' Output: un saggio di 600 parole con tre pattern diversi e nessuna scelta chiara."
-      },
-      "good": {
-        "label": "Formato specificato",
-        "content": "'Output: un solo file TypeScript, niente commenti, un solo default export, sotto le 80 righe.' Output: esattamente questo."
-      }
+      "type": "callout",
+      "variant": "tip",
+      "text": "💡 Metti il formato all'inizio del prompt, non alla fine. \"Solo codice, niente spiegazioni. [task]\" funziona meglio di \"[task]. Ah, e dammi solo il codice.\" L'AI elabora il contesto dall'inizio, non dalla coda."
     },
     {
-      "type": "example",
-      "label": "Leve di formato che vale la pena tirare",
-      "text": "Numero e nomi dei file. Linguaggio e versione. Singola funzione vs modulo intero. Piano-prima vs codice-prima. Commenti sì o no. Import in cima, type inline, export named o default. Forma JSON, tabella Markdown, lista puntata."
+      "type": "simulated_output",
+      "prompt": "Solo codice, niente spiegazioni. Converti questa funzione da callback a async/await.",
+      "output": "async function fetchUserData(userId) {\n  try {\n    const response = await fetch(`/api/users/${userId}`);\n    if (!response.ok) throw new Error('User not found');\n    return await response.json();\n  } catch (error) {\n    throw error;\n  }\n}"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando inizi a costruire sistemi più complessi — API, pipeline di dati, workflow multi-step — il formato smette di essere una preferenza estetica e diventa un requisito tecnico. Puoi chiedere all'AI di rispondere in JSON con uno schema preciso, e quell'output diventa direttamente l'input dello step successivo. È una tecnica che si chiama structured output, e ne parleremo in dettaglio quando affronteremo il prompt chaining."
+    },
+    {
+      "type": "paragraph",
+      "text": "Non ogni prompt ha bisogno di un formato esplicito. In conversazioni esplorative — \"cosa pensi di questo approccio?\", \"quali sono le opzioni?\" — lasciare libertà all'AI produce risposte più ricche. Il formato esplicito serve quando sai esattamente cosa ti serve: un blocco di codice, una lista, un piano in tre punti. Meno utile quando stai ancora capendo la domanda."
     },
     {
       "type": "callout",
       "variant": "key",
-      "text": "Formato prevedibile = iterazione prevedibile. Non puoi raffinare un output che non sai paragonare con quello della volta prima."
+      "text": "🔑 Prima di inviare, chiediti: \"In che forma voglio la risposta?\" Codice puro, piano prima, lista, risposta breve — una parola basta. Non specificarlo significa lasciare che l'AI scelga per te."
     }
   ],
   "exercise": {
     "format": "fill_blank",
-    "prompt_template": "Descrivi sempre il [BLANK] dell'output e la [BLANK] che ti aspetti.",
+    "prompt_template": "Il [BLANK] dell'output è l'ingrediente più dimenticato di un prompt — eppure è uno dei più facili da specificare e uno dei più [BLANK] sul tempo di lavoro.",
     "blanks": [
       {
         "index": 0,
-        "correct_answers": ["formato", "tipo", "stile", "forma"],
-        "hint_1": "JSON, tabella Markdown, codice puro — quale di questi è?",
-        "hint_2": "È il contenitore — il modo in cui la risposta è disposta.",
-        "explanation": "La risposta è 'formato' (o 'forma'). Specificare il formato rende paragonabili gli output tra iterazioni."
+        "correct_answers": [
+          "formato",
+          "il formato",
+          "forma",
+          "la forma",
+          "struttura",
+          "la struttura",
+          "presentazione",
+          "la presentazione",
+          "modalità",
+          "la modalità",
+          "stile",
+          "lo stile",
+          "organizzazione",
+          "tipo di risposta",
+          "schema"
+        ],
+        "hint_1": "Cosa descrive se vuoi codice, una lista, un piano o una risposta breve?",
+        "hint_2": "Inizia per 'f' — è la veste con cui arriva la risposta.",
+        "explanation": "La risposta è 'formato'. Specificarlo è il gesto più veloce per ricevere output già pronti all'uso, senza doverli riformattare."
       },
       {
         "index": 1,
-        "correct_answers": ["struttura", "organizzazione", "schema", "impalcatura"],
-        "hint_1": "Qual è l'organizzazione interna della risposta?",
-        "hint_2": "È la suddivisione — sezioni, campi, intestazioni, lo scheletro.",
-        "explanation": "La risposta è 'struttura' (o 'schema'). Il formato è il contenitore; la struttura è quello che c'è dentro."
+        "correct_answers": [
+          "impattanti",
+          "determinanti",
+          "influenti",
+          "rilevanti",
+          "significativi",
+          "importanti",
+          "decisivi",
+          "efficaci",
+          "utili",
+          "cruciali",
+          "fondamentali",
+          "incisivi",
+          "sostanziali",
+          "notevoli",
+          "consequenziali"
+        ],
+        "hint_1": "Come descrivi qualcosa che ha un grande effetto pratico su quello che fai?",
+        "hint_2": "Inizia per 'i' — è un aggettivo che indica forte influenza sul risultato.",
+        "explanation": "La risposta è 'impattanti'. Specificare il formato riduce il post-processing della risposta: quello che ricevi è già nella forma in cui ti serve."
       }
     ]
   },
   "outro": {
-    "recap": "Hai imparato a specificare formato e struttura in modo esplicito. Entrambi trasformano output vago in qualcosa su cui puoi iterare.",
-    "next_prompt": "Prossima: lo stesso obiettivo, due prompt — uno cattivo, uno buono."
+    "recap": "Il formato dell'output è l'ingrediente più dimenticato — e uno dei più semplici. Codice puro, piano prima, lista, risposta breve: una parola all'inizio del prompt cambia tutto.",
+    "next_prompt": "Prossima lezione: vediamo un prompt cattivo e uno buono fianco a fianco — e capiamo esattamente dove il primo perde e il secondo vince."
   }
 }

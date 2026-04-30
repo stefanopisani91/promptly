@@ -4,52 +4,97 @@
   "order": 6,
   "title": "Concatenare i prompt",
   "difficulty": "intermediate",
-  "estimated_minutes": 6,
+  "estimated_minutes": 5,
   "base_xp": 150,
   "difficulty_bonus_xp": 50,
   "icon": "/brand/lessons/prompt-06.svg",
   "theory": [
     {
       "type": "paragraph",
-      "text": "Alcune feature sono troppo grandi per un prompt solo, anche se ben scritto. La soluzione non è stipare di più nella frase — è spezzare il lavoro in una catena, dove ogni prompt costruisce sul precedente e tu controlli l'output prima di andare avanti."
-    },
-    {
-      "type": "example",
-      "label": "Una catena in quattro anelli",
-      "text": "1. 'Abbozza il modello dati e le signature delle funzioni per un sistema di notifiche. Niente codice ancora.'\n2. 'Bene. Ora spiegami in parole come funziona il flusso publish/subscribe.'\n3. 'Approvato. Implementa solo il publisher, con i test.'\n4. 'Adesso il subscriber. Poi collegali.'"
+      "text": "Hai una feature complessa da implementare. Potresti scrivere un unico prompt gigante con tutti i dettagli — e ottenere 300 righe di codice che contengono la logica giusta e dieci errori nascosti. Oppure puoi concatenare: quattro prompt in sequenza, ciascuno costruito sull'output del precedente. Non è più lento — è più preciso. E ogni passo è verificabile prima di procedere al successivo."
     },
     {
       "type": "paragraph",
-      "text": "Il primo anello è sempre uguale: chiedi un piano, non codice. Un piano di due minuti che puoi correggere batte venti minuti di codice da buttare. Una volta che il piano è giusto, la generazione è quasi meccanica."
+      "text": "Il pattern classico si articola in quattro layer. Il primo: schema e contratti — \"Definisci la struttura dei dati e le signature delle funzioni, senza scrivere l'implementazione.\" Il secondo: approccio — \"Descrivimi a parole come implementeresti la logica principale. Aspetta la mia approvazione.\" Il terzo: implementazione — \"Implementa il primo pezzo.\" Il quarto: espansione — \"Aggiungi la gestione degli errori\" o \"Aggiungi i test.\" Ogni layer è piccolo, verificabile, reversibile."
+    },
+    {
+      "type": "simulated_output",
+      "prompt": "Stiamo costruendo un sistema di prenotazioni. Layer 1: definisci solo la struttura TypeScript delle entità principali (Booking, User, Service) e le signature delle funzioni CRUD. Zero implementazione.",
+      "output": "type Booking = {\n  id: string;\n  userId: string;\n  serviceId: string;\n  date: Date;\n  status: 'pending' | 'confirmed' | 'cancelled';\n};\n\n// Solo signature:\nfunction createBooking(data: Omit<Booking, 'id'>): Promise<Booking>;\nfunction cancelBooking(id: string): Promise<void>;\nfunction getUserBookings(userId: string): Promise<Booking[]>;\n\nConfermi questo contratto prima che implementi?"
     },
     {
       "type": "callout",
       "variant": "tip",
-      "text": "Il plan-first prompting è l'abitudine con la leva più alta del path. È quello che separa i vibe coder veloci da quelli frustrati."
+      "text": "💡 L'atto di approvazione tra un layer e il successivo è il cuore del chaining. Ogni \"confermi?\" o \"procedi\" è un checkpoint dove sei ancora tu a decidere — non l'AI."
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando il chaining diventa abbastanza complesso, o quando i passi devono essere eseguiti in parallelo, si entra nel territorio degli agenti AI: sistemi dove ogni step è gestito da un agente specializzato che riceve l'output dello step precedente come input. È l'evoluzione naturale del prompt chaining manuale — e rappresenta oggi una delle frontiere più attive dello sviluppo software."
+    },
+    {
+      "type": "paragraph",
+      "text": "Il chaining non serve per ogni task. Feature semplici, correzioni puntuali, modifiche di stile — un singolo prompt ben scritto è la scelta giusta. Il chaining diventa necessario quando il task ha più di una fase distinta, quando vuoi approvare l'approccio prima dell'implementazione, o quando hai già bruciato tempo sullo stesso tipo di task con un prompt unico."
+    },
+    {
+      "type": "callout",
+      "variant": "key",
+      "text": "🔑 Ogni layer del chain deve essere così piccolo da poter essere verificato in meno di un minuto. Se non riesci a verificarlo rapidamente, è ancora troppo grande — spezzalo ancora."
     }
   ],
   "exercise": {
     "format": "fill_blank",
-    "prompt_template": "Per feature complesse, [BLANK] i prompt e chiedi sempre un [BLANK] prima di scrivere una sola riga di codice.",
+    "prompt_template": "Nel prompt chaining, l'output di ogni [BLANK] diventa il [BLANK] del passo successivo — costruendo la soluzione strato per strato.",
     "blanks": [
       {
         "index": 0,
-        "correct_answers": ["concatena", "spezza", "incatena", "collega", "dividi"],
-        "hint_1": "Lavoro grande, suddiviso in serie — quale verbo?",
-        "hint_2": "Ogni prompt alimenta il successivo, come anelli di una... cosa?",
-        "explanation": "La risposta è 'concatena' (o 'spezza'). I prompt concatenati ti permettono di verificare ogni passo prima di impegnarti col successivo."
+        "correct_answers": [
+          "passo",
+          "un passo",
+          "il passo",
+          "step",
+          "uno step",
+          "layer",
+          "un layer",
+          "il layer",
+          "stadio",
+          "uno stadio",
+          "fase",
+          "una fase",
+          "la fase",
+          "livello",
+          "il livello"
+        ],
+        "hint_1": "Come si chiama ogni singola richiesta all'interno di una catena di prompt?",
+        "hint_2": "Può essere anche in inglese: è quello che componi uno dopo l'altro.",
+        "explanation": "La risposta è 'passo' (o 'step', 'layer'). Nel chaining ogni passo è autonomo e verificabile — è questo che rende l'intera catena affidabile."
       },
       {
         "index": 1,
-        "correct_answers": ["piano", "abbozzo", "schema", "outline", "approccio"],
-        "hint_1": "Lo schema di alto livello, prima di una sola riga di codice?",
-        "hint_2": "Nomina file, signature delle funzioni e flusso dati — ma niente implementazione.",
-        "explanation": "La risposta è 'piano' (o 'abbozzo'). Il piano è la tua ultima occasione economica per cambiare direzione prima che venga scritto il codice."
+        "correct_answers": [
+          "contesto",
+          "il contesto",
+          "input",
+          "un input",
+          "l'input",
+          "base",
+          "la base",
+          "punto di partenza",
+          "il punto di partenza",
+          "fondamento",
+          "il fondamento",
+          "materiale",
+          "il materiale",
+          "premessa",
+          "la premessa"
+        ],
+        "hint_1": "Cosa porta con sé ogni nuovo prompt rispetto al passo precedente?",
+        "hint_2": "È quello che l'AI usa per capire dove siamo arrivati — inizia per 'c'.",
+        "explanation": "La risposta è 'contesto'. Ogni passo arricchisce il contesto disponibile per il successivo: l'AI non riparte da zero, ma costruisce su quanto già approvato."
       }
     ]
   },
   "outro": {
-    "recap": "Hai imparato a concatenare i prompt e a iniziare ogni catena con un piano. Due abitudini, un grosso salto di qualità.",
-    "next_prompt": "Prossima: la trappola della versione — perché l'AI potrebbe suggerirti codice di due anni fa."
+    "recap": "Il prompt chaining spezza una feature complessa in layer verificabili: schema, approccio, implementazione, espansione. Ogni checkpoint è un momento in cui sei ancora tu a decidere.",
+    "next_prompt": "Prossima lezione: il problema della versione — come gestire stack tecnologici che cambiano e tenere l'AI aggiornata."
   }
 }

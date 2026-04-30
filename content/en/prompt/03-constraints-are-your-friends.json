@@ -11,45 +11,90 @@
   "theory": [
     {
       "type": "paragraph",
-      "text": "Without rails, the AI invents. It picks libraries you don't use, patterns you don't follow, files in places you don't store them. Constraints aren't a cage — they're the lane lines that keep the output on your road."
+      "text": "When you describe what you want from the AI, the instinct is to focus on what it should do. But often the most useful part of a prompt is the opposite: telling it what not to do. Not this library. Don't touch that file. No external dependencies. No explanations — just the implementation. Constraints don't limit the AI — they direct it. Without them, it fills the degrees of freedom with its own preferences, which might not be yours."
     },
     {
-      "type": "paragraph",
-      "text": "Two flavors matter: positive constraints ('use React Hook Form, store dates as ISO strings, keep functions under 30 lines') and negative constraints ('do not add new dependencies, do not modify the auth flow, do not use Tailwind arbitrary values'). Negative constraints are often more powerful — they prevent whole categories of unwanted output."
-    },
-    {
-      "type": "example",
-      "label": "Layered constraints",
-      "text": "Use Next.js 15 App Router, TypeScript strict, Tailwind, no external form libraries. Do not edit anything in /components/ui. Do not introduce new env variables. Output a single file."
+      "type": "simulated_output",
+      "prompt": "Add validation to the registration form. Use Zod. DO NOT use React Hook Form — I already have a custom solution. DO NOT modify the parent component, only the inner form.",
+      "output": "I've added Zod validation directly inside the inner form, without touching the parent component and without introducing React Hook Form. The schema validates email, password (min 8 characters) and password confirmation.\n\nWould you like me to add a custom error message for each field?"
     },
     {
       "type": "callout",
-      "variant": "warning",
-      "text": "Telling the AI what *not* to do is one of the highest-leverage things you can write. It cuts off entire wrong branches before they grow."
+      "variant": "tip",
+      "text": "💡 The most useful constraints are negative ones: \"DO NOT use X\", \"DO NOT touch Y\", \"DO NOT add Z\". One negative constraint is often worth more than three positive instructions — it blocks exactly the category of mistakes that happens most often."
+    },
+    {
+      "type": "paragraph",
+      "text": "There are four types of constraint worth making explicit: the stack (\"Next.js 15, don't scaffold a new project\"), excluded libraries (\"DO NOT use Axios, we use native fetch\"), the scope (\"only modify this component, don't touch the rest\") and the format (\"no explanations, just the code\"). Not all of them are needed in every prompt — but when a relevant one is missing, the AI decides for itself."
+    },
+    {
+      "type": "paragraph",
+      "text": "This principle becomes even more powerful when working with multi-agent systems: each agent in the workflow receives a precise set of constraints that defines what it can and can't do — exactly like a team member with a clear job description. We'll come back to this when we cover prompt chaining and advanced workflows, but the intuition is already all here."
+    },
+    {
+      "type": "paragraph",
+      "text": "Too many constraints can lock the AI into suboptimal solutions. If you pile on \"DON'T do\" instructions on an exploratory task — where you're still figuring out the right approach — you risk excluding the best solution. Constraints are most useful when you already know what you don't want; less useful when you're still discovering what you want."
+    },
+    {
+      "type": "callout",
+      "variant": "key",
+      "text": "🔑 Every degree of freedom you leave open in the prompt is a decision the AI makes for you. Define your constraints — especially the negative ones — before it does."
     }
   ],
   "exercise": {
     "format": "fill_blank",
-    "prompt_template": "Use [BLANK] constraints to lock in the rules to follow, and [BLANK] constraints to rule out wrong paths.",
+    "prompt_template": "[BLANK] constraints — 'DO NOT use X', 'DO NOT touch Y' — are often more useful than positive ones because they block an entire [BLANK] of unwanted choices at once.",
     "blanks": [
       {
         "index": 0,
-        "correct_answers": ["positive", "do", "must", "required"],
-        "hint_1": "The kind that says 'do this'?",
-        "hint_2": "It's the rule that points at the thing you want — 'use Zod', 'store as ISO'.",
-        "explanation": "The answer is 'positive' (or 'do'). Positive constraints say what the AI should pick when it has options."
+        "correct_answers": [
+          "negative",
+          "negating",
+          "exclusionary",
+          "prohibitive",
+          "restrictive",
+          "prohibitory",
+          "limiting",
+          "banning",
+          "blocking",
+          "excluding",
+          "no-go",
+          "off-limits",
+          "do-not",
+          "preventive",
+          "preventative"
+        ],
+        "hint_1": "What do you call constraints that say what NOT to do, rather than what to do?",
+        "hint_2": "The opposite of 'positive'.",
+        "explanation": "The answer is 'negative'. Explicitly stating what to exclude is often more precise than describing what to include — it directly blocks the category of unwanted choices."
       },
       {
         "index": 1,
-        "correct_answers": ["negative", "don't", "do not", "forbidden", "no"],
-        "hint_1": "The kind that says 'do NOT do this'?",
-        "hint_2": "It's the rule that explicitly forbids — 'no new dependencies', 'do not modify X'.",
-        "explanation": "The answer is 'negative' (or 'don't'). Negative constraints prune entire branches the AI would otherwise explore."
+        "correct_answers": [
+          "category",
+          "the category",
+          "class",
+          "the class",
+          "type",
+          "the type",
+          "family",
+          "the family",
+          "group",
+          "the group",
+          "set",
+          "the set",
+          "range",
+          "the range",
+          "cluster"
+        ],
+        "hint_1": "What groups similar mistakes under a single label?",
+        "hint_2": "Starts with 'c' — it's what a negative constraint rules out all at once.",
+        "explanation": "The answer is 'category'. A negative constraint doesn't block a single mistake — it rules out an entire class of unwanted outputs, which is why it's so efficient."
       }
     ]
   },
   "outro": {
-    "recap": "You learned to layer positive and negative constraints. Both keep the output inside your project's lane.",
-    "next_prompt": "Next: why describing the output format matters as much as the input."
+    "recap": "Constraints don't limit the AI — they direct it. Negative ones ('DO NOT use X', 'DO NOT touch Y') are the most powerful: they rule out entire categories of unwanted choices.",
+    "next_prompt": "Next lesson: the fourth ingredient — describing the output format and getting exactly the shape of response you need."
   }
 }

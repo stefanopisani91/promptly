@@ -10,46 +10,117 @@
   "icon": "/brand/lessons/mindset-05.svg",
   "theory": [
     {
-      "type": "paragraph",
-      "text": "The same prompt, sent to the same AI, produces wildly different results depending on what surrounds it. That surrounding matter is the context: the files in your project, the rules you've set, the examples it can see, the conversation so far."
+      "type": "quote",
+      "text": "The art of giving the model all the context it needs for a task to be plausibly solvable.",
+      "attribution": "Tobi Lutke, CEO Shopify"
     },
     {
       "type": "paragraph",
-      "text": "Prompt engineering is about writing the right sentence. Context engineering is about shaping the entire room — so the AI walks in already half-prepared. A well-set room makes mediocre prompts work. A bare room makes brilliant prompts fail."
+      "text": "Every time you open a new chat with the AI, it starts from scratch. It doesn't remember your project, doesn't know your stack, and has no idea what decisions you made last week. What it produces depends almost entirely on what you put in the prompt.\n\nIf you write \"add a login button\", the AI has to make decisions: what framework are you using? Does the button open a modal or redirect to a page? Is there already an authentication system in place? Without this information, it chooses for you — but its choices might not match yours."
     },
     {
-      "type": "example",
-      "label": "What context looks like",
-      "text": "A short rules file ('we use Next.js 15, Tailwind, no any types'), example components the AI can mirror, the current file open in the editor, recent commits, the design tokens. None of that is a 'prompt' — but all of it shapes the answer."
+      "type": "callout",
+      "variant": "warning",
+      "text": "⚠️ Without context, the AI doesn't fail because it's dumb — it fails because it doesn't know enough. The more advanced your project, the more this gap hurts."
+    },
+    {
+      "type": "paragraph",
+      "text": "Sara is building a booking app with Next.js and Supabase. She writes: \"add the function to send confirmation emails.\" The AI responds with an implementation using Nodemailer — but Sara had already set up Resend in the project, with a custom template system in /emails/.\n\nAll it took was one line of context: \"We use Resend for emails, config in /lib/email.ts, base template in /emails/base.tsx.\" With that line, the AI would have integrated exactly what was needed, without inventing anything."
+    },
+    {
+      "type": "comparison_table",
+      "bad": {
+        "label": "🚫 Without context",
+        "content": "AI picks libraries at random\nIgnores existing files\nOutput incompatible with the codebase\nThree iterations just to get close\nYou rewrite most of the code"
+      },
+      "good": {
+        "label": "✅ With context",
+        "content": "AI uses the same libraries as the project\nFollows existing patterns and templates\nOutput integrates on the first try\nOne iteration and you move on\nMore time building, less time fixing"
+      }
+    },
+    {
+      "type": "simulated_output",
+      "prompt": "Create a contact form. Stack: Next.js 15, Tailwind, Resend for emails, Zod for validation.",
+      "output": "Here's the form. I used Resend as specified, Zod validation client-side and server-side, and kept the Tailwind classes consistent with the naming conventions in the rest of your project.\n\nWould you like me to add a toast notification after submission?"
+    },
+    {
+      "type": "paragraph",
+      "text": "A good practice when starting a new project is to have the AI itself help you create a specs file: the chosen stack, coding conventions, constraints, decisions already made. Just ask: \"Create a PROJECT.md file with the specs for this project\" and fill it in together during the first session. From then on, instead of repeating who you are and what you're building every time, you paste that file in the first prompt. The AI starts already oriented — and useful context isn't wasted on repetition. Tools like Cursor and Claude Code support this idea with dedicated files (.cursorrules, CLAUDE.md) that are read automatically at every session."
+    },
+    {
+      "type": "paragraph",
+      "text": "There is, however, a balance to strike. Too much context is almost worse than none: if you paste 400 lines of unrelated code, the AI struggles to find the information that actually matters. Useful context is context relevant to the specific task — the stack, the relevant files, the constraints. Not the entire project. Learn to select, not to dump."
     },
     {
       "type": "callout",
       "variant": "key",
-      "text": "Set the room before you speak. The best vibe coders spend more time on context than on prompts."
+      "text": "🔑 Before hitting send, ask yourself: \"Does the AI have enough information to avoid guessing?\" If the answer is no, add that one extra line. It's the smallest action with the biggest impact."
     }
   ],
   "exercise": {
     "format": "fill_blank",
-    "prompt_template": "Great results come from a great [BLANK] — not just a clever [BLANK].",
+    "prompt_template": "The more [BLANK] you give the AI, the less it will be forced to [BLANK] — and the closer the result will be to what you had in mind.",
     "blanks": [
       {
         "index": 0,
-        "correct_answers": ["context", "environment", "setup", "setting"],
-        "hint_1": "What surrounds the prompt — files, rules, examples?",
-        "hint_2": "It's the room the AI walks into before you say a word.",
-        "explanation": "The answer is 'context' (or 'environment'). Context shapes what's even possible for the AI to produce."
+        "correct_answers": [
+          "context",
+          "information",
+          "details",
+          "specifics",
+          "data",
+          "background",
+          "the context",
+          "the information",
+          "the details",
+          "the specifics",
+          "the data",
+          "the background",
+          "pointers",
+          "references",
+          "instructions",
+          "guidance",
+          "input",
+          "relevant information",
+          "relevant context",
+          "relevant details"
+        ],
+        "hint_1": "What is the AI missing when it knows nothing about your project?",
+        "hint_2": "One word, starts with 'c' — it's what makes a prompt useful instead of generic.",
+        "explanation": "The answer is 'context'. Without it, the AI works in the dark and has to make assumptions. With the right context, it produces output that fits directly into your project."
       },
       {
         "index": 1,
-        "correct_answers": ["prompt", "question", "request", "instruction"],
-        "hint_1": "What's the single sentence you type into the chat?",
-        "hint_2": "It's the visible part — but it's only one piece.",
-        "explanation": "The answer is 'prompt'. A clever prompt in a barren context still produces weak output. Context first, prompt second."
+        "correct_answers": [
+          "guess",
+          "assume",
+          "invent",
+          "improvise",
+          "make assumptions",
+          "make guesses",
+          "speculate",
+          "hypothesize",
+          "presume",
+          "fill in the blanks",
+          "make things up",
+          "infer",
+          "interpret",
+          "decide for you",
+          "choose for you",
+          "make stuff up",
+          "wing it",
+          "make up details",
+          "compensate",
+          "take liberties"
+        ],
+        "hint_1": "What does the AI do when it's missing information?",
+        "hint_2": "A verb that describes filling gaps without solid data — what anyone does when they don't know enough.",
+        "explanation": "The answer is 'guess' (or 'assume'). When the AI lacks context, it fills the gaps with its own choices — which might not match yours."
       }
     ]
   },
   "outro": {
-    "recap": "You learned that context is the room, the prompt is the question. Set the room well and even simple questions yield strong answers.",
-    "next_prompt": "Next: a checklist you can keep in your back pocket for every session."
+    "recap": "Context isn't optional — it's the difference between an AI that works for you and one that works in the dark. A few extra lines in the prompt, or a well-maintained specs file, can radically change the result.",
+    "next_prompt": "Next lesson: a practical checklist so you never forget anything before launching your prompts."
   }
 }
