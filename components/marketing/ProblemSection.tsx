@@ -1,9 +1,8 @@
 import {
   ArrowDown,
-  Lightbulb,
+  Bug,
   RefreshCw,
   Sparkles,
-  Wrench,
 } from "lucide-react";
 import type { LandingCopy } from "@/lib/i18n/landing";
 import { InfinityBugAnimation } from "@/components/marketing/InfinityBugAnimation";
@@ -12,9 +11,10 @@ interface Props {
   copy: LandingCopy["problem"];
 }
 
+// Sparkles = idea, Bug = qualcosa si rompe, RefreshCw = loop
 const ICON_MAP = {
-  idea: Lightbulb,
-  wrench: Wrench,
+  idea: Sparkles,
+  wrench: Bug,
   loop: RefreshCw,
 } as const;
 
@@ -31,10 +31,9 @@ export function ProblemSection({ copy }: Props) {
       aria-labelledby="bug-loop-title"
       className="py-16 sm:py-20 lg:py-24"
     >
-      {/* Wrapper relativo: l'animazione è absolute, il testo è sopra */}
+      {/* Titolo con animazione SVG in trasparenza */}
       <div className="relative mx-auto max-w-3xl px-4 text-center sm:px-6">
         <InfinityBugAnimation />
-        {/* z-[1] + relative assicurano che il testo stia sopra all'SVG assoluto */}
         <div className="relative z-[1]">
           <div className="mb-4 inline-block rounded-full bg-error/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.05em] text-error">
             {copy.eyebrow}
@@ -51,16 +50,17 @@ export function ProblemSection({ copy }: Props) {
         </div>
       </div>
 
-      <ol className="mx-auto mt-12 max-w-2xl space-y-12 px-4 sm:mt-14 sm:space-y-14 sm:px-6">
+      <ol className="mx-auto mt-12 max-w-2xl space-y-0 px-4 sm:mt-14 sm:px-6">
         {copy.steps.map((step, idx) => {
           const Icon = ICON_MAP[step.iconSlug];
           const isLoop = step.iconSlug === "loop";
-          const number = `0${idx + 1}`;
 
+          /* ── Scheda blue (loop) ── */
           if (isLoop) {
             return (
-              <li key={step.iconSlug}>
-                <div className="mb-2 flex justify-center">
+              <li key={step.iconSlug} className="mt-8 sm:mt-10">
+                {/* Freccia connettore tra 02 e 03 */}
+                <div className="mb-4 flex justify-center">
                   <ArrowDown
                     className="h-8 w-8 text-text-muted/40"
                     strokeWidth={2.2}
@@ -73,17 +73,15 @@ export function ProblemSection({ copy }: Props) {
                       {step.kickerEyebrow}
                     </p>
                   )}
-                  <div className="mt-3 flex items-start gap-4">
+                  {/* Icona grande + testo — senza numero "03" */}
+                  <div className="mt-4 flex items-start gap-6">
                     <Icon
-                      className="mt-1 h-7 w-7 flex-shrink-0 text-primary motion-safe:animate-spin-slow"
-                      strokeWidth={2.2}
+                      className="h-14 w-14 flex-shrink-0 text-primary motion-safe:animate-spin-slow sm:h-16 sm:w-16"
+                      strokeWidth={1.8}
                       aria-hidden
                     />
                     <div className="flex-1">
-                      <span className="font-mono text-xs font-medium text-primary/70">
-                        {number}
-                      </span>
-                      <h3 className="mt-1 font-heading text-2xl font-semibold leading-snug sm:text-3xl">
+                      <h3 className="font-heading text-2xl font-semibold leading-snug sm:text-3xl">
                         {step.title}
                       </h3>
                       <p className="mt-3 text-base leading-relaxed text-white/85 sm:text-lg">
@@ -101,28 +99,36 @@ export function ProblemSection({ copy }: Props) {
             );
           }
 
+          /* ── Step normale (01 e 02) ── */
           return (
-            <li
-              key={step.iconSlug}
-              className="grid grid-cols-[auto_1fr] gap-5 sm:gap-7"
-            >
-              <div className="flex flex-col items-start">
-                <span className="font-mono text-5xl font-bold leading-none text-text-muted/40 sm:text-6xl">
-                  {number}
-                </span>
-                <Icon
-                  className={`mt-3 h-7 w-7 ${ICON_COLOR[step.iconSlug]}`}
-                  strokeWidth={1.8}
-                  aria-hidden
-                />
-              </div>
-              <div className="pt-1">
-                <h3 className="font-heading text-xl font-semibold leading-snug text-text-primary sm:text-2xl">
-                  {step.title}
-                </h3>
-                <p className="mt-2 text-base leading-relaxed text-text-secondary sm:text-lg">
-                  {step.description}
-                </p>
+            <li key={step.iconSlug} className={idx > 0 ? "mt-8 sm:mt-10" : ""}>
+              {/* Freccia connettore tra 01 e 02 */}
+              {idx > 0 && (
+                <div className="mb-4 flex justify-center">
+                  <ArrowDown
+                    className="h-8 w-8 text-text-muted/40"
+                    strokeWidth={2.2}
+                    aria-hidden
+                  />
+                </div>
+              )}
+              <div className="grid grid-cols-[auto_1fr] items-start gap-5 sm:gap-8">
+                {/* Icona grande al posto del numero */}
+                <div className="flex items-center justify-center pt-1">
+                  <Icon
+                    className={`h-14 w-14 sm:h-16 sm:w-16 ${ICON_COLOR[step.iconSlug]}`}
+                    strokeWidth={1.5}
+                    aria-hidden
+                  />
+                </div>
+                <div>
+                  <h3 className="font-heading text-xl font-semibold leading-snug text-text-primary sm:text-2xl">
+                    {step.title}
+                  </h3>
+                  <p className="mt-2 text-base leading-relaxed text-text-secondary sm:text-lg">
+                    {step.description}
+                  </p>
+                </div>
               </div>
             </li>
           );
