@@ -1,5 +1,5 @@
-// Smooth sine-wave spine connecting the lesson nodes (Mimo-style).
-// Server component — pure rendering.
+// Smooth sine-wave spine connecting the lesson nodes (Mimo-style,
+// top-down). Server component — pure rendering.
 //
 // Two visual layers:
 //   - "ahead": dashed, muted, the full spine from start to end
@@ -36,9 +36,8 @@ export function MapPathLine({ bioma, nodes, height }: Props) {
     return -1;
   })();
 
-  const fullD = buildSpinePathD(0, nodes.length - 1, height);
-  const walkedD =
-    lastWalkedIdx > 0 ? buildSpinePathD(0, lastWalkedIdx, height) : "";
+  const fullD = buildSpinePathD(0, nodes.length - 1);
+  const walkedD = lastWalkedIdx > 0 ? buildSpinePathD(0, lastWalkedIdx) : "";
 
   return (
     <svg

@@ -2,9 +2,9 @@
 // the path sections, the endgame (PathT), and renders the robot cursor at
 // the user's current location.
 //
-// Render order is *reverse* progression order: PathT (endgame) → Ship →
-// Debug → Build → Prompt → Mindset. The user starts at the bottom (the
-// village) and climbs up.
+// Render order is *natural* progression order: Mindset (top) → Prompt →
+// Build → Debug → Ship → PathT endgame (bottom). The user starts at the
+// top (the village) and descends through the world.
 
 import { Crown, Lock, Star } from "lucide-react";
 
@@ -16,6 +16,9 @@ import { cn } from "@/lib/utils";
 
 import { MapSection } from "./MapSection";
 
+// ScrollHint removed: with top-down progression, the bottom-of-map hint
+// is the endgame banner itself, which speaks for itself.
+
 interface Props {
   data: MapData;
   copy: MapCopy;
@@ -24,8 +27,8 @@ interface Props {
 }
 
 export function LearningMap({ data, copy, lang, level }: Props) {
-  // Render reversed: highest path first (top of the map).
-  const sectionsTopDown = [...data.paths].reverse();
+  // Natural order: mindset first (top of the map), ship last.
+  const sectionsTopDown = data.paths;
 
   return (
     <div
@@ -33,8 +36,6 @@ export function LearningMap({ data, copy, lang, level }: Props) {
       aria-label="Learning map"
       className="-mx-4 overflow-hidden rounded-3xl border border-border bg-background sm:-mx-6"
     >
-      <EndgameBanner endgame={data.endgame} copy={copy} lang={lang} />
-
       {sectionsTopDown.map((section) => {
         const isRobotInSection = data.current.pathSlug === section.slug;
         return (
@@ -52,7 +53,7 @@ export function LearningMap({ data, copy, lang, level }: Props) {
         );
       })}
 
-      <ScrollHint copy={copy} />
+      <EndgameBanner endgame={data.endgame} copy={copy} lang={lang} />
     </div>
   );
 }
@@ -114,12 +115,3 @@ function EndgameBanner({ endgame, copy, lang }: EndgameBannerProps) {
   );
 }
 
-// ─── Scroll hint at the bottom of the map ───────────────────────────
-
-function ScrollHint({ copy }: { copy: MapCopy }) {
-  return (
-    <p className="px-6 py-4 text-center font-mono text-[11px] text-text-muted">
-      ↑ {copy.scrollHint}
-    </p>
-  );
-}

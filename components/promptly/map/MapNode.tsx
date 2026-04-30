@@ -21,8 +21,8 @@ interface Props {
   // *functions* across the RSC boundary — they aren't serializable.
   // The lookup is cheap and stays on the client.
   lang: Lang;
-  /** Position styling from the layout helper. */
-  bottomPx: number;
+  /** Position styling from the layout helper (top-down coords). */
+  topPx: number;
   leftPercent: number;
 }
 
@@ -34,7 +34,7 @@ export function MapNode({
   pathTitle,
   positionLabel,
   lang,
-  bottomPx,
+  topPx,
   leftPercent,
 }: Props) {
   const copy = getMapCopy(lang);
@@ -76,9 +76,9 @@ export function MapNode({
   );
 
   const positionStyle: React.CSSProperties = {
-    bottom: bottomPx,
+    top: topPx,
     left: `${leftPercent}%`,
-    transform: "translate(-50%, 50%)",
+    transform: "translate(-50%, -50%)",
   };
 
   let content: ReactNode;

@@ -9,30 +9,30 @@ import { RobotAvatar } from "@/components/promptly/RobotAvatar";
 
 interface Props {
   level: number;
-  bottomPx: number;
+  topPx: number;
   leftPercent: number;
-  /** Optional label rendered as a small flag above the avatar. */
+  /** Optional label rendered as a small flag next to the avatar. */
   flag?: string | null;
 }
 
-export function MapRobotCursor({ level, bottomPx, leftPercent, flag }: Props) {
+export function MapRobotCursor({ level, topPx, leftPercent, flag }: Props) {
   return (
     <div
-      className="pointer-events-none absolute z-20"
+      className="pointer-events-none absolute z-20 flex flex-col items-center"
       style={{
-        bottom: bottomPx,
+        top: topPx,
         left: `${leftPercent}%`,
-        transform: "translate(-50%, calc(-50% - 28px))",
+        transform: "translate(-50%, -50%)",
       }}
     >
-      {flag && (
-        <div className="mb-1 rounded-full bg-primary px-2 py-0.5 text-center font-heading text-[10px] font-bold uppercase tracking-wider text-white shadow">
-          {flag}
-        </div>
-      )}
       <div className="map-robot-bob">
         <RobotAvatar level={level} size="sm" />
       </div>
+      {flag && (
+        <div className="mt-1 rounded-full bg-primary px-2 py-0.5 text-center font-heading text-[10px] font-bold uppercase tracking-wider text-white shadow">
+          {flag}
+        </div>
+      )}
     </div>
   );
 }

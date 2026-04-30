@@ -14,8 +14,8 @@ interface Props {
   bonus: BonusPath;
   unlock: UnlockState;
   lang: Lang;
-  /** y position relative to section bottom, in px (from layout helper). */
-  bottomPx: number;
+  /** y position relative to section top, in px (from layout helper). */
+  topPx: number;
   /** Horizontal position as a percentage of section width. */
   leftPercent: number;
 }
@@ -24,7 +24,7 @@ export function MapBonusIsland({
   bonus,
   unlock,
   lang,
-  bottomPx,
+  topPx,
   leftPercent,
 }: Props) {
   const [modalOpen, setModalOpen] = useState(false);
@@ -68,9 +68,9 @@ export function MapBonusIsland({
             : "border-dashed border-[var(--bioma-bonus-bg-deep)] bg-[var(--bioma-bonus-bg)]/80 opacity-90",
         )}
         style={{
-          bottom: bottomPx,
+          top: topPx,
           left: `${leftPercent}%`,
-          transform: "translate(-50%, 50%)",
+          transform: "translate(-50%, -50%)",
         }}
         aria-label={`${mapCopy.legend.bonus} — ${title}`}
       >

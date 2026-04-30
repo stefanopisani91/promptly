@@ -131,7 +131,7 @@ export function MapSection({
             pathTitle={pathCopy.title}
             positionLabel={node.index + 1}
             lang={lang}
-            bottomPx={pos.bottomPx}
+            topPx={pos.topPx}
             leftPercent={pos.leftPercent}
           />
         );
@@ -150,7 +150,7 @@ export function MapSection({
             bonus={attachment.bonus}
             unlock={attachment.unlock}
             lang={lang}
-            bottomPx={pos.bottomPx}
+            topPx={pos.topPx}
             leftPercent={pos.leftPercent}
           />
         );
@@ -160,7 +160,7 @@ export function MapSection({
       {robotAtIndex !== null && (
         <MapRobotCursor
           level={level}
-          bottomPx={getNodePosition(robotAtIndex, totalNodes).bottomPx}
+          topPx={getNodePosition(robotAtIndex, totalNodes).topPx}
           leftPercent={getNodePosition(robotAtIndex, totalNodes).leftPercent}
           flag={showStart ? copy.start.label : null}
         />
