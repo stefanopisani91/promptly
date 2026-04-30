@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" width="500" height="500">
+  <!-- V2 REVISED: Flat infinity + Mechanical bold bug -->
+
+  <!-- Background -->
+  <rect width="500" height="500" fill="#FFFFFF" rx="28"/>
+
+  <!-- Infinity symbol — flat, hollow (evenodd), ruotato 45° -->
+  <!-- Forma esterna + due ellissi foro interne → i loop sono vuoti, come un 8 -->
+  <g transform="rotate(45, 250, 250)">
+    <path fill-rule="evenodd" fill="#B02EC9"
+      d="M 90,250 C 90,188 216,188 250,250 C 284,312 410,312 410,250 C 410,188 284,188 250,250 C 216,312 90,312 90,250 Z
+         M 120,250 A 50,32 0 1,0 220,250 A 50,32 0 1,0 120,250 Z
+         M 280,250 A 50,32 0 1,0 380,250 A 50,32 0 1,0 280,250 Z"/>
+  </g>
+
+  <!-- BUG MECCANICO — centrato su (250,250), tratto bold, forme angolari -->
+  <g stroke="#0D0D0D" stroke-linejoin="round" stroke-linecap="round">
+
+    <!-- MANDIBOLE (pinze aggressive, le prime per z-order) -->
+    <!-- Sinistra -->
+    <polyline points="238,216  214,198  208,214" fill="none" stroke-width="5"/>
+    <!-- Destra -->
+    <polyline points="262,216  286,198  292,214" fill="none" stroke-width="5"/>
+
+    <!-- TESTA — forma a scudo angolare -->
+    <path d="M 233,231 L 240,210 L 260,210 L 267,231 L 250,238 Z"
+          fill="#0D0D0D" stroke="none"/>
+
+    <!-- OCCHI — rettangoli aggressivi inclinati -->
+    <polygon points="237,224 246,218 248,225 239,231" fill="#FFFFFF"/>
+    <polygon points="263,224 254,218 252,225 261,231" fill="#FFFFFF"/>
+
+    <!-- ELYTRA SINISTRA — angolare, meccanica -->
+    <path d="M 234,238 L 249,238 L 249,282 L 224,275 L 224,246 Z"
+          fill="#0D0D0D" stroke="none"/>
+
+    <!-- ELYTRA DESTRA -->
+    <path d="M 266,238 L 251,238 L 251,282 L 276,275 L 276,246 Z"
+          fill="#0D0D0D" stroke="none"/>
+
+    <!-- LINEA CENTRALE CORPO (bold) -->
+    <line x1="250" y1="238" x2="250" y2="282" stroke="#0D0D0D" stroke-width="4"/>
+
+    <!-- SEGMENTAZIONE meccanica corpo -->
+    <line x1="226" y1="258" x2="274" y2="258" stroke="#333" stroke-width="2.5"/>
+
+    <!-- ZAMPE SINISTRE — angolari, con giunto a 90° -->
+    <!-- Superiore -->
+    <polyline points="226,248  204,240  198,250" fill="none" stroke-width="5"/>
+    <!-- Media -->
+    <polyline points="225,260  200,260  194,270" fill="none" stroke-width="5"/>
+    <!-- Inferiore -->
+    <polyline points="226,272  206,282  202,294" fill="none" stroke-width="5"/>
+
+    <!-- ZAMPE DESTRE -->
+    <!-- Superiore -->
+    <polyline points="274,248  296,240  302,250" fill="none" stroke-width="5"/>
+    <!-- Media -->
+    <polyline points="275,260  300,260  306,270" fill="none" stroke-width="5"/>
+    <!-- Inferiore -->
+    <polyline points="274,272  294,282  298,294" fill="none" stroke-width="5"/>
+
+    <!-- ANTENNE — rigide, geometriche, con punta a freccia -->
+    <line x1="242" y1="210" x2="222" y2="190" stroke="#0D0D0D" stroke-width="4"/>
+    <polygon points="222,190 214,182 228,182" fill="#0D0D0D" stroke="none"/>
+
+    <line x1="258" y1="210" x2="278" y2="190" stroke="#0D0D0D" stroke-width="4"/>
+    <polygon points="278,190 286,182 272,182" fill="#0D0D0D" stroke="none"/>
+
+  </g>
+</svg>

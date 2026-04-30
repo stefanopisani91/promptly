@@ -6,6 +6,7 @@ import {
   Wrench,
 } from "lucide-react";
 import type { LandingCopy } from "@/lib/i18n/landing";
+import { InfinityBugAnimation } from "@/components/marketing/InfinityBugAnimation";
 
 interface Props {
   copy: LandingCopy["problem"];
@@ -30,19 +31,24 @@ export function ProblemSection({ copy }: Props) {
       aria-labelledby="bug-loop-title"
       className="py-16 sm:py-20 lg:py-24"
     >
-      <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
-        <div className="mb-4 inline-block rounded-full bg-error/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.05em] text-error">
-          {copy.eyebrow}
+      {/* Wrapper relativo: l'animazione è absolute, il testo è sopra */}
+      <div className="relative mx-auto max-w-3xl px-4 text-center sm:px-6">
+        <InfinityBugAnimation />
+        {/* z-[1] + relative assicurano che il testo stia sopra all'SVG assoluto */}
+        <div className="relative z-[1]">
+          <div className="mb-4 inline-block rounded-full bg-error/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.05em] text-error">
+            {copy.eyebrow}
+          </div>
+          <h2
+            id="bug-loop-title"
+            className="whitespace-pre-line font-heading text-3xl font-bold leading-[1.1] text-text-primary text-balance sm:text-4xl lg:text-5xl"
+          >
+            {copy.title}
+          </h2>
+          <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-text-secondary sm:text-lg">
+            {copy.sub}
+          </p>
         </div>
-        <h2
-          id="bug-loop-title"
-          className="whitespace-pre-line font-heading text-3xl font-bold leading-[1.1] text-text-primary text-balance sm:text-4xl lg:text-5xl"
-        >
-          {copy.title}
-        </h2>
-        <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-text-secondary sm:text-lg">
-          {copy.sub}
-        </p>
       </div>
 
       <ol className="mx-auto mt-12 max-w-2xl space-y-12 px-4 sm:mt-14 sm:space-y-14 sm:px-6">
