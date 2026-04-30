@@ -3,8 +3,9 @@
 // the schema/typing surface stays in one place.
 
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { PathSlug, UserProfile, UserProgress } from "@/types";
+import type { PathSlug, UserProfile, UserProgress, UserReferral } from "@/types";
 import type { Database } from "./types";
+import { generateReferralCode } from "@/lib/referral";
 
 export type AppSupabaseClient = SupabaseClient<Database>;
 
@@ -13,20 +14,318 @@ export type ProfileGate =
   | { state: "incomplete"; profile: UserProfile }
   | { state: "complete"; profile: UserProfile };
 
+const USER_PROFILE_COLUMNS =
+  "id, email, full_name, language, daily_goal, onboarding_completed_at, signup_source, welcome_seen_at, push_prompted_at, ai_eval_prompted_at, total_xp, current_streak, longest_streak, last_activity_date, last_level_up_notified, referral_code, referral_link_activated_at, created_at, updated_at";
+
 export async function getUserProfile(
   supabase: AppSupabaseClient,
   userId: string,
 ): Promise<UserProfile | null> {
   const { data, error } = await supabase
     .from("users")
-    .select(
-      "id, email, full_name, language, daily_goal, onboarding_completed_at, signup_source, welcome_seen_at, push_prompted_at, ai_eval_prompted_at, total_xp, current_streak, longest_streak, last_activity_date, created_at, updated_at",
-    )
+    .select(USER_PROFILE_COLUMNS)
     .eq("id", userId)
     .maybeSingle();
 
   if (error) throw error;
   return data ?? null;
+}
+
+/**
+ * Persist the level for which the user has just been shown the level-up
+ * modal. Guard against decreasing values so an out-of-order request can't
+ * re-arm a celebration the user already dismissed.
+ */
+export async function updateLastLevelUpNotified(
+  supabase: AppSupabaseClient,
+  userId: string,
+  level: number,
+): Promise<void> {
+  const { data: current, error: readErr } = await supabase
+    .from("users")
+    .select("last_level_up_notified")
+    .eq("id", userId)
+    .maybeSingle();
+  if (readErr) throw readErr;
+
+  const previous = current?.last_level_up_notified ?? 1;
+  if (level <= previous) return;
+
+  const { error: updateErr } = await supabase
+    .from("users")
+    .update({ last_level_up_notified: level })
+    .eq("id", userId);
+  if (updateErr) throw updateErr;
+}
+
+// ─── XP grants (Dashboard V2 — Phase 2) ─────────────────────────────
+
+/**
+ * Read-modify-write `users.total_xp` by `amount`. Used for ad-hoc grants
+ * outside the lesson flow (referral activation, conversion bonuses).
+ *
+ * Returns the new total. Pass a `client` argument to use the service-role
+ * client for cross-user grants — the regular Supabase client would be
+ * rejected by RLS for any user other than auth.uid().
+ */
+export async function grantXp(
+  client: AppSupabaseClient,
+  userId: string,
+  amount: number,
+): Promise<{ newTotal: number }> {
+  if (amount === 0) {
+    const { data, error } = await client
+      .from("users")
+      .select("total_xp")
+      .eq("id", userId)
+      .maybeSingle();
+    if (error) throw error;
+    return { newTotal: data?.total_xp ?? 0 };
+  }
+
+  const { data: existing, error: readErr } = await client
+    .from("users")
+    .select("total_xp")
+    .eq("id", userId)
+    .maybeSingle();
+  if (readErr) throw readErr;
+
+  const newTotal = Math.max(0, (existing?.total_xp ?? 0) + amount);
+  const { error: writeErr } = await client
+    .from("users")
+    .update({ total_xp: newTotal })
+    .eq("id", userId);
+  if (writeErr) throw writeErr;
+
+  return { newTotal };
+}
+
+// ─── Referral system (Dashboard V2 — Phase 2) ───────────────────────
+
+const MAX_REFERRAL_CODE_GENERATION_RETRIES = 5;
+
+/**
+ * Read the user's referral code; lazily generate and persist one if missing.
+ * Uses the unique index on `users.referral_code` to detect collisions —
+ * regenerates with a fresh random suffix on conflict.
+ */
+export async function getOrCreateReferralCode(
+  supabase: AppSupabaseClient,
+  userId: string,
+  fullName: string | null,
+): Promise<string> {
+  const { data: existing, error: readErr } = await supabase
+    .from("users")
+    .select("referral_code")
+    .eq("id", userId)
+    .maybeSingle();
+  if (readErr) throw readErr;
+  if (existing?.referral_code) return existing.referral_code;
+
+  for (let attempt = 0; attempt < MAX_REFERRAL_CODE_GENERATION_RETRIES; attempt++) {
+    const candidate = generateReferralCode(fullName);
+    const { error: updateErr } = await supabase
+      .from("users")
+      .update({ referral_code: candidate })
+      .eq("id", userId);
+
+    if (!updateErr) return candidate;
+
+    // Postgres unique-violation surfaces as code 23505. Retry with a new
+    // random suffix; bail out on any other error.
+    const code = (updateErr as { code?: string }).code;
+    if (code !== "23505") throw updateErr;
+  }
+
+  throw new Error("Failed to generate a unique referral code after retries");
+}
+
+export interface ReferralStats {
+  count: number;
+  activatedAt: string | null;
+}
+
+/**
+ * One-shot read of (number of converted referrals, activation timestamp).
+ */
+export async function getReferralStats(
+  supabase: AppSupabaseClient,
+  userId: string,
+): Promise<ReferralStats> {
+  // Run the two reads in parallel — both are cheap and independent.
+  const [countResult, profileResult] = await Promise.all([
+    supabase
+      .from("user_referrals")
+      .select("id", { count: "exact", head: true })
+      .eq("referrer_id", userId),
+    supabase
+      .from("users")
+      .select("referral_link_activated_at")
+      .eq("id", userId)
+      .maybeSingle(),
+  ]);
+
+  if (countResult.error) throw countResult.error;
+  if (profileResult.error) throw profileResult.error;
+
+  return {
+    count: countResult.count ?? 0,
+    activatedAt: profileResult.data?.referral_link_activated_at ?? null,
+  };
+}
+
+export interface ActivationResult {
+  alreadyActive: boolean;
+  xpAwarded: number; // 25 on first activation, 0 otherwise
+}
+
+/**
+ * Mark the referral link as activated. Idempotent — only the first call
+ * grants the +25 XP bonus and writes the timestamp.
+ */
+export async function activateReferralLinkOnce(
+  supabase: AppSupabaseClient,
+  userId: string,
+): Promise<ActivationResult> {
+  const { data, error: readErr } = await supabase
+    .from("users")
+    .select("referral_link_activated_at")
+    .eq("id", userId)
+    .maybeSingle();
+  if (readErr) throw readErr;
+  if (data?.referral_link_activated_at) {
+    return { alreadyActive: true, xpAwarded: 0 };
+  }
+
+  const { error: stampErr } = await supabase
+    .from("users")
+    .update({ referral_link_activated_at: new Date().toISOString() })
+    .eq("id", userId);
+  if (stampErr) throw stampErr;
+
+  await grantXp(supabase, userId, 25);
+
+  return { alreadyActive: false, xpAwarded: 25 };
+}
+
+export interface ReferrerLookup {
+  id: string;
+  email: string;
+  full_name: string | null;
+}
+
+export async function findReferrerByCode(
+  supabase: AppSupabaseClient,
+  referralCode: string,
+): Promise<ReferrerLookup | null> {
+  const { data, error } = await supabase
+    .from("users")
+    .select("id, email, full_name")
+    .eq("referral_code", referralCode)
+    .maybeSingle();
+  if (error) throw error;
+  return data ?? null;
+}
+
+// Anti-farm cap from DASHBOARD_V2.md §4 — beyond this many converted
+// referrals a single account stops receiving the +300 XP grant. The row
+// is still recorded so unlock thresholds keep working for the referee.
+export const REFERRAL_REWARD_CAP = 10;
+
+export interface ConvertReferralInput {
+  referrerId: string;
+  refereeId: string;
+  refereeEmail: string;
+}
+
+export interface ConvertReferralResult {
+  inserted: boolean;
+  referrerXpAwarded: number;
+  refereeXpAwarded: number;
+}
+
+/**
+ * Atomically register a converted referral. Handles:
+ *   - self-referral guard (referrer ≠ referee)
+ *   - email-equality guard (same email can't refer themselves via aliases)
+ *   - rate-limit cap on referrer XP
+ *   - duplicate referral (UNIQUE on referee_id) → silent no-op
+ *
+ * Caller is responsible for using a service-role client so the cross-user
+ * UPDATE on the referrer's row passes RLS.
+ */
+export async function convertReferral(
+  serviceClient: AppSupabaseClient,
+  input: ConvertReferralInput,
+): Promise<ConvertReferralResult> {
+  const { referrerId, refereeId, refereeEmail } = input;
+
+  if (referrerId === refereeId) {
+    return { inserted: false, referrerXpAwarded: 0, refereeXpAwarded: 0 };
+  }
+
+  // Same-email guard: a user creating a second account to self-refer.
+  const { data: referrer, error: referrerErr } = await serviceClient
+    .from("users")
+    .select("id, email")
+    .eq("id", referrerId)
+    .maybeSingle();
+  if (referrerErr) throw referrerErr;
+  if (!referrer) {
+    return { inserted: false, referrerXpAwarded: 0, refereeXpAwarded: 0 };
+  }
+  if (referrer.email.toLowerCase() === refereeEmail.toLowerCase()) {
+    return { inserted: false, referrerXpAwarded: 0, refereeXpAwarded: 0 };
+  }
+
+  // Insert the referral row. UNIQUE(referee_id) makes this idempotent —
+  // a duplicate insert is silently treated as "already converted".
+  const { error: insertErr } = await serviceClient
+    .from("user_referrals")
+    .insert({ referrer_id: referrerId, referee_id: refereeId });
+  if (insertErr) {
+    const code = (insertErr as { code?: string }).code;
+    if (code === "23505") {
+      return { inserted: false, referrerXpAwarded: 0, refereeXpAwarded: 0 };
+    }
+    throw insertErr;
+  }
+
+  // Rate limit: count referrals already credited to the referrer.
+  const { count, error: countErr } = await serviceClient
+    .from("user_referrals")
+    .select("id", { count: "exact", head: true })
+    .eq("referrer_id", referrerId);
+  if (countErr) throw countErr;
+
+  const withinCap = (count ?? 0) <= REFERRAL_REWARD_CAP;
+  const referrerXp = withinCap ? 300 : 0;
+
+  await Promise.all([
+    referrerXp > 0 ? grantXp(serviceClient, referrerId, referrerXp) : Promise.resolve(),
+    grantXp(serviceClient, refereeId, 50),
+  ]);
+
+  return {
+    inserted: true,
+    referrerXpAwarded: referrerXp,
+    refereeXpAwarded: 50,
+  };
+}
+
+export async function getUserReferrals(
+  supabase: AppSupabaseClient,
+  userId: string,
+): Promise<UserReferral[]> {
+  const { data, error } = await supabase
+    .from("user_referrals")
+    .select(
+      "id, referrer_id, referee_id, xp_awarded_referrer, xp_awarded_referee, created_at",
+    )
+    .eq("referrer_id", userId)
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return (data ?? []) as UserReferral[];
 }
 
 /**

@@ -574,7 +574,7 @@ Social: Twitter · LinkedIn · GitHub
 
 ### Note
 - Il blog è opzionale e linkato solo se esiste contenuto pubblicato (almeno 3 articoli). Altrimenti rimuovere la voce.
-- "Aiuto" → email `support@promptly.app` (placeholder dominio)
+- "Aiuto" → email `support@learnpromptly.app` (placeholder dominio)
 - "Costruito con ❤ in Italia" è un piccolo elemento brand che umanizza il prodotto senza richiedere founder section.
 
 ---
@@ -633,9 +633,9 @@ JSON-LD `Course` schema (https://schema.org/Course) con: name, description, prov
 
 ### Hreflang
 ```html
-<link rel="alternate" hreflang="en" href="https://promptly.app/en/" />
-<link rel="alternate" hreflang="it" href="https://promptly.app/it/" />
-<link rel="alternate" hreflang="x-default" href="https://promptly.app/" />
+<link rel="alternate" hreflang="en" href="https://learnpromptly.app/en/" />
+<link rel="alternate" hreflang="it" href="https://learnpromptly.app/it/" />
+<link rel="alternate" hreflang="x-default" href="https://learnpromptly.app/" />
 ```
 
 ---

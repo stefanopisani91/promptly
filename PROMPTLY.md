@@ -10,11 +10,11 @@
 
 | Environment | URL | Provider | Notes |
 |---|---|---|---|
-| **Production** | `https://fancy-arithmetic-a6dc27.netlify.app/` | Netlify | Active. Renamed to a stable domain when `promptly.app` (or chosen TLD) is acquired. |
+| **Production** | `https://learnpromptly.app/` | Netlify | Active. Custom domain `learnpromptly.app` acquired and configured (DNS pending propagation). |
 | Repository | `https://github.com/stefanopisani91/promptly` | GitHub | Private. Deploys auto-trigger from `main`. |
 | Vercel (deprecated) | `project-ikucx.vercel.app` | Vercel | Abandoned: Edge Runtime middleware bundling issues. Kept inactive in case we need to compare. |
 
-When configuring OAuth redirect URIs, Stripe webhooks, Resend domain verification, etc., use the Netlify URL above (or the eventual custom domain).
+When configuring OAuth redirect URIs, Stripe webhooks, Resend domain verification, etc., use `https://learnpromptly.app`.
 
 ---
 

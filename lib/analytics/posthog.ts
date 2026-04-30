@@ -19,7 +19,8 @@ export function initPostHog() {
   initialized = true;
 }
 
-type LandingEvent =
+type AppEvent =
+  // Landing
   | { name: "landing_viewed"; props?: { lang?: string; source?: string } }
   | { name: "landing_hero_viewed"; props?: Record<string, never> }
   | {
@@ -44,9 +45,21 @@ type LandingEvent =
   | { name: "landing_socialproof_viewed"; props?: Record<string, never> }
   | { name: "landing_faq_opened"; props: { question_index: number } }
   | { name: "landing_closing_cta_viewed"; props?: Record<string, never> }
-  | { name: "landing_closing_cta_clicked"; props?: Record<string, never> };
+  | { name: "landing_closing_cta_clicked"; props?: Record<string, never> }
+  // Referral (Dashboard V2 — Phase 2)
+  | { name: "referral_link_activated"; props: { first_time: boolean } }
+  | {
+      name: "referral_link_copied";
+      props: { source: "clipboard" | "share_api" };
+    }
+  | { name: "referral_converted"; props: { xp_awarded: number } }
+  | { name: "referral_path_y_unlocked"; props?: Record<string, never> };
 
-export function track(event: LandingEvent) {
+// Kept as a deprecated alias so any external imports keep compiling.
+// Prefer `AppEvent` going forward.
+export type LandingEvent = AppEvent;
+
+export function track(event: AppEvent) {
   if (typeof window === "undefined") return;
   if (!initialized) return;
   posthog.capture(event.name, event.props ?? {});

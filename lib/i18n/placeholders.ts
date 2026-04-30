@@ -59,19 +59,19 @@ const placeholderCopyIt: PlaceholderCopy = {
     eyebrow: "INFORMATIVA PRIVACY",
     title: "Stiamo finalizzando la nostra Privacy Policy.",
     body:
-      "La versione definitiva sarà online prima del lancio pubblico. Nel frattempo: non vendiamo i tuoi dati, non usiamo dark pattern e raccogliamo solo quello che ci serve per migliorare il prodotto. Per qualsiasi domanda scrivi a privacy@promptly.app.",
+      "La versione definitiva sarà online prima del lancio pubblico. Nel frattempo: non vendiamo i tuoi dati, non usiamo dark pattern e raccogliamo solo quello che ci serve per migliorare il prodotto. Per qualsiasi domanda scrivi a privacy@learnpromptly.app.",
   },
   terms: {
     eyebrow: "TERMINI DI SERVIZIO",
     title: "Stiamo finalizzando i nostri Termini.",
     body:
-      "La versione definitiva sarà online prima del lancio pubblico. Le nostre regole si fondano su tre principi: trasparenza nei prezzi, libertà di disdire in ogni momento, nessuna sorpresa. Per qualsiasi domanda scrivi a hello@promptly.app.",
+      "La versione definitiva sarà online prima del lancio pubblico. Le nostre regole si fondano su tre principi: trasparenza nei prezzi, libertà di disdire in ogni momento, nessuna sorpresa. Per qualsiasi domanda scrivi a hello@learnpromptly.app.",
   },
   cookie: {
     eyebrow: "COOKIE",
     title: "Stiamo finalizzando la Cookie Policy.",
     body:
-      "La versione definitiva sarà online prima del lancio pubblico. Per ora utilizziamo solo cookie tecnici necessari al funzionamento del sito e analitici aggregati per capire come migliorarlo. Nessun cookie pubblicitario di terze parti. Per qualsiasi domanda scrivi a privacy@promptly.app.",
+      "La versione definitiva sarà online prima del lancio pubblico. Per ora utilizziamo solo cookie tecnici necessari al funzionamento del sito e analitici aggregati per capire come migliorarlo. Nessun cookie pubblicitario di terze parti. Per qualsiasi domanda scrivi a privacy@learnpromptly.app.",
   },
 };
 
@@ -95,19 +95,19 @@ const placeholderCopyEn: PlaceholderCopy = {
     eyebrow: "PRIVACY NOTICE",
     title: "We're finalizing our Privacy Policy.",
     body:
-      "The full version will be live before public launch. In the meantime: we don't sell your data, we don't use dark patterns, and we only collect what we need to improve the product. Questions? Email privacy@promptly.app.",
+      "The full version will be live before public launch. In the meantime: we don't sell your data, we don't use dark patterns, and we only collect what we need to improve the product. Questions? Email privacy@learnpromptly.app.",
   },
   terms: {
     eyebrow: "TERMS OF SERVICE",
     title: "We're finalizing our Terms.",
     body:
-      "The full version will be live before public launch. Our rules rest on three principles: transparent pricing, freedom to cancel anytime, no surprises. Questions? Email hello@promptly.app.",
+      "The full version will be live before public launch. Our rules rest on three principles: transparent pricing, freedom to cancel anytime, no surprises. Questions? Email hello@learnpromptly.app.",
   },
   cookie: {
     eyebrow: "COOKIES",
     title: "We're finalizing our Cookie Policy.",
     body:
-      "The full version will be live before public launch. For now we only use technical cookies needed for the site to work and aggregate analytics to understand how to improve it. No third-party advertising cookies. Questions? Email privacy@promptly.app.",
+      "The full version will be live before public launch. For now we only use technical cookies needed for the site to work and aggregate analytics to understand how to improve it. No third-party advertising cookies. Questions? Email privacy@learnpromptly.app.",
   },
 };
 

@@ -41,6 +41,51 @@
   /* Pro tier */
   --pro-accent: #7c3aed;
   --pro-light: #f5f3ff;
+
+  /* Map biomes (Dashboard V2 — Phase 4)
+     Soft backgrounds so node UI and text remain readable; accent is for
+     the connecting path/icons. Each path has its own atmosphere. */
+
+  /* Mindset — village (warm light green, friendly entry) */
+  --bioma-mindset-bg: #ecf6e8;
+  --bioma-mindset-bg-deep: #d5ebcd;
+  --bioma-mindset-accent: #4a9d3e;
+  --bioma-mindset-icon: #6fb95f;
+
+  /* Prompt — forest (deeper green, more focused) */
+  --bioma-prompt-bg: #d8ebd2;
+  --bioma-prompt-bg-deep: #b9dab0;
+  --bioma-prompt-accent: #2f7d2c;
+  --bioma-prompt-icon: #4a9c47;
+
+  /* Build — city (cool slate-blue, structured) */
+  --bioma-build-bg: #e3e9ee;
+  --bioma-build-bg-deep: #c9d2db;
+  --bioma-build-accent: #4b6478;
+  --bioma-build-icon: #6e8294;
+
+  /* Debug — workshop (warmer slate, industrial) */
+  --bioma-debug-bg: #d8d4cd;
+  --bioma-debug-bg-deep: #bbb3a8;
+  --bioma-debug-accent: #6c5c4a;
+  --bioma-debug-icon: #8a7864;
+
+  /* Ship — space (deep night blue, infinite) */
+  --bioma-ship-bg: #2a3550;
+  --bioma-ship-bg-deep: #1c2640;
+  --bioma-ship-accent: #b6c4f5;
+  --bioma-ship-icon: #8a9cd6;
+  --bioma-ship-text: #e8edff;
+
+  /* Bonus paths — golden floating islands */
+  --bioma-bonus-bg: #fff4d6;
+  --bioma-bonus-bg-deep: #ffe7a8;
+  --bioma-bonus-accent: #d97706;
+  --bioma-bonus-icon: #f59e0b;
+
+  /* Endgame (PathT) — premium gold */
+  --bioma-endgame-bg: #fff8e1;
+  --bioma-endgame-accent: #b78400;
 }
 
 html {
@@ -141,6 +186,43 @@ h6 {
 
 @media (prefers-reduced-motion: reduce) {
   .animate-spin-slow {
+    animation: none;
+  }
+}
+
+/* Map robot — gentle idle bob on the current node */
+@keyframes map-robot-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.map-robot-bob {
+  animation: map-robot-bob 2.4s ease-in-out infinite;
+}
+
+/* Map current-node halo */
+@keyframes map-node-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgb(232 112 63 / 0.45);
+  }
+  50% {
+    box-shadow: 0 0 0 12px rgb(232 112 63 / 0);
+  }
+}
+
+.map-node-pulse {
+  animation: map-node-pulse 2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .map-robot-bob,
+  .map-node-pulse {
     animation: none;
   }
 }

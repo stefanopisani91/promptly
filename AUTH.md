@@ -407,7 +407,7 @@ Trigger: Supabase webhook `on auth.users INSERT` → edge function → Resend.
 ### Contenuto (italiano)
 
 ```
-From:    Promptly <ciao@promptly.app>
+From:    Promptly <ciao@learnpromptly.app>
 Subject: Benvenuto in Promptly, [nome] 🧠
 
 [Logo Promptly in alto, dimensione contenuta]
@@ -438,7 +438,7 @@ Stai ricevendo questa email perché ti sei iscritto a Promptly.
 ### Contenuto (english)
 
 ```
-From:    Promptly <hello@promptly.app>
+From:    Promptly <hello@learnpromptly.app>
 Subject: Welcome to Promptly, [name] 🧠
 
 [Promptly logo at top, modest size]
@@ -666,7 +666,7 @@ Funnel chiave da impostare D1:
 - [ ] Webhook trigger `on auth.users INSERT` → edge function `handle-new-user` (crea profilo + invia welcome email)
 
 ### Setup Resend
-- [ ] Account Resend + dominio verificato (`promptly.app`)
+- [ ] Account Resend + dominio verificato (`learnpromptly.app`)
 - [ ] Template welcome IT + EN con `react-email`
 - [ ] Edge function `send-welcome-email` chiamata dal webhook
 

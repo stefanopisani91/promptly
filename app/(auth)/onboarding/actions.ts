@@ -1,8 +1,59 @@
 "use server";
 
+import { cookies } from "next/headers";
 import { isDailyGoal, isLang, type DailyGoal, type Lang } from "@/types";
 import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/service";
 import { sendWelcomeEmail } from "@/lib/notifications/email";
+import { isValidReferralCode } from "@/lib/referral";
+import { convertReferral, findReferrerByCode } from "@/lib/supabase/queries";
+
+const REFERRAL_PENDING_COOKIE = "promptly_referral_pending";
+
+interface ReferralOutcome {
+  inserted: boolean;
+  referrerXpAwarded: number;
+  refereeXpAwarded: number;
+}
+
+/**
+ * Best-effort referral conversion. Never throws — the welcome path must
+ * not fail just because a referral lookup hiccupped.
+ */
+async function tryConvertPendingReferral(params: {
+  refereeId: string;
+  refereeEmail: string;
+}): Promise<ReferralOutcome | null> {
+  const cookieStore = cookies();
+  const raw = cookieStore.get(REFERRAL_PENDING_COOKIE)?.value;
+  if (!raw) return null;
+
+  // Always clear the cookie — even if the code is malformed or the
+  // conversion is rejected — so subsequent renders don't keep retrying.
+  cookieStore.set({
+    name: REFERRAL_PENDING_COOKIE,
+    value: "",
+    path: "/",
+    maxAge: 0,
+  });
+
+  if (!isValidReferralCode(raw)) return null;
+
+  try {
+    const service = createServiceClient();
+    const referrer = await findReferrerByCode(service, raw);
+    if (!referrer || referrer.id === params.refereeId) return null;
+
+    return await convertReferral(service, {
+      referrerId: referrer.id,
+      refereeId: params.refereeId,
+      refereeEmail: params.refereeEmail,
+    });
+  } catch (error) {
+    console.error("[referral] conversion failed", error);
+    return null;
+  }
+}
 
 const NAME_REGEX = /^[\p{L}\p{N}\s\-']+$/u;
 const NAME_MAX = 40;
@@ -87,6 +138,13 @@ export async function completeOnboarding(
   if (upsertErr) {
     return { ok: false, error: "db_error" };
   }
+
+  // Convert pending referral, if any. Best-effort — failures are logged
+  // but don't break onboarding.
+  await tryConvertPendingReferral({
+    refereeId: user.id,
+    refereeEmail: user.email,
+  });
 
   // Fire welcome email — never block onboarding on email delivery.
   try {

@@ -29,6 +29,9 @@ export type Database = {
           current_streak: number;
           longest_streak: number;
           last_activity_date: string | null;
+          last_level_up_notified: number;
+          referral_code: string | null;
+          referral_link_activated_at: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -47,6 +50,9 @@ export type Database = {
           current_streak?: number;
           longest_streak?: number;
           last_activity_date?: string | null;
+          last_level_up_notified?: number;
+          referral_code?: string | null;
+          referral_link_activated_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -65,6 +71,9 @@ export type Database = {
           current_streak?: number;
           longest_streak?: number;
           last_activity_date?: string | null;
+          last_level_up_notified?: number;
+          referral_code?: string | null;
+          referral_link_activated_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -106,6 +115,33 @@ export type Database = {
           completed_at?: string | null;
           created_at?: string;
           updated_at?: string;
+        };
+        Relationships: [];
+      };
+      user_referrals: {
+        Row: {
+          id: string;
+          referrer_id: string;
+          referee_id: string;
+          xp_awarded_referrer: number;
+          xp_awarded_referee: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          referrer_id: string;
+          referee_id: string;
+          xp_awarded_referrer?: number;
+          xp_awarded_referee?: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          referrer_id?: string;
+          referee_id?: string;
+          xp_awarded_referrer?: number;
+          xp_awarded_referee?: number;
+          created_at?: string;
         };
         Relationships: [];
       };

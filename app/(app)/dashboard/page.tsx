@@ -3,25 +3,24 @@ import { redirect } from "next/navigation";
 import { isLang, type Lang } from "@/types";
 import { resolveLangFromRequest } from "@/lib/i18n/server-lang";
 import { getAuthCopy } from "@/lib/i18n/auth";
-import { getLessonsCopy } from "@/lib/i18n/lessons";
+import { getMapCopy } from "@/lib/i18n/map";
 import { createClient } from "@/lib/supabase/server";
 import {
   getAllUserProgress,
   getUserProfile,
 } from "@/lib/supabase/queries";
-import { getPathProgress } from "@/lib/lessons/progress";
-import { loadLessonById } from "@/lib/lessons/load";
+import { buildMapData } from "@/lib/map/data";
 import { DashboardGreeting } from "@/components/dashboard/DashboardGreeting";
 import { WelcomeCard } from "@/components/dashboard/WelcomeCard";
-import { PathOverviewCard } from "@/components/dashboard/PathOverviewCard";
-import { ContinueCard } from "@/components/dashboard/ContinueCard";
+import { LevelUpModal } from "@/components/promptly/LevelUpModal";
+import { ReferralCard } from "@/components/promptly/ReferralCard";
+import { LearningMap } from "@/components/promptly/map/LearningMap";
+import { MapTopBar } from "@/components/promptly/map/MapTopBar";
+import { getLevelFromXP } from "@/lib/levels";
 
 export const dynamic = "force-dynamic";
 
 export function generateMetadata(): Metadata {
-  // The header copy is derived from the user's language at render-time.
-  // For metadata we use the request-level fallback, which is fine for an
-  // authenticated, noindex page.
   const lang = resolveLangFromRequest();
   const copy = getAuthCopy(lang);
   return {
@@ -48,30 +47,46 @@ export default async function DashboardPage() {
     ? profile.language
     : resolveLangFromRequest();
   const authCopy = getAuthCopy(lang).dashboard;
-  const lessonsCopy = getLessonsCopy(lang);
+  const mapCopy = getMapCopy(lang);
 
-  const [progress, mindsetProgress, promptProgress] = await Promise.all([
+  // Build the map data (single batched fetch via lib/map/data.ts) plus the
+  // raw progress rows for the stats counter — both share a Supabase round
+  // trip with allProgress, so it's already cached internally.
+  const [progress, mapData] = await Promise.all([
     getAllUserProgress(supabase, user.id),
-    getPathProgress(supabase, user.id, "mindset", lang),
-    getPathProgress(supabase, user.id, "prompt", lang),
+    buildMapData(
+      supabase,
+      user.id,
+      lang,
+      // Path titles & descriptions: short labels reused inside the map UI.
+      // We pass them in so MapData stays UI-string-free at the lib layer.
+      {
+        mindset: mapCopy.paths.mindset.title,
+        prompt: mapCopy.paths.prompt.title,
+        build: mapCopy.paths.build.title,
+        debug: mapCopy.paths.debug.title,
+        ship: mapCopy.paths.ship.title,
+      },
+      {
+        mindset: mapCopy.paths.mindset.tagline,
+        prompt: mapCopy.paths.prompt.tagline,
+        build: mapCopy.paths.build.tagline,
+        debug: mapCopy.paths.debug.tagline,
+        ship: mapCopy.paths.ship.tagline,
+      },
+    ),
   ]);
-
-  // Continue: prefer the next incomplete lesson in mindset; fall back to
-  // prompt only when mindset is fully completed AND prompt is unlocked.
-  const continueTargetId =
-    mindsetProgress.next_lesson_id ??
-    (promptProgress.is_unlocked ? promptProgress.next_lesson_id : null);
-  const continueLesson = continueTargetId
-    ? await loadLessonById(continueTargetId, lang)
-    : null;
-  const continueHref = continueTargetId ? `/lesson/${continueTargetId}` : "/lesson/mindset-01";
-  const continueTitle = continueLesson?.title ?? lessonsCopy.continueCard.fallbackTitle;
-  const isStarted = progress.length > 0;
 
   const showWelcome = profile.welcome_seen_at === null;
   const displayName = (profile.full_name ?? "").trim() || user.email!.split("@")[0];
 
   const lessonsCompleted = progress.filter((p) => p.completed).length;
+
+  // Levels are derived from total_xp on every read (see lib/levels.ts).
+  // Show the celebratory modal once per crossed threshold, tracked via
+  // last_level_up_notified on the user row.
+  const currentLevel = getLevelFromXP(profile.total_xp);
+  const showLevelUp = currentLevel > profile.last_level_up_notified;
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 py-8 sm:px-6 sm:py-12">
@@ -83,6 +98,14 @@ export default async function DashboardPage() {
           submitting={authCopy.welcomeCard.submitting}
         />
       )}
+      {showLevelUp && (
+        <LevelUpModal
+          fromLevel={profile.last_level_up_notified}
+          toLevel={currentLevel}
+          language={lang}
+        />
+      )}
+
       <DashboardGreeting
         copy={authCopy}
         name={displayName}
@@ -91,27 +114,24 @@ export default async function DashboardPage() {
         lessonsCompleted={lessonsCompleted}
       />
 
-      <ContinueCard
-        copy={lessonsCopy.continueCard}
-        lessonHref={continueHref}
-        lessonTitle={continueTitle}
-        isStarted={isStarted}
+      <MapTopBar
+        level={currentLevel}
+        totalXp={profile.total_xp}
+        language={lang}
       />
 
-      <section className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <PathOverviewCard
-          progress={mindsetProgress}
-          copy={lessonsCopy}
-          iconSrc="/brand/icon-path-mindset.svg"
-          prereqTitle={null}
-        />
-        <PathOverviewCard
-          progress={promptProgress}
-          copy={lessonsCopy}
-          iconSrc="/brand/icon-path-prompt.svg"
-          prereqTitle={lessonsCopy.pathDisplay.mindset.title}
-        />
-      </section>
+      <LearningMap
+        data={mapData}
+        copy={mapCopy}
+        lang={lang}
+        level={currentLevel}
+      />
+
+      <ReferralCard
+        userId={user.id}
+        fullName={profile.full_name}
+        lang={lang}
+      />
     </main>
   );
 }
