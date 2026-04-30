@@ -61,11 +61,17 @@ export type BonusSide = "left" | "right";
 export interface MapBonusAttachment {
   bonus: BonusPath;
   unlock: UnlockState;
+  /**
+   * Catalog-declared side preference. The layout helper may override this
+   * if the spine's concave at the slot lies on the other side (we always
+   * favour visual coherence — see lib/map/layout.ts).
+   */
   side: BonusSide;
-  // Which lesson on the spine the island branches off from. We anchor near
-  // the *last* lesson of the parent path so the bonus appears at the top
-  // of its parent's section (matching DASHBOARD_V2.md §1 illustration).
-  branchAtLessonIndex: number;
+  /**
+   * Position among siblings on the same parent (0 or 1). Drives vertical
+   * staggering so two bonuses on one parent don't overlap.
+   */
+  slotIndex: number;
 }
 
 export interface MapEndgameData {
@@ -236,14 +242,14 @@ export async function buildMapData(
     }
 
     // Bonus paths anchored to this main path, with the side from spec §3.
+    // slotIndex is assigned in catalog order — first attached bonus = slot 0.
     const bonusAttachments: MapBonusAttachment[] = listBonusPaths()
       .filter((b) => b.branch_from_path === slug)
-      .map((bonus) => ({
+      .map((bonus, index) => ({
         bonus,
         unlock: bonusUnlockStates[bonus.slug],
         side: BONUS_SIDE_BY_SLUG[bonus.slug],
-        // Anchor near the top of the parent section.
-        branchAtLessonIndex: Math.max(0, meta.totalLessons - 2),
+        slotIndex: index,
       }));
 
     return {

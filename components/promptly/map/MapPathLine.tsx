@@ -1,41 +1,32 @@
-// Decorative SVG that draws the curved dashed line connecting the lesson
-// nodes within a section. Server component — pure rendering.
+// Smooth sine-wave spine connecting the lesson nodes (Mimo-style).
+// Server component — pure rendering.
 //
-// The line is split into two visual states:
-//   - "walked" — solid, accent-coloured, between completed nodes (and to
-//     the current node).
-//   - "ahead" — dashed, muted, between not-yet-reached nodes.
+// Two visual layers:
+//   - "ahead": dashed, muted, the full spine from start to end
+//   - "walked": solid, accent-coloured, drawn ON TOP from start to the
+//     last completed/current node
+//
+// Both layers are sampled from the same sine in lib/map/layout.ts, so
+// nodes always sit exactly on the curve.
 
 import type { PathSlug } from "@/types";
-import { getNodePosition, NODE_ROW_HEIGHT_PX } from "@/lib/map/layout";
+import { buildSpinePathD } from "@/lib/map/layout";
 
 import type { NodeState } from "@/lib/map/data";
 
 interface Props {
   bioma: PathSlug;
   nodes: { state: NodeState }[];
-  height: number; // section height in px (matches BiomeBackground)
+  height: number; // section height in px
 }
 
 export function MapPathLine({ bioma, nodes, height }: Props) {
-  if (nodes.length < 2) return null;
+  if (nodes.length < 1) return null;
 
   const accent = `var(--bioma-${bioma}-accent)`;
 
-  // Translate (leftPercent, bottomPx) → (xViewBox, yViewBox).
-  // viewBox: width=100 (matches percent), height=`height` px.
-  const points = nodes.map((_, i) => {
-    const pos = getNodePosition(i, nodes.length);
-    return {
-      x: pos.leftPercent,
-      // SVG y grows downward; we want lesson 0 at bottom, so y = height - bottomPx.
-      y: height - pos.bottomPx,
-    };
-  });
-
-  // Build two paths: one walked (solid), one ahead (dashed). The split
-  // point is the LAST node in {completed, current} — the line up to (and
-  // including) the current node is "walked", everything after is "ahead".
+  // Find the last walked t — the last completed or current node defines
+  // where the solid line ends. -1 means nothing is walked yet.
   const lastWalkedIdx = (() => {
     for (let i = nodes.length - 1; i >= 0; i--) {
       if (nodes[i].state === "completed" || nodes[i].state === "current") {
@@ -45,24 +36,9 @@ export function MapPathLine({ bioma, nodes, height }: Props) {
     return -1;
   })();
 
-  function buildD(from: number, to: number): string {
-    if (to <= from) return "";
-    const segments: string[] = [`M ${points[from].x} ${points[from].y}`];
-    for (let i = from + 1; i <= to; i++) {
-      const prev = points[i - 1];
-      const cur = points[i];
-      // Quadratic Bezier with control point offset toward the previous y
-      // — gives a soft curve through the zigzag.
-      const cx = (prev.x + cur.x) / 2;
-      const cy = (prev.y + cur.y) / 2 - NODE_ROW_HEIGHT_PX * 0.05;
-      segments.push(`Q ${cx} ${cy} ${cur.x} ${cur.y}`);
-    }
-    return segments.join(" ");
-  }
-
-  const walkedD = lastWalkedIdx > 0 ? buildD(0, lastWalkedIdx) : "";
-  const aheadFrom = Math.max(0, lastWalkedIdx);
-  const aheadD = aheadFrom < nodes.length - 1 ? buildD(aheadFrom, nodes.length - 1) : "";
+  const fullD = buildSpinePathD(0, nodes.length - 1, height);
+  const walkedD =
+    lastWalkedIdx > 0 ? buildSpinePathD(0, lastWalkedIdx, height) : "";
 
   return (
     <svg
@@ -73,27 +49,26 @@ export function MapPathLine({ bioma, nodes, height }: Props) {
       viewBox={`0 0 100 ${height}`}
       preserveAspectRatio="none"
     >
-      {aheadD && (
-        <path
-          d={aheadD}
-          stroke={accent}
-          strokeWidth="2"
-          strokeOpacity="0.35"
-          strokeLinecap="round"
-          strokeDasharray="3 5"
-          fill="none"
-          // Path is drawn in % space (x: 0-100) but stroke-width is in
-          // user units. preserveAspectRatio="none" stretches the viewBox,
-          // so we use vector-effect to keep stroke crisp.
-          vectorEffect="non-scaling-stroke"
-        />
-      )}
+      {/* Ahead — full spine, muted dashed. */}
+      <path
+        d={fullD}
+        stroke={accent}
+        strokeWidth="6"
+        strokeOpacity="0.25"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeDasharray="4 8"
+        fill="none"
+        vectorEffect="non-scaling-stroke"
+      />
+      {/* Walked — drawn on top, solid. */}
       {walkedD && (
         <path
           d={walkedD}
           stroke={accent}
-          strokeWidth="3"
+          strokeWidth="6"
           strokeLinecap="round"
+          strokeLinejoin="round"
           fill="none"
           vectorEffect="non-scaling-stroke"
         />

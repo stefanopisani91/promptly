@@ -1,20 +1,21 @@
 // One path's section on the map. Server component — composes:
 //   - BiomeBackground (decorative SVG layer)
-//   - MapPathLine    (the connecting walked/ahead path)
-//   - MapNode[]      (lesson nodes, client islands)
-//   - MapBonusIsland[] + bonus bridges
+//   - MapPathLine    (the smooth sine-wave spine)
+//   - MapNode[]      (lesson nodes, client islands, sitting on the spine)
+//   - MapBonusIsland[] (nestled inside concave spaces of the spine)
 //   - MapRobotCursor (when this is the user's current path)
 //   - Section header banner with path title + tagline + progress.
 
-import type { Lang } from "@/types";
 import { Crown } from "lucide-react";
+import type { Lang } from "@/types";
+
 import { cn } from "@/lib/utils";
 import {
+  getBonusPosition,
   getNodePosition,
   getSectionHeight,
-  NODE_ROW_HEIGHT_PX,
 } from "@/lib/map/layout";
-import type { MapBonusAttachment, MapPathSection } from "@/lib/map/data";
+import type { MapPathSection } from "@/lib/map/data";
 import type { MapCopy } from "@/lib/i18n/map";
 import { PATH_META } from "@/lib/lessons/paths";
 
@@ -79,7 +80,9 @@ export function MapSection({
       <header
         className={cn(
           "absolute left-1/2 z-10 w-[88%] max-w-md -translate-x-1/2 rounded-2xl border bg-surface/90 px-4 py-3 text-center backdrop-blur-sm",
-          isSpace ? "border-[var(--bioma-ship-accent)]/40 bg-[var(--bioma-ship-bg-deep)]/85" : "border-border",
+          isSpace
+            ? "border-[var(--bioma-ship-accent)]/40 bg-[var(--bioma-ship-bg-deep)]/85"
+            : "border-border",
         )}
         style={{ top: 12 }}
       >
@@ -111,12 +114,13 @@ export function MapSection({
           {section.isUnlocked || section.isPro
             ? copy.pathProgress(section.completedLessons, section.totalLessons)
             : copy.pathLockedHint(
-                copy.paths[PATH_META[section.slug].prerequisitePath ?? "mindset"].title,
+                copy.paths[PATH_META[section.slug].prerequisitePath ?? "mindset"]
+                  .title,
               )}
         </p>
       </header>
 
-      {/* Lesson nodes (client islands). */}
+      {/* Lesson nodes — sit on the spine. */}
       {section.nodes.map((node) => {
         const pos = getNodePosition(node.index, totalNodes);
         return (
@@ -133,19 +137,26 @@ export function MapSection({
         );
       })}
 
-      {/* Bonus islands branching off this section (with bridges). */}
-      {section.bonusAttachments.map((attachment) => (
-        <BonusBranch
-          key={`${section.slug}-bonus-${attachment.bonus.slug}`}
-          attachment={attachment}
-          totalNodes={totalNodes}
-          sectionHeight={sectionHeight}
-          lang={lang}
-          biomaAccent={`var(--bioma-${section.slug}-accent)`}
-        />
-      ))}
+      {/* Bonus islands nestled in the concave spaces of the spine. */}
+      {section.bonusAttachments.map((attachment) => {
+        const pos = getBonusPosition(
+          totalNodes,
+          attachment.slotIndex,
+          attachment.side,
+        );
+        return (
+          <MapBonusIsland
+            key={`${section.slug}-bonus-${attachment.bonus.slug}`}
+            bonus={attachment.bonus}
+            unlock={attachment.unlock}
+            lang={lang}
+            bottomPx={pos.bottomPx}
+            leftPercent={pos.leftPercent}
+          />
+        );
+      })}
 
-      {/* Robot cursor — placed on top of the current node. */}
+      {/* Robot cursor — placed on top of the current node, on the spine. */}
       {robotAtIndex !== null && (
         <MapRobotCursor
           level={level}
@@ -155,73 +166,5 @@ export function MapSection({
         />
       )}
     </section>
-  );
-}
-
-// ─── Bonus branch (bridge SVG + island) ─────────────────────────────
-
-interface BonusBranchProps {
-  attachment: MapBonusAttachment;
-  totalNodes: number;
-  sectionHeight: number;
-  lang: Lang;
-  biomaAccent: string;
-}
-
-function BonusBranch({
-  attachment,
-  totalNodes,
-  sectionHeight,
-  lang,
-  biomaAccent,
-}: BonusBranchProps) {
-  const spinePos = getNodePosition(attachment.branchAtLessonIndex, totalNodes);
-  const islandBottomPx = spinePos.bottomPx + NODE_ROW_HEIGHT_PX * 0.4;
-
-  // SVG bridge: from the spine node to the island. Drawn in viewBox="0 0 100 H".
-  const svgY1 = sectionHeight - spinePos.bottomPx;
-  const svgY2 = sectionHeight - islandBottomPx;
-  const svgX1 = spinePos.leftPercent;
-  // Island sits at the section edge — approx 12% inset matches the
-  // `left-2`/`right-2` on the island button (8px inside ~600px container).
-  const svgX2 = attachment.side === "left" ? 12 : 88;
-  // Cubic bezier control points for a soft arc.
-  const cpX1 = svgX1;
-  const cpY1 = (svgY1 + svgY2) / 2;
-  const cpX2 = svgX2;
-  const cpY2 = cpY1;
-  const bridgePath = `M ${svgX1} ${svgY1} C ${cpX1} ${cpY1}, ${cpX2} ${cpY2}, ${svgX2} ${svgY2}`;
-
-  return (
-    <>
-      <svg
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0"
-        width="100%"
-        height={sectionHeight}
-        viewBox={`0 0 100 ${sectionHeight}`}
-        preserveAspectRatio="none"
-      >
-        <path
-          d={bridgePath}
-          stroke={biomaAccent}
-          strokeWidth="2"
-          strokeOpacity="0.4"
-          strokeDasharray="4 6"
-          fill="none"
-          vectorEffect="non-scaling-stroke"
-        />
-      </svg>
-      <MapBonusIsland
-        bonus={attachment.bonus}
-        unlock={attachment.unlock}
-        lang={lang}
-        side={attachment.side}
-        bottomPx={islandBottomPx}
-        spineNodeBottomPx={spinePos.bottomPx}
-        spineNodeLeftPercent={spinePos.leftPercent}
-        anchorIndex={attachment.branchAtLessonIndex}
-      />
-    </>
   );
 }
