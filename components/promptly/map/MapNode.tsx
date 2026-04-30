@@ -5,9 +5,9 @@ import { useState, type ReactNode } from "react";
 import { Check, Crown, Lock } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import type { PathSlug } from "@/types";
+import type { Lang, PathSlug } from "@/types";
 import type { MapNodeData } from "@/lib/map/data";
-import type { MapCopy } from "@/lib/i18n/map";
+import { getMapCopy } from "@/lib/i18n/map";
 
 import { MapNodeDetailsModal, type NodeModalContent } from "./MapNodeDetailsModal";
 
@@ -17,7 +17,10 @@ interface Props {
   pathTitle: string;
   /** lesson-display index (1-based) shown inside the node when available */
   positionLabel: number;
-  copy: MapCopy;
+  // We pass `lang` instead of the resolved MapCopy so we don't ship i18n
+  // *functions* across the RSC boundary — they aren't serializable.
+  // The lookup is cheap and stays on the client.
+  lang: Lang;
   /** Position styling from the layout helper. */
   bottomPx: number;
   leftPercent: number;
@@ -30,10 +33,11 @@ export function MapNode({
   bioma,
   pathTitle,
   positionLabel,
-  copy,
+  lang,
   bottomPx,
   leftPercent,
 }: Props) {
+  const copy = getMapCopy(lang);
   const [modal, setModal] = useState<NodeModalContent | null>(null);
 
   function openCompletedModal() {

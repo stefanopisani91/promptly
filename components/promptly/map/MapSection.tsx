@@ -126,7 +126,7 @@ export function MapSection({
             bioma={section.slug}
             pathTitle={pathCopy.title}
             positionLabel={node.index + 1}
-            copy={copy}
+            lang={lang}
             bottomPx={pos.bottomPx}
             leftPercent={pos.leftPercent}
           />
@@ -141,7 +141,6 @@ export function MapSection({
           totalNodes={totalNodes}
           sectionHeight={sectionHeight}
           lang={lang}
-          mapCopy={copy}
           biomaAccent={`var(--bioma-${section.slug}-accent)`}
         />
       ))}
@@ -166,7 +165,6 @@ interface BonusBranchProps {
   totalNodes: number;
   sectionHeight: number;
   lang: Lang;
-  mapCopy: MapCopy;
   biomaAccent: string;
 }
 
@@ -175,7 +173,6 @@ function BonusBranch({
   totalNodes,
   sectionHeight,
   lang,
-  mapCopy,
   biomaAccent,
 }: BonusBranchProps) {
   const spinePos = getNodePosition(attachment.branchAtLessonIndex, totalNodes);
@@ -219,7 +216,6 @@ function BonusBranch({
         bonus={attachment.bonus}
         unlock={attachment.unlock}
         lang={lang}
-        mapCopy={mapCopy}
         side={attachment.side}
         bottomPx={islandBottomPx}
         spineNodeBottomPx={spinePos.bottomPx}

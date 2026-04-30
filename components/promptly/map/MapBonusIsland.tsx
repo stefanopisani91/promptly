@@ -6,15 +6,17 @@ import { Lock, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { BonusPath, Lang, UnlockState } from "@/types";
 import { describeUnlockState, getBonusPathsCopy } from "@/lib/i18n/bonus-paths";
-import type { MapCopy } from "@/lib/i18n/map";
+import { getMapCopy } from "@/lib/i18n/map";
 
 import { MapNodeDetailsModal, type NodeModalContent } from "./MapNodeDetailsModal";
 
 interface Props {
   bonus: BonusPath;
   unlock: UnlockState;
+  // Same reasoning as MapNode: only `lang` crosses the RSC boundary, and
+  // i18n copy is resolved on the client. MapCopy contains function fields
+  // that can't be serialized.
   lang: Lang;
-  mapCopy: MapCopy;
   side: "left" | "right";
   /** y position relative to section bottom, in px. */
   bottomPx: number;
@@ -32,7 +34,6 @@ export function MapBonusIsland({
   bonus,
   unlock,
   lang,
-  mapCopy,
   side,
   bottomPx,
   spineNodeBottomPx,
@@ -41,6 +42,7 @@ export function MapBonusIsland({
   void spineNodeBottomPx;
   void spineNodeLeftPercent;
   const [modalOpen, setModalOpen] = useState(false);
+  const mapCopy = getMapCopy(lang);
   const bonusCopy = getBonusPathsCopy(lang);
   const title = lang === "it" ? bonus.title_it : bonus.title_en;
   const description = lang === "it" ? bonus.description_it : bonus.description_en;
