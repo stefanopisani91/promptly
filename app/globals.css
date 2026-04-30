@@ -117,6 +117,28 @@ h6 {
   animation: spin-slow 4s linear infinite;
 }
 
+/* AlternatingDemoButton — shimmer sweep */
+@keyframes shimmer {
+  0% {
+    transform: skewX(-12deg) translateX(-120%);
+  }
+  60%,
+  100% {
+    transform: skewX(-12deg) translateX(220%);
+  }
+}
+
+/* AlternatingDemoButton — terminal cursor blink */
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-spin-slow {
     animation: none;

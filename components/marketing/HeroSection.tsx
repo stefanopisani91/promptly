@@ -7,6 +7,7 @@ import type { Lang } from "@/types";
 import type { LandingCopy } from "@/lib/i18n/landing";
 import { track } from "@/lib/analytics/posthog";
 import { HeroMockup } from "./HeroMockup";
+import { AlternatingDemoButton } from "./AlternatingDemoButton";
 
 interface Props {
   copy: LandingCopy["hero"];
@@ -79,13 +80,10 @@ export function HeroSection({ copy, lang }: Props) {
                 {copy.ctaPrimary}
                 <ArrowRight className="h-4 w-4" />
               </Link>
-              <a
-                href="#exercise-demo"
+              <AlternatingDemoButton
+                label={copy.ctaSecondary}
                 onClick={onSecondary}
-                className="inline-flex items-center justify-center rounded-md border border-border bg-surface px-6 py-3 text-base font-medium text-text-primary transition-colors hover:border-primary hover:text-primary-deep"
-              >
-                {copy.ctaSecondary}
-              </a>
+              />
             </div>
 
             <p className="mt-5 text-sm text-text-muted">{copy.reminder}</p>
