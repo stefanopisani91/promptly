@@ -82,6 +82,7 @@ export function HeroSection({ copy, lang }: Props) {
               </Link>
               <AlternatingDemoButton
                 label={copy.ctaSecondary}
+                bugLabel={copy.ctaBug}
                 onClick={onSecondary}
               />
             </div>

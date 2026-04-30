@@ -34,10 +34,11 @@ function randomSparkles(): Sparkle[] {
 
 interface Props {
   label: string;
+  bugLabel: string;
   onClick?: () => void;
 }
 
-export function AlternatingDemoButton({ label, onClick }: Props) {
+export function AlternatingDemoButton({ label, bugLabel, onClick }: Props) {
   const [variant, setVariant] = useState<"example" | "bug">("example");
   const [transitioning, setTransitioning] = useState(false);
   const [sparkles, setSparkles] = useState<Sparkle[]>(() => randomSparkles());
@@ -131,7 +132,7 @@ export function AlternatingDemoButton({ label, onClick }: Props) {
 
       {/* Label */}
       <span className={isExample ? "" : "tracking-wide"}>
-        {isExample ? label : "fixa il bug"}
+        {isExample ? label : bugLabel}
       </span>
 
       {/* Terminal cursor blink — only for bug variant */}

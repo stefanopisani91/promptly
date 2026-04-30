@@ -20,6 +20,7 @@ export interface LandingCopy {
     sub: string;
     ctaPrimary: string;
     ctaSecondary: string;
+    ctaBug: string;
     reminder: string;
     mockup: {
       url: string;

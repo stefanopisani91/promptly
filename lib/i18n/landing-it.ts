@@ -18,9 +18,10 @@ export const landingCopyIt: LandingCopy = {
     sub: "Promptly è il corso interattivo di vibe coding: impari a parlare con l'AI per costruire software vero. Lezioni brevi, esercizi pratici, risultati che vedi crescere ogni giorno.",
     ctaPrimary: "Inizia gratis",
     ctaSecondary: "Vedi un esempio",
+    ctaBug: "fixa il bug",
     reminder: "14 lezioni gratis · No carta di credito · 5 minuti al giorno",
     mockup: {
-      url: "promptly.app/lezione/1",
+      url: "learnpromptly.app/lezione/1",
       lessonTitle: "Cos'è il vibe coding?",
       lessonStep: "Lezione 1 · Esercizio",
       promptLabel: "Completa la definizione",
@@ -144,7 +145,7 @@ export const landingCopyIt: LandingCopy = {
   exercise: {
     title: "Prova una lezione, ora.",
     sub: "Una vera mini-lezione. Nessun login.",
-    url: "promptly.app/lezione/1",
+    url: "learnpromptly.app/lezione/1",
     lessonStep: "Lezione 1 · Esercizio interattivo",
     lessonTitle: "Cos'è il vibe coding?",
     promptLabel: "Completa la definizione",
@@ -347,8 +348,8 @@ export const landingCopyIt: LandingCopy = {
         links: [
           { label: "Domande frequenti", href: "#faq" },
           { label: "Curriculum", href: "#curriculum" },
-          { label: "Aiuto", href: "mailto:support@promptly.app" },
-          { label: "Contatti", href: "mailto:hello@promptly.app" },
+          { label: "Aiuto", href: "mailto:support@learnpromptly.app" },
+          { label: "Contatti", href: "mailto:hello@learnpromptly.app" },
         ],
       },
       legal: {
