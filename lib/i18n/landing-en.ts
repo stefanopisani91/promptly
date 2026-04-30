@@ -175,6 +175,81 @@ export const landingCopyEn: LandingCopy = {
       ariaFeedback: "Exercise status",
     },
   },
+  evaluator: {
+    badge: "Live Demo",
+    modeLabel: "local heuristics",
+    title: "How effective is",
+    titleEm: "your prompt?",
+    sub: "Read the bug. Write the prompt you'd send to an AI for help. Get structured feedback in real time.",
+    bug: {
+      code: `async function showUserNames() {\n  const users = await fetchUsers();\n  const names = users.map(u =>\n    u.name.toUpperCase()\n  );\n  setUserNames(names);\n}`,
+      error: `Uncaught (in promise) TypeError:\nCannot read properties of undefined\n(reading 'toUpperCase')\n    at showUserNames (app.js:4)`,
+      hint: "Sometimes it works, sometimes it crashes. We're loading users from an API.",
+    },
+    bashTab: "bash — debug-session",
+    cmdCat: "$ cat app.js",
+    cmdRun: "$ npm run dev",
+    editorTab: "prompt.md",
+    resultTab: "result.json",
+    evalLabel: "RESULT",
+    evaluatingLabel: "EVALUATING",
+    adviceLabel: "ADVICE",
+    textareaPlaceholder:
+      "// Write here the prompt you would send to the AI\n// to fix the bug on the left...",
+    ariaTextarea: "Write your prompt here",
+    ariaScore: "Total prompt score",
+    ariaBar: "Dimension score",
+    runBtn: "evaluate prompt",
+    runningBtn: "analyzing...",
+    resetBtn: "retry",
+    statusReady: "ready",
+    statusEvaluating: "analyzing...",
+    statusEvaluated: "evaluated",
+    charsLabel: "chars",
+    scoreLabels: {
+      excellent: "EXCELLENT",
+      good: "GOOD",
+      improve: "NEEDS WORK",
+      insufficient: "INSUFFICIENT",
+    },
+    dimensions: {
+      chiarezza: {
+        label: "clarity",
+        desc: "exact error",
+        advice:
+          "Always include the exact error as text (e.g. 'TypeError: Cannot read properties...') instead of describing it in words.",
+      },
+      contesto: {
+        label: "context",
+        desc: "environment / code",
+        advice:
+          "Explain what the code does and where it runs: framework, async, where data comes from. Without context the AI is guessing.",
+      },
+      obiettivo: {
+        label: "goal",
+        desc: "what you want",
+        advice:
+          "State what you want and ask for an explanation too. 'Fix it' isn't enough — describe the expected behavior.",
+      },
+      protezione: {
+        label: "guardrails",
+        desc: "constraints",
+        advice:
+          "Add constraints: 'don't touch the rest', 'make the minimal change', 'tell me what you change and why'.",
+      },
+    },
+    consiglio: {
+      excellent:
+        "Excellent prompt: the AI has everything it needs to give you a thoughtful, safe answer. Keep going.",
+      excellentWithWeak:
+        "Very good prompt. To make it perfect, strengthen {dim}: {advice}",
+      good: "Good prompt. To push it to excellence, work on {dim}: {advice}",
+      medium: "Weak spot: {dim}. {advice}",
+      low: "The prompt is too generic. {advice}",
+    },
+    footer:
+      "A small taste of Promptly — the app that teaches you real vibe coding.",
+  },
   socialProof: {
     eyebrow: "COMMUNITY",
     title: "A community starting today.",

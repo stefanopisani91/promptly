@@ -178,6 +178,81 @@ export const landingCopyIt: LandingCopy = {
       ariaFeedback: "Stato esercizio",
     },
   },
+  evaluator: {
+    badge: "Live Demo",
+    modeLabel: "valutazione locale",
+    title: "Quanto è efficace",
+    titleEm: "il tuo prompt?",
+    sub: "Leggi il bug. Scrivi il prompt che useresti per chiedere aiuto a un'AI. Ricevi un feedback strutturato.",
+    bug: {
+      code: `async function showUserNames() {\n  const users = await fetchUsers();\n  const names = users.map(u =>\n    u.name.toUpperCase()\n  );\n  setUserNames(names);\n}`,
+      error: `Uncaught (in promise) TypeError:\nCannot read properties of undefined\n(reading 'toUpperCase')\n    at showUserNames (app.js:4)`,
+      hint: "A volte funziona, a volte crasha. Stiamo caricando utenti da un'API.",
+    },
+    bashTab: "bash — debug-session",
+    cmdCat: "$ cat app.js",
+    cmdRun: "$ npm run dev",
+    editorTab: "prompt.md",
+    resultTab: "result.json",
+    evalLabel: "RISULTATO",
+    evaluatingLabel: "VALUTAZIONE",
+    adviceLabel: "CONSIGLIO",
+    textareaPlaceholder:
+      "// Scrivi qui il prompt che invieresti all'AI\n// per risolvere il bug a sinistra...",
+    ariaTextarea: "Scrivi il tuo prompt qui",
+    ariaScore: "Punteggio totale del prompt",
+    ariaBar: "Punteggio dimensione",
+    runBtn: "valuta prompt",
+    runningBtn: "analisi in corso...",
+    resetBtn: "riprova",
+    statusReady: "pronto",
+    statusEvaluating: "analisi...",
+    statusEvaluated: "valutato",
+    charsLabel: "caratteri",
+    scoreLabels: {
+      excellent: "ECCELLENTE",
+      good: "BUONO",
+      improve: "DA MIGLIORARE",
+      insufficient: "INSUFFICIENTE",
+    },
+    dimensions: {
+      chiarezza: {
+        label: "chiarezza",
+        desc: "errore esatto",
+        advice:
+          "Includi sempre l'errore esatto come testo (es. 'TypeError: Cannot read properties...') invece di descriverlo a parole.",
+      },
+      contesto: {
+        label: "contesto",
+        desc: "ambiente / codice",
+        advice:
+          "Spiega cosa fa il codice e in che ambiente gira: framework, async, da dove arrivano i dati. Senza contesto l'AI tira a indovinare.",
+      },
+      obiettivo: {
+        label: "obiettivo",
+        desc: "cosa vuoi",
+        advice:
+          "Dichiara cosa vuoi ottenere e chiedi anche una spiegazione. 'Sistemalo' non basta: di' come dovrebbe comportarsi.",
+      },
+      protezione: {
+        label: "protezione",
+        desc: "vincoli",
+        advice:
+          "Aggiungi vincoli: 'non modificare il resto', 'fai la modifica minima', 'spiegami cosa cambi e perché'.",
+      },
+    },
+    consiglio: {
+      excellent:
+        "Prompt eccellente: l'AI ha tutto il necessario per darti una soluzione ragionata e sicura. Continua così.",
+      excellentWithWeak:
+        "Prompt molto buono. Per renderlo perfetto, rinforza la {dim}: {advice}",
+      good: "Buon prompt. Per portarlo all'eccellenza, lavora sulla {dim}: {advice}",
+      medium: "Punto debole: {dim}. {advice}",
+      low: "Il prompt è troppo generico. {advice}",
+    },
+    footer:
+      "Un piccolo assaggio di Promptly — l'app che ti insegna a fare vibe coding davvero.",
+  },
   socialProof: {
     eyebrow: "COMUNITÀ",
     title: "Una comunità che inizia oggi.",

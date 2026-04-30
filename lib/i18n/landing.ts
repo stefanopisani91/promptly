@@ -1,4 +1,5 @@
 import type { Lang } from "@/types";
+import type { EvaluatorCopy } from "@/lib/evaluator/types";
 import { landingCopyIt } from "./landing-it";
 import { landingCopyEn } from "./landing-en";
 
@@ -90,6 +91,7 @@ export interface LandingCopy {
       ariaFeedback: string;
     };
   };
+  evaluator: EvaluatorCopy;
   socialProof: {
     eyebrow: string;
     title: string;
