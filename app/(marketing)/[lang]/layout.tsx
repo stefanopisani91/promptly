@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { isLang, type Lang } from "@/types";
 import { getLandingCopy } from "@/lib/i18n/landing";
+import { SITE_URL } from "@/lib/site";
 import { MarketingHeader } from "@/components/marketing/MarketingHeader";
 import { MarketingFooter } from "@/components/marketing/MarketingFooter";
 import { PostHogProvider } from "@/components/analytics/PostHogProvider";
@@ -26,6 +27,41 @@ export function generateMetadata({
   return {
     title: copy.meta.title,
     description: copy.meta.description,
+    keywords:
+      lang === "it"
+        ? [
+            "vibe coding",
+            "corso vibe coding",
+            "imparare a programmare con AI",
+            "prompt engineering corso",
+            "costruire app senza codice",
+            "AI coding corso",
+            "no-code AI",
+          ]
+        : [
+            "vibe coding",
+            "vibe coding course",
+            "learn AI coding",
+            "prompt engineering course",
+            "build apps without code",
+            "AI coding tutorial",
+            "no-code AI",
+          ],
+    authors: [{ name: "Promptly", url: SITE_URL }],
+    creator: "Promptly",
+    publisher: "Promptly",
+    category: "education",
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+        "max-video-preview": -1,
+      },
+    },
     alternates: {
       canonical: `/${lang}`,
       languages: {

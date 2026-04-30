@@ -2,9 +2,9 @@ import type { LandingCopy } from "./landing";
 
 export const landingCopyIt: LandingCopy = {
   meta: {
-    title: "Promptly — Impara a costruire con le parole, non con il codice",
+    title: "Vibe Coding: corso interattivo gratis · Promptly",
     description:
-      "Il primo corso interattivo di vibe coding. Trasforma le tue idee in app vere, senza scrivere codice. Inizia gratis con 14 lezioni.",
+      "Impara il vibe coding con Promptly: parla con l'AI per costruire app vere senza scrivere codice. 14 lezioni gratis, 5 minuti al giorno. Inizia subito.",
   },
   header: {
     login: "Accedi",
@@ -13,9 +13,9 @@ export const landingCopyIt: LandingCopy = {
     closeMenu: "Chiudi il menu",
   },
   hero: {
-    eyebrow: "IMPARA A USARE L'AI PER COSTRUIRE",
+    eyebrow: "VIBE CODING · IMPARA A COSTRUIRE CON L'AI",
     headline: "Trasforma le tue idee in app vere.\nSenza scrivere una riga di codice.",
-    sub: "Promptly ti insegna a parlare con l'AI per costruire software vero. Lezioni brevi, esercizi pratici, risultati che vedi crescere ogni giorno.",
+    sub: "Promptly è il corso interattivo di vibe coding: impari a parlare con l'AI per costruire software vero. Lezioni brevi, esercizi pratici, risultati che vedi crescere ogni giorno.",
     ctaPrimary: "Inizia gratis",
     ctaSecondary: "Vedi un esempio",
     reminder: "14 lezioni gratis · No carta di credito · 5 minuti al giorno",
@@ -265,52 +265,52 @@ export const landingCopyIt: LandingCopy = {
     sub: "Tutto quello che vuoi sapere prima di iniziare.",
     items: [
       {
-        q: "Cos'è il vibe coding?",
-        a: "È il modo di costruire software parlando con l'AI in linguaggio naturale, invece di scrivere codice riga per riga. Tu descrivi cosa vuoi, l'AI lo crea.",
+        q: "Cos'è il vibe coding e come funziona?",
+        a: "Vibe coding significa costruire software parlando con un'AI in linguaggio naturale, invece di scrivere codice riga per riga. Tu descrivi cosa vuoi — un'app, un sito, un piccolo strumento — e l'AI lo crea con te. È il modo più veloce oggi per trasformare un'idea in qualcosa di reale, anche se non hai mai programmato.",
       },
       {
-        q: "Devo già saper programmare?",
-        a: "No. Promptly nasce per chi parte da zero. Se sai scrivere un'email, sai abbastanza per iniziare.",
+        q: "Posso imparare il vibe coding senza saper programmare?",
+        a: "Sì, e anzi è il caso d'uso ideale. Promptly è pensato per chi parte da zero: se sai scrivere un messaggio chiaro, sai già il 70% di quello che ti serve per fare vibe coding. Non installiamo niente, non ti chiediamo termini tecnici — ti insegniamo come pensare e come parlare all'AI.",
       },
       {
-        q: "Quanto costa?",
-        a: "Le prime 14 lezioni sono gratis, sempre. Per il percorso completo c'è il piano Pro, attivabile dopo aver provato gratis.",
+        q: "Quanto costa il corso di vibe coding di Promptly?",
+        a: "Le prime 14 lezioni di vibe coding sono gratis, sempre, senza carta di credito. Per il percorso completo (38 lezioni, esercizi avanzati, progetto finale online) c'è il piano Pro, che attivi solo se vuoi continuare. Nessun trial nascosto, nessun rinnovo automatico a sorpresa.",
       },
       {
-        q: "Quanto tempo serve per finire il corso?",
-        a: "5 minuti al giorno per circa 6 settimane, se vuoi prendertela con calma. Più veloce se sei di fretta — il ritmo lo decidi tu.",
+        q: "In quanto tempo si impara il vibe coding?",
+        a: "Bastano 5 minuti al giorno: con questo ritmo finisci in circa 6 settimane le 38 lezioni totali. Se vuoi accelerare puoi farne più di una al giorno — il ritmo lo decidi tu, e l'app ti tiene traccia dei progressi così non perdi lo slancio.",
       },
       {
-        q: "Cosa mi serve per iniziare?",
-        a: "Un browser e 5 minuti. Niente da installare, niente carta di credito.",
+        q: "Cosa serve per iniziare a costruire app con l'AI?",
+        a: "Un browser e 5 minuti liberi: niente da installare, niente carta di credito, niente account su mille piattaforme. Apri Promptly, scegli la prima lezione di vibe coding e inizi subito a parlare con l'AI per costruire qualcosa di tuo.",
       },
       {
-        q: "Funziona davvero anche per chi non è 'tecnico'?",
-        a: "Sì — anzi, è il caso d'uso che ci interessa di più. Il corso è progettato per chi non ha mai aperto un editor di codice.",
+        q: "Il vibe coding funziona davvero per chi non è tecnico?",
+        a: "Sì — è esattamente il pubblico per cui Promptly è stato costruito. Il corso non assume nessuna conoscenza pregressa di codice o terminale: parte dal modo di pensare, ti insegna a fare le domande giuste all'AI, e ti porta a costruire un'app vera passo dopo passo.",
       },
       {
-        q: "Quale AI userò durante le lezioni?",
-        a: "Lavoreremo con i modelli più diffusi (Claude, ChatGPT). Ti insegniamo i principi, non un singolo strumento.",
+        q: "Quale AI si usa per fare vibe coding (Claude, ChatGPT)?",
+        a: "Lavoriamo principalmente con Claude (Anthropic) e ChatGPT (OpenAI), i due modelli più diffusi per il vibe coding. Ti insegniamo i principi del prompt engineering che valgono per qualsiasi AI: quando cambierà il modello dominante, saprai adattarti senza ricominciare da capo.",
       },
       {
-        q: "Alla fine del corso avrò un progetto vero?",
-        a: "Sì. L'ultima tappa è 'Pubblica al Mondo': esci con un'app online, funzionante, che hai costruito tu.",
+        q: "A fine corso avrò un'app online costruita da me?",
+        a: "Sì. L'ultima tappa del percorso si chiama 'Pubblica al Mondo': esci con un'app vera, online, funzionante, costruita interamente da te tramite vibe coding. Non un esercizio chiuso nell'app, ma un progetto che puoi condividere con un link.",
       },
       {
-        q: "Posso disdire Pro quando voglio?",
-        a: "Sì, in un click dalle impostazioni. Niente penali, niente domande.",
+        q: "Posso annullare l'abbonamento Pro di Promptly quando voglio?",
+        a: "Sì, in un click dalle impostazioni del tuo account. Niente penali, niente domande, niente catene di email per trattenerti. Se Pro non fa per te, lo disattivi e mantieni comunque l'accesso alle 14 lezioni gratuite.",
       },
       {
-        q: "Come sono strutturate le lezioni?",
-        a: "Ogni lezione è una micro-storia: una spiegazione breve, un esercizio interattivo, un risultato che vedi subito. Niente video da 30 minuti.",
+        q: "Come sono strutturate le lezioni di vibe coding di Promptly?",
+        a: "Ogni lezione è una micro-storia di 5 minuti: una spiegazione breve del concetto, un esercizio interattivo dove provi davvero, un risultato che vedi subito. Niente video da 30 minuti, niente quiz a crocette — è tutto pratico, tutto orientato a costruire qualcosa.",
       },
       {
-        q: "C'è una community?",
-        a: "Sì, abbiamo uno spazio per chi sta seguendo il corso — per condividere progetti, fare domande, vedere cosa stanno costruendo gli altri.",
+        q: "C'è una community di vibe coder dove confrontarsi?",
+        a: "Sì, abbiamo uno spazio dedicato a chi sta seguendo Promptly: condividi i progetti che stai costruendo, fai domande quando l'AI ti blocca, vedi cosa stanno facendo gli altri vibe coder. Imparare in compagnia funziona meglio che in solitaria.",
       },
       {
-        q: "Da quale lezione devo iniziare?",
-        a: "Dalla prima — 'La Mente del Vibe Coder'. È pensata per chi parte da zero, e ti dà il modo di pensare giusto per tutto il resto del corso.",
+        q: "Da dove iniziare a imparare il vibe coding da zero?",
+        a: "Dalla prima lezione: 'La Mente del Vibe Coder'. È pensata proprio per chi parte da zero e ti dà il modo di pensare giusto per tutto il resto del corso — prima di toccare un'AI, capisci come ragionare. Da lì il percorso ti porta gradualmente a costruire la tua prima app.",
       },
     ],
   },
@@ -332,6 +332,8 @@ export const landingCopyIt: LandingCopy = {
       resources: {
         heading: "Risorse",
         links: [
+          { label: "Domande frequenti", href: "#faq" },
+          { label: "Curriculum", href: "#curriculum" },
           { label: "Aiuto", href: "mailto:support@promptly.app" },
           { label: "Contatti", href: "mailto:hello@promptly.app" },
         ],

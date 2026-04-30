@@ -2,9 +2,9 @@ import type { LandingCopy } from "./landing";
 
 export const landingCopyEn: LandingCopy = {
   meta: {
-    title: "Promptly — Learn to build with words, not code",
+    title: "Vibe Coding Course: Build Apps with AI · Promptly",
     description:
-      "The first interactive vibe coding course. Turn your ideas into real apps without writing code. Start free with 14 lessons.",
+      "Learn vibe coding with Promptly: talk to AI and build real apps without writing code. 14 free lessons, 5 minutes a day. Start free, no credit card.",
   },
   header: {
     login: "Log in",
@@ -13,9 +13,9 @@ export const landingCopyEn: LandingCopy = {
     closeMenu: "Close menu",
   },
   hero: {
-    eyebrow: "LEARN TO BUILD WITH AI",
+    eyebrow: "VIBE CODING · LEARN TO BUILD WITH AI",
     headline: "Turn your ideas into real apps.\nWithout writing a single line of code.",
-    sub: "Promptly teaches you how to talk to AI to build real software. Short lessons, hands-on exercises, results you see growing every day.",
+    sub: "Promptly is the interactive vibe coding course: learn to talk to AI to build real software. Short lessons, hands-on exercises, results you see growing every day.",
     ctaPrimary: "Start free",
     ctaSecondary: "Try an example",
     reminder: "14 free lessons · No credit card · 5 minutes a day",
@@ -262,52 +262,52 @@ export const landingCopyEn: LandingCopy = {
     sub: "Everything you want to know before starting.",
     items: [
       {
-        q: "What is vibe coding?",
-        a: "It's the practice of building software by talking to AI in natural language, instead of writing code line by line. You describe what you want, the AI builds it.",
+        q: "What is vibe coding and how does it work?",
+        a: "Vibe coding means building software by talking to an AI in plain English instead of writing code line by line. You describe what you want — an app, a website, a small tool — and the AI builds it with you. It's the fastest way today to turn an idea into something real, even if you've never coded before.",
       },
       {
-        q: "Do I need to know how to code?",
-        a: "No. Promptly is built for people starting from zero. If you can write an email, you know enough to begin.",
+        q: "Can I learn vibe coding without knowing how to code?",
+        a: "Yes — that's actually the whole point. Promptly is built for absolute beginners: if you can write a clear message, you already know about 70% of what's needed to vibe code. Nothing to install, no jargon required, just learning how to think and how to talk to AI.",
       },
       {
-        q: "How much does it cost?",
-        a: "The first 14 lessons are free, forever. The full path is on the Pro plan, which you can activate after trying the free lessons.",
+        q: "How much does the Promptly vibe coding course cost?",
+        a: "The first 14 vibe coding lessons are free forever, no credit card required. The full path (38 lessons, advanced exercises, final live project) is on the Pro plan, which you only activate if you want to keep going. No hidden trial, no surprise renewal.",
       },
       {
-        q: "How long does the course take?",
-        a: "5 minutes a day for about 6 weeks, if you go slow. Faster if you want — you set the pace.",
+        q: "How long does it take to learn vibe coding?",
+        a: "Just 5 minutes a day: at that pace you finish all 38 lessons in about 6 weeks. If you want to go faster you can do several in a row — you set the rhythm, and the app keeps track of your progress so you don't lose momentum.",
       },
       {
-        q: "What do I need to start?",
-        a: "A browser and 5 minutes. Nothing to install, no credit card.",
+        q: "What do I need to start building apps with AI?",
+        a: "A browser and 5 free minutes: nothing to install, no credit card, no signing up across a dozen platforms. Open Promptly, pick the first vibe coding lesson, and start talking to an AI to build something of your own right away.",
       },
       {
-        q: "Does it really work for non-technical people?",
-        a: "Yes — that's actually our main audience. The course is designed for people who've never opened a code editor.",
+        q: "Does vibe coding really work for non-technical people?",
+        a: "Yes — non-technical people are exactly who Promptly is built for. The course assumes zero prior knowledge of code or terminals: it starts from the mindset, teaches you to ask the right questions of an AI, and walks you step by step toward shipping a real app.",
       },
       {
-        q: "Which AI will I use in the lessons?",
-        a: "We'll work with the most-used models (Claude, ChatGPT). We teach the principles, not a single tool.",
+        q: "Which AI is used for vibe coding (Claude, ChatGPT)?",
+        a: "We work mainly with Claude (Anthropic) and ChatGPT (OpenAI), the two most widely used models for vibe coding. We teach the prompt engineering principles that hold for any AI: when the dominant model changes, you'll know how to adapt without starting over.",
       },
       {
-        q: "Will I have a real project by the end?",
-        a: "Yes. The final path is 'Ship': you walk out with a real, live app that you built yourself.",
+        q: "Will I have a live, real app at the end of the course?",
+        a: "Yes. The final stage of the path is called 'Ship to the World': you walk out with a real, live, working app that you built entirely through vibe coding — not a sandbox exercise locked inside the app, but a project you can share with a link.",
       },
       {
-        q: "Can I cancel Pro anytime?",
-        a: "Yes, one click from settings. No penalty, no questions.",
+        q: "Can I cancel my Promptly Pro subscription anytime?",
+        a: "Yes, in one click from your account settings. No penalty, no questions, no email chains trying to keep you. If Pro isn't for you, you turn it off and you still keep access to the 14 free vibe coding lessons.",
       },
       {
-        q: "How are the lessons structured?",
-        a: "Each lesson is a micro-story: a short explanation, an interactive exercise, a result you see immediately. No 30-minute videos.",
+        q: "How are Promptly's vibe coding lessons structured?",
+        a: "Every lesson is a 5-minute micro-story: a short explanation of the concept, an interactive exercise where you actually try it, and a result you see right away. No 30-minute videos, no multiple-choice quizzes — it's all hands-on, all aimed at building.",
       },
       {
-        q: "Is there a community?",
-        a: "Yes, we have a space for people taking the course — to share projects, ask questions, see what others are building.",
+        q: "Is there a community of vibe coders to learn with?",
+        a: "Yes, there's a dedicated space for people taking Promptly: share the projects you're building, ask questions when the AI gets you stuck, see what other vibe coders are working on. Learning with others beats learning alone.",
       },
       {
-        q: "Which lesson should I start from?",
-        a: "With the first one — 'The Mindset'. It's designed for absolute beginners, and gives you the right way of thinking for the rest of the course.",
+        q: "Where should a complete beginner start with vibe coding?",
+        a: "Start with the first lesson: 'The Mindset of the Vibe Coder'. It's designed for total beginners and gives you the right way of thinking for the rest of the course — before you ever touch an AI, you understand how to reason. From there the path takes you step by step to your first app.",
       },
     ],
   },
@@ -329,6 +329,8 @@ export const landingCopyEn: LandingCopy = {
       resources: {
         heading: "Resources",
         links: [
+          { label: "FAQ", href: "#faq" },
+          { label: "Curriculum", href: "#curriculum" },
           { label: "Help", href: "mailto:support@promptly.app" },
           { label: "Contact", href: "mailto:hello@promptly.app" },
         ],

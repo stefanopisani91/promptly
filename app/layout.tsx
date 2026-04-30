@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import { headers } from "next/headers";
+import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 type Lang = "en" | "it";
@@ -29,7 +30,7 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://promptly.app"),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "Promptly — Learn to build with words, not code",
     template: "%s · Promptly",

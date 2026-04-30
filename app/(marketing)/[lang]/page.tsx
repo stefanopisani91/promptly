@@ -10,6 +10,7 @@ import { SocialProofSection } from "@/components/marketing/SocialProofSection";
 import { FAQSection } from "@/components/marketing/FAQSection";
 import { ClosingCTA } from "@/components/marketing/ClosingCTA";
 import { JsonLdCourse } from "@/components/marketing/JsonLdCourse";
+import { JsonLdFAQ } from "@/components/marketing/JsonLdFAQ";
 
 export default function LandingPage({ params }: { params: { lang: string } }) {
   if (!isLang(params.lang)) notFound();
@@ -23,6 +24,7 @@ export default function LandingPage({ params }: { params: { lang: string } }) {
         name={copy.meta.title}
         description={copy.meta.description}
       />
+      <JsonLdFAQ items={copy.faq.items} />
       <HeroSection copy={copy.hero} lang={lang} />
       <ProblemSection copy={copy.problem} />
       <SolutionSection copy={copy.solution} />

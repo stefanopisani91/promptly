@@ -41,6 +41,18 @@ export function JsonLdCourse({ lang, name, description }: Props) {
       courseWorkload: "PT5M",
     },
     educationalLevel: "Beginner",
+    coursePrerequisites: "None",
+    educationalCredentialAwarded: "Certificate of completion",
+    audience: {
+      "@type": "EducationalAudience",
+      educationalRole: "student",
+    },
+    about: [
+      "Vibe coding",
+      "AI-assisted software development",
+      "Prompt engineering",
+    ],
+    numberOfCredits: 38,
     teaches: [
       "Vibe coding",
       "Prompt engineering",
