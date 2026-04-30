@@ -33,19 +33,35 @@ export const landingCopyEn: LandingCopy = {
     },
   },
   problem: {
-    title: "You have an idea, but code is blocking you.",
-    subtitle: "Sound familiar?",
-    cards: [
-      { emoji: "📌", quote: "I want to build my idea, but I can't code." },
+    eyebrow: "Sound familiar?",
+    title: "The infinite\nbug loop of vibe coding.",
+    sub: "The story of trying to build with AI without knowing how to guide it.",
+    steps: [
       {
-        emoji: "🌪",
-        quote: "I tried coding courses, but they're long and abstract.",
+        iconSlug: "idea",
+        title: "You have a brilliant idea.",
+        description:
+          "AI feels like the perfect way to turn it into a real app. You start vibe coding, full of energy.",
       },
       {
-        emoji: "🤖",
-        quote: "AI looks promising, but I don't know how to actually use it.",
+        iconSlug: "wrench",
+        title: "Something breaks.",
+        description:
+          "You write a prompt for the AI to fix the bug. It seems to work. You let out a sigh of relief and move on.",
+      },
+      {
+        iconSlug: "loop",
+        kickerEyebrow: "Three hours later, ten prompts later",
+        title: "Now something else has broken.",
+        description: "Then another piece. And another. You're back to square one.",
+        kickerEnd: "Or worse.",
       },
     ],
+    conclusion: {
+      line1: "It's not your fault. No one taught you how to guide AI.",
+      microExpertise: "It's problem #1 for anyone starting vibe coding without a method.",
+      bridge: "But it can be learned.",
+    },
   },
   solution: {
     title: "Promptly teaches you to build with words.",

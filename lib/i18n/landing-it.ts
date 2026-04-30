@@ -33,22 +33,35 @@ export const landingCopyIt: LandingCopy = {
     },
   },
   problem: {
-    title: "Hai un'idea, ma il codice ti blocca.",
-    subtitle: "Suona familiare?",
-    cards: [
+    eyebrow: "Ti suona familiare?",
+    title: "Il ciclo infinito\ndei bug del vibe coding.",
+    sub: "La storia di chi prova a costruire con l'AI senza sapere come guidarla.",
+    steps: [
       {
-        emoji: "📌",
-        quote: "Vorrei costruire la mia idea, ma non so programmare.",
+        iconSlug: "idea",
+        title: "Hai un'idea geniale.",
+        description:
+          "L'AI sembra il modo perfetto per trasformarla in app. Inizi a fare vibe coding, pieno di entusiasmo.",
       },
       {
-        emoji: "🌪",
-        quote: "Ho provato i corsi di coding, ma sono lunghi e astratti.",
+        iconSlug: "wrench",
+        title: "Qualcosa si rompe.",
+        description:
+          "Scrivi un prompt all'AI per sistemare il bug. Sembra funzionare. Tiri un sospiro di sollievo e vai avanti.",
       },
       {
-        emoji: "🤖",
-        quote: "L'AI sembra promettente, ma non so come usarla davvero.",
+        iconSlug: "loop",
+        kickerEyebrow: "Tre ore dopo, dieci prompt più tardi",
+        title: "Ma ora si è rotto qualcos'altro.",
+        description: "E poi un altro pezzo. E un altro ancora. Sei nello stesso punto.",
+        kickerEnd: "O peggio.",
       },
     ],
+    conclusion: {
+      line1: "Non è colpa tua. Nessuno ti ha insegnato a guidare l'AI.",
+      microExpertise: "È il problema #1 di chi inizia il vibe coding senza metodo.",
+      bridge: "Ma si può imparare.",
+    },
   },
   solution: {
     title: "Promptly ti insegna a costruire con le parole.",

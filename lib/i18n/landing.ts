@@ -35,9 +35,21 @@ export interface LandingCopy {
     };
   };
   problem: {
+    eyebrow: string;
     title: string;
-    subtitle: string;
-    cards: { emoji: string; quote: string }[];
+    sub: string;
+    steps: {
+      iconSlug: "idea" | "wrench" | "loop";
+      kickerEyebrow?: string;
+      title: string;
+      description: string;
+      kickerEnd?: string;
+    }[];
+    conclusion: {
+      line1: string;
+      microExpertise: string;
+      bridge: string;
+    };
   };
   solution: {
     title: string;
