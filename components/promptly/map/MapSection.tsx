@@ -9,7 +9,6 @@
 import { Crown } from "lucide-react";
 import type { Lang } from "@/types";
 
-import { cn } from "@/lib/utils";
 import {
   getBonusPosition,
   getNodePosition,
@@ -48,14 +47,6 @@ export function MapSection({
   const totalNodes = section.totalLessons;
   const sectionHeight = getSectionHeight(totalNodes);
 
-  const isSpace = section.slug === "ship";
-  const titleColor = isSpace
-    ? "text-[var(--bioma-ship-text)]"
-    : "text-text-primary";
-  const taglineColor = isSpace
-    ? "text-[var(--bioma-ship-accent)]"
-    : "text-text-secondary";
-
   const pathCopy = copy.paths[section.slug];
 
   return (
@@ -76,23 +67,16 @@ export function MapSection({
         height={sectionHeight}
       />
 
-      {/* Section header banner — sits at the top of this section. */}
+      {/* Section header banner — sits at the top of every section.
+          Solid `--background` colour for cross-bioma coherence with the
+          rest of the dashboard (no translucency, no backdrop blur).
+          Future per-section content (image / animation) lands inside. */}
       <header
-        className={cn(
-          "absolute left-1/2 z-10 w-[88%] max-w-md -translate-x-1/2 rounded-2xl border bg-surface/90 px-4 py-3 text-center backdrop-blur-sm",
-          isSpace
-            ? "border-[var(--bioma-ship-accent)]/40 bg-[var(--bioma-ship-bg-deep)]/85"
-            : "border-border",
-        )}
+        className="absolute left-1/2 z-10 w-[88%] max-w-md -translate-x-1/2 rounded-2xl border border-border bg-background px-4 py-3 text-center"
         style={{ top: 12 }}
       >
         <div className="flex items-center justify-center gap-2">
-          <h3
-            className={cn(
-              "font-heading text-base font-bold leading-tight",
-              isSpace ? "text-[var(--bioma-ship-text)]" : titleColor,
-            )}
-          >
+          <h3 className="font-heading text-base font-bold leading-tight text-text-primary">
             {pathCopy.title}
           </h3>
           {section.isPro && (
@@ -102,14 +86,7 @@ export function MapSection({
             </span>
           )}
         </div>
-        <p
-          className={cn(
-            "mt-0.5 text-xs",
-            isSpace ? "text-[var(--bioma-ship-accent)]" : taglineColor,
-          )}
-        >
-          {pathCopy.tagline}
-        </p>
+        <p className="mt-0.5 text-xs text-text-secondary">{pathCopy.tagline}</p>
         <p className="mt-1 font-mono text-[11px] text-text-muted">
           {section.isUnlocked || section.isPro
             ? copy.pathProgress(section.completedLessons, section.totalLessons)

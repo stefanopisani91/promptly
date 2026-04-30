@@ -15,9 +15,11 @@
 // than tacked on as branches.
 
 export const NODE_ROW_HEIGHT_PX = 96;
-// The top padding leaves room for the section header banner. Bottom
+// The top padding leaves room for the section header banner. Sized
+// generously so the banner can grow with future content (image /
+// animation) without colliding with the first lesson node. Bottom
 // padding is just breathing room before the next biome starts.
-export const SECTION_TOP_PADDING_PX = 104;
+export const SECTION_TOP_PADDING_PX = 156;
 export const SECTION_BOTTOM_PADDING_PX = 56;
 
 // Sine parameters — tuned visually for legibility at 320px viewport.
