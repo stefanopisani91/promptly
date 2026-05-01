@@ -14,7 +14,6 @@ import { DashboardGreeting } from "@/components/dashboard/DashboardGreeting";
 import { DashboardStatsGrid } from "@/components/dashboard/DashboardStatsGrid";
 import { ContinueCard } from "@/components/dashboard/ContinueCard";
 import { DailyGoalCard } from "@/components/dashboard/DailyGoalCard";
-import { PathMiniGrid } from "@/components/dashboard/PathMiniGrid";
 import type { RecentLessonItem } from "@/components/dashboard/RecentLessonsList";
 import { WelcomeCard } from "@/components/dashboard/WelcomeCard";
 import { LevelUpModal } from "@/components/promptly/LevelUpModal";
@@ -225,10 +224,6 @@ export default async function DashboardPage() {
           activeDates={activeDates}
           recentLessons={recentLessons}
         />
-      </div>
-
-      <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 lg:max-w-5xl">
-        <PathMiniGrid paths={mapData.paths} copy={authCopy.pathsGrid} />
       </div>
 
       <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 lg:max-w-5xl">
