@@ -1,33 +1,29 @@
-import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import type { Database } from "./types";
 
 export function createClient() {
-  const store = cookies();
+  const cookieStore = cookies();
 
   return createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get(name: string) {
-          return store.get(name)?.value;
+        getAll() {
+          return cookieStore.getAll();
         },
-        set(name: string, value: string, options: CookieOptions) {
-          // In a Server Component cookies() is read-only and `set` throws.
-          // Route Handlers and Server Actions can write — swallow the throw
-          // so the same client works in both contexts.
+        setAll(cookiesToSet) {
+          // In a Server Component cookies() is read-only and set() throws.
+          // Route Handlers and Server Actions can write. We swallow the error
+          // here so the same client works in both contexts — token refreshes
+          // are handled by middleware.ts which CAN write to response cookies.
           try {
-            store.set({ name, value, ...options });
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options),
+            );
           } catch {
-            /* noop */
-          }
-        },
-        remove(name: string, options: CookieOptions) {
-          try {
-            store.set({ name, value: "", ...options });
-          } catch {
-            /* noop */
+            /* noop — expected in Server Components; middleware handles refresh */
           }
         },
       },

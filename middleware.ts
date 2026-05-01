@@ -1,14 +1,59 @@
-// Middleware intentionally disabled.
-// Language routing is handled by app/page.tsx (root redirect) + app/[lang]/layout.tsx.
-// This file exists because the build pipeline expects it; the matcher below
-// never matches a real path, so this middleware is never invoked at runtime.
+// Middleware: session refresh only.
+//
+// This middleware does ONE thing: it calls supabase.auth.getUser() so that
+// any expired access tokens are refreshed and the new tokens are written to
+// both the response cookies (sent back to the browser) and the forwarded
+// request (so Server Components downstream read the fresh session).
+//
+// Language routing is handled by app/page.tsx + app/[lang]/layout.tsx and
+// does NOT need to live here. Authorization (redirecting unauthenticated
+// users) is handled by the individual layouts / pages, not here.
+//
+// IMPORTANT: do NOT add logic between createServerClient and getUser() —
+// a bug there can clear session cookies without refreshing, causing random
+// logouts.
 
-import { NextResponse } from "next/server";
+import { createServerClient } from "@supabase/ssr";
+import { NextResponse, type NextRequest } from "next/server";
 
-export function middleware() {
-  return NextResponse.next();
+export async function middleware(request: NextRequest) {
+  let supabaseResponse = NextResponse.next({ request });
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
+        },
+        setAll(cookiesToSet) {
+          // Write refreshed tokens into the forwarded request so Server
+          // Components see them via cookies() from next/headers.
+          cookiesToSet.forEach(({ name, value }) =>
+            request.cookies.set(name, value),
+          );
+          // Also write them into the response so the browser stores the
+          // new tokens and sends them on the next request.
+          supabaseResponse = NextResponse.next({ request });
+          cookiesToSet.forEach(({ name, value, options }) =>
+            supabaseResponse.cookies.set(name, value, options),
+          );
+        },
+      },
+    },
+  );
+
+  // Refresh the session. If the access token is expired this call will use
+  // the refresh token to obtain a new one and persist it via setAll above.
+  await supabase.auth.getUser();
+
+  return supabaseResponse;
 }
 
 export const config = {
-  matcher: ["/__noop_never_match_xyz__/:path*"],
+  matcher: [
+    // Run on every path except Next.js internals and static assets.
+    "/((?!_next/static|_next/image|favicon\\.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+  ],
 };
