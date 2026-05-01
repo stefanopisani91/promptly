@@ -1,32 +1,29 @@
-// Smooth sine-wave spine connecting the lesson nodes (Mimo-style,
-// top-down). Server component — pure rendering.
+// Smooth sine-wave spine connecting the lesson nodes. Renders in either
+// vertical (top-down) or horizontal (left-to-right) orientation, picking
+// the matching layout helpers from lib/map/layout.ts.
 //
 // Two visual layers:
-//   - "ahead": dashed, muted, the full spine from start to end
-//   - "walked": solid, accent-coloured, drawn ON TOP from start to the
-//     last completed/current node
-//
-// Both layers are sampled from the same sine in lib/map/layout.ts, so
-// nodes always sit exactly on the curve.
+//   - "ahead": dashed, muted, full spine
+//   - "walked": solid accent on top, ending at the last completed/current node
 
 import type { PathSlug } from "@/types";
-import { buildSpinePathD } from "@/lib/map/layout";
+import { buildSpinePathD, buildSpinePathDH } from "@/lib/map/layout";
 
 import type { NodeState } from "@/lib/map/data";
 
 interface Props {
   bioma: PathSlug;
   nodes: { state: NodeState }[];
-  height: number; // section height in px
+  /** Section height in px. For horizontal mode this is the band height. */
+  height: number;
+  orientation: "vertical" | "horizontal";
 }
 
-export function MapPathLine({ bioma, nodes, height }: Props) {
+export function MapPathLine({ bioma, nodes, height, orientation }: Props) {
   if (nodes.length < 1) return null;
 
   const accent = `var(--bioma-${bioma}-accent)`;
 
-  // Find the last walked t — the last completed or current node defines
-  // where the solid line ends. -1 means nothing is walked yet.
   const lastWalkedIdx = (() => {
     for (let i = nodes.length - 1; i >= 0; i--) {
       if (nodes[i].state === "completed" || nodes[i].state === "current") {
@@ -36,8 +33,13 @@ export function MapPathLine({ bioma, nodes, height }: Props) {
     return -1;
   })();
 
-  const fullD = buildSpinePathD(0, nodes.length - 1);
-  const walkedD = lastWalkedIdx > 0 ? buildSpinePathD(0, lastWalkedIdx) : "";
+  const buildD = (from: number, to: number) =>
+    orientation === "horizontal"
+      ? buildSpinePathDH(from, to, nodes.length)
+      : buildSpinePathD(from, to);
+
+  const fullD = buildD(0, nodes.length - 1);
+  const walkedD = lastWalkedIdx > 0 ? buildD(0, lastWalkedIdx) : "";
 
   return (
     <svg
@@ -48,7 +50,6 @@ export function MapPathLine({ bioma, nodes, height }: Props) {
       viewBox={`0 0 100 ${height}`}
       preserveAspectRatio="none"
     >
-      {/* Ahead — full spine, muted dashed. */}
       <path
         d={fullD}
         stroke={accent}
@@ -60,7 +61,6 @@ export function MapPathLine({ bioma, nodes, height }: Props) {
         fill="none"
         vectorEffect="non-scaling-stroke"
       />
-      {/* Walked — drawn on top, solid. */}
       {walkedD && (
         <path
           d={walkedD}

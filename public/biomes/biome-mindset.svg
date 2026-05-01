@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="sky-mind" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFE9D8"></stop>
+      <stop offset="1" stop-color="#F5C99B"></stop>
+    </linearGradient>
+    <radialGradient id="sun-mind" cx=".75" cy=".25" r=".4">
+      <stop offset="0" stop-color="#FFC78A" stop-opacity=".9"></stop>
+      <stop offset="1" stop-color="#FFC78A" stop-opacity="0"></stop>
+    </radialGradient>
+  </defs>
+  <rect width="400" height="240" fill="url(#sky-mind)"></rect>
+  <circle cx="320" cy="48" r="28" fill="#FFB070" opacity=".7"></circle>
+  <circle cx="300" cy="60" r="60" fill="url(#sun-mind)"></circle>
+  
+  <path d="M0 170 Q 60 130 120 150 T 240 145 T 400 158 L 400 240 L 0 240 Z" fill="#E5A883" opacity=".55"></path>
+  <path d="M0 195 Q 80 165 160 180 T 320 178 T 400 188 L 400 240 L 0 240 Z" fill="#C97C5E" opacity=".6"></path>
+  
+  <g transform="translate(70 165)">
+    <rect x="0" y="14" width="32" height="26" fill="#EFE4D7"></rect>
+    <polygon points="-3,14 16,0 35,14" fill="#A23E12"></polygon>
+    <rect x="12" y="24" width="9" height="16" fill="#7A4226"></rect>
+  </g>
+  <g transform="translate(180 158)">
+    <rect x="0" y="18" width="40" height="32" fill="#FFF1EB"></rect>
+    <polygon points="-4,18 20,0 44,18" fill="#C8521F"></polygon>
+    <rect x="8" y="30" width="9" height="20" fill="#7A4226"></rect>
+    <rect x="24" y="28" width="9" height="9" fill="#F5C99B"></rect>
+  </g>
+  <g transform="translate(280 168)">
+    <rect x="0" y="14" width="28" height="22" fill="#EFE4D7"></rect>
+    <polygon points="-3,14 14,2 31,14" fill="#A23E12"></polygon>
+  </g>
+  
+  <g fill="#6B8E5A">
+    <circle cx="40" cy="180" r="12"></circle>
+    <circle cx="148" cy="178" r="10"></circle>
+    <circle cx="240" cy="182" r="14"></circle>
+    <circle cx="350" cy="184" r="11"></circle>
+  </g>
+</svg>

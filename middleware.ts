@@ -53,7 +53,13 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Run on every path except Next.js internals and static assets.
-    "/((?!_next/static|_next/image|favicon\\.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    /*
+     * Run on all paths EXCEPT:
+     * - Next.js internals (_next/static, _next/image)
+     * - favicon and static assets
+     * - Auth routes (/auth/*) — the PKCE OAuth callback must run without
+     *   middleware interference; session-refresh is not needed there anyway.
+     */
+    "/((?!_next/static|_next/image|favicon\\.ico|auth/|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

@@ -34,7 +34,7 @@ export function LearningMap({ data, copy, lang, level }: Props) {
     <div
       role="region"
       aria-label="Learning map"
-      className="-mx-4 overflow-hidden rounded-3xl border border-border bg-background sm:-mx-6"
+      className="-mx-4 overflow-hidden rounded-3xl border border-border bg-background shadow-[0_18px_38px_rgba(17,24,39,0.10),_0_4px_10px_rgba(17,24,39,0.06)] sm:-mx-6 lg:mx-0"
     >
       {sectionsTopDown.map((section) => {
         const isRobotInSection = data.current.pathSlug === section.slug;
@@ -43,7 +43,6 @@ export function LearningMap({ data, copy, lang, level }: Props) {
             key={section.slug}
             section={section}
             lang={lang}
-            copy={copy}
             level={level}
             robotAtIndex={
               isRobotInSection ? data.current.lessonIndex : null

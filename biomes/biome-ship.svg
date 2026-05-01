@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <radialGradient id="sky-ship" cx=".5" cy=".4" r=".8">
+      <stop offset="0" stop-color="#3F4548"></stop>
+      <stop offset="1" stop-color="#2C2F33"></stop>
+    </radialGradient>
+  </defs>
+  <rect width="400" height="240" fill="url(#sky-ship)"></rect>
+  
+  <g fill="#EFE4D7">
+    <circle cx="40" cy="30" r="1"></circle><circle cx="70" cy="60" r="0.8"></circle>
+    <circle cx="120" cy="40" r="1.2"></circle><circle cx="170" cy="25" r="0.8"></circle>
+    <circle cx="220" cy="55" r="1"></circle><circle cx="280" cy="35" r="1.2"></circle>
+    <circle cx="330" cy="70" r="0.9"></circle><circle cx="370" cy="40" r="1"></circle>
+    <circle cx="50" cy="100" r="0.8"></circle><circle cx="100" cy="110" r="1"></circle>
+    <circle cx="200" cy="100" r="0.7"></circle><circle cx="350" cy="115" r="1"></circle>
+  </g>
+  
+  <circle cx="320" cy="80" r="32" fill="#E5A883"></circle>
+  <ellipse cx="320" cy="80" rx="46" ry="6" fill="none" stroke="#C97C5E" stroke-width="2.5" opacity=".8"></ellipse>
+  <circle cx="310" cy="74" r="6" fill="#C97C5E" opacity=".6"></circle>
+  <circle cx="328" cy="86" r="4" fill="#C97C5E" opacity=".5"></circle>
+  
+  <path d="M80 200 Q 130 160 180 130 T 260 80" stroke="#E8703F" stroke-width="2" fill="none" stroke-dasharray="4 5" opacity=".8"></path>
+  
+  <g transform="translate(255 70) rotate(35)">
+    <path d="M0 0 L 6 -22 L 12 0 Z" fill="#EFE4D7"></path>
+    <rect x="2" y="0" width="8" height="14" fill="#E8703F"></rect>
+    <path d="M2 14 L 6 22 L 10 14 Z" fill="#FFC78A"></path>
+  </g>
+  
+  <path d="M0 220 Q 200 195 400 220 L 400 240 L 0 240 Z" fill="#345B5A"></path>
+</svg>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState, useTransition } from "react";
+import { useCallback, useEffect, useState, useTransition } from "react";
 import { Copy, Share2 } from "lucide-react";
 
 import { activateReferralLink } from "@/app/(app)/dashboard/actions";
@@ -78,8 +78,14 @@ export function ReferralShareButton({
     await handleCopy();
   }, [claimActivation, copy.share, referrerName, referralUrl, handleCopy]);
 
-  const supportsShare =
-    typeof window !== "undefined" && "share" in window.navigator;
+  // Defer the navigator.share probe to after mount so the server render and
+  // the first client render agree (both omit the button). Without this,
+  // hydration mismatches with `<button> in <div>` on browsers that support
+  // the Web Share API.
+  const [supportsShare, setSupportsShare] = useState(false);
+  useEffect(() => {
+    setSupportsShare(typeof navigator !== "undefined" && "share" in navigator);
+  }, []);
 
   return (
     <>

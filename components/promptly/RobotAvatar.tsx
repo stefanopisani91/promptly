@@ -1,4 +1,6 @@
-import { getRobotSvg } from "@/lib/avatar";
+import Image from "next/image";
+
+import { getRobotPath } from "@/lib/avatar";
 import { getLevelInfo } from "@/lib/levels";
 
 export type RobotAvatarSize = "sm" | "md" | "lg";
@@ -6,14 +8,13 @@ export type RobotAvatarSize = "sm" | "md" | "lg";
 interface Props {
   level: number;
   size?: RobotAvatarSize;
-  // Optional override label for screen readers; defaults to robot name.
   ariaLabel?: string;
   className?: string;
 }
 
 const SIZE_CLASS: Record<RobotAvatarSize, string> = {
-  sm: "h-10 w-10", // 40px
-  md: "h-20 w-20", // 80px
+  sm: "h-10 w-10",
+  md: "h-20 w-20",
   lg: "h-[120px] w-[120px]",
 };
 
@@ -25,13 +26,10 @@ const PIXELS: Record<RobotAvatarSize, number> = {
 
 export function RobotAvatar({ level, size = "md", ariaLabel, className }: Props) {
   const info = getLevelInfo(level);
-  const svg = getRobotSvg(info.level);
   const px = PIXELS[size];
 
   return (
     <div
-      role="img"
-      aria-label={ariaLabel ?? info.robot_name}
       className={[
         "relative flex shrink-0 items-center justify-center rounded-2xl bg-primary-light",
         SIZE_CLASS[size],
@@ -40,8 +38,15 @@ export function RobotAvatar({ level, size = "md", ariaLabel, className }: Props)
         .filter(Boolean)
         .join(" ")}
       style={{ width: px, height: px }}
-      // DiceBear emits a static SVG document with no scripts; safe to inline.
-      dangerouslySetInnerHTML={{ __html: svg }}
-    />
+    >
+      <Image
+        src={getRobotPath(info.level)}
+        alt={ariaLabel ?? info.robot_name}
+        width={px}
+        height={px}
+        priority={size === "lg"}
+        className="h-full w-full object-contain"
+      />
+    </div>
   );
 }

@@ -15,15 +15,17 @@ interface Props {
   node: MapNodeData;
   bioma: PathSlug;
   pathTitle: string;
-  /** lesson-display index (1-based) shown inside the node when available */
   positionLabel: number;
-  // We pass `lang` instead of the resolved MapCopy so we don't ship i18n
-  // *functions* across the RSC boundary — they aren't serializable.
-  // The lookup is cheap and stays on the client.
   lang: Lang;
-  /** Position styling from the layout helper (top-down coords). */
   topPx: number;
   leftPercent: number;
+  /**
+   * Where to anchor the hover popover relative to the node.
+   * "top" places the card above the node, "bottom" below — chosen by the
+   * caller based on the node's position in the section so the card never
+   * gets clipped at the section edge.
+   */
+  popoverSide?: "top" | "bottom";
 }
 
 const NODE_SIZE_CLASS = "h-14 w-14 sm:h-16 sm:w-16";
@@ -36,6 +38,7 @@ export function MapNode({
   lang,
   topPx,
   leftPercent,
+  popoverSide = "top",
 }: Props) {
   const copy = getMapCopy(lang);
   const [modal, setModal] = useState<NodeModalContent | null>(null);
@@ -66,54 +69,56 @@ export function MapNode({
     });
   }
 
-  // Clickable states: completed/current/available navigate or open a modal;
-  // locked nodes are non-interactive but still expose an accessible label.
   const accent = `var(--bioma-${bioma}-accent)`;
 
   const baseClasses = cn(
-    "absolute flex shrink-0 items-center justify-center rounded-full border-2 font-heading text-base font-bold transition-transform",
+    "flex shrink-0 items-center justify-center rounded-full border-2 font-heading text-base font-bold transition-transform",
     NODE_SIZE_CLASS,
   );
-
-  const positionStyle: React.CSSProperties = {
-    top: topPx,
-    left: `${leftPercent}%`,
-    transform: "translate(-50%, -50%)",
-  };
 
   let content: ReactNode;
   let stateClass = "";
   let stateStyle: React.CSSProperties = {};
+  let stateLabel: string;
+  let stateColor: string;
 
   switch (node.state) {
     case "completed": {
       content = <Check className="h-6 w-6 text-white" strokeWidth={3} aria-hidden />;
       stateClass = "border-transparent text-white shadow-md hover:scale-110";
       stateStyle = { background: accent };
+      stateLabel = copy.legend.completed;
+      stateColor = "#16A34A";
       break;
     }
     case "current": {
       content = <span className="text-text-primary">{positionLabel}</span>;
       stateClass =
         "map-node-pulse border-primary bg-surface text-primary shadow-lg hover:scale-110";
+      stateLabel = copy.legend.current;
+      stateColor = "var(--primary)";
       break;
     }
     case "available": {
-      content = (
-        <span style={{ color: accent }}>{positionLabel}</span>
-      );
+      content = <span style={{ color: accent }}>{positionLabel}</span>;
       stateClass = "bg-surface hover:scale-110";
       stateStyle = { borderColor: accent };
+      stateLabel = copy.legend.current;
+      stateColor = accent;
       break;
     }
     case "locked_sequential": {
       content = <Lock className="h-5 w-5 text-text-muted" aria-hidden />;
       stateClass = "border-border bg-surface-muted opacity-70";
+      stateLabel = copy.legend.locked;
+      stateColor = "var(--text-muted)";
       break;
     }
     case "locked_pro": {
       content = <Crown className="h-5 w-5 text-pro-accent" aria-hidden />;
       stateClass = "border-pro-accent bg-pro-light text-pro-accent";
+      stateLabel = copy.legend.pro;
+      stateColor = "var(--pro-accent)";
       break;
     }
   }
@@ -123,50 +128,48 @@ export function MapNode({
     ? `${pathTitle} — ${node.title}`
     : `${pathTitle} — ${positionLabel}`;
 
-  // Render: nav link / modal trigger / non-interactive — picked per state.
-  let element: ReactNode;
+  // Inner element — link / button / span depending on state.
+  let inner: ReactNode;
   if (node.state === "completed") {
-    element = (
+    inner = (
       <button
         type="button"
         onClick={openCompletedModal}
         className={sharedClasses}
-        style={{ ...positionStyle, ...stateStyle }}
+        style={stateStyle}
         aria-label={accessibleLabel}
       >
         {content}
       </button>
     );
   } else if (node.state === "locked_pro") {
-    element = (
+    inner = (
       <button
         type="button"
         onClick={openProModal}
         className={sharedClasses}
-        style={{ ...positionStyle, ...stateStyle }}
+        style={stateStyle}
         aria-label={`${accessibleLabel} — ${copy.legend.pro}`}
       >
         {content}
       </button>
     );
   } else if ((node.state === "current" || node.state === "available") && node.href) {
-    element = (
+    inner = (
       <Link
         href={node.href}
         className={sharedClasses}
-        style={{ ...positionStyle, ...stateStyle }}
+        style={stateStyle}
         aria-label={accessibleLabel}
       >
         {content}
       </Link>
     );
   } else {
-    // locked_sequential or any state without a target — render a span with
-    // a native title tooltip rather than an inert button.
-    element = (
+    inner = (
       <span
         className={cn(sharedClasses, "cursor-not-allowed")}
-        style={{ ...positionStyle, ...stateStyle }}
+        style={stateStyle}
         title={`${accessibleLabel} — ${copy.legend.locked}`}
         aria-label={`${accessibleLabel} — ${copy.legend.locked}`}
       >
@@ -175,9 +178,53 @@ export function MapNode({
     );
   }
 
+  // Hover popover — desktop-only (lg+). Hidden via Tailwind below the
+  // breakpoint; on touch devices it'd be a UX regression to show on tap.
+  const popoverClasses = cn(
+    "pointer-events-none absolute left-1/2 z-30 hidden w-56 -translate-x-1/2 rounded-xl border border-border bg-surface p-3 text-left opacity-0 shadow-lg transition-opacity duration-150",
+    "lg:group-hover:block lg:group-hover:opacity-100",
+    "lg:group-focus-within:block lg:group-focus-within:opacity-100",
+    popoverSide === "top" ? "bottom-full mb-3" : "top-full mt-3",
+  );
+
   return (
     <>
-      {element}
+      <div
+        className="group absolute"
+        style={{
+          top: topPx,
+          left: `${leftPercent}%`,
+          transform: "translate(-50%, -50%)",
+        }}
+      >
+        {inner}
+        <div role="tooltip" className={popoverClasses}>
+          <div className="mb-1 flex items-center gap-1.5">
+            <span
+              className="inline-block h-1.5 w-1.5 rounded-full"
+              style={{ background: stateColor }}
+              aria-hidden
+            />
+            <span
+              className="text-[10px] font-bold uppercase tracking-wider"
+              style={{ color: stateColor }}
+            >
+              {stateLabel}
+            </span>
+            <span className="ml-auto text-[10px] font-semibold uppercase tracking-wider text-text-muted">
+              {pathTitle}
+            </span>
+          </div>
+          <p className="font-heading text-sm font-bold leading-snug text-text-primary">
+            {node.title ?? `${pathTitle} ${positionLabel}`}
+          </p>
+          {node.xpEarned !== undefined && (
+            <p className="mt-1 text-xs font-medium text-text-muted">
+              ⚡ {node.xpEarned} XP
+            </p>
+          )}
+        </div>
+      </div>
       {modal && (
         <MapNodeDetailsModal
           content={modal}

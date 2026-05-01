@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="sky-prom" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#C9D5C2"></stop>
+      <stop offset="1" stop-color="#A6A89B"></stop>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="240" fill="url(#sky-prom)"></rect>
+  
+  <ellipse cx="100" cy="130" rx="140" ry="18" fill="#fff" opacity=".25"></ellipse>
+  <ellipse cx="280" cy="150" rx="160" ry="14" fill="#fff" opacity=".2"></ellipse>
+  
+  <g fill="#345B5A" opacity=".7">
+    <polygon points="20,200 35,140 50,200"></polygon>
+    <polygon points="60,210 78,135 96,210"></polygon>
+    <polygon points="100,205 118,150 136,205"></polygon>
+    <polygon points="150,200 172,128 194,200"></polygon>
+    <polygon points="210,210 230,140 250,210"></polygon>
+    <polygon points="270,205 290,135 310,205"></polygon>
+    <polygon points="320,200 342,142 364,200"></polygon>
+  </g>
+  
+  <g fill="#2C4A4A">
+    <polygon points="0,240 25,150 50,240"></polygon>
+    <polygon points="40,240 70,135 100,240"></polygon>
+    <polygon points="90,240 122,148 154,240"></polygon>
+    <polygon points="150,240 180,140 210,240"></polygon>
+    <polygon points="210,240 245,150 280,240"></polygon>
+    <polygon points="280,240 312,138 344,240"></polygon>
+    <polygon points="340,240 370,150 400,240"></polygon>
+  </g>
+  
+  <g fill="#F59E0B">
+    <circle cx="80" cy="90" r="2.5" opacity=".8"></circle>
+    <circle cx="180" cy="70" r="2" opacity=".7"></circle>
+    <circle cx="240" cy="100" r="2.5" opacity=".9"></circle>
+    <circle cx="320" cy="80" r="2" opacity=".7"></circle>
+  </g>
+</svg>

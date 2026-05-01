@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="sky-build" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F0EBE3"></stop>
+      <stop offset="1" stop-color="#DDD8D2"></stop>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="240" fill="url(#sky-build)"></rect>
+  
+  <g fill="#A6A89B" opacity=".6">
+    <rect x="20" y="120" width="22" height="80"></rect>
+    <rect x="50" y="100" width="30" height="100"></rect>
+    <rect x="90" y="130" width="20" height="70"></rect>
+  </g>
+  
+  <g fill="#373B3D">
+    <rect x="120" y="90" width="44" height="150"></rect>
+    <rect x="170" y="60" width="38" height="180"></rect>
+    <rect x="214" y="100" width="34" height="140"></rect>
+    <rect x="254" y="80" width="44" height="160"></rect>
+    <rect x="304" y="110" width="32" height="130"></rect>
+    <rect x="342" y="70" width="40" height="170"></rect>
+  </g>
+  
+  <g fill="#E8703F">
+    <rect x="128" y="100" width="4" height="6"></rect><rect x="138" y="100" width="4" height="6"></rect><rect x="148" y="100" width="4" height="6"></rect>
+    <rect x="128" y="115" width="4" height="6"></rect><rect x="138" y="115" width="4" height="6"></rect><rect x="148" y="115" width="4" height="6"></rect>
+    <rect x="128" y="130" width="4" height="6"></rect><rect x="148" y="130" width="4" height="6"></rect>
+    <rect x="178" y="72" width="4" height="6"></rect><rect x="188" y="72" width="4" height="6"></rect><rect x="198" y="72" width="4" height="6"></rect>
+    <rect x="178" y="86" width="4" height="6"></rect><rect x="198" y="86" width="4" height="6"></rect>
+    <rect x="178" y="100" width="4" height="6"></rect><rect x="188" y="100" width="4" height="6"></rect>
+    <rect x="220" y="112" width="4" height="6"></rect><rect x="232" y="112" width="4" height="6"></rect>
+    <rect x="262" y="92" width="4" height="6"></rect><rect x="274" y="92" width="4" height="6"></rect><rect x="286" y="92" width="4" height="6"></rect>
+    <rect x="262" y="106" width="4" height="6"></rect><rect x="286" y="106" width="4" height="6"></rect>
+    <rect x="312" y="122" width="4" height="6"></rect><rect x="324" y="122" width="4" height="6"></rect>
+    <rect x="350" y="82" width="4" height="6"></rect><rect x="362" y="82" width="4" height="6"></rect><rect x="374" y="82" width="4" height="6"></rect>
+    <rect x="350" y="96" width="4" height="6"></rect><rect x="374" y="96" width="4" height="6"></rect>
+  </g>
+  
+  <rect x="0" y="220" width="400" height="20" fill="#2C2F33"></rect>
+</svg>

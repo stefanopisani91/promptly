@@ -38,6 +38,12 @@ export interface MapNodeData {
   title: string | null;
   state: NodeState;
   xpEarned?: number;
+  /**
+   * Estimated minutes from the lesson catalog. Present whenever the lesson
+   * has shipped content (mirrors lesson availability in the path). Used by
+   * the dashboard Continue card and DailyGoal computation.
+   */
+  estimatedMinutes?: number;
   href: string | null; // null when state requires a modal instead of navigation
 }
 
@@ -238,7 +244,15 @@ export async function buildMapData(
         state = "locked_sequential";
       }
 
-      nodes.push({ index: i, lessonId, title, state, xpEarned, href });
+      nodes.push({
+        index: i,
+        lessonId,
+        title,
+        state,
+        xpEarned,
+        estimatedMinutes: lesson?.estimated_minutes,
+        href,
+      });
     }
 
     // Bonus paths anchored to this main path, with the side from spec §3.

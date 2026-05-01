@@ -11,6 +11,11 @@ import {
 } from "@/lib/supabase/queries";
 import { buildMapData } from "@/lib/map/data";
 import { DashboardGreeting } from "@/components/dashboard/DashboardGreeting";
+import { DashboardStatsGrid } from "@/components/dashboard/DashboardStatsGrid";
+import { ContinueCard } from "@/components/dashboard/ContinueCard";
+import { DailyGoalCard } from "@/components/dashboard/DailyGoalCard";
+import { PathMiniGrid } from "@/components/dashboard/PathMiniGrid";
+import type { RecentLessonItem } from "@/components/dashboard/RecentLessonsList";
 import { WelcomeCard } from "@/components/dashboard/WelcomeCard";
 import { LevelUpModal } from "@/components/promptly/LevelUpModal";
 import { ReferralCard } from "@/components/promptly/ReferralCard";
@@ -19,6 +24,10 @@ import { MapTopBar } from "@/components/promptly/map/MapTopBar";
 import { getLevelFromXP } from "@/lib/levels";
 
 export const dynamic = "force-dynamic";
+
+// Hard-coded daily goal for now — when we ship the settings page we'll
+// move this onto `users.daily_goal_minutes` and let users tweak it.
+const DAILY_GOAL_MINUTES = 10;
 
 export function generateMetadata(): Metadata {
   const lang = resolveLangFromRequest();
@@ -49,17 +58,12 @@ export default async function DashboardPage() {
   const authCopy = getAuthCopy(lang).dashboard;
   const mapCopy = getMapCopy(lang);
 
-  // Build the map data (single batched fetch via lib/map/data.ts) plus the
-  // raw progress rows for the stats counter — both share a Supabase round
-  // trip with allProgress, so it's already cached internally.
   const [progress, mapData] = await Promise.all([
     getAllUserProgress(supabase, user.id),
     buildMapData(
       supabase,
       user.id,
       lang,
-      // Path titles & descriptions: short labels reused inside the map UI.
-      // We pass them in so MapData stays UI-string-free at the lib layer.
       {
         mindset: mapCopy.paths.mindset.title,
         prompt: mapCopy.paths.prompt.title,
@@ -78,25 +82,102 @@ export default async function DashboardPage() {
   ]);
 
   const showWelcome = profile.welcome_seen_at === null;
-  const displayName = (profile.full_name ?? "").trim() || user.email!.split("@")[0];
+  const displayName =
+    (profile.full_name ?? "").trim() || user.email!.split("@")[0];
 
   const lessonsCompleted = progress.filter((p) => p.completed).length;
 
-  // Levels are derived from total_xp on every read (see lib/levels.ts).
-  // Show the celebratory modal once per crossed threshold, tracked via
-  // last_level_up_notified on the user row.
+  // Activity heatmap — UTC dates (YYYY-MM-DD) where ≥1 lesson was completed.
+  const activeDates = Array.from(
+    new Set(
+      progress
+        .filter((p) => p.completed && p.completed_at)
+        .map((p) => p.completed_at!.slice(0, 10)),
+    ),
+  );
+
+  // Lookup: lessonId → minutes (drives DailyGoal sum + ContinueCard duration)
+  // and lessonId → title (drives RecentLessonsList).
+  const titleByLessonId = new Map<string, string>();
+  const minutesByLessonId = new Map<string, number>();
+  for (const path of mapData.paths) {
+    for (const node of path.nodes) {
+      if (node.lessonId) {
+        if (node.title) titleByLessonId.set(node.lessonId, node.title);
+        if (node.estimatedMinutes !== undefined) {
+          minutesByLessonId.set(node.lessonId, node.estimatedMinutes);
+        }
+      }
+    }
+  }
+  const pathTitles = {
+    mindset: mapCopy.paths.mindset.title,
+    prompt: mapCopy.paths.prompt.title,
+    build: mapCopy.paths.build.title,
+    debug: mapCopy.paths.debug.title,
+    ship: mapCopy.paths.ship.title,
+  };
+  const recentLessons: RecentLessonItem[] = progress
+    .filter((p) => p.completed && p.completed_at)
+    .sort((a, b) => (b.completed_at ?? "").localeCompare(a.completed_at ?? ""))
+    .slice(0, 3)
+    .map((p) => ({
+      lessonId: p.lesson_id,
+      title: titleByLessonId.get(p.lesson_id) ?? p.lesson_id,
+      pathTitle: pathTitles[p.path_slug],
+      href: `/lesson/${p.lesson_id}`,
+    }));
+
+  // Today's minutes — sum of estimated_minutes for lessons completed today.
+  // Uses UTC date keys so it lines up with the heatmap.
+  const todayKey = new Date().toISOString().slice(0, 10);
+  const minutesToday = progress
+    .filter((p) => p.completed && p.completed_at?.startsWith(todayKey))
+    .reduce((sum, p) => sum + (minutesByLessonId.get(p.lesson_id) ?? 0), 0);
+
+  // Streak derived from activeDates (column exists but isn't written yet).
+  const activeSet = new Set(activeDates);
+  let derivedStreak = 0;
+  const cursor = new Date();
+  if (!activeSet.has(cursor.toISOString().slice(0, 10))) {
+    cursor.setUTCDate(cursor.getUTCDate() - 1);
+  }
+  while (activeSet.has(cursor.toISOString().slice(0, 10))) {
+    derivedStreak++;
+    cursor.setUTCDate(cursor.getUTCDate() - 1);
+  }
+
   const currentLevel = getLevelFromXP(profile.total_xp);
   const showLevelUp = currentLevel > profile.last_level_up_notified;
 
+  // Active lesson lookup for the ContinueCard. When the user hasn't
+  // started anything (or is fully done with all available content), the
+  // card stays hidden.
+  const activeSection =
+    mapData.current.pathSlug !== null
+      ? mapData.paths.find((p) => p.slug === mapData.current.pathSlug)
+      : null;
+  const activeNode =
+    activeSection && mapData.current.lessonIndex !== null
+      ? activeSection.nodes[mapData.current.lessonIndex]
+      : null;
+  const activeLessonHref =
+    activeNode?.href ??
+    (activeNode?.lessonId ? `/lesson/${activeNode.lessonId}` : null);
+  const showContinue =
+    !!activeSection && !!activeNode && !!activeLessonHref && !!activeNode.title;
+
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 py-8 sm:px-6 sm:py-12">
+    <main className="flex flex-1 flex-col gap-6 py-8 sm:py-12">
       {showWelcome && (
-        <WelcomeCard
-          title={authCopy.welcomeCard.title(displayName)}
-          sub={authCopy.welcomeCard.sub}
-          cta={authCopy.welcomeCard.cta}
-          submitting={authCopy.welcomeCard.submitting}
-        />
+        <div className="mx-auto w-full max-w-3xl px-4 sm:px-6">
+          <WelcomeCard
+            title={authCopy.welcomeCard.title(displayName)}
+            sub={authCopy.welcomeCard.sub}
+            cta={authCopy.welcomeCard.cta}
+            submitting={authCopy.welcomeCard.submitting}
+          />
+        </div>
       )}
       {showLevelUp && (
         <LevelUpModal
@@ -106,32 +187,71 @@ export default async function DashboardPage() {
         />
       )}
 
-      <DashboardGreeting
-        copy={authCopy}
-        name={displayName}
-        totalXp={profile.total_xp}
-        currentStreak={profile.current_streak}
-        lessonsCompleted={lessonsCompleted}
-      />
+      <div className="mx-auto w-full max-w-3xl px-4 sm:px-6">
+        <DashboardGreeting copy={authCopy} name={displayName} />
+      </div>
 
-      <MapTopBar
-        level={currentLevel}
-        totalXp={profile.total_xp}
-        language={lang}
-      />
+      {showContinue && activeSection && activeNode && activeLessonHref && (
+        <div className="mx-auto w-full max-w-3xl px-4 sm:px-6">
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.4fr_1fr]">
+            <ContinueCard
+              copy={authCopy.continueCard}
+              pathTitle={activeSection.title}
+              lessonNumber={activeNode.index + 1}
+              lessonTitle={activeNode.title!}
+              href={activeLessonHref}
+              pathProgress={
+                activeSection.totalLessons > 0
+                  ? activeSection.completedLessons / activeSection.totalLessons
+                  : 0
+              }
+              estimatedMinutes={activeNode.estimatedMinutes}
+            />
+            <DailyGoalCard
+              copy={authCopy.dailyGoal}
+              minutesToday={minutesToday}
+              goalMinutes={DAILY_GOAL_MINUTES}
+            />
+          </div>
+        </div>
+      )}
 
-      <LearningMap
-        data={mapData}
-        copy={mapCopy}
-        lang={lang}
-        level={currentLevel}
-      />
+      <div className="mx-auto w-full max-w-3xl px-4 sm:px-6">
+        <DashboardStatsGrid
+          copy={authCopy}
+          totalXp={profile.total_xp}
+          currentStreak={derivedStreak}
+          lessonsCompleted={lessonsCompleted}
+          activeDates={activeDates}
+          recentLessons={recentLessons}
+        />
+      </div>
 
-      <ReferralCard
-        userId={user.id}
-        fullName={profile.full_name}
-        lang={lang}
-      />
+      <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 lg:max-w-5xl">
+        <PathMiniGrid paths={mapData.paths} copy={authCopy.pathsGrid} />
+      </div>
+
+      <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 lg:max-w-5xl">
+        <MapTopBar
+          level={currentLevel}
+          totalXp={profile.total_xp}
+          language={lang}
+        />
+        <LearningMap
+          data={mapData}
+          copy={mapCopy}
+          lang={lang}
+          level={currentLevel}
+        />
+      </div>
+
+      <div className="mx-auto w-full max-w-3xl px-4 sm:px-6">
+        <ReferralCard
+          userId={user.id}
+          fullName={profile.full_name}
+          lang={lang}
+        />
+      </div>
     </main>
   );
 }

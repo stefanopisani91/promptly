@@ -108,6 +108,23 @@ export interface AuthCopy {
       cta: string;
       submitting: string;
     };
+    continueCard: {
+      eyebrow: string;
+      lessonNumberLabel: (n: number) => string;
+      resumeCta: string;
+      minutesLabel: string;
+    };
+    dailyGoal: {
+      eyebrow: string;
+      minutesToGo: (mins: number) => string;
+      minutesDoneOf: (done: number, total: number) => string;
+      goalReached: string;
+    };
+    pathsGrid: {
+      title: string;
+      completedBadge: string;
+      lockedHint: string;
+    };
   };
 }
 
@@ -234,6 +251,24 @@ const it: AuthCopy = {
       cta: "Inizia →",
       submitting: "Un attimo...",
     },
+    continueCard: {
+      eyebrow: "CONTINUA",
+      lessonNumberLabel: (n: number) => `Lezione ${String(n).padStart(2, "0")}`,
+      resumeCta: "Riprendi",
+      minutesLabel: "min",
+    },
+    dailyGoal: {
+      eyebrow: "OBIETTIVO DI OGGI",
+      minutesToGo: (mins: number) =>
+        mins === 1 ? "1 minuto al traguardo" : `${mins} minuti al traguardo`,
+      minutesDoneOf: (done: number, total: number) => `${done} di ${total} min`,
+      goalReached: "Obiettivo raggiunto! 🎉",
+    },
+    pathsGrid: {
+      title: "I tuoi percorsi",
+      completedBadge: "Completato",
+      lockedHint: "Bloccato",
+    },
   },
 };
 
@@ -359,6 +394,24 @@ const en: AuthCopy = {
       sub: "Start with the first lesson: \"What is vibe coding?\"",
       cta: "Start →",
       submitting: "One moment...",
+    },
+    continueCard: {
+      eyebrow: "CONTINUE",
+      lessonNumberLabel: (n: number) => `Lesson ${String(n).padStart(2, "0")}`,
+      resumeCta: "Resume",
+      minutesLabel: "min",
+    },
+    dailyGoal: {
+      eyebrow: "TODAY'S GOAL",
+      minutesToGo: (mins: number) =>
+        mins === 1 ? "1 minute to go" : `${mins} minutes to go`,
+      minutesDoneOf: (done: number, total: number) => `${done} of ${total} min`,
+      goalReached: "Goal reached! 🎉",
+    },
+    pathsGrid: {
+      title: "Your paths",
+      completedBadge: "Completed",
+      lockedHint: "Locked",
     },
   },
 };

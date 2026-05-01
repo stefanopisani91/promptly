@@ -10,6 +10,7 @@ import {
 import { Check, Lightbulb, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { checkBlank } from "@/lib/lessons/validate";
+import { fireConfetti } from "@/lib/confetti";
 import { calculateLessonXp } from "@/lib/xp";
 import { completeLessonAction } from "@/app/(app)/lesson/[id]/actions";
 import {
@@ -132,6 +133,7 @@ export function ExerciseFillBlank({
     if (allCorrect) {
       setWrongFlags(Array(blankCount).fill(false));
       setShowWrongInline(false);
+      fireConfetti();
       persistCompletion(newAttempts);
       return;
     }
@@ -203,7 +205,7 @@ export function ExerciseFillBlank({
   return (
     <div className="flex flex-col gap-4">
       <div className="rounded-xl bg-prompt-bg p-5 sm:p-6">
-        <p className="text-[10px] font-semibold uppercase tracking-wider text-prompt-text/60">
+        <p className="text-[10px] font-semibold uppercase tracking-wider text-prompt-text">
           {strings.promptLabel}
         </p>
         <p className="mt-3 font-mono text-sm leading-loose text-prompt-text sm:text-base">
