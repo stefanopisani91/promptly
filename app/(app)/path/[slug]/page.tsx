@@ -7,7 +7,7 @@ import {
   isActivePathSlug,
   isLang,
   type Lang,
-  type LessonContent,
+  type AnyLessonContent,
   type PathSlug,
 } from "@/types";
 import { resolveLangFromRequest } from "@/lib/i18n/server-lang";
@@ -18,6 +18,7 @@ import {
   getUserProfile,
 } from "@/lib/supabase/queries";
 import { loadAvailableLessonsInPath } from "@/lib/lessons/load";
+import { getShortTitle } from "@/lib/lessons/display";
 import { getPathProgress } from "@/lib/lessons/progress";
 import { PATH_META } from "@/lib/lessons/paths";
 import { PathProgressBar } from "@/components/lessons/PathProgressBar";
@@ -37,8 +38,8 @@ export function generateMetadata({ params }: PageProps): Metadata {
 
 function buildPlannedSlots(
   pathSlug: PathSlug,
-  available: LessonContent[],
-): Array<{ id: string; lesson: LessonContent | null; order: number }> {
+  available: AnyLessonContent[],
+): Array<{ id: string; lesson: AnyLessonContent | null; order: number }> {
   const total = PATH_META[pathSlug].totalLessons;
   const byOrder = new Map(available.map((l) => [l.order, l]));
   return Array.from({ length: total }, (_, idx) => {
@@ -153,7 +154,9 @@ export default async function PathPage({ params }: PageProps) {
               )}
               <div className="flex flex-1 flex-col">
                 <p className="font-heading text-base font-semibold text-text-primary">
-                  {lesson?.title ?? copy.pathOverview.comingSoonLessonLabel}
+                  {lesson
+                    ? getShortTitle(lesson)
+                    : copy.pathOverview.comingSoonLessonLabel}
                 </p>
                 {lesson && (
                   <p className="text-xs text-text-muted">

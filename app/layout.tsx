@@ -1,5 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
+import {
+  Inter,
+  Plus_Jakarta_Sans,
+  JetBrains_Mono,
+  Fredoka,
+} from "next/font/google";
 import { headers } from "next/headers";
 import { SITE_URL } from "@/lib/site";
 import "./globals.css";
@@ -26,6 +31,17 @@ const jakarta = Plus_Jakarta_Sans({
 const jetbrains = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-jetbrains",
+  display: "swap",
+});
+
+// Fredoka is used exclusively inside the landing-page Lucia demo for the
+// fictional app's logo + decorative DOWNLOAD button. It deliberately doesn't
+// match the Promptly heading font (Plus Jakarta Sans) so visitors read
+// Lucia's site as a separate piece of content from the landing itself.
+const fredoka = Fredoka({
+  subsets: ["latin"],
+  variable: "--font-fredoka",
+  weight: ["600", "700"],
   display: "swap",
 });
 
@@ -67,7 +83,7 @@ export default function RootLayout({
   return (
     <html
       lang={lang}
-      className={`${inter.variable} ${jakarta.variable} ${jetbrains.variable}`}
+      className={`${inter.variable} ${jakarta.variable} ${jetbrains.variable} ${fredoka.variable}`}
     >
       <body>{children}</body>
     </html>

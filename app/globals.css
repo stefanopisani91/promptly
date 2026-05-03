@@ -120,6 +120,15 @@ h6 {
   letter-spacing: -0.01em;
 }
 
+@layer components {
+  .eyebrow {
+    font-size: 0.625rem; /* 10px */
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;

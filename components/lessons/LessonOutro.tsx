@@ -24,13 +24,13 @@ export function LessonOutro({
 }: Props) {
   return (
     <section
-      className="mt-2 rounded-2xl border border-success-light bg-success-light/40 p-6 text-center sm:p-8"
+      className="mt-2 rounded-2xl border border-success/30 bg-success-light/40 p-6 text-center sm:p-8"
       aria-live="polite"
     >
-      <p className="font-heading text-xl font-bold text-success sm:text-2xl">
+      <h2 className="font-heading text-xl font-bold text-success sm:text-2xl">
         {strings.title}
-      </p>
-      <p className="mt-2 inline-flex items-center gap-2 rounded-full bg-success/15 px-3 py-1 font-mono text-sm font-semibold text-success">
+      </h2>
+      <p className="mt-2 inline-flex items-center gap-2 rounded-full bg-success/15 px-3 py-1 text-sm font-semibold text-success">
         {strings.xpEarnedLabel}
       </p>
       <p className="mt-4 text-base leading-relaxed text-text-secondary">{recap}</p>
@@ -57,7 +57,7 @@ export function LessonOutro({
         {nextLesson && (
           <Link
             href={pathHref}
-            className="text-sm font-medium text-text-secondary underline-offset-4 hover:text-primary-deep hover:underline"
+            className="rounded-sm text-sm font-medium text-text-secondary underline-offset-4 hover:text-primary-deep hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-deep"
           >
             {strings.backToPathCta}
           </Link>

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
-import { isLang, type Lang } from "@/types";
+import { isLang, isLessonV2Content, type Lang } from "@/types";
 import { resolveLangFromRequest } from "@/lib/i18n/server-lang";
 import { getLessonsCopy } from "@/lib/i18n/lessons";
 import { createClient } from "@/lib/supabase/server";
@@ -17,6 +17,10 @@ import {
   ExerciseFillBlank,
   type ExerciseFillBlankStrings,
 } from "@/components/lessons/ExerciseFillBlank";
+import {
+  LessonV2View,
+  type LessonV2ViewStrings,
+} from "@/components/lessons/LessonV2View";
 import { LessonNavigator } from "@/components/lessons/LessonNavigator";
 
 export const dynamic = "force-dynamic";
@@ -27,9 +31,18 @@ interface PageProps {
 
 const MAX_ATTEMPTS = 3;
 
-export function generateMetadata({ params }: PageProps): Metadata {
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const lang: Lang = resolveLangFromRequest();
+  const lesson = await loadLessonById(params.id, lang);
+  const description =
+    lesson && "subtitle" in lesson && typeof lesson.subtitle === "string"
+      ? lesson.subtitle
+      : undefined;
   return {
-    title: `Lesson · ${params.id} — Promptly`,
+    title: lesson
+      ? `${lesson.title} — Promptly`
+      : `Lesson · ${params.id} — Promptly`,
+    description,
     robots: { index: false, follow: false },
   };
 }
@@ -64,10 +77,85 @@ export default async function LessonPage({ params }: PageProps) {
     Math.max(positionLabel.total, lesson.order),
   );
 
-  // Pre-resolve every string crossing into client components. The i18n copy
-  // object contains arrow functions that React cannot serialize across the
-  // server/client boundary — see Round 2 fix (commit 09d78a2) and the
-  // Round 3a regression with digest 293253662.
+  // ─── V2 branch ──────────────────────────────────────────────────────
+  // Open question + AI commentary + archetype quiz. Pre-resolves all i18n
+  // strings server-side before passing them into the client component
+  // tree (function values cannot cross the server/client boundary — see
+  // Round 2 fix commit 09d78a2 + Round 3a regression digest 293253662).
+  if (isLessonV2Content(lesson)) {
+    const baseLessonXp = lesson.base_xp + lesson.difficulty_bonus_xp;
+    // All fields below MUST be plain strings (no functions). Templates with
+    // {token} placeholders are substituted in the client. Anything that
+    // depends on a value not yet known server-side stays a template.
+    const v2Strings: LessonV2ViewStrings = {
+      body: {
+        openQuestion: {
+          submitCta: lessonsCopy.v2.openQuestion.submitCta,
+          submitting: lessonsCopy.v2.openQuestion.submitting,
+          submittedLabel: lessonsCopy.v2.openQuestion.submittedLabel,
+          placeholderFallback: lessonsCopy.v2.openQuestion.placeholderFallback,
+          charCounterTemplate: lessonsCopy.v2.openQuestion.charCounterTemplate,
+          networkError: lessonsCopy.v2.openQuestion.networkError,
+          apiError: lessonsCopy.v2.openQuestion.apiError,
+          missingKeyError: lessonsCopy.v2.openQuestion.missingKeyError,
+          retryCta: lessonsCopy.v2.openQuestion.retryCta,
+          skipCta: lessonsCopy.v2.openQuestion.skipCta,
+          skippedNotice: lessonsCopy.v2.openQuestion.skippedNotice,
+        },
+        archetypeQuiz: {
+          questionOfTemplate: lessonsCopy.v2.archetypeQuiz.questionOfTemplate,
+          pickOneHint: lessonsCopy.v2.archetypeQuiz.pickOneHint,
+          revealCta: lessonsCopy.v2.archetypeQuiz.revealCta,
+          revealedTitle: lessonsCopy.v2.archetypeQuiz.revealedTitle,
+          bonusXpTemplate: lessonsCopy.v2.archetypeQuiz.bonusXpTemplate,
+          retakeCta: lessonsCopy.v2.archetypeQuiz.retakeCta,
+        },
+      },
+      finishCta: lessonsCopy.v2.completion.finishCta,
+      alreadyCompleted: lessonsCopy.v2.completion.alreadyCompleted,
+      outro: {
+        title: lessonsCopy.outro.title,
+        xpEarnedLabel: lessonsCopy.outro.xpEarned(baseLessonXp),
+        nextLessonCta: lessonsCopy.outro.nextLessonCta,
+        backToPathCta: lessonsCopy.outro.backToPathCta,
+      },
+      toast: {
+        full: lessonsCopy.toast.xpLabel(baseLessonXp),
+        dismissLabel: lessonsCopy.toast.dismissLabel,
+      },
+    };
+
+    return (
+      <LessonShell
+        lesson={lesson}
+        pathTitle={pathDisplay.title}
+        pathHref={pathHref}
+        copy={lessonsCopy}
+        positionLabel={positionText}
+      >
+        <LessonV2View
+          lesson={lesson}
+          strings={v2Strings}
+          nextLesson={next}
+          pathHref={pathHref}
+          baseLessonXp={baseLessonXp}
+        />
+        <LessonNavigator
+          prev={prev}
+          next={next}
+          pathHref={pathHref}
+          pathLabel={lessonsCopy.lessonPage.backToPathCta}
+          positionLabel={positionText}
+          navigationLabel={lessonsCopy.navigationLabel}
+        />
+      </LessonShell>
+    );
+  }
+
+  // ─── V1 branch (legacy fill_blank) ──────────────────────────────────
+  // Pre-resolve every string crossing into client components. The i18n
+  // copy object contains arrow functions that React cannot serialize
+  // across the server/client boundary.
   const xpFull = calculateLessonXp(
     lesson.base_xp,
     lesson.difficulty_bonus_xp,
@@ -98,6 +186,7 @@ export default async function LessonPage({ params }: PageProps) {
     xpLabelHalved: lessonsCopy.outro.xpEarned(xpHalved),
     toastLabelFull: lessonsCopy.toast.xpLabel(xpFull),
     toastLabelHalved: lessonsCopy.toast.xpLabel(xpHalved),
+    toastDismissLabel: lessonsCopy.toast.dismissLabel,
   };
 
   const outroStrings = {
@@ -141,6 +230,7 @@ export default async function LessonPage({ params }: PageProps) {
         pathHref={pathHref}
         pathLabel={lessonsCopy.lessonPage.backToPathCta}
         positionLabel={positionText}
+        navigationLabel={lessonsCopy.navigationLabel}
       />
     </LessonShell>
   );

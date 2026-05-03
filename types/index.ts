@@ -240,3 +240,115 @@ export interface PathProgress {
   next_lesson_id: string | null;
   is_unlocked: boolean;
 }
+
+// ─── Lessons V2 (2 May 2026 pivot — open_question + archetype_quiz) ──
+//
+// V2 lessons replace the single fill_blank exercise with a richer interleaved
+// `body` array that mixes the existing TheoryBlock variants with three new
+// interactive blocks:
+//   - section_heading  → split a longer lesson into chapters
+//   - open_question    → free-text answer commented by GPT-4o mini
+//   - archetype_quiz   → multi-question multiple-choice with static reveal
+//
+// V1 LessonContent stays untouched. `AnyLessonContent` is the discriminated
+// union the loader returns; pages branch on `isLessonV2Content`. See
+// LESSON-GUIDELINES.md §3.b and §11 for the authoring spec, and PROMPTLY.md
+// "Exercise Formats — B" for the runtime flow.
+
+export interface SectionHeadingBlock {
+  type: "section_heading";
+  text: string;
+  subtitle?: string;
+}
+
+export interface OpenQuestionBlock {
+  type: "open_question";
+  id: string;
+  prompt: string;
+  helper_text?: string;
+  placeholder?: string;
+  max_chars?: number;
+  // OBBLIGATORIO. Vedi LESSON-GUIDELINES.md §11. Mai default a runtime.
+  system_prompt: string;
+}
+
+export interface ArchetypeQuizOption {
+  key: string;
+  label: string;
+  archetype_key: string;
+}
+
+export interface ArchetypeQuizQuestion {
+  id: string;
+  prompt: string;
+  options: ArchetypeQuizOption[];
+}
+
+export interface ArchetypeDefinition {
+  key: string;
+  title: string;
+  description: string;
+}
+
+export interface ArchetypeQuizBlock {
+  type: "archetype_quiz";
+  id: string;
+  intro_text?: string;
+  instructions?: string;
+  reveal_xp_bonus?: number;
+  questions: ArchetypeQuizQuestion[];
+  // tie_breaker_priority MUST contain exactly the same archetype keys as
+  // archetypes[].key — checked by the V2 validator at load time. The order
+  // resolves equal-score scenarios deterministically.
+  tie_breaker_priority: string[];
+  archetypes: ArchetypeDefinition[];
+}
+
+export type LessonV2BodyBlock =
+  | TheoryBlock
+  | SectionHeadingBlock
+  | OpenQuestionBlock
+  | ArchetypeQuizBlock;
+
+export interface LessonV2Content {
+  id: string;
+  format_version: 2;
+  path_slug: PathSlug;
+  order: number;
+  // The full, expressive title — shown on the lesson page header. Can be
+  // narrative or evocative ("Il villaggio. Da dove tutto comincia.").
+  title: string;
+  // Short, topic-focused label — shown wherever the long title would feel
+  // out of place: map nodes, prev/next navigator, path overview lesson
+  // cards, dashboard's "Continue" card, recent-lessons list. Optional;
+  // when absent, navigation falls back to `title`.
+  map_title?: string;
+  subtitle?: string;
+  difficulty: Difficulty;
+  estimated_minutes: number;
+  base_xp: number;
+  difficulty_bonus_xp: number;
+  icon: string;
+  body: LessonV2BodyBlock[];
+  outro: {
+    recap: string;
+    next_prompt: string;
+  };
+}
+
+export type AnyLessonContent = LessonContent | LessonV2Content;
+
+export function isLessonV2Content(
+  lesson: AnyLessonContent,
+): lesson is LessonV2Content {
+  return (
+    "format_version" in lesson &&
+    (lesson as LessonV2Content).format_version === 2
+  );
+}
+
+export function isLessonV1Content(
+  lesson: AnyLessonContent,
+): lesson is LessonContent {
+  return !isLessonV2Content(lesson);
+}

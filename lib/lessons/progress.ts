@@ -1,6 +1,6 @@
 import type {
+  AnyLessonContent,
   Lang,
-  LessonContent,
   PathProgress,
   PathSlug,
   UserProgress,
@@ -12,6 +12,7 @@ import {
 } from "@/lib/supabase/queries";
 import { PATH_META } from "./paths";
 import { loadAvailableLessonsInPath } from "./load";
+import { getShortTitle } from "./display";
 
 interface DashboardStats {
   totalXp: number;
@@ -120,18 +121,21 @@ export interface NavigationNeighbors {
 /**
  * Compute prev/next neighbors for a lesson within its path. Uses the on-disk
  * available lessons (not the planned total) so navigation only ever links to
- * existing JSONs.
+ * existing JSONs. Works on both V1 and V2 lessons (only `id`, `title`, `order`
+ * are read).
  */
 export function getLessonNeighbors(
-  available: LessonContent[],
-  current: LessonContent,
+  available: AnyLessonContent[],
+  current: AnyLessonContent,
 ): NavigationNeighbors {
   const idx = available.findIndex((l) => l.id === current.id);
   const prev = idx > 0 ? available[idx - 1] : null;
   const next = idx >= 0 && idx < available.length - 1 ? available[idx + 1] : null;
   return {
-    prev: prev ? { id: prev.id, title: prev.title } : null,
-    next: next ? { id: next.id, title: next.title } : null,
+    // The bottom-of-page navigator shows compact prev/next labels — use
+    // the short title (V2's `map_title` when present, otherwise `title`).
+    prev: prev ? { id: prev.id, title: getShortTitle(prev) } : null,
+    next: next ? { id: next.id, title: getShortTitle(next) } : null,
     positionLabel: { current: idx + 1, total: available.length },
   };
 }

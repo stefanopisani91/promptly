@@ -42,6 +42,7 @@ export interface ExerciseFillBlankStrings {
   xpLabelHalved: string;
   toastLabelFull: string;
   toastLabelHalved: string;
+  toastDismissLabel: string;
 }
 
 interface Props {
@@ -220,7 +221,7 @@ export function ExerciseFillBlank({
               type="button"
               onClick={handleVerify}
               disabled={allEmpty || pending}
-              className="inline-flex items-center justify-center rounded-md bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-deep disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-deep disabled:cursor-not-allowed disabled:opacity-50"
             >
               {strings.checkAnswer}
             </button>
@@ -228,7 +229,7 @@ export function ExerciseFillBlank({
               type="button"
               onClick={handleHint}
               disabled={hintLevel >= 2}
-              className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface px-3 py-2.5 text-sm font-medium text-text-secondary transition-colors hover:border-primary hover:text-primary-deep disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface px-3 py-2.5 text-sm font-medium text-text-secondary transition-colors hover:border-primary hover:text-primary-deep focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-deep disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Lightbulb className="h-4 w-4" />
               {strings.showHint}
@@ -312,6 +313,7 @@ export function ExerciseFillBlank({
       {showToast && (
         <XpToast
           label={toastLabel}
+          dismissLabel={strings.toastDismissLabel}
           onDismiss={() => setShowToast(false)}
         />
       )}

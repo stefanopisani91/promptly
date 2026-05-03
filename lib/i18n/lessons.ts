@@ -36,6 +36,46 @@ export interface LessonsCopy {
     blankAriaLabel: (n: number) => string;
     backToPathCta: string;
   };
+  // V2 — open_question, archetype_quiz, completion CTA. The open_question
+  // copy is used for the inline AI commentary widget; archetype_quiz copy
+  // wraps the multi-step quiz; completion CTA marks a V2 lesson done.
+  //
+  // ALL fields are static strings (no functions). Templates use {token}
+  // placeholders that the client substitutes at render time. This is the
+  // mandatory pattern for anything crossing into Client Components — see
+  // PROMPTLY.md regression notes (commit 09d78a2 + Round 3a digest
+  // 293253662) and the same convention in lessonPage.attemptOf which is
+  // pre-resolved into an array at the page level.
+  v2: {
+    openQuestion: {
+      submitCta: string;
+      submitting: string;
+      submittedLabel: string;
+      placeholderFallback: string;
+      // Template: "{current} / {max}"
+      charCounterTemplate: string;
+      networkError: string;
+      apiError: string;
+      missingKeyError: string;
+      retryCta: string;
+      skipCta: string;
+      skippedNotice: string;
+    };
+    archetypeQuiz: {
+      // Template: "Domanda {n} di {total}" / "Question {n} of {total}"
+      questionOfTemplate: string;
+      pickOneHint: string;
+      revealCta: string;
+      revealedTitle: string;
+      // Template: "+{xp} XP bonus"
+      bonusXpTemplate: string;
+      retakeCta: string;
+    };
+    completion: {
+      finishCta: string;
+      alreadyCompleted: string;
+    };
+  };
   outro: {
     title: string;
     xpEarned: (xp: number) => string;
@@ -46,7 +86,9 @@ export interface LessonsCopy {
   };
   toast: {
     xpLabel: (xp: number) => string;
+    dismissLabel: string;
   };
+  navigationLabel: string;
   pathDisplay: Record<PathSlug, PathDisplay>;
   proPathBadge: string;
   proPathSub: string;
@@ -100,7 +142,9 @@ const it: LessonsCopy = {
   },
   toast: {
     xpLabel: (xp) => `+${xp} XP ⚡`,
+    dismissLabel: "Chiudi",
   },
+  navigationLabel: "Navigazione lezione",
   pathDisplay: {
     mindset: {
       title: "Mindset",
@@ -108,7 +152,7 @@ const it: LessonsCopy = {
     },
     prompt: {
       title: "Prompt",
-      tagline: "Un prompt è una specifica. Imparala e l'AI ti seguirà.",
+      tagline: "Un prompt è una specifica. Imparala e l’AI ti seguirà.",
     },
     build: {
       title: "Build",
@@ -116,7 +160,7 @@ const it: LessonsCopy = {
     },
     debug: {
       title: "Debug",
-      tagline: "L'AI rompe le cose. Tu impari a sistemarle a parole.",
+      tagline: "L’AI rompe le cose. Tu impari a sistemarle a parole.",
     },
     ship: {
       title: "Ship",
@@ -128,9 +172,38 @@ const it: LessonsCopy = {
   continueCard: {
     eyebrow: "Continua dove eri rimasto",
     startEyebrow: "Inizia il viaggio",
-    fallbackTitle: "Cos'è il vibe coding?",
+    fallbackTitle: "Cos’è il vibe coding?",
     cta: "Riprendi →",
     startCta: "Inizia la prima lezione →",
+  },
+  v2: {
+    openQuestion: {
+      submitCta: "Invia",
+      submitting: "Sto leggendo…",
+      submittedLabel: "La tua risposta",
+      placeholderFallback: "Scrivi qui la tua risposta…",
+      charCounterTemplate: "{current} / {max}",
+      networkError: "Connessione assente. Controlla la rete e riprova.",
+      apiError:
+        "Il commento non è disponibile in questo momento. Puoi andare avanti — il commento è opzionale.",
+      missingKeyError: "Servizio AI non disponibile. Riprova più tardi.",
+      retryCta: "Riprova",
+      skipCta: "Salta",
+      skippedNotice:
+        "Hai saltato la domanda. Puoi tornare e rispondere quando vuoi.",
+    },
+    archetypeQuiz: {
+      questionOfTemplate: "Domanda {n} di {total}",
+      pickOneHint: "Scegli un’opzione per andare avanti.",
+      revealCta: "Scopri il tuo archetipo →",
+      revealedTitle: "Il tuo archetipo",
+      bonusXpTemplate: "+{xp} XP bonus",
+      retakeCta: "Rifai il quiz",
+    },
+    completion: {
+      finishCta: "Completa la lezione →",
+      alreadyCompleted: "Hai già completato questa lezione.",
+    },
   },
 };
 
@@ -175,7 +248,9 @@ const en: LessonsCopy = {
   },
   toast: {
     xpLabel: (xp) => `+${xp} XP ⚡`,
+    dismissLabel: "Dismiss",
   },
+  navigationLabel: "Lesson navigation",
   pathDisplay: {
     mindset: {
       title: "Mindset",
@@ -206,6 +281,35 @@ const en: LessonsCopy = {
     fallbackTitle: "What is vibe coding?",
     cta: "Resume →",
     startCta: "Start the first lesson →",
+  },
+  v2: {
+    openQuestion: {
+      submitCta: "Send",
+      submitting: "Reading…",
+      submittedLabel: "Your answer",
+      placeholderFallback: "Type your answer here…",
+      charCounterTemplate: "{current} / {max}",
+      networkError: "No connection. Check the network and retry.",
+      apiError:
+        "The comment isn't available right now. You can keep going — the comment is optional.",
+      missingKeyError: "AI service unavailable. Please try again later.",
+      retryCta: "Retry",
+      skipCta: "Skip",
+      skippedNotice:
+        "You skipped this question. You can come back and answer whenever you want.",
+    },
+    archetypeQuiz: {
+      questionOfTemplate: "Question {n} of {total}",
+      pickOneHint: "Pick one option to continue.",
+      revealCta: "Reveal your archetype →",
+      revealedTitle: "Your archetype",
+      bonusXpTemplate: "+{xp} bonus XP",
+      retakeCta: "Retake the quiz",
+    },
+    completion: {
+      finishCta: "Complete the lesson →",
+      alreadyCompleted: "You've already completed this lesson.",
+    },
   },
 };
 

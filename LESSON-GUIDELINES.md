@@ -8,44 +8,101 @@
 > - `vibe-coding-teoria-completa.md` — fonte teorica primaria
 > - `PROMPTLY.md` — single source of truth del progetto
 >
-> Versione 1.0 — 29 April 2026.
+> Versione 2.0 — 2 May 2026.
+
+---
+
+## ⚠️ V2 — Cambio di rotta (2 May 2026)
+
+A partire da maggio 2026 il formato delle lezioni Path 1-2 cambia in modo
+sostanziale. Quanto segue **sostituisce** le decisioni V1 dove i due si
+sovrappongono. Le sezioni V1 più sotto restano per riferimento storico, ma
+NON usarle come spec attiva.
+
+### Cosa cambia
+
+| Aspetto | V1 (vecchio) | V2 (nuovo, attivo) |
+|---|---|---|
+| Formato esercizio | `fill_blank` (riempi le parole mancanti) | `open_question` (risposta aperta + commento AI) e `archetype_quiz` (quiz a scelta multipla con reveal di archetipo) |
+| Posizione interazioni | 1 esercizio finale dopo la teoria | Più interazioni interleaved tra i blocchi di teoria |
+| Validazione risposta | Client-side, lista sinonimi case-insensitive | Server-side: chiamata a OpenAI GPT-4o mini per restituire un commento testuale (no scoring, no gating) |
+| Workflow autoriale | AI propone bozza → utente reviewa | Utente scrive bozza → AI reviewa, propone migliorie, traduce |
+| Chiave API | `DEEPSEEK_API_KEY` (solo Pro/v2) | Aggiunta `OPENAI_API_KEY` + `OPENAI_MODEL=gpt-4o-mini` in `.env.example` (DeepSeek resta riservata a Path 3-5 quando arriveranno) |
+| System prompt AI | n/a | **Per-lezione**: ogni blocco `open_question` porta il proprio campo `system_prompt`, versionato col contenuto |
+
+### Convenzione "system prompt per lezione"
+
+**Regola dura:** non esiste un system prompt globale di default per le
+risposte aperte. Ogni `open_question` dentro una lezione ha il **suo**
+campo `system_prompt`, scritto dall'autore della lezione e versionato
+nello stesso JSON. Questo perché:
+
+1. Il commento AI deve aderire al tono e al contesto specifico della lezione (la prima lezione è di benvenuto, l'ottava è tecnica — non vogliamo lo stesso prompt).
+2. Modificando il prompt si modifica solo quella lezione, senza side-effect.
+3. Il contenuto e il comportamento dell'AI sono diff-abili insieme nel git log.
+
+Se vediamo emergere pattern stabili li estrarremo in un helper, ma per ora:
+**un `system_prompt` per ogni `open_question`, dentro il JSON della lezione**.
+
+### Stato del rollout V2
+
+- ⏳ Lezione 1 (`mindset-01`) è la prima lezione scritta in formato V2. Salvata accanto al JSON V1 come `01-what-is-vibe-coding.v2.json` (vedi `§3.b`). Il renderer V2 non esiste ancora — fino al wiring, la produzione continua a servire il file V1.
+- ⏳ Renderer + componenti `OpenQuestion.tsx` + `ArchetypeQuiz.tsx` + API route per GPT-4o mini = round di codice separato, fuori dallo scope dell'autoraggio contenuti.
+- ⏳ Le altre lezioni (mindset 02-06, prompt 01-08) restano V1 finché non vengono riscritte in V2 una a una.
+
+### Workflow (invertito rispetto a V1)
+
+V1 prevedeva: AI propone bozza → utente reviewa.
+V2 prevede: **Utente scrive bozza → AI reviewa, propone migliorie a punti, traduce in inglese e salva i due JSON V2.**
+
+Vedi §5 aggiornato per il flow operativo.
 
 ---
 
 ## 1. Stato attuale
 
-### ✅ Lezioni completate (rifatte con il nuovo standard editoriale)
+### ✅ Lezioni V1 completate (formato `fill_blank` — in produzione finché non sostituite da V2)
 
 | ID | Titolo IT | EN | IT | Note |
 |---|---|---|---|---|
-| mindset-01 | Cos'è il vibe coding | ✅ | ✅ | Originale, già esistente, OK così |
+| mindset-01 | Cos'è il vibe coding | ✅ | ✅ | V1 in produzione · V2 in lavorazione (`01-what-is-vibe-coding.v2.json`) |
 | mindset-02 | Sei tu l'architetto | ✅ | ✅ | Citazione Willison |
 | mindset-03 | Pensa in risultati, non in passi | ✅ | ✅ | Apertura con caso concreto (login Google) |
-| mindset-04 | Scomponi il problema | ✅ | ✅ | Citazione Descartes — **fixture di riferimento** |
+| mindset-04 | Scomponi il problema | ✅ | ✅ | Citazione Descartes — fixture di stile V1 |
 
-### ⏳ Da rifare (priorità alta, in ordine)
+### ⏳ Da rifare in V2 (priorità alta, una alla volta)
 
-**Path 1 — Mindset (2 lezioni rimaste):**
+Tutte e 14 le lezioni Path 1 + Path 2 vanno riscritte in formato V2
+(open_question + archetype_quiz dove serve). Si procede una lezione per
+volta: l'utente scrive la bozza in chat, l'AI reviewa e traduce.
 
-| ID | Titolo IT | Titolo EN | Fonte (vibe-coding-teoria-completa.md) |
+**Path 1 — Mindset:**
+
+| ID | Titolo IT | Stato V2 | Fonte |
 |---|---|---|---|
-| mindset-05 | Il contesto è tutto | Context is everything | §8 (Context engineering) |
-| mindset-06 | La checklist del vibe coder | The vibe coder's checklist | §6 (loop 7 passi sintetizzato) |
+| mindset-01 | Il villaggio. Da dove tutto comincia | 🚧 in lavorazione (file v2) | §1 |
+| mindset-02 | Sei tu l'architetto | ⏳ pending | §2 |
+| mindset-03 | Pensa in risultati, non in passi | ⏳ pending | §2 + §6 |
+| mindset-04 | Scomponi il problema | ⏳ pending | §6 |
+| mindset-05 | Il contesto è tutto | ⏳ pending | §8 |
+| mindset-06 | La checklist del vibe coder | ⏳ pending | §6 |
 
-**Path 2 — Prompt (8 lezioni nuove):**
+**Path 2 — Prompt:**
 
-| ID | Titolo IT | Titolo EN | Difficoltà | Fonte |
+| ID | Titolo IT | Difficoltà | Stato V2 | Fonte |
 |---|---|---|---|---|
-| prompt-01 | Anatomia di un buon prompt | Anatomy of a great prompt | beginner | §7 |
-| prompt-02 | Dai un ruolo all'AI | Give the AI a role | beginner | §7 |
-| prompt-03 | I vincoli sono tuoi amici | Constraints are your friends | beginner | §7 |
-| prompt-04 | Descrivi il formato dell'output | Describe the output format | intermediate | §7 |
-| prompt-05 | Prompt cattivo vs prompt buono | Bad prompt vs good prompt | intermediate | §7 |
-| prompt-06 | Concatenare i prompt | Prompt chaining | intermediate | §7 |
-| prompt-07 | Il problema della versione | The version problem | intermediate | §7 |
-| prompt-08 | Libreria di pattern | Prompt patterns library | intermediate | §7 |
+| prompt-01 | Anatomia di un buon prompt | beginner | ⏳ pending | §7 |
+| prompt-02 | Dai un ruolo all'AI | beginner | ⏳ pending | §7 |
+| prompt-03 | I vincoli sono tuoi amici | beginner | ⏳ pending | §7 |
+| prompt-04 | Descrivi il formato dell'output | intermediate | ⏳ pending | §7 |
+| prompt-05 | Prompt cattivo vs prompt buono | intermediate | ⏳ pending | §7 |
+| prompt-06 | Concatenare i prompt | intermediate | ⏳ pending | §7 |
+| prompt-07 | Il problema della versione | intermediate | ⏳ pending | §7 |
+| prompt-08 | Libreria di pattern | intermediate | ⏳ pending | §7 |
 
-> ⚠️ Le 13 lezioni "vecchie" generate da Claude Code in modalità automatica (che oggi sono ancora in produzione) sono **da considerare scartate**. Sono troppo brevi (130-180 parole), formattazione poco brillante, sembrano triviali. NON usarle come reference. Usare la `mindset-04` come fixture.
+> ⚠️ I file V1 in produzione (formato `fill_blank`) restano live finché non
+> arriva il renderer V2 e il primo file V2 non viene wired. Non cancellarli.
+> Le V2 vivono accanto come `<order>-<slug>.v2.json` (vedi §3).
 
 ---
 
@@ -91,6 +148,8 @@ Quando il concetto trattato ha una naturale estensione in una lezione futura —
 
 ### 2.5 Tipi di blocchi disponibili
 
+**V1 (statici, ancora validi anche in V2):**
+
 ```typescript
 { type: "paragraph", text: string }
 { type: "callout", variant: "key" | "warning" | "tip", text: string }
@@ -99,6 +158,58 @@ Quando il concetto trattato ha una naturale estensione in una lezione futura —
 { type: "comparison_table", bad: { label, content }, good: { label, content } }
 { type: "quote", text: string, attribution: string }
 ```
+
+**V2 (nuovi blocchi, attivi nel formato V2):**
+
+```typescript
+// Titolo di sezione interno alla lezione (sopra un blocco di teoria).
+// Permette di spezzare lezioni più lunghe in sotto-cap. Sottotitolo opzionale.
+{ type: "section_heading", text: string, subtitle?: string }
+
+// Domanda a risposta aperta. La risposta dell'utente viene mandata a
+// GPT-4o mini insieme al campo system_prompt → l'AI restituisce un commento.
+// Niente scoring, niente gating: è puro engagement / personalizzazione.
+{
+  type: "open_question",
+  id: string,                       // unico nella lezione (es. "intro-motivation")
+  prompt: string,                   // la domanda mostrata all'utente
+  helper_text?: string,             // riga grigia sotto la domanda, opzionale
+  placeholder?: string,             // placeholder dell'input
+  max_chars?: number,               // limite hard, default 500
+  system_prompt: string             // OBBLIGATORIO — vedi §11
+}
+
+// Quiz a scelta multipla con reveal di un archetipo (logica statica, no AI).
+// Calcola l'archetipo dominante sommando le scelte. Pareggi risolti via
+// tie_breaker_priority. Reveal accompagnato da bonus XP opzionale.
+{
+  type: "archetype_quiz",
+  id: string,                       // es. "vibe-coder-archetype"
+  intro_text?: string,              // breve intro mostrata sopra le domande
+  instructions?: string,            // es. "Rispondi d'istinto, 30 secondi"
+  reveal_xp_bonus?: number,         // opzionale, default 0
+  questions: Array<{
+    id: string,
+    prompt: string,
+    options: Array<{
+      key: string,                  // "a" | "b" | "c" | "d" — locale alla domanda
+      label: string,                // testo mostrato all'utente
+      archetype_key: string         // chiave dell'archetipo a cui dà punti
+    }>
+  }>,
+  tie_breaker_priority: string[],   // ordine di archetype_key in caso di pareggio
+  archetypes: Array<{
+    key: string,
+    title: string,                  // es. "Il Costruttore Ostinato"
+    description: string             // 2-4 frasi, tono coerente con la lezione
+  }>
+}
+```
+
+**Regola d'oro V2:** la teoria e le interazioni si **interleaveano**. Non
+c'è più "prima la teoria, poi l'esercizio". Le `open_question` e gli
+`archetype_quiz` sono mescolati con i `paragraph`, `callout`, `quote`, ecc.
+nell'array `body` (vedi schema in §3.b).
 
 ### 2.6 Emoticon — solo nei callout e nei label di comparison_table
 
@@ -163,13 +274,15 @@ NON citare nomi non chiaramente attribuibili. Niente "qualcuno ha detto che..." 
 
 ## 3. Schema JSON di una lezione
 
+### 3.a — Schema V1 (legacy, fill_blank — usato dai file in produzione)
+
 **Path file:** `/content/<lang>/<path-slug>/<order>-<slug>.json`
 
 Esempi:
 - `/content/it/mindset/04-break-it-down.json`
 - `/content/en/mindset/04-break-it-down.json`
 
-### Schema completo
+### Schema V1 completo
 
 ```json
 {
@@ -239,7 +352,114 @@ Esempi:
 
 ---
 
+### 3.b — Schema V2 (attivo, open_question + archetype_quiz)
+
+**Path file:** `/content/<lang>/<path-slug>/<order>-<slug>.v2.json`
+
+Il suffisso `.v2.json` distingue i file V2 dai V1, che restano live finché
+il renderer V2 non è pronto. I due file convivono nella stessa cartella.
+
+**Esempio (estratto, il file completo è il riferimento):**
+
+```json
+{
+  "id": "mindset-01",
+  "format_version": 2,
+  "path_slug": "mindset",
+  "order": 1,
+  "title": "Il villaggio. Da dove tutto comincia.",
+  "map_title": "Cos'è il vibe coding?",
+  "subtitle": "Il primo segreto del vibe coding non è un prompt. È come pensi.",
+  "difficulty": "beginner",
+  "estimated_minutes": 5,
+  "base_xp": 100,
+  "difficulty_bonus_xp": 0,
+  "icon": "/brand/lessons/mindset-01.svg",
+  "body": [
+    { "type": "paragraph", "text": "..." },
+    { "type": "section_heading", "text": "Cos'è il vibe coding (per davvero)" },
+    { "type": "paragraph", "text": "..." },
+    {
+      "type": "open_question",
+      "id": "first-motivation",
+      "prompt": "Dimmi in poche parole: cosa ti spinge a voler programmare?",
+      "helper_text": "Non c'è risposta giusta. Sii sincero.",
+      "placeholder": "Scrivi qui la tua risposta...",
+      "max_chars": 500,
+      "system_prompt": "Sei l'assistente di Promptly... (vedi §11)"
+    },
+    { "type": "section_heading", "text": "Il primo segreto" },
+    { "type": "paragraph", "text": "..." },
+    { "type": "callout", "variant": "key", "text": "🔑 ..." },
+    {
+      "type": "archetype_quiz",
+      "id": "vibe-coder-archetype",
+      "intro_text": "Voglio capire che tipo di vibe coder sei...",
+      "instructions": "Rispondi d'istinto. Cinque domande, un minuto.",
+      "reveal_xp_bonus": 150,
+      "questions": [
+        {
+          "id": "q1",
+          "prompt": "Quando ti blocchi su qualcosa che non sai fare, di solito tu...",
+          "options": [
+            { "key": "a", "label": "Apro venti tab cercando la risposta", "archetype_key": "analitico" },
+            { "key": "b", "label": "Chiedo aiuto subito a qualcuno che ne sa", "archetype_key": "visionario" },
+            { "key": "c", "label": "Provo e riprovo finché qualcosa non funziona", "archetype_key": "costruttore" },
+            { "key": "d", "label": "Mollo e cambio approccio", "archetype_key": "pragmatico" }
+          ]
+        }
+      ],
+      "tie_breaker_priority": ["pragmatico", "costruttore", "analitico", "visionario"],
+      "archetypes": [
+        { "key": "costruttore", "title": "Il Costruttore Ostinato", "description": "..." },
+        { "key": "visionario",  "title": "Il Visionario",          "description": "..." },
+        { "key": "pragmatico",  "title": "Il Pragmatico",          "description": "..." },
+        { "key": "analitico",   "title": "L'Analitico",            "description": "..." }
+      ]
+    },
+    {
+      "type": "open_question",
+      "id": "deep-motivation",
+      "prompt": "Perché vuoi imparare a programmare invece di affidarti a un professionista?",
+      "system_prompt": "..."
+    }
+  ],
+  "outro": {
+    "recap": "...",
+    "next_prompt": "..."
+  }
+}
+```
+
+### Campi V2 — regole
+
+| Campo | Valore |
+|---|---|
+| `format_version` | sempre `2` (numero, non stringa). Discriminator del renderer. |
+| `id` | `<path-slug>-<order zero-padded>` (uguale a V1) |
+| `path_slug` | `"mindset"` o `"prompt"` |
+| `order` | numero progressivo, intero |
+| `title` | titolo principale, può essere più espressivo che in V1 (es. metaforico). Mostrato in cima alla pagina lezione. |
+| `map_title` | OPZIONALE. Etichetta corta e topic-focused (es. `"Cos'è il vibe coding?"`) usata in TUTTI i contesti di navigazione: nodi della mappa interattiva, navigator prev/next, lista lezioni del path overview, "Continua dove eri rimasto" e "Recent lessons" della dashboard. Quando assente, navigation cade su `title`. Linea guida: tieni `title` espressivo (anche lungo) e `map_title` ≤30 caratteri. |
+| `subtitle` | OPZIONALE, sotto-titolo della lezione (mostrato sotto al titolo nell'header della pagina lezione) |
+| `difficulty`, `estimated_minutes`, `base_xp`, `difficulty_bonus_xp`, `icon` | uguali a V1 |
+| `body` | array che mescola blocchi statici (V1) e interattivi (V2) in **document order** |
+| `body[*].id` su open_question / archetype_quiz | unico dentro la lezione, kebab-case |
+| `body[*].system_prompt` su open_question | OBBLIGATORIO. Vedi §11 |
+| `outro.recap`, `outro.next_prompt` | uguali a V1 |
+
+### Cosa NON va in V2
+
+- ❌ Niente più campo `theory` o `exercise` al top-level: tutto è in `body`.
+- ❌ Niente `fill_blank` né `correct_answers` né `hint_1/2/explanation`. Se una lezione V2 vuole un esercizio "più strutturato" della open_question, oggi non c'è — vediamo se serve dopo le prime 3-4 lezioni V2.
+- ❌ Niente system prompt globale. Per ogni `open_question`, il suo `system_prompt`. Vedi §11.
+
+---
+
 ## 4. Sinonimi nelle `correct_answers`
+
+> **Solo per V1.** In V2 non esistono `correct_answers` perché la
+> validazione è sostituita dal commento AI di GPT-4o mini.
 
 **Regola: 15-20 sinonimi per blank**, in vari registri.
 
@@ -259,60 +479,70 @@ Quindi NON serve duplicare maiuscole/minuscole nella lista, basta avere la forma
 
 ---
 
-## 5. Workflow operativo
+## 5. Workflow operativo (V2 — invertito rispetto a V1)
 
-### 5.1 Bozza in chat (italiano)
-L'AI propone la lezione completa in IT, formattata in chat (NON JSON), con i blocchi indicati così:
+### 5.1 Bozza in chat (italiano) — la scrive **l'utente**
+L'utente scrive la bozza completa della lezione in italiano, formattata in
+chat con i blocchi nominati come nello schema V2 (`paragraph`,
+`section_heading`, `open_question`, `archetype_quiz`, ecc.). Per gli
+`open_question` indica:
+- la `prompt` mostrata al lettore,
+- l'`helper_text` opzionale,
+- il `placeholder` opzionale,
+- una bozza del `system_prompt` (anche solo a parole — l'AI lo affina).
 
-```
-[1] QUOTE (apertura)
-"...."
-— Autore, anno
+Per gli `archetype_quiz` indica la lista di domande, opzioni, mapping
+delle opzioni agli archetipi, e la priorità di tie-breaking.
 
-[2] PARAGRAPH (concetto)
-Testo del paragrafo...
-
-[3] CALLOUT (variant: warning, ⚠️)
-⚠️ Testo del callout...
-```
-
-E così via per tutti i blocchi. Esercizio + outro alla fine.
-
-### 5.2 Review utente
-Utente legge in chat, dà feedback specifico:
-- "Cambia X in Y" (micro-correzione)
-- "Rifai blocco N" (sostituisci pezzo)
-- "Estendi/riduci di 50 parole"
-- "Procedi" o "Salva"
+### 5.2 Review AI (con proposte numerate)
+L'AI:
+1. Legge la bozza con cura.
+2. Identifica problemi concreti: incongruenze, lunghezze, cliché, regole forzate, sovrapposizioni con lezioni precedenti, etc.
+3. Risponde con **proposte numerate** (1, 2, 3...), ognuna autocontenuta, indicando se è una micro-correzione o un cambio di sostanza.
+4. NON modifica nulla finché l'utente non risponde quali proposte accettare.
 
 ### 5.3 Iterazione
-AI applica le modifiche in chat, ripropone solo il blocco modificato (non riscrive tutta la lezione).
+L'utente risponde con la lista delle proposte da accettare, modificare o
+scartare. L'AI integra solo quelle approvate, ripropone i pezzi cambiati,
+chiede conferma finale. Una manciata di giri al massimo.
 
-### 5.4 Salva quando OK
-1. AI scrive il file JSON IT in `/content/it/<path>/<order>-<slug>.json` (sovrascrivendo l'esistente — usa `Read` prima di `Write`).
-2. AI traduce in inglese mantenendo registro e tono, salva in `/content/en/<path>/<order>-<slug>.json`.
+### 5.4 Salva quando OK (file V2 paralleli)
+1. AI scrive il file IT V2 in `/content/it/<path>/<order>-<slug>.v2.json`. Il file V1 originale **non viene cancellato** finché il renderer V2 non è in produzione.
+2. AI traduce in inglese mantenendo registro e tono, salva in `/content/en/<path>/<order>-<slug>.v2.json`.
+3. Per gli `open_question`, il `system_prompt` viene tradotto coerentemente: stesso tono e stessi vincoli, in inglese. Vedi §11.
 
 ### 5.5 Validazione
-AI esegue veloce sanity check:
+AI esegue veloce sanity check su entrambi i file V2:
 ```bash
-node -e "JSON.parse(require('fs').readFileSync('content/it/<path>/<file>.json','utf8'));console.log('IT ✓')"
-node -e "JSON.parse(require('fs').readFileSync('content/en/<path>/<file>.json','utf8'));console.log('EN ✓')"
+node -e "JSON.parse(require('fs').readFileSync('content/it/<path>/<file>.v2.json','utf8'));console.log('IT v2 ✓')"
+node -e "JSON.parse(require('fs').readFileSync('content/en/<path>/<file>.v2.json','utf8'));console.log('EN v2 ✓')"
 ```
 
-E word count della teoria:
+E word count del body (somma `text` di paragraph + content vari, esclusi system_prompt):
 ```bash
-node -e "const j=JSON.parse(require('fs').readFileSync('content/it/<path>/<file>.json','utf8'));const w=j.theory.map(b=>(b.text||b.content||(b.bad&&b.bad.content+' '+b.good.content)||(b.prompt+' '+b.output)||'').split(/\\s+/).filter(Boolean).length).reduce((a,b)=>a+b,0);console.log('IT theory:',w,'words')"
+node -e "
+const j=JSON.parse(require('fs').readFileSync('content/it/<path>/<file>.v2.json','utf8'));
+const w=j.body.map(b=>(b.text||b.content||b.prompt||(b.questions?b.questions.map(q=>q.prompt+' '+q.options.map(o=>o.label).join(' ')).join(' '):'')||'').split(/\\s+/).filter(Boolean).length).reduce((a,b)=>a+b,0);
+console.log('IT body:',w,'words');
+"
 ```
+
+Sanity check minimi V2:
+- Tutti gli `open_question` hanno un `system_prompt` non vuoto.
+- Tutti gli `id` (lezione, open_question, archetype_quiz, question) sono unici dove richiesto.
+- `tie_breaker_priority` contiene esattamente le `archetype_key` definite in `archetypes`.
+- Ogni `option.archetype_key` esiste tra le `archetypes`.
 
 ### 5.6 NON committare singole lezioni
 Tutto resta in locale finché non finiamo tutto Path 1+2, poi un singolo commit + push finale.
 
 ### 5.7 Cosa NON fare
-- NON commitare ogni lezione singola. Commit unico alla fine.
-- NON modificare `LESSONS.md`, `AUTH.md`, `BACKLOG.md`, `PROMPTLY.md`.
-- NON modificare codice di rendering, schema TypeScript, `lib/`.
+- NON commitare ogni lezione singola. Commit unico quando si chiude un blocco di lavoro coerente (es. tutte le V2 di Path 1).
+- NON cancellare i file V1 in produzione finché il renderer V2 non è live e wired alle V2.
+- NON modificare codice di rendering, schema TypeScript, `lib/` mentre si scrivono contenuti. Quello è scope del round "renderer V2".
 - NON aggiungere lezioni fuori dalla lista (Path 1: 6 lez, Path 2: 8 lez).
 - NON creare nuovi SVG (sono già pronti in `/public/brand/lessons/` e `/assets/lessons/`).
+- NON inventare archetype_key, archetipi o tie-breaking al volo: se servono, propongono e si concordano.
 
 ---
 
@@ -389,35 +619,36 @@ Poi verifica deploy verde su Netlify.
 
 ---
 
-## 9. Prompt di kickoff per nuova chat
+## 9. Prompt di kickoff per nuova chat (V2)
 
 Da copiare/incollare all'inizio di una chat nuova:
 
 ```
-Sto continuando il lavoro sulle lezioni di Promptly. Apri il file
-LESSON-GUIDELINES.md nel workspace, leggilo INTERAMENTE, poi apri
-anche /content/it/mindset/04-break-it-down.json come fixture di
-riferimento.
+Sto continuando il lavoro sulle lezioni di Promptly in formato V2.
+Apri LESSON-GUIDELINES.md nel workspace e leggilo INTERAMENTE,
+specialmente il banner ⚠️ V2 in cima e le sezioni 2.5, 3.b, 5, 11.
+Apri anche /content/it/mindset/01-what-is-vibe-coding.v2.json come
+fixture V2.
 
-Workflow approvato:
-1. Tu scrivi la bozza della lezione in chat in italiano (formattata
-   come blocchi numerati [1] PARAGRAPH, [2] CALLOUT, ecc.).
-2. Io reviso, do feedback puntuale ("cambia X in Y", "rifai blocco N",
-   "procedi").
-3. Tu salvi il JSON IT, poi traduci e salvi il JSON EN.
-4. Validazione veloce (parse + word count).
-5. NON committare. Commit unico alla fine di Path 2.
+Workflow approvato (invertito rispetto a V1):
+1. IO scrivo la bozza della lezione in italiano in chat, blocchi
+   nominati come nello schema V2 (paragraph, section_heading,
+   open_question, archetype_quiz, ...).
+2. TU revisioni con proposte numerate, senza modificare nulla.
+3. Io confermo quali proposte accettare.
+4. Tu integri, salvi /content/it/<path>/<file>.v2.json e traduci /
+   salvi /content/en/<path>/<file>.v2.json.
+5. Validazione (parse + word count + sanity check V2).
+6. NON committare. Commit unico quando finisce il blocco di lavoro.
 
-Status:
-- Path 1 lezioni 1-4 ✅ fatte
-- Mancano: mindset-05, mindset-06, prompt-01..08
+Stato V2:
+- mindset-01 ✅ scritta (file v2 in repo)
+- da fare: tutto il resto
 
-Iniziamo dalla lezione mindset-05 (Il contesto è tutto, fonte §8 di
-vibe-coding-teoria-completa.md).
-
-Ricorda: niente metafore eccessive, niente regole forzate, 350-500
-parole, sinonimi ricchi nelle blank (15-20 per blank), citazioni
-parsimoniose (Karpathy/Willison/Descartes già usati).
+Iniziamo dalla lezione <id>.
+Ricorda: niente regole forzate, niente metafore eccessive, ogni
+open_question deve avere il suo system_prompt (vedi §11),
+archetype_quiz richiede tie_breaker_priority esplicito.
 ```
 
 ---
@@ -431,12 +662,77 @@ parsimoniose (Karpathy/Willison/Descartes già usati).
 | `vibe-coding-teoria-completa.md` | Fonte teorica primaria (20 sezioni) |
 | `PROMPTLY.md` | Single source of truth del progetto (vision, design, hosting) |
 | `BACKLOG.md` | Backlog post-launch (refresh lezioni è la voce 4) |
-| `/content/it/mindset/04-break-it-down.json` | **Fixture di stile** — apri sempre prima di iniziare |
-| `/content/en/mindset/04-break-it-down.json` | Fixture di stile EN |
-| `/content/<lang>/<path>/*` | Tutti i file lezione (sovrascrivere quelli esistenti) |
+| `/content/it/mindset/01-what-is-vibe-coding.v2.json` | **Fixture V2** — apri sempre prima di iniziare una nuova lezione V2 |
+| `/content/en/mindset/01-what-is-vibe-coding.v2.json` | Fixture V2 EN |
+| `/content/it/mindset/04-break-it-down.json` | Fixture stilistica V1 (per registro / tono di scrittura) |
+| `/content/<lang>/<path>/<order>-<slug>.json` | File V1 in produzione (NON cancellare finché renderer V2 non live) |
+| `/content/<lang>/<path>/<order>-<slug>.v2.json` | File V2 paralleli (in lavorazione) |
 | `/public/brand/lessons/<id>.svg` | Icone già pronte, non toccare |
+| `.env.example` | Variabili d'ambiente: `OPENAI_API_KEY`, `OPENAI_MODEL=gpt-4o-mini` |
+
+---
+
+## 11. Convenzione `system_prompt` per `open_question`
+
+Ogni `open_question` ha **il suo** `system_prompt` versionato dentro il
+JSON della lezione. Niente prompt globale di default. Il prompt deve
+seguire questa struttura minima:
+
+1. **Identità + contesto** — "Sei l'assistente di Promptly, sito che
+   insegna vibe coding. Stai commentando la risposta di uno studente
+   alla Lezione N (titolo)".
+2. **Compito** — "Commenta la risposta in massimo 2 frasi. No consigli
+   tecnici, no scoring, no domande di follow-up."
+3. **Tono** — "Caldo, sintetico, mai paternalistico. Niente
+   motivational-da-LinkedIn. Niente emoji."
+4. **Casi tipici** — 2-4 esempi (idea concreta / curiosità generica /
+   dubbio o insicurezza / risposta evasiva) e come rispondere a ognuno.
+   Servono come few-shot impliciti.
+5. **Vincoli duri** — lunghezza max, lingua (sempre quella della
+   lezione), niente promesse di risultati, niente claim di
+   personalizzazione futura non supportata dal prodotto.
+
+**Esempio (italiano, lezione 1):**
+
+```
+Sei l'assistente di Promptly, sito che insegna vibe coding. Stai
+commentando la risposta aperta di uno studente alla Lezione 1
+("Il villaggio. Da dove tutto comincia.") alla domanda
+"cosa ti spinge a voler programmare?".
+
+Compito: commenta la risposta in massimo 2 frasi. Niente consigli
+tecnici, niente scoring, niente domande di follow-up.
+
+Tono: caldo, sintetico, mai paternalistico. Niente motivazionale
+da LinkedIn. Niente emoji. Italiano scorrevole.
+
+Casi tipici:
+- Idea concreta (app, sito, automazione) → riconoscila e dì che
+  è esattamente da idee così che parte Promptly.
+- Curiosità generica ("voglio capire come funziona") → conferma
+  che la curiosità è il combustibile più duraturo.
+- Insicurezza / dubbio ("non so se ce la farò") → valida il dubbio
+  e dì che è il miglior alleato all'inizio.
+- Risposta evasiva o non pertinente → rispondi con sobrietà,
+  senza forzare entusiasmo.
+
+Vincoli:
+- Massimo 2 frasi.
+- Mai chiudere con una domanda.
+- Mai promettere "diventerai un programmatore in X giorni".
+- Mai citare strumenti specifici (Cursor, Claude, ecc.) — quelli
+  arrivano dopo nel corso.
+```
+
+**Traduzione EN del `system_prompt`:** quando si traduce la lezione,
+si traduce anche il `system_prompt` (stesso contenuto, in inglese).
+È uno dei campi che cambiano per locale.
+
+**Modifiche post-pubblicazione:** se vediamo che il commento AI
+non è all'altezza, si modifica il `system_prompt` nella lezione
+specifica. Niente patch globali.
 
 ---
 
 *Aggiorna questo file ogni volta che il workflow o le decisioni di stile cambiano.*
-*Versione 1.0 — 29 April 2026.*
+*Versione 2.0 — 2 May 2026.*

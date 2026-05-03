@@ -2,7 +2,34 @@
 
 > Read this file BEFORE touching any other file in the project.
 > This is the single source of truth for vision, design, data model, and UI language.
-> Version 2.2 — Updated after first deploy.
+> Version 2.3 — Updated 2 May 2026 (lessons V2 pivot).
+
+---
+
+## ⚠️ Lessons V2 pivot (2 May 2026)
+
+The Path 1-2 exercise format has changed. The "fill-in-the-blank" template
+documented in earlier sections is **superseded** for new content:
+
+- **New format** for Path 1-2: open-ended questions + AI commentary
+  via **OpenAI GPT-4o mini**. Plus optional in-lesson `archetype_quiz`
+  blocks (multiple-choice with static archetype reveal).
+- **System prompts live per-lesson** inside each `open_question` block
+  (no global default). See `LESSON-GUIDELINES.md` §11.
+- **Authoring workflow inverted**: Stefano writes the draft, the AI reviews
+  with numbered proposals, the AI translates and saves both `.v2.json`
+  files (IT + EN) in `/content/<lang>/<path>/`.
+- **Rollout strategy**: V2 lessons are saved as `<order>-<slug>.v2.json`
+  alongside the V1 files until the renderer is wired. V1 stays in
+  production for now.
+- **API keys**: `.env.example` now declares `OPENAI_API_KEY` and
+  `OPENAI_MODEL=gpt-4o-mini`. DeepSeek is still reserved for the v2 Pro
+  tier (Path 3-5) when those lessons land.
+
+Sections of this document that were written assuming the V1 fill-blank
+format are kept for context but flagged where they conflict with V2.
+The authoritative spec for the V2 lesson schema lives in
+`LESSON-GUIDELINES.md` (§3.b, §2.5, §5, §11).
 
 ---
 
@@ -59,7 +86,7 @@ The first launch ships only:
 1. ✅ Auth (Email + Google), onboarding, language selection, daily goal selection
 2. ✅ Dashboard with all 5 paths visible (Path 3-5 marked "Coming soon — Pro")
 3. ✅ Path 1 (Mindset, 6 lessons) + Path 2 (Prompt, 8 lessons) — full content in EN + IT
-4. ✅ Lesson page with theory + fill-in-the-blank exercise + adaptive hints
+4. ✅ Lesson page with theory + exercise. **V1** uses fill-in-the-blank with adaptive hints (currently in production). **V2** (rollout in progress May 2026) uses open-ended questions with AI commentary via GPT-4o mini, plus optional archetype quizzes — see V2 banner above.
 5. ✅ Streak system (with weekly freeze) + XP system + daily goal ring
 6. ✅ Save/bookmark, settings, language toggle
 7. ✅ Push notifications (PWA) + email fallback for streak reminders
@@ -78,7 +105,8 @@ Path 3-5 + AI prompt evaluation + completion certificate ship in **v2**, after M
 - **Database:** Supabase (PostgreSQL + Auth)
 - **Auth providers:** Email/password + Google OAuth (no Apple OAuth in MVP — adds $99/year + complexity for marginal gain)
 - **Payments:** Stripe Checkout + webhook → Supabase
-- **AI evaluation (Path 3-5, v2):** DeepSeek API (`deepseek-chat`) — chosen for cost efficiency (~5–10x cheaper than GPT-4o mini or Claude Haiku at comparable quality on structured rubric tasks)
+- **AI commentary (Path 1-2, V2):** OpenAI **GPT-4o mini** — used to comment on the user's free-text answers to in-lesson `open_question` blocks. No scoring, no gating: pure engagement layer. Each lesson's JSON carries its own `system_prompt` per question.
+- **AI evaluation (Path 3-5, v2 Pro tier):** DeepSeek API (`deepseek-chat`) — chosen for cost efficiency (~5–10x cheaper than GPT-4o mini or Claude Haiku at comparable quality on structured rubric tasks). Used for free-form prompt evaluation with numeric scoring.
 - **Push notifications:** Web Push API via service worker (PWA installs only)
 - **Email:** Resend (transactional + streak reminders)
 - **Analytics:** PostHog (self-hosted EU instance for GDPR comfort, or PostHog Cloud EU)
@@ -88,8 +116,22 @@ Path 3-5 + AI prompt evaluation + completion certificate ship in **v2**, after M
 ### GDPR notes
 
 - DeepSeek API servers are in China. The user prompt is sent there for evaluation. This must be disclosed in the privacy policy and the consent flow before activating Pro features.
+- OpenAI (GPT-4o mini) servers are in the US. User answers to V2 `open_question` blocks are sent there for the commentary layer. Disclose in the privacy policy. EU data residency add-ons can be considered if/when traffic justifies the cost.
 - PostHog should be the EU-region instance to avoid extra DPAs.
 - Supabase project should be in the EU region.
+
+### Privacy policy backlog
+
+The landing-page Lucia demo (`/api/landing-evaluate`) sends anonymous-user prompts to OpenAI (US). Interim coverage is in place:
+
+- `/[lang]/privacy` renders a **provisional** Italian + English privacy notice (`components/marketing/PrivacyPolicyProvisional.tsx`) covering Art. 13 GDPR, EU-US Data Privacy Framework (Adequacy Decision 2023/1795), AI Act Art. 50 transparency, and the warning to not include personal data in the prompt. Lawful basis declared: legitimate interest (Art. 6(1)(f) GDPR), NOT consent.
+- An inline disclosure note sits under the demo with a link to the page.
+
+**Before public launch:**
+- [ ] Have a lawyer review and replace the provisional privacy notice with the definitive version. The provisional content is a defensible interim placeholder, not a substitute for legal review.
+- [ ] Decide the data controller's identifying details (legal entity, address, P.IVA / VAT, contact DPO if any) and update the "Titolare del trattamento" / "Data controller" section.
+- [ ] Verify OpenAI's current DPF certification status before publication.
+- [ ] Add full Cookie Policy + Terms of Service (currently still placeholders).
 
 ---
 
@@ -409,13 +451,13 @@ Each path contains lessons. Each lesson has two parts: **Theory** (read/understa
 
 ### Path tier mapping
 
-| Path | Tier | Exercise format | MVP? |
-|------|------|------------------|------|
-| 1 — Mindset | Free | Fill-in-the-blank | ✅ |
-| 2 — Prompt | Free | Fill-in-the-blank | ✅ |
-| 3 — Build | Pro | Free-form prompt + AI evaluation (DeepSeek) | v2 |
-| 4 — Debug | Pro | Free-form prompt + AI evaluation (DeepSeek) | v2 |
-| 5 — Ship | Pro | Free-form prompt + AI evaluation (DeepSeek) + capstone | v2 |
+| Path | Tier | Exercise format (V1 — current production) | Exercise format (V2 — rollout in progress) | MVP? |
+|------|------|---|---|------|
+| 1 — Mindset | Free | Fill-in-the-blank | Open question + AI commentary (GPT-4o mini) + optional archetype_quiz | ✅ |
+| 2 — Prompt | Free | Fill-in-the-blank | Open question + AI commentary (GPT-4o mini) | ✅ |
+| 3 — Build | Pro | n/a | Free-form prompt + AI evaluation (DeepSeek) | v2 |
+| 4 — Debug | Pro | n/a | Free-form prompt + AI evaluation (DeepSeek) | v2 |
+| 5 — Ship | Pro | n/a | Free-form prompt + AI evaluation (DeepSeek) + capstone | v2 |
 
 ---
 
@@ -480,9 +522,15 @@ Completing Path 5 unlocks the completion certificate.
 
 ## Exercise Formats
 
-Promptly uses **two distinct exercise formats**, mapped to user level:
+Promptly uses **three distinct exercise formats** as of V2:
 
-### A. Fill-in-the-blank (Path 1-2 — Free tier)
+| Format | Path | Tier | Notes |
+|---|---|---|---|
+| A. Fill-in-the-blank | Path 1-2 | Free | **Legacy V1** — still serves the lessons currently in production. Not used for new V2 lessons. |
+| B. Open question + AI commentary | Path 1-2 | Free | **V2 active.** GPT-4o mini comments the user's free-text answer; no scoring, no gating. Plus the special-purpose `archetype_quiz` block for static branching reveals (no API call). |
+| C. Free-form prompt + AI evaluation | Path 3-5 | Pro | DeepSeek-rubric scoring (v2 Pro tier, not yet in MVP). |
+
+### A. Fill-in-the-blank (Path 1-2 — V1, legacy)
 
 Used for foundational mechanics where there's a clear "right shape" of answer. Client-side validation against a list of accepted answers (case-insensitive, with synonym support).
 
@@ -510,7 +558,32 @@ Used for foundational mechanics where there's a clear "right shape" of answer. C
 
 The user can never get stuck. The system always moves forward.
 
-### B. Free-form prompt + AI evaluation (Path 3-5 — Pro tier, v2)
+### B. Open question + AI commentary (Path 1-2 — V2, active)
+
+Used in V2 lessons as the engagement layer between blocks of theory.
+The user reads a question (e.g. *"Cosa ti spinge a voler programmare?"*),
+types a free-text answer into a single input, and on submit the answer
+is sent to **OpenAI GPT-4o mini** with a per-question `system_prompt`
+versioned inside the lesson JSON. The AI returns a 1-2 sentence comment
+that's rendered inline.
+
+Key properties:
+- **No scoring, no gating.** The user always advances. The commentary is
+  pure engagement / personalization.
+- **Per-question system prompt.** Each `open_question` block in the
+  lesson JSON carries its own `system_prompt` field. There is no global
+  default. See `LESSON-GUIDELINES.md` §11 for the prompt structure.
+- **Multiple per lesson.** A V2 lesson can interleave several
+  `open_question` blocks with paragraphs of theory.
+- **Companion block: `archetype_quiz`.** Static multi-question
+  multiple-choice quiz that reveals one of N pre-defined archetypes via
+  dominant-answer logic + an explicit `tie_breaker_priority`. No API
+  call, but listed here because it lives next to `open_question` blocks
+  in the lesson body.
+- **Rate limit.** When wired, default cap = 30 commentary calls per user
+  per day in MVP (matching the Path 3-5 cap until we observe usage).
+
+### C. Free-form prompt + AI evaluation (Path 3-5 — Pro tier, v2)
 
 Used where there is no single right answer — only better and worse prompts. The user writes their full prompt in a textarea. On submit, the prompt is sent to **DeepSeek** with a rubric:
 
@@ -992,10 +1065,11 @@ Main home.
 11. User progress, streak, freezes, XP, subscription IS stored in the database.
 12. XP calculation logic lives exclusively in `lib/xp.ts`.
 13. Streak + freeze logic lives exclusively in `lib/streak.ts`.
-14. Fill-in-the-blank answer checking is **client-side** (answers in JSON for instant feedback).
-15. Free-form prompt evaluation goes through `app/api/evaluate/route.ts` → DeepSeek. Rate-limit per user (max 30 evaluations/day in MVP).
-16. PostHog events go through `lib/analytics/posthog.ts` — never call `posthog.capture` directly.
-17. Stripe webhooks are the source of truth for subscription state. Never update `subscription_tier` from client-side success redirects.
+14. **V1 only:** fill-in-the-blank answer checking is client-side (answers in JSON for instant feedback). **V2:** the `open_question` block has no client-side validation — submission goes through the open-question API route → GPT-4o mini → returns a textual comment. The user always advances. The `archetype_quiz` reveal is fully client-side static logic (no API).
+15. Path 3-5 free-form prompt evaluation goes through `app/api/evaluate/route.ts` → DeepSeek. V2 Path 1-2 commentary goes through a separate route (e.g. `app/api/comment-answer/route.ts`) → OpenAI GPT-4o mini. Rate-limit per user (default 30/day in MVP for both).
+16. **System prompts for V2 `open_question` are per-lesson**, stored inside the lesson JSON (`open_question.system_prompt`). Never define a global default; never silently substitute a fallback prompt at runtime — fail loudly if the field is missing.
+17. PostHog events go through `lib/analytics/posthog.ts` — never call `posthog.capture` directly.
+18. Stripe webhooks are the source of truth for subscription state. Never update `subscription_tier` from client-side success redirects.
 
 ---
 

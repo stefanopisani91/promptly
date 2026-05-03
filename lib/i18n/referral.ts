@@ -12,6 +12,7 @@ export interface ReferralCopy {
     shareBtn: string;
     copiedFeedback: string;
     activatedToast: string;
+    activatedToastDismiss: string;
     bonusReferrer: string;
   };
   progress: {
@@ -37,6 +38,7 @@ const it: ReferralCopy = {
     shareBtn: "Condividi",
     copiedFeedback: "Copiato! ✓",
     activatedToast: "+25 XP — link attivato!",
+    activatedToastDismiss: "Chiudi",
     bonusReferrer: "+300 XP per ogni amico che si iscrive",
   },
   progress: {
@@ -65,6 +67,7 @@ const en: ReferralCopy = {
     shareBtn: "Share",
     copiedFeedback: "Copied! ✓",
     activatedToast: "+25 XP — link activated!",
+    activatedToastDismiss: "Dismiss",
     bonusReferrer: "+300 XP for every friend who signs up",
   },
   progress: {

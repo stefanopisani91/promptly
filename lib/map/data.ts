@@ -10,13 +10,14 @@ import type {
   BonusPath,
   BonusPathSlug,
   Lang,
-  LessonContent,
+  AnyLessonContent,
   PathSlug,
   UnlockState,
 } from "@/types";
 import { listBonusPaths } from "@/lib/bonus-paths";
 import { PATH_META, PATH_ORDER } from "@/lib/lessons/paths";
 import { loadAvailableLessonsInPath } from "@/lib/lessons/load";
+import { getShortTitle } from "@/lib/lessons/display";
 import { getAllUserProgress, type AppSupabaseClient } from "@/lib/supabase/queries";
 import { checkAllBonusPathsFromSnapshot, getUnlockSnapshot } from "@/lib/unlock";
 
@@ -118,7 +119,7 @@ function placeholderTitle(slug: PathSlug, index: number, lang: Lang): string {
 
 interface PathLessons {
   slug: PathSlug;
-  available: LessonContent[];
+  available: AnyLessonContent[];
 }
 
 // ─── Core builder ───────────────────────────────────────────────────
@@ -139,7 +140,7 @@ export async function buildMapData(
     })),
   ]);
 
-  const lessonsBySlug: Record<PathSlug, LessonContent[]> = {
+  const lessonsBySlug: Record<PathSlug, AnyLessonContent[]> = {
     mindset: [],
     prompt: [],
     build: [],
@@ -211,7 +212,12 @@ export async function buildMapData(
     for (let i = 0; i < meta.totalLessons; i++) {
       const lesson = available[i];
       const lessonId = lesson?.id ?? null;
-      const title = lesson?.title ?? placeholderTitle(slug, i, lang);
+      // Map nodes use the short navigation label so storytelling V2 titles
+      // ("Il villaggio. Da dove tutto comincia.") don't blow out the node
+      // width. V1 lessons just return their title via getShortTitle.
+      const title = lesson
+        ? getShortTitle(lesson)
+        : placeholderTitle(slug, i, lang);
 
       let state: NodeState;
       let href: string | null = null;

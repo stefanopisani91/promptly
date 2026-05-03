@@ -4,7 +4,7 @@ import { getLandingCopy } from "@/lib/i18n/landing";
 import { HeroSection } from "@/components/marketing/HeroSection";
 import { ProblemSection } from "@/components/marketing/ProblemSection";
 import { SolutionSection } from "@/components/marketing/SolutionSection";
-import { PromptEvaluatorSection } from "@/components/marketing/PromptEvaluatorSection";
+import { LuciaDemoSection } from "@/components/marketing/lucia/LuciaDemoSection";
 import { CurriculumPreview } from "@/components/marketing/CurriculumPreview";
 import { SocialProofSection } from "@/components/marketing/SocialProofSection";
 import { FAQSection } from "@/components/marketing/FAQSection";
@@ -28,7 +28,7 @@ export default function LandingPage({ params }: { params: { lang: string } }) {
       <HeroSection copy={copy.hero} lang={lang} />
       <ProblemSection copy={copy.problem} />
       <SolutionSection copy={copy.solution} />
-      <PromptEvaluatorSection copy={copy.evaluator} lang={lang} />
+      <LuciaDemoSection copy={copy.demo} lang={lang} />
       <CurriculumPreview copy={copy.curriculum} />
       <SocialProofSection copy={copy.socialProof} />
       <FAQSection copy={copy.faq} />

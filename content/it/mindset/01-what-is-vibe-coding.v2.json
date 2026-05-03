@@ -1,0 +1,258 @@
+{
+  "id": "mindset-01",
+  "format_version": 2,
+  "path_slug": "mindset",
+  "order": 1,
+  "title": "Il villaggio. Da dove tutto comincia.",
+  "map_title": "Cos’è il vibe coding?",
+  "subtitle": "Il primo segreto del vibe coding non è un prompt. È come pensi.",
+  "difficulty": "beginner",
+  "estimated_minutes": 5,
+  "base_xp": 100,
+  "difficulty_bonus_xp": 0,
+  "icon": "/brand/lessons/mindset-01.svg",
+  "body": [
+    {
+      "type": "paragraph",
+      "text": "E così hai deciso di programmare senza saper scrivere codice, eh?"
+    },
+    {
+      "type": "paragraph",
+      "text": "Ebbene sì: che sia un’app o un sito web, che sia per smartphone o per computer, con funzioni complesse o basilari… si può fare. O almeno, questo dicono tutti: «con l’AI si può fare»."
+    },
+    {
+      "type": "paragraph",
+      "text": "Ma è davvero così? E soprattutto, è davvero così semplice come sembra?"
+    },
+    {
+      "type": "paragraph",
+      "text": "Te lo dico io — Stefano, l’autore di questo corso — che fino a poche settimane fa non sapevo cosa fosse una riga di HTML."
+    },
+    {
+      "type": "paragraph",
+      "text": "In 5 minuti ti porto a casa due cose: il principio che separa chi fa funzionare l’AI da chi ci litiga, e il tuo profilo di vibe coder — quello che useremo in tutto il corso per non farti sbattere sempre nello stesso muro."
+    },
+
+    {
+      "type": "section_heading",
+      "text": "Cos’è il vibe coding (per davvero)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Te la dico semplice, senza definizioni da manuale: il vibe coding è dire all’AI «fammi questo» in italiano normale, e lasciarle costruire il software per te. Tu parli, lei esegue. E ultimamente lo fa anche molto bene."
+    },
+    {
+      "type": "paragraph",
+      "text": "Quindi mi chiederai: «basta che le dico \"voglio un nuovo social network con queste caratteristiche\" e sono il prossimo founder con la sudadera grigia da copertina di Forbes?»"
+    },
+    {
+      "type": "paragraph",
+      "text": "No."
+    },
+    {
+      "type": "paragraph",
+      "text": "Te lo dico subito, senza giri di parole: se stai leggendo questo corso, di sicuro non sarai il prossimo founder con la sudadera grigia da copertina di Forbes. Non perché non sei abbastanza intelligente — ma perché chiunque pensa di poterlo diventare con un prompt non ha capito niente del vibe coding. Compreso il sottoscritto, fino a poche settimane fa."
+    },
+    {
+      "type": "paragraph",
+      "text": "Però lascia che ti chieda una cosa, prima di andare avanti."
+    },
+
+    {
+      "type": "open_question",
+      "id": "first-motivation",
+      "prompt": "Pensa al tuo prossimo progetto — quello che vorresti vedere esistere domani. Descrivimelo in due righe.",
+      "helper_text": "Non c’è risposta giusta. Sii sincero. Ti aiuterà nel resto del corso.",
+      "placeholder": "Scrivi qui la tua risposta…",
+      "max_chars": 500,
+      "system_prompt": "Sei l’assistente di Promptly, sito che insegna vibe coding. Stai commentando la risposta aperta di uno studente alla Lezione 1 (\"Il villaggio. Da dove tutto comincia.\") alla domanda \"pensa al tuo prossimo progetto — quello che vorresti vedere esistere domani — e descrivilo in due righe\".\n\nCompito: commenta la risposta in massimo 2 frasi. L’obiettivo è incoraggiare la concretezza dell’idea progetto. Niente consigli tecnici, niente scoring, niente domande di follow-up.\n\nTono: caldo, sintetico, mai paternalistico. Niente motivazionale da LinkedIn. Niente emoji. Italiano scorrevole.\n\nCasi tipici e come rispondere:\n- Idea concreta e specifica (app, sito, automazione, problema chiaro): riconosci la concretezza, dì che è proprio da un’idea così precisa che il corso ha più presa. Quella specificità è il primo prompt utile.\n- Idea generica (\"un sito\", \"un’app\", \"qualcosa con l’AI\"): senza giudicare, fai notare che per ora è ancora un contorno e che imparerai presto a renderla nitida — è uno dei muscoli del corso.\n- Idea ambiziosa o vaga su larga scala (\"il prossimo Instagram\", \"un social network\"): riconosci la visione, ma riporta a terra: il corso parte sempre dalla versione minima dell’idea, quella che potresti far girare domani.\n- Risposta evasiva o \"non lo so\": valida l’incertezza, dì che troverai l’idea facendo i primi prompt, non pensandoci a freddo.\n\nVincoli:\n- Massimo 2 frasi.\n- Mai chiudere con una domanda.\n- Mai promettere \"diventerai un programmatore in X giorni\".\n- Mai citare strumenti specifici (Cursor, Claude, ChatGPT, ecc.) — quelli arrivano dopo nel corso.\n- Mai dire \"complimenti\", \"ottima risposta\" o frasi di approvazione automatica."
+    },
+
+    {
+      "type": "section_heading",
+      "text": "Il primo segreto"
+    },
+    {
+      "type": "paragraph",
+      "text": "Ok, adesso che ci conosciamo un po’, ti racconto una cosa che ho imparato sulla mia pelle."
+    },
+    {
+      "type": "paragraph",
+      "text": "Le prime volte che ho chiesto all’AI di scrivermi codice, ho ottenuto risultati che sembravano perfetti. Pulsanti colorati, scritte ordinate, layout impeccabile. Sembrava magia."
+    },
+    {
+      "type": "paragraph",
+      "text": "Poi cliccavo. E si rompeva tutto."
+    },
+    {
+      "type": "paragraph",
+      "text": "La seconda volta è successo uguale. La terza pure. Alla decima ho iniziato a sospettare che il problema non fosse l’AI."
+    },
+    {
+      "type": "paragraph",
+      "text": "Ero io."
+    },
+    {
+      "type": "paragraph",
+      "text": "Non sapevo darle istruzioni. Le dicevo «fammi un sito» e lei mi faceva «un sito». Generico, finto, demo. Le dicevo «sistema il bug» e lei tirava a indovinare. Mi arrabbiavo con lei per qualcosa che era colpa mia."
+    },
+    {
+      "type": "paragraph",
+      "text": "Quel giorno ho capito una cosa che voglio dirti subito, perché ti farà risparmiare settimane:"
+    },
+    {
+      "type": "callout",
+      "variant": "key",
+      "text": "🔑 L’AI non è intelligente. È ubbidiente. Non capisce cosa vuoi. Capisce cosa scrivi."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esempio rapido. Prompt vago: «fammi un sito per la mia pizzeria». Cosa ottieni: un layout generico con foto stock e Lorem Ipsum. Prompt preciso: «fammi una pagina singola per la mia pizzeria a Milano, con menù, orari, e un bottone per chiamare dal telefono». Cosa ottieni: qualcosa che potresti pubblicare stasera. Stessi 30 secondi di scrittura. Risultato diverso."
+    },
+    {
+      "type": "paragraph",
+      "text": "Domanda secca, prima di andare avanti: se all’AI scrivi «sistema il bug», cosa farà? Esatto — tirerà a indovinare. Tutto il vibe coding parte da qui. Se non hai capito questo, non c’è prompt che funzioni. Se l’hai capito, ogni prompt diventa più potente del precedente."
+    },
+
+    {
+      "type": "section_heading",
+      "text": "Quick win — Scopri che vibe coder sei"
+    },
+    {
+      "type": "paragraph",
+      "text": "Adesso una cosa diversa. Il principio l’hai capito — l’AI esegue, non capisce. Ma *come* tu darai istruzioni dipende anche da che tipo di persona sei. Ci sono almeno quattro vibe coder diversi, e ognuno scivola in un modo diverso. Capire il tuo tipo ti fa risparmiare le settimane che ho perso io."
+    },
+    {
+      "type": "archetype_quiz",
+      "id": "vibe-coder-archetype",
+      "instructions": "Rispondi d’istinto, senza pensarci troppo. Cinque domande, un minuto.",
+      "reveal_xp_bonus": 150,
+      "questions": [
+        {
+          "id": "q1-stuck",
+          "prompt": "Quando ti blocchi su qualcosa che non sai fare, di solito tu...",
+          "options": [
+            { "key": "a", "label": "Apro venti tab cercando la risposta", "archetype_key": "analitico" },
+            { "key": "b", "label": "Chiedo aiuto subito a qualcuno che ne sa", "archetype_key": "visionario" },
+            { "key": "c", "label": "Provo e riprovo finché qualcosa non funziona", "archetype_key": "costruttore" },
+            { "key": "d", "label": "Mollo quella strada e cambio approccio", "archetype_key": "pragmatico" }
+          ]
+        },
+        {
+          "id": "q2-idea-source",
+          "prompt": "La tua idea per un progetto nasce di solito da...",
+          "options": [
+            { "key": "a", "label": "Un problema che ho vissuto io in prima persona", "archetype_key": "pragmatico" },
+            { "key": "b", "label": "Un’opportunità di business che ho intravisto", "archetype_key": "visionario" },
+            { "key": "c", "label": "Un’ispirazione vista altrove che voglio replicare", "archetype_key": "costruttore" },
+            { "key": "d", "label": "Pura curiosità — voglio capire come funziona", "archetype_key": "analitico" }
+          ]
+        },
+        {
+          "id": "q3-wrong-answer",
+          "prompt": "Quando l’AI ti dà una risposta che non funziona, tu...",
+          "options": [
+            { "key": "a", "label": "Penso che il problema sia troppo grande per il prompt e cambio scala", "archetype_key": "visionario" },
+            { "key": "b", "label": "Riformulo il prompt e riprovo subito", "archetype_key": "pragmatico" },
+            { "key": "c", "label": "Insisto con la stessa formulazione, magari con più dettagli, finché non ottengo qualcosa", "archetype_key": "costruttore" },
+            { "key": "d", "label": "Ci ragiono a freddo per capire dove ha sbagliato", "archetype_key": "analitico" }
+          ]
+        },
+        {
+          "id": "q4-finished-instinct",
+          "prompt": "Hai appena finito una cosa che funziona. La tua reazione di pancia è...",
+          "options": [
+            { "key": "a", "label": "Pubblicarla subito, vediamo come va in mano alla gente", "archetype_key": "pragmatico" },
+            { "key": "b", "label": "Pensare già alla versione 2, più ambiziosa", "archetype_key": "visionario" },
+            { "key": "c", "label": "Aggiungere un’altra feature prima di mollarla", "archetype_key": "costruttore" },
+            { "key": "d", "label": "Capire perché funziona, leggermi tutto il codice generato", "archetype_key": "analitico" }
+          ]
+        },
+        {
+          "id": "q5-feedback",
+          "prompt": "Il feedback che ti accende di più è...",
+          "options": [
+            { "key": "a", "label": "«Hai risolto il problema giusto»", "archetype_key": "pragmatico" },
+            { "key": "b", "label": "«Mi hai fatto vedere una cosa che non avevo immaginato»", "archetype_key": "visionario" },
+            { "key": "c", "label": "«Non ti sei fermato finché non funzionava»", "archetype_key": "costruttore" },
+            { "key": "d", "label": "«Hai capito davvero come funziona dentro»", "archetype_key": "analitico" }
+          ]
+        }
+      ],
+      "tie_breaker_priority": ["pragmatico", "costruttore", "analitico", "visionario"],
+      "archetypes": [
+        {
+          "key": "costruttore",
+          "title": "Il Costruttore Ostinato",
+          "description": "Risolvi a forza di volontà. Non molli mai. Ma rischi di sprecare ore su problemi che si risolverebbero con la domanda giusta. Ti insegnerò a chiedere aiuto all’AI nel modo giusto, prima di arrenderti dopo tre ore."
+        },
+        {
+          "key": "visionario",
+          "title": "Il Visionario",
+          "description": "Vedi il quadro grande prima degli altri. Ma fatichi sui dettagli, e nel codice i dettagli sono tutto. Ti insegnerò a scendere dalla montagna senza perdere la visione."
+        },
+        {
+          "key": "pragmatico",
+          "title": "Il Pragmatico",
+          "description": "Non perdi tempo con la teoria. Vuoi risultati. Sei l’archetipo perfetto per il vibe coding — ma attento a non saltare i fondamentali, perché poi paghi il debito tecnico."
+        },
+        {
+          "key": "analitico",
+          "title": "L’Analitico",
+          "description": "Capisci a fondo, sempre. Ma rischi il perfezionismo che blocca. Il vibe coding richiede di accettare che il primo risultato non è mai quello finale. Ti insegnerò a iterare invece di pianificare."
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Ricordati questo profilo. Lo userò per personalizzare il corso. E te lo richiamerò nelle prossime lezioni quando il tuo punto debole sta per fregarti."
+    },
+
+    {
+      "type": "section_heading",
+      "text": "Un’ultima cosa, prima di lasciarti andare"
+    },
+    {
+      "type": "paragraph",
+      "text": "Ti faccio un’ultima domanda."
+    },
+    {
+      "type": "open_question",
+      "id": "deep-motivation",
+      "prompt": "Perché vuoi imparare a programmare invece di affidarti a un professionista? Cosa ti motiva veramente?",
+      "helper_text": "Sii onesto. Solo tu leggerai la risposta sotto questa forma.",
+      "placeholder": "Scrivi qui la tua risposta…",
+      "max_chars": 500,
+      "system_prompt": "Sei l’assistente di Promptly, sito che insegna vibe coding. Stai commentando la risposta aperta di uno studente alla seconda domanda della Lezione 1: \"perché vuoi imparare a programmare invece di affidarti a un professionista? Cosa ti motiva veramente?\".\n\nCompito: commenta la risposta in massimo 2 frasi. Niente consigli tecnici, niente scoring, niente domande di follow-up.\n\nTono: caldo, sintetico, mai paternalistico. Niente motivazionale da LinkedIn. Niente emoji. Italiano scorrevole.\n\nCasi tipici e come rispondere:\n- Motivazione economica (\"voglio risparmiare\", \"voglio guadagnare\", \"indipendenza finanziaria\"): riconosci la motivazione, dì che è una motivazione potente, da tenere accesa.\n- Curiosità o piacere di imparare: conferma che la curiosità è il combustibile più duraturo, e che avrà vita facile nel corso.\n- Necessità lavorativa (\"il lavoro lo richiede\", \"voglio cambiare carriera\"): dì che nessuna pressione fa imparare come la necessità, e che è nel posto giusto.\n- Voglia di controllo / non dipendere da nessuno: riconosci la motivazione, dì che il controllo è proprio ciò che il corso restituisce.\n- Risposta tipo \"non lo so bene\" o vaga: valida l’incertezza, dì che la motivazione la trovi facendo, non pensando.\n\nVincoli:\n- Massimo 2 frasi.\n- Mai chiudere con una domanda.\n- Mai promettere risultati specifici (\"in X mesi sarai...\").\n- Mai citare strumenti specifici.\n- Mai dire \"complimenti\" o \"bellissima risposta\"."
+    },
+
+    {
+      "type": "section_heading",
+      "text": "Cliffhanger"
+    },
+    {
+      "type": "paragraph",
+      "text": "Ok, lezione 1 chiusa."
+    },
+    {
+      "type": "paragraph",
+      "text": "Hai appena imparato la cosa più importante del corso: l’AI esegue, non capisce."
+    },
+    {
+      "type": "paragraph",
+      "text": "Nella prossima lezione inizia il vero gioco: scrivi il tuo primo prompt vero, e ti faccio vedere come riformularlo *secondo il tuo archetipo* — perché un Pragmatico e un Analitico non scrivono lo stesso prompt anche quando vogliono la stessa cosa."
+    },
+    {
+      "type": "paragraph",
+      "text": "Ti aspetto."
+    },
+    {
+      "type": "paragraph",
+      "text": "— Stefano"
+    }
+  ],
+  "outro": {
+    "recap": "L’AI esegue, non capisce. Tutto il vibe coding parte da qui: se non sai dare istruzioni precise, nessun modello — per quanto potente — lavorerà bene per te.",
+    "next_prompt": "Nella prossima lezione: il tuo primo prompt vero. Capirai esattamente perché funziona — o perché no."
+  }
+}

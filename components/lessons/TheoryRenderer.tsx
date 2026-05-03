@@ -54,7 +54,6 @@ export function TheoryRenderer({ blocks }: Props) {
               <aside
                 key={idx}
                 className={`rounded-xl border px-5 py-4 ${calloutVariantStyles[block.variant]}`}
-                role="note"
               >
                 <p className="text-base leading-relaxed">
                   <span className="mr-2" aria-hidden>
@@ -71,7 +70,7 @@ export function TheoryRenderer({ blocks }: Props) {
                 key={idx}
                 className="rounded-xl border border-border bg-surface-muted px-5 py-4"
               >
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-primary-deep">
+                <p className="eyebrow text-primary-deep">
                   {block.label}
                 </p>
                 <p className="mt-2 text-base leading-relaxed text-text-secondary">
@@ -87,7 +86,7 @@ export function TheoryRenderer({ blocks }: Props) {
                 className="overflow-hidden rounded-xl border border-border bg-surface shadow-sm"
               >
                 <div className="border-b border-border bg-prompt-bg px-4 py-3">
-                  <p className="text-[10px] font-semibold uppercase tracking-wider text-prompt-text/60">
+                  <p className="eyebrow text-prompt-text/60">
                     Prompt
                   </p>
                   <p className="mt-1 font-mono text-sm leading-relaxed text-prompt-text">
@@ -107,7 +106,7 @@ export function TheoryRenderer({ blocks }: Props) {
                 className="grid grid-cols-1 gap-3 sm:grid-cols-2"
               >
                 <div className="rounded-xl border border-error/30 bg-error/5 p-4">
-                  <p className="text-[10px] font-semibold uppercase tracking-wider text-error">
+                  <p className="eyebrow text-error">
                     {block.bad.label}
                   </p>
                   <p className="mt-2 font-mono text-sm leading-relaxed text-text-secondary">
@@ -115,7 +114,7 @@ export function TheoryRenderer({ blocks }: Props) {
                   </p>
                 </div>
                 <div className="rounded-xl border border-success/30 bg-success-light/40 p-4">
-                  <p className="text-[10px] font-semibold uppercase tracking-wider text-success">
+                  <p className="eyebrow text-success">
                     {block.good.label}
                   </p>
                   <p className="mt-2 font-mono text-sm leading-relaxed text-text-secondary">

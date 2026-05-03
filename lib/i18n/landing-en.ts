@@ -192,77 +192,102 @@ export const landingCopyEn: LandingCopy = {
       ariaFeedback: "Exercise status",
     },
   },
-  evaluator: {
-    badge: "Live Demo",
-    modeLabel: "local heuristics",
+  demo: {
+    badge: "PROMPTLY · LIVE DEMO",
     title: "How effective is",
     titleEm: "your prompt?",
-    sub: "Read the bug. Write the prompt you'd send to an AI for help. Get structured feedback in real time.",
-    bug: {
-      code: `async function showUserNames() {\n  const users = await fetchUsers();\n  const names = users.map(u =>\n    u.name.toUpperCase()\n  );\n  setUserNames(names);\n}`,
-      error: `Uncaught (in promise) TypeError:\nCannot read properties of undefined\n(reading 'toUpperCase')\n    at showUserNames (app.js:4)`,
-      hint: "Sometimes it works, sometimes it crashes. We're loading users from an API.",
+    subtitle:
+      "You just created your website's homepage. It looks perfect, but something's off. What do you write to AI to ask for help?",
+    homepage: {
+      addressBar: "mealgenius.app",
+      appName: "MEALGENIUS",
+      nav: {
+        howItWorks: "How it works",
+        pricing: "Pricing",
+        getStarted: "Get started",
+      },
+      luciaHeadline: "Hi, I'm Lucia.",
+      luciaSubheadline:
+        "I work in marketing and I'm building Mealgenius, the app that suggests what to cook based on what's in your fridge.",
+      photoLabel: "profile photo",
+      errorBadge: "404",
+      projectTitle:
+        "Mealgenius — the app that turns what you have in your fridge into the perfect dinner in 3 minutes",
+      ctaButton: "DOWNLOAD",
+      footer: "© 2026 MEALGENIUS — Made by Lucia",
+      ariaIllustration: "Stylized illustration of Lucia",
+      ariaHeaderIllustration: "Cartoon illustration: cooking with fresh food",
     },
-    bashTab: "bash — debug-session",
-    cmdCat: "$ cat app.js",
-    cmdRun: "$ npm run dev",
-    editorTab: "prompt.md",
-    resultTab: "result.json",
-    evalLabel: "RESULT",
-    evaluatingLabel: "EVALUATING",
-    adviceLabel: "ADVICE",
-    textareaPlaceholder:
-      "// Write here the prompt you would send to the AI\n// to fix the bug on the left...",
-    ariaTextarea: "Write your prompt here",
-    ariaScore: "Total prompt score",
-    ariaBar: "Dimension score",
-    runBtn: "evaluate prompt",
-    runningBtn: "analyzing...",
-    resetBtn: "retry",
-    statusReady: "ready",
-    statusEvaluating: "analyzing...",
-    statusEvaluated: "evaluated",
-    charsLabel: "chars",
-    scoreLabels: {
-      excellent: "EXCELLENT",
-      good: "GOOD",
-      improve: "NEEDS WORK",
-      insufficient: "INSUFFICIENT",
+    console: {
+      errorLine1: "GET /assets/profilo.jpg 404 (Not Found)",
+      errorLine2:
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
     },
-    dimensions: {
-      chiarezza: {
-        label: "clarity",
-        desc: "exact error",
-        advice:
-          "Always include the exact error as text (e.g. 'TypeError: Cannot read properties...') instead of describing it in words.",
+    editor: {
+      windowTitle: "Code editor — prompt.md",
+      placeholder:
+        "Write here how you'd ask AI for help...\n\nHint: the AI can't see the homepage.\nYou have to describe what's not working.",
+      statusReady: "ready",
+      statusEvaluating: "evaluating",
+      statusEvaluated: "evaluated",
+      charsLabel: "characters",
+      btnEvaluate: "evaluate prompt",
+      btnEvaluating: "evaluating...",
+      btnRetry: "retry",
+      previousAttempt: "previous attempt: {score}/100",
+      ariaTextarea: "Write your prompt here",
+      ariaScore: "Total prompt score",
+      ariaBar: "Dimension score",
+    },
+    result: {
+      evalLabel: "RESULT",
+      adviceLabel: "ADVICE",
+      scoreLabels: {
+        review: "NEEDS REWORK",
+        improve: "NEEDS WORK",
+        good: "GOOD",
+        great: "GREAT",
+        perfect: "PERFECT",
       },
-      contesto: {
-        label: "context",
-        desc: "environment / code",
-        advice:
-          "Explain what the code does and where it runs: framework, async, where data comes from. Without context the AI is guessing.",
-      },
-      obiettivo: {
-        label: "goal",
-        desc: "what you want",
-        advice:
-          "State what you want and ask for an explanation too. 'Fix it' isn't enough — describe the expected behavior.",
-      },
-      protezione: {
-        label: "guardrails",
-        desc: "constraints",
-        advice:
-          "Add constraints: 'don't touch the rest', 'make the minimal change', 'tell me what you change and why'.",
+      dimensions: {
+        chiarezza: { label: "clarity", desc: "exact error" },
+        contesto: { label: "context", desc: "environment / code" },
+        obiettivo: { label: "goal", desc: "what you want" },
+        protezione: { label: "guardrails", desc: "constraints" },
       },
     },
-    consiglio: {
-      excellent:
-        "Excellent prompt: the AI has everything it needs to give you a thoughtful, safe answer. Keep going.",
-      excellentWithWeak:
-        "Very good prompt. To make it perfect, strengthen {dim}: {advice}",
-      good: "Good prompt. To push it to excellence, work on {dim}: {advice}",
-      medium: "Weak spot: {dim}. {advice}",
-      low: "The prompt is too generic. {advice}",
+    messages: {
+      scoreLow: "AI didn't quite get it. Improve your prompt and try again.",
+      scoreMidOnePhotoOnly:
+        "Good prompt. You fixed one bug, but something's still off.",
+      scoreMidPartialOneLeft:
+        "Almost! You caught the ones you mentioned. One left…",
+      scoreMidAllBugs:
+        "Nice! You caught all the bugs. To reach a perfect prompt, work on the details from the advice.",
+      scoreHighPartial:
+        "Great prompt — but did you notice the other {count} visible issues?",
+      scoreHighAllTitle: "You fixed the homepage with a {score}/100 prompt.",
+      scoreHighAllSub:
+        "In Promptly you learn to do this for real, on your own projects.",
+      ctaFinal: "Try it free →",
+      limitTitle: "You've explored the demo well!",
+      limitSub:
+        "To keep learning and improving your prompts, start the journey in Promptly.",
+      limitCta: "Start free →",
+    },
+    errors: {
+      network: "Connection lost. Please try again in a few seconds.",
+      rateLimit:
+        "You've hit the evaluation limit. Try again in a few minutes.",
+      tooLong: "Prompt is too long. 1500 characters max.",
+      invalidPrompt: "We can't evaluate this prompt. Try rewriting it.",
+      generic: "Something went wrong. Please try again.",
+      empty: "Write something before evaluating.",
+    },
+    disclosure: {
+      text:
+        "The prompt you submit is processed by an AI (OpenAI, US) to generate the evaluation. Don't include personal data.",
+      linkLabel: "Privacy Policy",
     },
     footer:
       "A small taste of Promptly — the app that teaches you real vibe coding.",

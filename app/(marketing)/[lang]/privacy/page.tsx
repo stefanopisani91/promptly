@@ -1,8 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { isLang, type Lang } from "@/types";
-import { getPlaceholderCopy } from "@/lib/i18n/placeholders";
-import { PlaceholderShell } from "@/components/marketing/PlaceholderShell";
+import { PrivacyPolicyProvisional } from "@/components/marketing/PrivacyPolicyProvisional";
 
 type Params = { lang: string };
 
@@ -12,10 +11,13 @@ export function generateStaticParams(): Params[] {
 
 export function generateMetadata({ params }: { params: Params }): Metadata {
   if (!isLang(params.lang)) return {};
-  const copy = getPlaceholderCopy(params.lang).privacy;
+  const isIt = params.lang === "it";
   return {
-    title: copy.title.replace(/[.!?]+$/, ""),
-    description: copy.body,
+    title: isIt ? "Privacy Policy · Promptly" : "Privacy Policy · Promptly",
+    description: isIt
+      ? "Informativa privacy provvisoria per la demo della landing di Promptly."
+      : "Provisional privacy notice for the Promptly landing-page demo.",
+    // The page is provisional and won't be the canonical source for SEO yet.
     robots: { index: false, follow: true },
   };
 }
@@ -23,17 +25,5 @@ export function generateMetadata({ params }: { params: Params }): Metadata {
 export default function PrivacyPage({ params }: { params: Params }) {
   if (!isLang(params.lang)) notFound();
   const lang: Lang = params.lang;
-  const placeholders = getPlaceholderCopy(lang);
-  const copy = placeholders.privacy;
-  return (
-    <PlaceholderShell
-      eyebrow={copy.eyebrow}
-      title={copy.title}
-      body={copy.body}
-      primaryCta={{
-        label: placeholders.backToLandingLabel,
-        href: `/${lang}`,
-      }}
-    />
-  );
+  return <PrivacyPolicyProvisional lang={lang} />;
 }

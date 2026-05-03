@@ -18,8 +18,16 @@ function isClient(): boolean {
   return typeof window !== "undefined";
 }
 
+function prefersReducedMotion(): boolean {
+  return (
+    typeof window !== "undefined" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
+}
+
 export function fireConfetti(): void {
   if (!isClient()) return;
+  if (prefersReducedMotion()) return;
   confetti({
     particleCount: 80,
     spread: 60,
@@ -32,6 +40,7 @@ export function fireConfetti(): void {
 // sides plus a centre top-up. ~1.5s total feel.
 export function fireLevelUpConfetti(): void {
   if (!isClient()) return;
+  if (prefersReducedMotion()) return;
 
   const shoot = (originX: number) => {
     confetti({

@@ -192,77 +192,105 @@ export const landingCopyIt: LandingCopy = {
       ariaFeedback: "Stato esercizio",
     },
   },
-  evaluator: {
-    badge: "Live Demo",
-    modeLabel: "valutazione locale",
+  demo: {
+    badge: "PROMPTLY · LIVE DEMO",
     title: "Quanto è efficace",
     titleEm: "il tuo prompt?",
-    sub: "Leggi il bug. Scrivi il prompt che useresti per chiedere aiuto a un'AI. Ricevi un feedback strutturato.",
-    bug: {
-      code: `async function showUserNames() {\n  const users = await fetchUsers();\n  const names = users.map(u =>\n    u.name.toUpperCase()\n  );\n  setUserNames(names);\n}`,
-      error: `Uncaught (in promise) TypeError:\nCannot read properties of undefined\n(reading 'toUpperCase')\n    at showUserNames (app.js:4)`,
-      hint: "A volte funziona, a volte crasha. Stiamo caricando utenti da un'API.",
+    subtitle:
+      "Hai appena creato la home page del tuo sito web. Sembra perfetta, ma c'è qualcosa che non va. Cosa scrivi all'AI per chiederle aiuto?",
+    homepage: {
+      addressBar: "frigomagico.app",
+      appName: "FRIGOMAGICO",
+      nav: {
+        howItWorks: "Come funziona",
+        pricing: "Prezzi",
+        getStarted: "Inizia",
+      },
+      luciaHeadline: "Ciao, sono Lucia.",
+      luciaSubheadline:
+        "Lavoro nel marketing e sto costruendo FrigoMagico, l'app che ti suggerisce cosa cucinare in base a quello che hai nel frigo.",
+      photoLabel: "foto profilo",
+      errorBadge: "404",
+      projectTitle:
+        "FrigoMagico — l'app che trasforma quello che hai in frigo in cena perfetta in 3 minuti",
+      ctaButton: "DOWNLOAD",
+      footer: "© 2026 FRIGOMAGICO — Made by Lucia",
+      ariaIllustration: "Illustrazione stilizzata di Lucia",
+      ariaHeaderIllustration: "Illustrazione cartoon: cucinare con cibi freschi",
     },
-    bashTab: "bash — debug-session",
-    cmdCat: "$ cat app.js",
-    cmdRun: "$ npm run dev",
-    editorTab: "prompt.md",
-    resultTab: "result.json",
-    evalLabel: "RISULTATO",
-    evaluatingLabel: "VALUTAZIONE",
-    adviceLabel: "CONSIGLIO",
-    textareaPlaceholder:
-      "// Scrivi qui il prompt che invieresti all'AI\n// per risolvere il bug a sinistra...",
-    ariaTextarea: "Scrivi il tuo prompt qui",
-    ariaScore: "Punteggio totale del prompt",
-    ariaBar: "Punteggio dimensione",
-    runBtn: "valuta prompt",
-    runningBtn: "analisi in corso...",
-    resetBtn: "riprova",
-    statusReady: "pronto",
-    statusEvaluating: "analisi...",
-    statusEvaluated: "valutato",
-    charsLabel: "caratteri",
-    scoreLabels: {
-      excellent: "ECCELLENTE",
-      good: "BUONO",
-      improve: "DA MIGLIORARE",
-      insufficient: "INSUFFICIENTE",
+    console: {
+      errorLine1: "GET /assets/profilo.jpg 404 (Not Found)",
+      errorLine2:
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
     },
-    dimensions: {
-      chiarezza: {
-        label: "chiarezza",
-        desc: "errore esatto",
-        advice:
-          "Includi sempre l'errore esatto come testo (es. 'TypeError: Cannot read properties...') invece di descriverlo a parole.",
+    editor: {
+      windowTitle: "Code editor — prompt.md",
+      placeholder:
+        "Scrivi qui come chiederesti aiuto all'AI...\n\nSuggerimento: l'AI non vede la homepage.\nDevi descriverle tu cosa non funziona.",
+      statusReady: "pronto",
+      statusEvaluating: "valutazione in corso",
+      statusEvaluated: "valutato",
+      charsLabel: "caratteri",
+      btnEvaluate: "valuta prompt",
+      btnEvaluating: "valutazione in corso...",
+      btnRetry: "riprova",
+      previousAttempt: "tentativo precedente: {score}/100",
+      ariaTextarea: "Scrivi il tuo prompt qui",
+      ariaScore: "Punteggio totale del prompt",
+      ariaBar: "Punteggio dimensione",
+    },
+    result: {
+      evalLabel: "RISULTATO",
+      adviceLabel: "CONSIGLIO",
+      scoreLabels: {
+        review: "DA RIVEDERE",
+        improve: "DA MIGLIORARE",
+        good: "BUONO",
+        great: "OTTIMO",
+        perfect: "PERFETTO",
       },
-      contesto: {
-        label: "contesto",
-        desc: "ambiente / codice",
-        advice:
-          "Spiega cosa fa il codice e in che ambiente gira: framework, async, da dove arrivano i dati. Senza contesto l'AI tira a indovinare.",
-      },
-      obiettivo: {
-        label: "obiettivo",
-        desc: "cosa vuoi",
-        advice:
-          "Dichiara cosa vuoi ottenere e chiedi anche una spiegazione. 'Sistemalo' non basta: di' come dovrebbe comportarsi.",
-      },
-      protezione: {
-        label: "protezione",
-        desc: "vincoli",
-        advice:
-          "Aggiungi vincoli: 'non modificare il resto', 'fai la modifica minima', 'spiegami cosa cambi e perché'.",
+      dimensions: {
+        chiarezza: { label: "chiarezza", desc: "errore esatto" },
+        contesto: { label: "contesto", desc: "ambiente / codice" },
+        obiettivo: { label: "obiettivo", desc: "cosa vuoi" },
+        protezione: { label: "protezione", desc: "vincoli" },
       },
     },
-    consiglio: {
-      excellent:
-        "Prompt eccellente: l'AI ha tutto il necessario per darti una soluzione ragionata e sicura. Continua così.",
-      excellentWithWeak:
-        "Prompt molto buono. Per renderlo perfetto, rinforza la {dim}: {advice}",
-      good: "Buon prompt. Per portarlo all'eccellenza, lavora sulla {dim}: {advice}",
-      medium: "Punto debole: {dim}. {advice}",
-      low: "Il prompt è troppo generico. {advice}",
+    messages: {
+      scoreLow:
+        "L'AI non ha capito bene cosa fare. Migliora il prompt e riprova.",
+      scoreMidOnePhotoOnly:
+        "Buon prompt. Hai sistemato un bug, ma c'è ancora qualcosa che non va.",
+      scoreMidPartialOneLeft:
+        "Quasi! Hai notato i bug che hai menzionato. Ne è rimasto uno…",
+      scoreMidAllBugs:
+        "Bravo! Hai trovato tutti i bug. Per arrivare a un prompt perfetto, lavora sui dettagli che vedi nel consiglio.",
+      scoreHighPartial:
+        "Ottimo prompt, ma hai notato gli altri {count} problemi visibili?",
+      scoreHighAllTitle:
+        "Hai sistemato la homepage con un prompt da {score}/100.",
+      scoreHighAllSub:
+        "In Promptly impari a farlo per davvero, su progetti tuoi.",
+      ctaFinal: "Provala gratis →",
+      limitTitle: "Hai esplorato bene la demo!",
+      limitSub:
+        "Per continuare a imparare e migliorare i tuoi prompt, inizia il viaggio in Promptly.",
+      limitCta: "Inizia gratis →",
+    },
+    errors: {
+      network: "Connessione interrotta. Riprova tra qualche secondo.",
+      rateLimit:
+        "Hai raggiunto il limite di valutazioni. Riprova tra qualche minuto.",
+      tooLong: "Il prompt è troppo lungo. Massimo 1500 caratteri.",
+      invalidPrompt:
+        "Non riusciamo a valutare questo prompt. Prova a riscriverlo.",
+      generic: "Qualcosa è andato storto. Riprova.",
+      empty: "Scrivi qualcosa prima di valutare.",
+    },
+    disclosure: {
+      text:
+        "Il prompt che invii viene elaborato da un'IA (OpenAI, USA) per generare la valutazione. Non inserire dati personali.",
+      linkLabel: "Privacy Policy",
     },
     footer:
       "Un piccolo assaggio di Promptly — l'app che ti insegna a fare vibe coding davvero.",

@@ -50,6 +50,10 @@ export function MapNodeDetailsModal({ content, onClose, closeAria }: Props) {
   );
 
   return (
+    // Backdrop click-outside-to-close. Keyboard equivalent (Escape) is wired
+    // on `window` in the effect above, plus a visible × close button, so the
+    // a11y contract is satisfied — the backdrop click is just a UX shortcut.
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-noninteractive-element-interactions
     <div
       role="dialog"
       aria-modal="true"

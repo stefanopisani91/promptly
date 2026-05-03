@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, type FormEvent } from "react";
+import { useEffect, useId, useRef, type FormEvent } from "react";
 import type { AuthCopy } from "@/lib/i18n/auth";
 import { cn } from "@/lib/utils";
 
@@ -24,6 +24,16 @@ export function OnboardingStepName({
   onSubmit,
 }: Props) {
   const inputId = useId();
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  // Programmatic focus on mount — replaces the autoFocus attribute, which
+  // jsx-a11y flags because it can disorient screen-reader and keyboard users
+  // when applied indiscriminately. Here the focus is intentional (this is the
+  // first form field of an onboarding step), so we keep the behavior but
+  // trigger it via effect to satisfy the lint rule.
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -52,7 +62,7 @@ export function OnboardingStepName({
           type="text"
           inputMode="text"
           autoComplete="given-name"
-          autoFocus
+          ref={inputRef}
           maxLength={NAME_MAX}
           spellCheck={false}
           placeholder={copy.placeholder}

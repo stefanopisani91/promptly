@@ -246,42 +246,67 @@ Vincoli:
 
 ---
 
-## 4. ✏️ Riscrittura lezioni Path 1 + Path 2 con standard editoriale rifinito
+## 4. ✏️ Riscrittura lezioni Path 1 + Path 2 — pivot V2 (open_question + GPT-4o mini)
 
-**Stato:** 🚧 in progress
+**Stato:** 🚧 in progress (pivot V2 attivo dal 2 May 2026)
 **Priorità:** 🔴 alta (le lezioni sono il prodotto vero — gli utenti le consumano per imparare)
 
 ### Contesto
 
-Il Round 3b ha lasciato 13 lezioni in produzione (Path 1 lez 2-6 + Path 2 lez 1-8) generate da Claude Code in modalità automatica. Sono **scarse**: troppo brevi (130-180 parole), formattazione poco brillante, sembrano triviali.
+Il Round 3b ha lasciato 13 lezioni in produzione (Path 1 lez 2-6 + Path 2
+lez 1-8) generate da Claude Code in modalità automatica. Erano **scarse**:
+troppo brevi (130-180 parole), formattazione poco brillante, sembravano
+triviali.
 
-Le stiamo riscrivendo manualmente in chat (lavoro condiviso utente + AI), una lezione alla volta, con uno standard editoriale alzato:
-- 350-500 parole di teoria
-- 7-9 blocchi vari per lezione
-- Aperture con citazione (preferibile) o caso concreto
-- Emoticon strategiche solo nei callout
-- Sinonimi ricchi nelle blank degli esercizi (15-20 per blank)
-- Eccezione/sfumatura sempre presente prima del callout di chiusura
+Stavamo iniziando una riscrittura V1 (formato `fill_blank`, standard
+editoriale alzato a 350-500 parole). 4 lezioni mindset erano state rifatte
+in quel formato (mindset-01..04).
 
-### Stato attuale
+### Pivot V2 (2 May 2026) — cambio di rotta
 
-✅ Già rifatte:
-- mindset-01 (originale, OK così)
-- mindset-02 (Sei tu l'architetto)
-- mindset-03 (Pensa in risultati, non in passi)
-- mindset-04 (Scomponi il problema) — **fixture di riferimento**
+A maggio 2026 il formato esercizio cambia: niente più `fill_blank`. Il
+nuovo standard è:
 
-⏳ Da rifare:
-- mindset-05, mindset-06 (Path 1)
-- prompt-01..08 (Path 2, 8 lezioni)
+- **`open_question`** — domande a risposta aperta con un singolo campo testo. La risposta dell'utente viene commentata da **OpenAI GPT-4o mini**. Niente scoring, niente gating: pura personalizzazione.
+- **`archetype_quiz`** — quiz multi-domanda multiple-choice che rivela un archetipo, logica statica (no API), opzionale per lezione.
+- **System prompt per-lezione**, dentro ogni `open_question.system_prompt`. Niente default globale.
+- **Workflow invertito**: Stefano scrive la bozza, l'AI revisiona con proposte numerate, traduce in EN e salva entrambi i file V2.
+- **File paralleli**: `<order>-<slug>.v2.json` accanto al file V1, finché il renderer V2 non è in produzione.
+- **API key**: `.env.example` contiene `OPENAI_API_KEY` + `OPENAI_MODEL=gpt-4o-mini` (da riempire).
+
+Spec completa: `LESSON-GUIDELINES.md` (banner ⚠️ V2 in cima, §3.b, §11).
+Master: `PROMPTLY.md` (banner V2 in cima, sezione "Exercise Formats — B").
+
+### Stato V2
+
+🚧 In lavorazione:
+- mindset-01 (Il villaggio. Da dove tutto comincia.) — file v2 in repo, in fase di review
+
+⏳ Da rifare in V2:
+- mindset-02..06 (Path 1)
+- prompt-01..08 (Path 2)
+
+🗑 Le V1 di mindset-01..04 non sono più la "fixture": vengono sostituite
+dalle V2 una a una. Restano in produzione finché la V2 non viene wired.
+
+### Il renderer V2 è una voce di codice separata
+
+Vedi `LESSONS.md` "Round 4 — V2 lesson format" per la checklist
+implementativa (types, componenti, API route OpenAI, ecc.). Lo si fa
+DOPO che almeno la prima lezione V2 è scritta e validata sul testo.
 
 ### File di riferimento
 
-**`LESSON-GUIDELINES.md`** in root del progetto contiene tutto il contesto operativo necessario per continuare il lavoro: decisioni di stile, schema JSON, workflow, errori da evitare, prompt di kickoff per nuova chat.
+**`LESSON-GUIDELINES.md`** in root del progetto contiene tutto il contesto
+operativo necessario per continuare: decisioni di stile, schema V2,
+workflow invertito, convenzione `system_prompt` per-lezione (§11), errori
+da evitare, prompt di kickoff per nuova chat.
 
 ### Quando finita
 
-Single commit + push: `feat(content): rewrite all Path 1+2 lessons with refined editorial standard`. Niente commit intermedi.
+Single commit + push quando si chiude un blocco coerente (es. tutte le V2
+di Path 1, oppure tutto Path 1+2). Messaggio suggerito:
+`feat(content): rewrite Path 1 lessons in V2 (open_question + GPT-4o mini)`.
 
 ---
 

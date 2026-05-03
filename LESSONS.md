@@ -5,24 +5,35 @@
 > Da leggere insieme a `PROMPTLY.md` (single source of truth), `AUTH.md` (utente già autenticato), e `vibe-coding-teoria-completa.md` (fonte primaria del materiale didattico).
 >
 > Versione 1.0 — 29 April 2026.
+>
+> ⚠️ **Aggiornamento 2 May 2026 — pivot V2.** Il formato esercizio
+> descritto in questo file (`fill_blank` con validazione client-side e
+> sinonimi) è **superseded** per i nuovi contenuti. La spec attiva del
+> formato V2 (open_question + archetype_quiz + commento GPT-4o mini con
+> system prompt per-lezione) vive in `LESSON-GUIDELINES.md` (banner ⚠️
+> V2 in cima, §3.b, §11). Le sezioni qui sotto restano valide per il
+> renderer V1 in produzione finché non viene sostituito.
 
 ---
 
-## Decisioni prese
+## Decisioni prese (V1 — Round 3, 29 April 2026)
+
+> Le righe marcate **[V2 superseded]** sono state riviste con il pivot
+> del 2 May 2026. La nuova decisione è in `LESSON-GUIDELINES.md`.
 
 | Aspetto | Decisione |
 |---|---|
-| Lunghezza teoria | 150-300 parole per lezione |
+| Lunghezza teoria | 150-300 parole per lezione (V2 alza a 300-500) |
 | Tono | Conversazionale, "tu", caldo, accessibile |
-| Blank esercizio | Variabile 1-3 a seconda della lezione |
+| Blank esercizio | Variabile 1-3 a seconda della lezione **[V2 superseded — niente blank, si usano `open_question` + `archetype_quiz`]** |
 | Citazioni esperti | Parsimoniose: solo 1-2 in tutto il corso (Karpathy + Willison) |
-| Blocchi teoria | `paragraph`, `callout`, `example`, `simulated_output`, `comparison_table`, `quote` (motivante) |
-| Lingua-first | Inglese (poi traduzione IT) |
-| Struttura tipica | Hook (quote) → paragraph → example/simulated_output → callout → esercizio |
+| Blocchi teoria | `paragraph`, `callout`, `example`, `simulated_output`, `comparison_table`, `quote` (V2 aggiunge `section_heading`, `open_question`, `archetype_quiz`) |
+| Lingua-first | Inglese (poi traduzione IT) **[V2 superseded — autoraggio in italiano, traduzione AI in inglese]** |
+| Struttura tipica | Hook (quote) → paragraph → example/simulated_output → callout → esercizio **[V2: teoria e interazioni interleaved nell'array `body`]** |
 | Outro lezione | Recap rapido + XP toast + bottone "Prossima lezione" |
-| Reveal (3° tentativo errato) | Risposta corretta + spiegazione 2-3 frasi, XP -50% |
+| Reveal (3° tentativo errato) | Risposta corretta + spiegazione 2-3 frasi, XP -50% **[V2 superseded — niente tentativi, l'utente avanza sempre]** |
 | Navigazione | Lezioni libere dentro un path · Path 2 si sblocca solo dopo aver completato Path 1 |
-| Validazione blank | Case-insensitive + lista sinonimi (no fuzzy, no AI) |
+| Validazione blank | Case-insensitive + lista sinonimi (no fuzzy, no AI) **[V2 superseded — commento GPT-4o mini per `open_question`, logica statica per `archetype_quiz`]** |
 | Visual | 1 illustrazione SVG semplice per lezione (icona concettuale) |
 | Implementazione | Code-first: scaffold + 1 lezione di esempio. Contenuti completi in round successivo |
 
@@ -496,3 +507,25 @@ Le 14 lezioni si basano sul materiale in `vibe-coding-teoria-completa.md`. Mappa
 ---
 
 *Brief versione 1.0 — quando sei pronto, dai a Claude Code: "Implementa il Round 3a (scaffold lezioni + 1 lezione esempio) seguendo `LESSONS.md`. Conferma il piano prima di toccare codice. Termina sempre il round con build pulito + commit + push + verifica Netlify deploy verde, e riporta tutti e 4 i punti nel riepilogo finale."*
+
+---
+
+## Round 4 — V2 lesson format (planned, 2 May 2026)
+
+Prossimo round di codice (fuori dallo scope del Round 3): wirearci il
+formato V2 al renderer.
+
+Checklist orientativa:
+
+- [ ] `types/index.ts`: aggiungere discriminatore `format_version` su `LessonContent`, nuovi tipi `OpenQuestionBlock`, `ArchetypeQuizBlock`, `SectionHeadingBlock`, e `LessonV2Content` con `body` array misto.
+- [ ] `lib/lessons/load.ts`: leggere `*.v2.json` quando presente, usare `format_version: 2` per scegliere la pipeline.
+- [ ] Nuovo componente `components/lessons/OpenQuestion.tsx`: textarea + bottone submit + render del commento AI ricevuto.
+- [ ] Nuovo componente `components/lessons/ArchetypeQuiz.tsx`: stato locale per le risposte, calcolo dominante, tie-breaking via `tie_breaker_priority`, reveal card per l'archetipo + bonus XP opzionale.
+- [ ] Nuovo componente `components/lessons/SectionHeading.tsx`.
+- [ ] Estendere `TheoryRenderer` o creare `LessonBodyRenderer` che cammina su `body[]` mischiando i tipi V1+V2.
+- [ ] Nuova API route: `app/api/comment-answer/route.ts` → riceve `{lessonId, openQuestionId, userAnswer}`, cerca il `system_prompt` nella lezione caricata server-side (no input dal client), chiama OpenAI GPT-4o mini, ritorna 1-2 frasi di commento. Rate-limit 30/giorno/utente in MVP.
+- [ ] `.env.example` già aggiornato con `OPENAI_API_KEY` + `OPENAI_MODEL=gpt-4o-mini`. Wirare `lib/ai/openai.ts`.
+- [ ] Aggiornare `LessonContent` consumers (`page.tsx`, `LessonShell`) per supportare il branching V1/V2.
+- [ ] PostHog: nuovi eventi `open_question_submitted { lesson_id, question_id, answer_chars, comment_received }` e `archetype_revealed { lesson_id, archetype_key }`.
+- [ ] Migrare lezione 1 da V1 a V2 cancellando il file V1 una volta che il deploy V2 è stabile per ≥48h.
+- [ ] Aggiornare GDPR / privacy con la disclosure "OpenAI US" come nuovo data processor.

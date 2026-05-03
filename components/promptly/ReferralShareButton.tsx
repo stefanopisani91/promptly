@@ -118,6 +118,7 @@ export function ReferralShareButton({
       {toastXp !== null && (
         <XpToast
           label={copy.card.activatedToast}
+          dismissLabel={copy.card.activatedToastDismiss}
           onDismiss={() => setToastXp(null)}
         />
       )}
