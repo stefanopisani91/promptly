@@ -7,7 +7,7 @@ import { Menu, X } from "lucide-react";
 import type { Lang } from "@/types";
 import type { LandingCopy } from "@/lib/i18n/landing";
 import { cn } from "@/lib/utils";
-import { LangSwitcher } from "./LangSwitcher";
+import { LangSwitcher } from "@/components/i18n/LangSwitcher";
 
 interface Props {
   lang: Lang;
@@ -67,7 +67,7 @@ export function MarketingHeader({ lang, copy }: Props) {
 
         {/* Desktop nav */}
         <nav className="hidden items-center gap-3 md:flex">
-          <LangSwitcher current={lang} />
+          <LangSwitcher fallback={lang} />
           <Link
             href={`/auth?source=header_login&lang=${lang}`}
             className="rounded-md px-3 py-2 text-sm font-medium text-text-secondary transition-colors hover:text-text-primary"
@@ -113,7 +113,7 @@ export function MarketingHeader({ lang, copy }: Props) {
               {copy.cta}
             </Link>
             <div className="pt-2">
-              <LangSwitcher current={lang} />
+              <LangSwitcher fallback={lang} />
             </div>
           </div>
         </div>

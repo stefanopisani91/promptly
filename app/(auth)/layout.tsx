@@ -3,7 +3,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { resolveLangFromRequest } from "@/lib/i18n/server-lang";
 import { getAuthCopy } from "@/lib/i18n/auth";
-import { LangToggle } from "@/components/auth/LangToggle";
+import { LangSwitcher } from "@/components/i18n/LangSwitcher";
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
   const lang = resolveLangFromRequest();
@@ -26,7 +26,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
             className="h-7 w-auto sm:h-8"
           />
         </Link>
-        <LangToggle current={lang} ariaLabel={copy.shell.langToggleLabel} />
+        <LangSwitcher fallback={lang} ariaLabel={copy.shell.langToggleLabel} />
       </header>
       {children}
     </div>

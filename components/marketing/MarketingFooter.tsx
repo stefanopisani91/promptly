@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Lang } from "@/types";
 import type { LandingCopy } from "@/lib/i18n/landing";
-import { LangSwitcher } from "./LangSwitcher";
+import { LangSwitcher } from "@/components/i18n/LangSwitcher";
 
 interface Props {
   lang: Lang;
@@ -28,7 +28,7 @@ export function MarketingFooter({ lang, copy }: Props) {
             </Link>
             <p className="text-sm text-text-muted">{copy.builtWith}</p>
           </div>
-          <LangSwitcher current={lang} />
+          <LangSwitcher fallback={lang} />
         </div>
 
         <div className="mt-10 grid grid-cols-2 gap-8 sm:grid-cols-3">

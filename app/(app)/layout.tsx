@@ -7,7 +7,7 @@ import { resolveLangFromRequest } from "@/lib/i18n/server-lang";
 import { getAuthCopy } from "@/lib/i18n/auth";
 import { createClient } from "@/lib/supabase/server";
 import { getUserProfile } from "@/lib/supabase/queries";
-import { LangToggle } from "@/components/auth/LangToggle";
+import { LangSwitcher } from "@/components/i18n/LangSwitcher";
 import { LogoutButton } from "@/components/dashboard/LogoutButton";
 
 export default async function AppLayout({ children }: { children: ReactNode }) {
@@ -45,7 +45,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
           />
         </Link>
         <div className="flex items-center gap-3">
-          <LangToggle current={lang} ariaLabel={copy.shell.langToggleLabel} />
+          <LangSwitcher fallback={lang} ariaLabel={copy.shell.langToggleLabel} />
           <LogoutButton label={copy.dashboard.logoutCta} />
         </div>
       </header>
