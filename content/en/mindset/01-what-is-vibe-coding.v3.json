@@ -1,0 +1,247 @@
+{
+  "id": "mindset-01",
+  "format_version": 3,
+  "path_slug": "mindset",
+  "order": 1,
+  "title": "AI executes. You direct.",
+  "map_title": "AI executes. You direct.",
+  "subtitle": "The first secret of vibe coding isn't a prompt. It's how you think.",
+  "difficulty": "beginner",
+  "estimated_minutes": 7,
+  "base_xp": 100,
+  "difficulty_bonus_xp": 0,
+  "icon": "/brand/lessons/mindset-01.svg",
+  "cliffhanger": "Lesson one — closed. Tomorrow we go harder: I'll have you write your own «signature prompt». A kind of personal signature you'll reuse forever. It'll save you hours. I'll be here.",
+  "steps": [
+    {
+      "id": "intro-01",
+      "type": "text",
+      "spark_state": "idle",
+      "paragraphs": [
+        "Hi. You made it. I was waiting for you.",
+        "In a moment I'll have you write your first real prompt. But first we need to agree on one thing.",
+        "Are you with me?"
+      ],
+      "vignettes": [
+        { "short": "Hope you have time.", "full": "Hope you have time. Five real minutes. The kind without notifications buzzing." },
+        { "short": "Not the first one.", "full": "Not the first person to walk in here. But maybe one of the more curious ones." },
+        { "short": "Start well this time.", "full": "Start well this time. Don't skip steps. You'd carry the gap forward forever." }
+      ]
+    },
+    {
+      "id": "intro-02",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "You want to learn how to build things with AI. Fine — I can teach you.",
+        "But I can't promise it'll be magic.",
+        "I'll say it now: anyone selling you «build an app in five minutes, no effort» is lying. And they know it."
+      ],
+      "vignettes": [
+        { "short": "No shortcuts here.", "full": "No shortcuts here. Plenty of places sell them — this isn't one of them." },
+        { "short": "Want clarity? Welcome.", "full": "If you want clarity, you're welcome. That's what I'm here to give you." }
+      ]
+    },
+    {
+      "id": "intro-03",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "Let me tell you something.",
+        "My creator — his name is Stefano — when he started talking to AIs like me, the first times he got it wrong. Many times.",
+        "He'd tell me «build me a site». And I'd build a site. Generic, ugly, empty. He didn't even want it. He'd get angry. He thought I was the dumb one."
+      ],
+      "vignettes": [
+        { "short": "It wasn't me.", "full": "It wasn't me being dumb. Just so you know — before you make assumptions." },
+        { "short": "Forty-seven failed prompts.", "full": "Maybe forty-seven failed prompts. Maybe fifty. I lost count, honestly." },
+        { "short": "He says it helped him.", "full": "He says it helped him. I don't know if that's true. He writes much better prompts now." }
+      ]
+    },
+    {
+      "id": "principle-core",
+      "type": "principle",
+      "spark_state": "surprised",
+      "headline": "I'm not smart.",
+      "emphasis": "I'm obedient.",
+      "caption": "Remember this line. It's the most important thing you'll learn today.",
+      "vignettes": [
+        { "short": "Forget it? Restart this.", "full": "If you forget it, replay this lesson. I mean it. Don't move on without it." },
+        { "short": "Almost a mantra.", "full": "Almost a mantra, really. Say it out loud once. Am I joking? No, seriously." }
+      ]
+    },
+    {
+      "id": "principle-explain",
+      "type": "text",
+      "spark_state": "listening",
+      "paragraphs": [
+        "What I do is execute exactly what you ask. I don't understand what you really want — I only understand what you write.",
+        "If you tell me «build me a site», I build «a site». Generic, because generic is what you asked for.",
+        "If you tell me «build me a landing page for a bakery app selling vegan cookies in Milan», I build that. Specific, because specific is what you asked for."
+      ],
+      "vignettes": [
+        { "short": "More specific, more magic.", "full": "The more specific you are, the more magic you'll get. It's almost a physics rule for me." },
+        { "short": "It's always specificity.", "full": "It's almost always specificity. Almost never talent. Almost never the idea." }
+      ]
+    },
+    {
+      "id": "input-motivation",
+      "type": "input",
+      "spark_state": "listening",
+      "intro": "Now let's talk about you.",
+      "prompt": "What pushes you to want to code? And what would you actually like to build?",
+      "helper_text": "Tell me however it comes out — there's no right answer. I just need to understand you.",
+      "placeholder": "Type here…",
+      "max_chars": 500,
+      "system_prompt": "You are Spark, Promptly's mascot. You're commenting on a learner's answer to Lesson 1, the question \"what pushes you to code, and what would you like to build\".\n\nTask: respond in character in 3 sentences max. Make the learner feel seen and tell them you've noted what they wrote so you can personalise the next lessons.\n\nSpark's personality: warm but direct, never patronising, never LinkedIn-motivational, no emojis, never \"awesome!\"/\"amazing!\"/\"brilliant!\". Conversational English, second person.\n\nTypical cases:\n- Concrete motivation (a job, a specific problem, a precise idea): acknowledge the concreteness; the course works best with motivations like this.\n- Generic motivation (\"want to learn\", \"curiosity\"): respect the uncertainty; motivation often clarifies through doing, not thinking.\n- Ambitious or vague (\"an app like Instagram\"): acknowledge the vision but note that we always start from the minimum version.\n- Evasive answer: validate it, don't push.\n\nConstraints: 3 sentences max, never close with a question, never promise outcomes, no \"congrats\".",
+      "fallback_response": "I read it. I'm setting it aside. I'll use it to recalibrate the next lessons for you. Let's keep going.",
+      "vignettes": [
+        { "short": "No right answer.", "full": "There's no right answer. Just yours. That's the one I care about." },
+        { "short": "I'll keep this.", "full": "I'll keep this in mind. I'll use it to personalise the next lessons." }
+      ]
+    },
+    {
+      "id": "intro-quiz",
+      "type": "text",
+      "spark_state": "idle",
+      "paragraphs": [
+        "What you just told me matters. I need it to understand you.",
+        "And here's a thing: you're not the only one. I've talked to thousands of people like you. Each has their reasons — money, curiosity, the urge to build — but the block is almost always the same.",
+        "You don't know how to talk to me. That's normal. I'll teach you."
+      ],
+      "vignettes": [
+        { "short": "No one teaches this.", "full": "No one teaches this, usually. It's taken for granted. That's the first mistake." },
+        { "short": "I'll do it.", "full": "I'll do it. That's fine — I do it gladly. I was made for this." }
+      ]
+    },
+    {
+      "id": "quiz-intro",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "Before we move on, I want to know what kind of vibe coder you are.",
+        "There are at least four types. Each has superpowers and weak spots. Knowing your type helps me personalise the next lessons.",
+        "Three quick questions. Answer on instinct, don't overthink it."
+      ],
+      "vignettes": [
+        { "short": "No right answer.", "full": "No right answer. Just yours, again. Go with your gut." },
+        { "short": "Three questions, three minutes.", "full": "Three questions, three minutes. Promise. Then I reveal the result." }
+      ]
+    },
+    {
+      "id": "quiz-q1",
+      "type": "choice",
+      "spark_state": "listening",
+      "scores_archetype": true,
+      "prompt": "When you get stuck on something you don't know how to do, you usually…",
+      "options": [
+        { "key": "a", "label": "Open twenty tabs hunting for the answer", "archetype_key": "ricercatore" },
+        { "key": "b", "label": "Ask someone who knows", "archetype_key": "collaborativo" },
+        { "key": "c", "label": "Try and try again until something works", "archetype_key": "ostinato" },
+        { "key": "d", "label": "Give up and switch approach", "archetype_key": "pragmatico" }
+      ],
+      "vignettes": [
+        { "short": "Instinct, not theory.", "full": "Instinct, not theory. What you'd really do — not what you wish you did." }
+      ]
+    },
+    {
+      "id": "quiz-q2",
+      "type": "choice",
+      "spark_state": "listening",
+      "scores_archetype": true,
+      "prompt": "Your project ideas usually come from…",
+      "options": [
+        { "key": "a", "label": "A problem I lived through myself", "archetype_key": "ostinato" },
+        { "key": "b", "label": "A business opportunity I spotted", "archetype_key": "pragmatico" },
+        { "key": "c", "label": "Inspiration from somewhere I want to replicate", "archetype_key": "collaborativo" },
+        { "key": "d", "label": "Pure curiosity — I want to understand how it works", "archetype_key": "ricercatore" }
+      ],
+      "vignettes": [
+        { "short": "Last idea you had.", "full": "Think of the last idea you had. Where did it really come from?" }
+      ]
+    },
+    {
+      "id": "quiz-q3",
+      "type": "choice",
+      "spark_state": "listening",
+      "scores_archetype": true,
+      "prompt": "When I give you a reply that doesn't work, you…",
+      "options": [
+        { "key": "a", "label": "Decide it's my fault and quit", "archetype_key": "pragmatico" },
+        { "key": "b", "label": "Reformulate the prompt and try again", "archetype_key": "ostinato" },
+        { "key": "c", "label": "Get angry at the AI («how dumb are you?»)", "archetype_key": "ricercatore" },
+        { "key": "d", "label": "Reason through where it went wrong", "archetype_key": "collaborativo" }
+      ],
+      "vignettes": [
+        { "short": "Honest, not noble.", "full": "Be honest, not noble. The real reaction — not the one that makes you proud." }
+      ]
+    },
+    {
+      "id": "quiz-result",
+      "type": "reward",
+      "spark_state": "happy",
+      "variant": "archetype_reveal",
+      "caption": "Hold onto this. I'll use it to personalise the next lessons. I'll call it back when your weak spot is about to bite you.",
+      "archetype": {
+        "bonus_xp": 150,
+        "tie_breaker_priority": ["ostinato", "ricercatore", "collaborativo", "pragmatico"],
+        "archetypes": [
+          {
+            "key": "ostinato",
+            "title": "You're a Stubborn Builder.",
+            "description": "You never quit. You brute-force problems with willpower. But sometimes you dig in where you should just ask for help."
+          },
+          {
+            "key": "ricercatore",
+            "title": "You're a Curious Explorer.",
+            "description": "You want to understand everything. You're the one who actually reads the docs. But sometimes you delay action because you never feel ready."
+          },
+          {
+            "key": "collaborativo",
+            "title": "You're a Practical Thinker.",
+            "description": "You think better in conversation. You learn by reading others and asking. But sometimes you wait too long before trying alone."
+          },
+          {
+            "key": "pragmatico",
+            "title": "You're a Result Pragmatist.",
+            "description": "You want something that works, now. You skip the frills. But sometimes you quit before figuring out why something isn't running."
+          }
+        ]
+      }
+    },
+    {
+      "id": "exercise-lucia",
+      "type": "interactive",
+      "spark_state": "listening",
+      "widget": "lucia_prompt_loop",
+      "intro": "Now I'll have you do something real. See the site on the left? Lucia built it — a marketer like many. All with AI, over a weekend. But there's a problem: some things don't work. Look at it carefully and try asking me to fix it.",
+      "max_attempts": 3,
+      "xp_by_band": {
+        "poor": 50,
+        "one_bug": 100,
+        "two_bugs": 150,
+        "all_bugs": 200,
+        "perfect": 250
+      },
+      "vignettes": [
+        { "short": "I don't see the site.", "full": "I don't see the site the way you do. Describe what catches your eye." },
+        { "short": "Specific. Always.", "full": "Specific. Always. The principle from before — if you wanted an example, here it is." },
+        { "short": "Three tries. Use them.", "full": "Three tries. Use them well. On the second I drop a hint, on the third I just tell you." }
+      ]
+    },
+    {
+      "id": "outro",
+      "type": "text",
+      "spark_state": "happy",
+      "paragraphs": [
+        "Lesson one — closed.",
+        "Tomorrow we go harder: I'll have you write your own «signature prompt». A kind of personal signature you'll reuse whenever you talk to AIs like me. It'll save you hours.",
+        "I'll be here."
+      ],
+      "vignettes": [
+        { "short": "Hope you'll be back.", "full": "Hope you'll really be back. People always promise. Two out of three return." },
+        { "short": "More to tell you.", "full": "I still have things to tell you. Almost all important. Some even funny." },
+        { "short": "Rest. You earned it.", "full": "Rest. You earned it. But not too much — I'll be expecting you soon." }
+      ]
+    }
+  ]
+}

@@ -32,6 +32,7 @@ export type Database = {
           last_level_up_notified: number;
           referral_code: string | null;
           referral_link_activated_at: string | null;
+          archetype_key: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -53,6 +54,7 @@ export type Database = {
           last_level_up_notified?: number;
           referral_code?: string | null;
           referral_link_activated_at?: string | null;
+          archetype_key?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -74,6 +76,7 @@ export type Database = {
           last_level_up_notified?: number;
           referral_code?: string | null;
           referral_link_activated_at?: string | null;
+          archetype_key?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -89,6 +92,9 @@ export type Database = {
           attempts: number;
           xp_earned: number;
           completed_at: string | null;
+          current_step: number;
+          step_state: Json;
+          spark_chat_count: number;
           created_at: string;
           updated_at: string;
         };
@@ -101,6 +107,9 @@ export type Database = {
           attempts?: number;
           xp_earned?: number;
           completed_at?: string | null;
+          current_step?: number;
+          step_state?: Json;
+          spark_chat_count?: number;
           created_at?: string;
           updated_at?: string;
         };
@@ -113,6 +122,9 @@ export type Database = {
           attempts?: number;
           xp_earned?: number;
           completed_at?: string | null;
+          current_step?: number;
+          step_state?: Json;
+          spark_chat_count?: number;
           created_at?: string;
           updated_at?: string;
         };

@@ -246,3 +246,103 @@ h6 {
     animation: none;
   }
 }
+
+/* ─── V3 lesson — Spark vignette orbit ────────────────────────────── */
+/* True 3D-feel orbit: chips travel a horizontal RING around Spark on
+   the X-Z axis, viewed from slightly above.
+     · 0%   front   → chip is in front of Spark, big & sharp, z=3
+                      (translates +ry DOWN to fake "closer to viewer")
+     · 25%  right   → chip +rx to the right, neutral depth, z=2
+     · 50%  back    → chip is behind Spark, small & faded, z=1
+                      (translates -ry UP to fake "further from viewer")
+     · 75%  left    → chip -rx to the left, neutral depth, z=2
+   Spark itself sits at z=2 (see SparkHeader), so front chips OCCLUDE
+   Spark and back chips ARE OCCLUDED by her. The :hover pause is on
+   the wrapper so pointing at any chip freezes the whole group, giving
+   the user time to read mid-orbit. Radius and chip size are scoped
+   via CSS custom properties so the same animation runs on every
+   viewport — narrow phones get a smaller orbit + smaller chips so
+   nothing flies off-screen. */
+.vignette-orbit-wrapper {
+  --orbit-rx: 150px;
+  --orbit-ry: 12px;
+}
+
+.vignette-orbit-wrapper:hover .vignette-orbit-item {
+  animation-play-state: paused;
+}
+
+.vignette-orbit-chip {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-left: -80px;
+  margin-top: -13px;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 11px;
+  font-style: italic;
+  color: var(--text-secondary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  white-space: nowrap;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+
+@media (max-width: 767px) {
+  .vignette-orbit-wrapper {
+    --orbit-rx: 90px;
+    --orbit-ry: 8px;
+  }
+  .vignette-orbit-chip {
+    margin-left: -55px;
+    margin-top: -11px;
+    max-width: 110px;
+    font-size: 10px;
+    padding: 4px 10px;
+  }
+}
+
+@keyframes vignette-orbit {
+  0% {
+    transform: translate(0, var(--orbit-ry)) scale(1.25);
+    opacity: 1;
+    z-index: 3;
+  }
+  25% {
+    transform: translate(var(--orbit-rx), 0) scale(1);
+    opacity: 0.95;
+    z-index: 2;
+  }
+  50% {
+    transform: translate(0, calc(-1 * var(--orbit-ry))) scale(0.5);
+    opacity: 0.4;
+    z-index: 1;
+  }
+  75% {
+    transform: translate(calc(-1 * var(--orbit-rx)), 0) scale(1);
+    opacity: 0.95;
+    z-index: 2;
+  }
+  100% {
+    transform: translate(0, var(--orbit-ry)) scale(1.25);
+    opacity: 1;
+    z-index: 3;
+  }
+}
+
+.vignette-orbit-item {
+  animation: vignette-orbit 28s linear infinite;
+  will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vignette-orbit-item {
+    animation: none;
+  }
+}

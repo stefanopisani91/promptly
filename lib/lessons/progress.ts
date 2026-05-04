@@ -5,6 +5,7 @@ import type {
   PathSlug,
   UserProgress,
 } from "@/types";
+import { isLessonV3Content } from "@/types";
 import {
   getAllUserProgress,
   getProgressForPath,
@@ -65,14 +66,16 @@ export async function getPathProgress(
   );
   const earnedXp = progressRows.reduce((sum, p) => sum + p.xp_earned, 0);
 
-  // Next lesson = first available (by order) the user has NOT completed.
-  // If everything available is completed, point at the first uncompleted
-  // declared lesson id by convention (`<slug>-01`) — even if its JSON does
-  // not exist yet (Round 3a only ships mindset-01).
-  const nextAvailable = available.find((l) => !completedIds.has(l.id));
+  // Next lesson = first V3 lesson (by order) the user has NOT completed.
+  // V1/V2 are excluded from navigation (the path page renders them as
+  // "Coming soon"). Falls back to the first declared id if nothing exists
+  // yet for this path — keeps Dashboard's "Continue" card from breaking
+  // before V3 content lands.
+  const v3Available = available.filter((l) => isLessonV3Content(l));
+  const nextAvailable = v3Available.find((l) => !completedIds.has(l.id));
   let nextLessonId: string | null = null;
   if (nextAvailable) nextLessonId = nextAvailable.id;
-  else if (available.length === 0) nextLessonId = `${pathSlug}-01`;
+  else if (v3Available.length === 0) nextLessonId = `${pathSlug}-01`;
 
   let isUnlocked = true;
   if (meta.prerequisitePath) {

@@ -1,10 +1,19 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
-import { isLang, isLessonV2Content, type Lang } from "@/types";
+import {
+  isLang,
+  isLessonV2Content,
+  isLessonV3Content,
+  type Lang,
+} from "@/types";
 import { resolveLangFromRequest } from "@/lib/i18n/server-lang";
 import { getLessonsCopy } from "@/lib/i18n/lessons";
+import { getLandingCopy } from "@/lib/i18n/landing";
 import { createClient } from "@/lib/supabase/server";
-import { getUserProfile } from "@/lib/supabase/queries";
+import {
+  getLessonProgress,
+  getUserProfile,
+} from "@/lib/supabase/queries";
 import { loadAvailableLessonsInPath, loadLessonById } from "@/lib/lessons/load";
 import {
   getLessonNeighbors,
@@ -22,6 +31,10 @@ import {
   type LessonV2ViewStrings,
 } from "@/components/lessons/LessonV2View";
 import { LessonNavigator } from "@/components/lessons/LessonNavigator";
+import {
+  LessonV3View,
+  type LessonV3ViewStrings,
+} from "@/components/lessons/v3/LessonV3View";
 
 export const dynamic = "force-dynamic";
 
@@ -30,6 +43,7 @@ interface PageProps {
 }
 
 const MAX_ATTEMPTS = 3;
+const SPARK_CHAT_LIMIT = 5;
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const lang: Lang = resolveLangFromRequest();
@@ -77,16 +91,74 @@ export default async function LessonPage({ params }: PageProps) {
     Math.max(positionLabel.total, lesson.order),
   );
 
-  // ─── V2 branch ──────────────────────────────────────────────────────
-  // Open question + AI commentary + archetype quiz. Pre-resolves all i18n
-  // strings server-side before passing them into the client component
-  // tree (function values cannot cross the server/client boundary — see
-  // Round 2 fix commit 09d78a2 + Round 3a regression digest 293253662).
+  // ─── V3 branch (card-step + Spark mascot) ───────────────────────────
+  // Pre-resolves all i18n strings, the Lucia demo copy reused inside the
+  // INTERACTIVE step, and the user's persisted state so the client view
+  // boots straight into "resume where you left off".
+  if (isLessonV3Content(lesson)) {
+    const persisted = await getLessonProgress(supabase, user.id, lesson.id);
+    const alreadyCompleted = persisted?.completed ?? false;
+    // If the lesson was previously completed, treat any re-entry as a fresh
+    // walk-through: start from step 0 and ignore the persisted current_step.
+    // The DB still holds the previous step_state (so the user's old answers
+    // hydrate the cards) but the index resets so they don't get teleported
+    // to the cliffhanger they already saw. Mid-lesson resumes (not yet
+    // completed) keep the saved current_step.
+    const initialStep = alreadyCompleted
+      ? 0
+      : persisted?.current_step ?? 0;
+    const rawStepState = persisted?.step_state;
+    const initialStepState =
+      rawStepState && typeof rawStepState === "object" && !Array.isArray(rawStepState)
+        ? (rawStepState as Record<string, unknown>)
+        : {};
+    const chatUsed = persisted?.spark_chat_count ?? 0;
+    const chatRemaining = Math.max(0, SPARK_CHAT_LIMIT - chatUsed);
+
+    const landingCopy = getLandingCopy(lang);
+
+    const v3Strings: LessonV3ViewStrings = {
+      header: lessonsCopy.v3.header,
+      navigation: lessonsCopy.v3.navigation,
+      inputStep: lessonsCopy.v3.inputStep,
+      rewardStep: lessonsCopy.v3.rewardStep,
+      interactiveStep: {
+        hint: lessonsCopy.v3.interactiveStep.hint,
+        attemptCounterTemplate:
+          lessonsCopy.v3.interactiveStep.attemptCounterTemplate,
+        placeholder: lessonsCopy.v3.interactiveStep.placeholder,
+        submitCta: lessonsCopy.v3.interactiveStep.submitCta,
+        submitting: lessonsCopy.v3.interactiveStep.submitting,
+        retryCta: lessonsCopy.v3.interactiveStep.retryCta,
+        finalCta: lessonsCopy.v3.interactiveStep.finalCta,
+        networkError: lessonsCopy.v3.interactiveStep.networkError,
+        rateLimitError: lessonsCopy.v3.interactiveStep.rateLimitError,
+        apiError: lessonsCopy.v3.interactiveStep.apiError,
+        awaitingPrompt: lessonsCopy.v3.interactiveStep.awaitingPrompt,
+        reactions: lessonsCopy.v3.interactiveStep.reactions,
+        homepageCopy: landingCopy.demo.homepage,
+        consoleCopy: landingCopy.demo.console,
+      },
+      chat: lessonsCopy.v3.chat,
+    };
+
+    return (
+      <LessonV3View
+        lesson={lesson}
+        pathHref={pathHref}
+        strings={v3Strings}
+        initialStep={initialStep}
+        initialStepState={initialStepState}
+        alreadyCompleted={alreadyCompleted}
+        initialChatRemaining={chatRemaining}
+        chatLimit={SPARK_CHAT_LIMIT}
+      />
+    );
+  }
+
+  // ─── V2 branch (legacy open_question + archetype_quiz) ──────────────
   if (isLessonV2Content(lesson)) {
     const baseLessonXp = lesson.base_xp + lesson.difficulty_bonus_xp;
-    // All fields below MUST be plain strings (no functions). Templates with
-    // {token} placeholders are substituted in the client. Anything that
-    // depends on a value not yet known server-side stays a template.
     const v2Strings: LessonV2ViewStrings = {
       body: {
         openQuestion: {
@@ -153,9 +225,6 @@ export default async function LessonPage({ params }: PageProps) {
   }
 
   // ─── V1 branch (legacy fill_blank) ──────────────────────────────────
-  // Pre-resolve every string crossing into client components. The i18n
-  // copy object contains arrow functions that React cannot serialize
-  // across the server/client boundary.
   const xpFull = calculateLessonXp(
     lesson.base_xp,
     lesson.difficulty_bonus_xp,

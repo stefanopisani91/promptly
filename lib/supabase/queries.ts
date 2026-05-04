@@ -15,7 +15,7 @@ export type ProfileGate =
   | { state: "complete"; profile: UserProfile };
 
 const USER_PROFILE_COLUMNS =
-  "id, email, full_name, language, daily_goal, onboarding_completed_at, signup_source, welcome_seen_at, push_prompted_at, ai_eval_prompted_at, total_xp, current_streak, longest_streak, last_activity_date, last_level_up_notified, referral_code, referral_link_activated_at, created_at, updated_at";
+  "id, email, full_name, language, daily_goal, onboarding_completed_at, signup_source, welcome_seen_at, push_prompted_at, ai_eval_prompted_at, total_xp, current_streak, longest_streak, last_activity_date, last_level_up_notified, referral_code, referral_link_activated_at, archetype_key, created_at, updated_at";
 
 export async function getUserProfile(
   supabase: AppSupabaseClient,
@@ -349,6 +349,9 @@ export async function getOnboardingGate(
 
 // ─── Lessons (Round 3) ─────────────────────────────────────────────
 
+const USER_PROGRESS_COLUMNS =
+  "id, user_id, lesson_id, path_slug, completed, attempts, xp_earned, completed_at, current_step, step_state, spark_chat_count, created_at, updated_at";
+
 export async function getProgressForPath(
   supabase: AppSupabaseClient,
   userId: string,
@@ -356,9 +359,7 @@ export async function getProgressForPath(
 ): Promise<UserProgress[]> {
   const { data, error } = await supabase
     .from("user_progress")
-    .select(
-      "id, user_id, lesson_id, path_slug, completed, attempts, xp_earned, completed_at, created_at, updated_at",
-    )
+    .select(USER_PROGRESS_COLUMNS)
     .eq("user_id", userId)
     .eq("path_slug", pathSlug);
 
@@ -372,13 +373,112 @@ export async function getAllUserProgress(
 ): Promise<UserProgress[]> {
   const { data, error } = await supabase
     .from("user_progress")
-    .select(
-      "id, user_id, lesson_id, path_slug, completed, attempts, xp_earned, completed_at, created_at, updated_at",
-    )
+    .select(USER_PROGRESS_COLUMNS)
     .eq("user_id", userId);
 
   if (error) throw error;
   return (data ?? []) as UserProgress[];
+}
+
+/**
+ * Read the persisted lesson state for a single (user, lesson) — drives the
+ * "resume where you left off" behaviour for V3 lessons. Returns null when
+ * the user has never opened the lesson.
+ */
+export async function getLessonProgress(
+  supabase: AppSupabaseClient,
+  userId: string,
+  lessonId: string,
+): Promise<UserProgress | null> {
+  const { data, error } = await supabase
+    .from("user_progress")
+    .select(USER_PROGRESS_COLUMNS)
+    .eq("user_id", userId)
+    .eq("lesson_id", lessonId)
+    .maybeSingle();
+  if (error) throw error;
+  return (data as UserProgress | null) ?? null;
+}
+
+/**
+ * Persist the user's progress through a V3 lesson without marking it
+ * completed. Called by the autosave that runs on every step transition.
+ * `step_state` is replaced wholesale — callers send the full bag.
+ */
+export async function upsertLessonProgressState(
+  supabase: AppSupabaseClient,
+  params: {
+    userId: string;
+    lessonId: string;
+    pathSlug: PathSlug;
+    currentStep: number;
+    stepState: Record<string, unknown>;
+  },
+): Promise<void> {
+  const { error } = await supabase
+    .from("user_progress")
+    .upsert(
+      {
+        user_id: params.userId,
+        lesson_id: params.lessonId,
+        path_slug: params.pathSlug,
+        current_step: params.currentStep,
+        step_state: params.stepState as never,
+      },
+      { onConflict: "user_id,lesson_id" },
+    );
+  if (error) throw error;
+}
+
+/**
+ * Atomically increment `spark_chat_count` for a (user, lesson) row, returning
+ * the new count. Creates the row with count=1 if the user hadn't opened the
+ * lesson yet. The API route enforces the per-lesson 5-message quota using
+ * this counter.
+ */
+export async function incrementSparkChatCount(
+  supabase: AppSupabaseClient,
+  params: { userId: string; lessonId: string; pathSlug: PathSlug },
+): Promise<{ count: number }> {
+  const { data: existing, error: readErr } = await supabase
+    .from("user_progress")
+    .select("id, spark_chat_count")
+    .eq("user_id", params.userId)
+    .eq("lesson_id", params.lessonId)
+    .maybeSingle();
+  if (readErr) throw readErr;
+
+  const newCount = (existing?.spark_chat_count ?? 0) + 1;
+  const { error: writeErr } = await supabase
+    .from("user_progress")
+    .upsert(
+      {
+        user_id: params.userId,
+        lesson_id: params.lessonId,
+        path_slug: params.pathSlug,
+        spark_chat_count: newCount,
+      },
+      { onConflict: "user_id,lesson_id" },
+    );
+  if (writeErr) throw writeErr;
+  return { count: newCount };
+}
+
+/**
+ * Persist the user's archetype key once they reveal their result in the
+ * Lesson 1 quiz. Idempotent — overwriting with the same key is a no-op
+ * write but never throws. We don't expose a "clear" path on purpose.
+ */
+export async function setUserArchetype(
+  supabase: AppSupabaseClient,
+  userId: string,
+  archetypeKey: string,
+): Promise<void> {
+  const { error } = await supabase
+    .from("users")
+    .update({ archetype_key: archetypeKey })
+    .eq("id", userId);
+  if (error) throw error;
 }
 
 export async function upsertLessonCompletion(

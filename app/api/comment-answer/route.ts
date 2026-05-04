@@ -4,35 +4,39 @@ import { isLang, type Lang } from "@/types";
 import { resolveLangFromRequest } from "@/lib/i18n/server-lang";
 import { getUserProfile } from "@/lib/supabase/queries";
 import { loadLessonById } from "@/lib/lessons/load";
-import { isLessonV2Content } from "@/types";
+import { isLessonV2Content, isLessonV3Content } from "@/types";
 import { requestCommentary } from "@/lib/ai/openai";
 
-// V2 commentary endpoint: takes a user's answer to an open_question block,
-// runs it through GPT-4o mini using the system_prompt versioned inside the
-// lesson JSON, returns the comment.
+// Commentary endpoint shared by V2 (open_question) and V3 (input step).
+// Takes a user's answer + the id of the block/step inside the lesson,
+// runs it through GPT-4o mini using the system_prompt versioned inside
+// the lesson JSON, and returns the comment.
 //
 // The endpoint is server-only (the user's API key never touches the
-// browser). It re-validates lessonId + openQuestionId server-side and
-// loads the system_prompt from disk — the client never sends or chooses
-// the prompt, which closes a prompt-injection vector.
+// browser). It re-validates lessonId + blockId server-side and loads
+// the system_prompt from disk — the client never sends or chooses the
+// prompt, which closes a prompt-injection vector.
 //
 // PROMPTLY.md rule 16: per-lesson system prompts. No global default.
-// PROMPTLY.md rule 14: V2 has no client-side validation; the user always
-//   advances regardless of the AI response.
+// PROMPTLY.md rule 14: the user always advances regardless of the AI
+//   response — failures fall back to the per-step `fallback_response`.
 //
-// Rate limiting: deliberately NOT implemented in this round. The OpenAI
-// Project budget cap ($10/month) is the financial backstop. A proper
-// per-user-per-day limit (target: 30/day) is tracked in SECURITY-BACKLOG.md
-// item to add — see the comment at the bottom of this file.
+// Wire-compat: V2 callers send `openQuestionId` + `userAnswer`; V3 callers
+// send `blockId` + `answer`. Both shapes are accepted so the V2 view
+// (still mounted for legacy lessons) keeps working unchanged.
 
 const MAX_ANSWER_CHARS = 2000;
 const LESSON_ID_RE = /^[a-z]+-\d{2}$/;
-const OPEN_QUESTION_ID_RE = /^[a-z][a-z0-9-]{0,99}$/;
+const BLOCK_ID_RE = /^[a-z][a-z0-9-]{0,99}$/;
 
 interface RequestBody {
   lessonId?: unknown;
+  // V2-style fields.
   openQuestionId?: unknown;
   userAnswer?: unknown;
+  // V3-style fields.
+  blockId?: unknown;
+  answer?: unknown;
 }
 
 export async function POST(request: Request) {
@@ -56,18 +60,23 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "invalid_json" }, { status: 400 });
   }
   const lessonId = typeof body.lessonId === "string" ? body.lessonId : null;
-  const openQuestionId =
-    typeof body.openQuestionId === "string" ? body.openQuestionId : null;
+  const blockIdRaw =
+    typeof body.blockId === "string"
+      ? body.blockId
+      : typeof body.openQuestionId === "string"
+      ? body.openQuestionId
+      : null;
   const userAnswerRaw =
-    typeof body.userAnswer === "string" ? body.userAnswer : null;
+    typeof body.userAnswer === "string"
+      ? body.userAnswer
+      : typeof body.answer === "string"
+      ? body.answer
+      : null;
   if (!lessonId || !LESSON_ID_RE.test(lessonId)) {
     return NextResponse.json({ error: "invalid_lesson_id" }, { status: 400 });
   }
-  if (!openQuestionId || !OPEN_QUESTION_ID_RE.test(openQuestionId)) {
-    return NextResponse.json(
-      { error: "invalid_open_question_id" },
-      { status: 400 },
-    );
+  if (!blockIdRaw || !BLOCK_ID_RE.test(blockIdRaw)) {
+    return NextResponse.json({ error: "invalid_block_id" }, { status: 400 });
   }
   if (!userAnswerRaw) {
     return NextResponse.json({ error: "missing_answer" }, { status: 400 });
@@ -80,29 +89,40 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "answer_too_long" }, { status: 413 });
   }
 
-  // 3. Load the lesson server-side, find the open_question block, pull its
-  //    system_prompt. The client never sees or sends the prompt, so even a
-  //    crafted body can't override it.
+  // 3. Load the lesson server-side, find the matching block (V3 input step
+  //    OR V2 open_question), pull its system_prompt. The client never sees
+  //    or sends the prompt, so a crafted body can't override it.
   const lang: Lang = isLang(profile.language)
     ? profile.language
     : resolveLangFromRequest();
   const lesson = await loadLessonById(lessonId, lang);
-  if (!lesson || !isLessonV2Content(lesson)) {
+  if (!lesson) {
     return NextResponse.json({ error: "lesson_not_found" }, { status: 404 });
   }
-  const block = lesson.body.find(
-    (b) => b.type === "open_question" && b.id === openQuestionId,
-  );
-  if (!block || block.type !== "open_question") {
+
+  let systemPrompt: string | null = null;
+  if (isLessonV3Content(lesson)) {
+    const step = lesson.steps.find(
+      (s) => s.type === "input" && s.id === blockIdRaw,
+    );
+    if (step && step.type === "input") systemPrompt = step.system_prompt;
+  } else if (isLessonV2Content(lesson)) {
+    const block = lesson.body.find(
+      (b) => b.type === "open_question" && b.id === blockIdRaw,
+    );
+    if (block && block.type === "open_question")
+      systemPrompt = block.system_prompt;
+  }
+  if (!systemPrompt) {
     return NextResponse.json(
-      { error: "open_question_not_found" },
+      { error: "block_not_found" },
       { status: 404 },
     );
   }
 
   // 4. Call OpenAI with the per-question system_prompt.
   const result = await requestCommentary({
-    systemPrompt: block.system_prompt,
+    systemPrompt,
     userAnswer,
   });
   if (!result.ok) {

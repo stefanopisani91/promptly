@@ -7,6 +7,8 @@ import type {
   LessonContent,
   LessonV2BodyBlock,
   LessonV2Content,
+  LessonV3Content,
+  LessonV3Step,
   OpenQuestionBlock,
   PathSlug,
 } from "@/types";
@@ -191,6 +193,119 @@ function isLessonV2Content(value: unknown): value is LessonV2Content {
   return true;
 }
 
+// ─── V3 (card-step + Spark) validator ─────────────────────────────
+//
+// Each step type has its own structural shape. We validate just enough at
+// load time to reject obviously broken JSON; the renderers trust the data
+// past this point, which is why the validator is intentionally strict on
+// required fields and lenient on cosmetic ones.
+
+function isStringArray(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every((v) => typeof v === "string");
+}
+
+function isVignettesArray(value: unknown): boolean {
+  if (!Array.isArray(value)) return false;
+  return value.every(
+    (v) =>
+      typeof v === "object" &&
+      v !== null &&
+      typeof (v as { short?: unknown }).short === "string" &&
+      typeof (v as { full?: unknown }).full === "string",
+  );
+}
+
+function isLessonV3Step(value: unknown): value is LessonV3Step {
+  if (typeof value !== "object" || value === null) return false;
+  const b = value as Record<string, unknown>;
+  if (typeof b.id !== "string" || b.id.length === 0) return false;
+  if ("vignettes" in b && b.vignettes !== undefined) {
+    if (!isVignettesArray(b.vignettes)) return false;
+  }
+  switch (b.type) {
+    case "text":
+      return isStringArray(b.paragraphs);
+    case "principle":
+      return typeof b.headline === "string" && typeof b.emphasis === "string";
+    case "input": {
+      return (
+        typeof b.prompt === "string" &&
+        typeof b.system_prompt === "string" &&
+        (b.system_prompt as string).length > 0 &&
+        typeof b.fallback_response === "string"
+      );
+    }
+    case "choice": {
+      if (typeof b.prompt !== "string") return false;
+      if (!Array.isArray(b.options) || b.options.length < 2) return false;
+      return b.options.every(
+        (o) =>
+          typeof o === "object" &&
+          o !== null &&
+          typeof (o as { key?: unknown }).key === "string" &&
+          typeof (o as { label?: unknown }).label === "string",
+      );
+    }
+    case "interactive": {
+      if (b.widget !== "lucia_prompt_loop") return false;
+      if (typeof b.max_attempts !== "number" || b.max_attempts < 1) return false;
+      if (
+        typeof b.xp_by_band !== "object" ||
+        b.xp_by_band === null ||
+        typeof (b.xp_by_band as Record<string, unknown>).poor !== "number"
+      ) {
+        return false;
+      }
+      return true;
+    }
+    case "reward": {
+      if (b.variant !== "archetype_reveal" && b.variant !== "milestone")
+        return false;
+      if (b.variant === "archetype_reveal") {
+        const arch = b.archetype as
+          | { archetypes?: unknown; tie_breaker_priority?: unknown }
+          | undefined;
+        if (
+          !arch ||
+          !Array.isArray(arch.archetypes) ||
+          arch.archetypes.length < 2 ||
+          !Array.isArray(arch.tie_breaker_priority)
+        ) {
+          return false;
+        }
+      }
+      return true;
+    }
+    default:
+      return false;
+  }
+}
+
+function isLessonV3Content(value: unknown): value is LessonV3Content {
+  if (typeof value !== "object" || value === null) return false;
+  const v = value as Record<string, unknown>;
+  if (v.format_version !== 3) return false;
+  if (
+    typeof v.id !== "string" ||
+    typeof v.order !== "number" ||
+    typeof v.title !== "string" ||
+    typeof v.icon !== "string" ||
+    typeof v.cliffhanger !== "string" ||
+    !isPathSlug(v.path_slug) ||
+    !Array.isArray(v.steps) ||
+    v.steps.length === 0
+  ) {
+    return false;
+  }
+  const ids = new Set<string>();
+  for (const step of v.steps) {
+    if (!isLessonV3Step(step)) return false;
+    if (ids.has((step as { id: string }).id)) return false;
+    ids.add((step as { id: string }).id);
+  }
+  return true;
+}
+
 interface LoadedLessonFile {
   filename: string;
   lesson: AnyLessonContent;
@@ -211,6 +326,7 @@ async function loadLessonsForPath(
   const loaded = await Promise.all(
     jsonFiles.map(async (file): Promise<LoadedLessonFile | null> => {
       const data = await readJson(path.join(pathDir(lang, pathSlug), file));
+      if (isLessonV3Content(data)) return { filename: file, lesson: data };
       if (isLessonV2Content(data)) return { filename: file, lesson: data };
       if (isLessonV1Content(data)) return { filename: file, lesson: data };
       return null;
@@ -238,18 +354,32 @@ export async function loadAvailableLessonsInPath(
 ): Promise<AnyLessonContent[]> {
   const loaded = await loadLessonsForPath(pathSlug, lang);
 
-  // Group by lesson id; if both V1 and V2 exist, keep V2.
+  // Group by lesson id and pick the highest format_version. Files coexisting
+  // for the same id (legacy V1 alongside the new V3, etc.) are resolved in
+  // favour of the newer format so the swap is just "delete the old file once
+  // the new one is stable".
+  function rank(lesson: AnyLessonContent): number {
+    if (
+      "format_version" in lesson &&
+      (lesson as { format_version?: unknown }).format_version === 3
+    ) {
+      return 3;
+    }
+    if (
+      "format_version" in lesson &&
+      (lesson as { format_version?: unknown }).format_version === 2
+    ) {
+      return 2;
+    }
+    return 1;
+  }
+
   const byId = new Map<string, AnyLessonContent>();
   for (const { lesson } of loaded) {
     const existing = byId.get(lesson.id);
-    if (!existing) {
+    if (!existing || rank(lesson) > rank(existing)) {
       byId.set(lesson.id, lesson);
-      continue;
     }
-    const existingIsV2 = "format_version" in existing;
-    const newIsV2 = "format_version" in lesson;
-    if (newIsV2 && !existingIsV2) byId.set(lesson.id, lesson);
-    // else: existing wins (either both V1 or existing already V2).
   }
 
   return [...byId.values()].sort((a, b) => a.order - b.order);

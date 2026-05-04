@@ -45,6 +45,10 @@ export interface UserProfile {
   // timestamp marks the first copy/share (drives the +25 XP one-time bonus).
   referral_code: string | null;
   referral_link_activated_at: string | null;
+  // Lesson V3 — vibe coder archetype, set when the user reveals their result
+  // in the Lesson 1 quiz (mindset-01). Used in future lessons to personalize
+  // Spark's tone and call out the user's blind spots.
+  archetype_key: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -227,6 +231,13 @@ export interface UserProgress {
   attempts: number;
   xp_earned: number;
   completed_at: string | null;
+  // Lesson V3 — progressive save. `current_step` is 0-indexed; `step_state`
+  // is a free-form JSON bag holding the user's answers to INPUT/CHOICE/
+  // INTERACTIVE steps so a returning user resumes where they left off.
+  // `spark_chat_count` enforces the per-lesson chat quota.
+  current_step: number;
+  step_state: Record<string, unknown>;
+  spark_chat_count: number;
   created_at: string;
   updated_at: string;
 }
@@ -336,19 +347,187 @@ export interface LessonV2Content {
   };
 }
 
-export type AnyLessonContent = LessonContent | LessonV2Content;
+// ─── Lessons V3 (3 May 2026 — card-step + Spark mascot) ──────────────
+//
+// V3 lessons replace the long scrollable `body` with a sequence of bite-size
+// "step cards", each fitting the screen. Spark, the lesson mascot, drives
+// the narrative across steps — her voice lives inside the step copy, not
+// outside it. See PROMPTLY_Lessons_System_V2.md for the full blueprint.
+//
+// Six step types cover every interaction we need:
+//   - text       → narrative card, just paragraphs (Spark's voice)
+//   - principle  → poster-style card, the lesson's core takeaway
+//   - input      → free-text answer commented by GPT-4o mini
+//   - choice     → 2-4 cliccable options, can drive an archetype quiz
+//   - interactive→ ad-hoc widget (Lucia homepage exercise for Lesson 1)
+//   - reward     → milestone celebration (e.g. archetype reveal)
+//
+// Vignettes are pre-written thought bubbles that float around Spark on each
+// step. Tap to expand. Strictly contextual to the step they sit on.
+
+export type SparkState =
+  | "idle"
+  | "thinking"
+  | "happy"
+  | "sad"
+  | "surprised"
+  | "listening";
+
+export interface Vignette {
+  // Short label shown collapsed (3-7 words). The full quote appears on tap.
+  short: string;
+  full: string;
+}
+
+interface StepBase {
+  id: string;
+  spark_state?: SparkState;
+  vignettes?: Vignette[];
+}
+
+export interface TextStep extends StepBase {
+  type: "text";
+  // Each paragraph is a bubble. First paragraph is rendered larger if the
+  // step has only one. Spark "speaks" these.
+  paragraphs: string[];
+}
+
+export interface PrincipleStep extends StepBase {
+  type: "principle";
+  // Two-line poster. Used for the "Io non sono intelligente. Sono ubbidiente."
+  // moment in Lesson 1.
+  headline: string;
+  emphasis: string;
+  // Optional small caption underneath, shown in Spark's voice.
+  caption?: string;
+}
+
+export interface InputStep extends StepBase {
+  type: "input";
+  prompt: string;
+  // Pre-filled text shown above the textarea (Spark's framing).
+  intro?: string;
+  placeholder?: string;
+  helper_text?: string;
+  max_chars?: number;
+  // Required: the system prompt sent to gpt-4o-mini for Spark's reply.
+  // Mirrors LessonV2's open_question contract — must be non-empty at load.
+  system_prompt: string;
+  // Spark's fallback line, rendered when the API fails (network/etc).
+  fallback_response: string;
+}
+
+export interface ChoiceStepOption {
+  key: string;
+  label: string;
+  // Optional — used by archetype quizzes to score the user's answer.
+  archetype_key?: string;
+}
+
+export interface ChoiceStep extends StepBase {
+  type: "choice";
+  prompt: string;
+  intro?: string;
+  options: ChoiceStepOption[];
+  // When true, this choice contributes to the lesson's archetype score.
+  // The reward step at the end reveals the result. Lesson 1 has 3
+  // consecutive archetype-scoring choices (steps 9-11).
+  scores_archetype?: boolean;
+}
+
+export type InteractiveWidgetType = "lucia_prompt_loop";
+
+export interface InteractiveStep extends StepBase {
+  type: "interactive";
+  widget: InteractiveWidgetType;
+  // Lucia widget config — number of attempts and intro text from Spark.
+  intro?: string;
+  max_attempts: number;
+  // XP awarded by score band. Keys mirror the bands in the spec
+  // (50/100/150/200/250). Computed at completion time.
+  xp_by_band: {
+    poor: number;
+    one_bug: number;
+    two_bugs: number;
+    all_bugs: number;
+    perfect: number;
+  };
+}
+
+export interface ArchetypeRevealConfig {
+  bonus_xp: number;
+  archetypes: Array<{
+    key: string;
+    title: string;
+    description: string;
+  }>;
+  tie_breaker_priority: string[];
+}
+
+export interface RewardStep extends StepBase {
+  type: "reward";
+  // Either a generic reward (xp_label/title) or an archetype reveal that
+  // computes the result from previous CHOICE steps.
+  variant: "archetype_reveal" | "milestone";
+  title?: string;
+  // Spark's commentary line shown below the trophy/result.
+  caption?: string;
+  // For variant=archetype_reveal — config for the result.
+  archetype?: ArchetypeRevealConfig;
+  xp_label?: string;
+}
+
+export type LessonV3Step =
+  | TextStep
+  | PrincipleStep
+  | InputStep
+  | ChoiceStep
+  | InteractiveStep
+  | RewardStep;
+
+export interface LessonV3Content {
+  id: string;
+  format_version: 3;
+  path_slug: PathSlug;
+  order: number;
+  title: string;
+  map_title?: string;
+  subtitle?: string;
+  difficulty: Difficulty;
+  estimated_minutes: number;
+  base_xp: number;
+  difficulty_bonus_xp: number;
+  icon: string;
+  // Cliffhanger for the very last step — Spark's preview of the next lesson.
+  cliffhanger: string;
+  steps: LessonV3Step[];
+}
+
+export type AnyLessonContent =
+  | LessonContent
+  | LessonV2Content
+  | LessonV3Content;
+
+export function isLessonV3Content(
+  lesson: AnyLessonContent,
+): lesson is LessonV3Content {
+  return (
+    "format_version" in lesson &&
+    (lesson as { format_version?: unknown }).format_version === 3
+  );
+}
 
 export function isLessonV2Content(
   lesson: AnyLessonContent,
 ): lesson is LessonV2Content {
   return (
     "format_version" in lesson &&
-    (lesson as LessonV2Content).format_version === 2
+    (lesson as { format_version?: unknown }).format_version === 2
   );
 }
 
 export function isLessonV1Content(
   lesson: AnyLessonContent,
 ): lesson is LessonContent {
-  return !isLessonV2Content(lesson);
+  return !isLessonV2Content(lesson) && !isLessonV3Content(lesson);
 }

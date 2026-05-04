@@ -76,6 +76,85 @@ export interface LessonsCopy {
       alreadyCompleted: string;
     };
   };
+  // V3 — card-step lesson with Spark mascot. All values are static strings;
+  // templates use {token} placeholders the client substitutes at render
+  // time, mirroring the convention enforced by the V2 fields above.
+  v3: {
+    header: {
+      // "{current} / {total}"
+      stepCounterTemplate: string;
+      exitLabel: string;
+      vignetteCloseLabel: string;
+    };
+    navigation: {
+      backCta: string;
+      nextCta: string;
+      finishCta: string;
+      cliffhangerLabel: string;
+      pathHrefLabel: string;
+      // Eyebrow shown on the completion card when the user has just
+      // replayed an already-completed lesson and earned no extra XP.
+      replayBadge: string;
+    };
+    inputStep: {
+      submitCta: string;
+      submitting: string;
+      // "{current} / {max}"
+      charCounterTemplate: string;
+      networkError: string;
+      apiError: string;
+      retryCta: string;
+      youLabel: string;
+      sparkLabel: string;
+    };
+    rewardStep: {
+      // "+{xp} XP"
+      xpBonusTemplate: string;
+      archetypeEyebrow: string;
+    };
+    interactiveStep: {
+      hint: string;
+      // "Tentativo {current} / {max}"
+      attemptCounterTemplate: string;
+      placeholder: string;
+      submitCta: string;
+      submitting: string;
+      retryCta: string;
+      finalCta: string;
+      networkError: string;
+      rateLimitError: string;
+      apiError: string;
+      awaitingPrompt: string;
+      reactions: {
+        vague: string;
+        photoOnly: string;
+        twoBugs: string;
+        allBugsLowScore: string;
+        allBugsHighScore: string;
+        finalEncouragePartial: string;
+        finalEncourageFull: string;
+        secondAttemptHintPhoto: string;
+        secondAttemptHintImproved: string;
+        thirdAttemptDirect: string;
+      };
+    };
+    chat: {
+      launcherLabel: string;
+      modalTitle: string;
+      // "{remaining} / {limit} messaggi rimasti"
+      modalSubtitleTemplate: string;
+      closeLabel: string;
+      placeholder: string;
+      sendCta: string;
+      sending: string;
+      emptyHint: string;
+      quotaExhausted: string;
+      networkError: string;
+      apiError: string;
+      unauthorized: string;
+      hintExamples: string[];
+    };
+  };
   outro: {
     title: string;
     xpEarned: (xp: number) => string;
@@ -205,6 +284,79 @@ const it: LessonsCopy = {
       alreadyCompleted: "Hai già completato questa lezione.",
     },
   },
+  v3: {
+    header: {
+      stepCounterTemplate: "Passo {current} / {total}",
+      exitLabel: "Esci dalla lezione",
+      vignetteCloseLabel: "Chiudi pensiero",
+    },
+    navigation: {
+      backCta: "Indietro",
+      nextCta: "Avanti",
+      finishCta: "Concludi",
+      cliffhangerLabel: "Continua",
+      pathHrefLabel: "Torna al percorso",
+      replayBadge: "Hai ripassato la lezione.",
+    },
+    inputStep: {
+      submitCta: "Invia",
+      submitting: "Sto leggendo…",
+      charCounterTemplate: "{current} / {max}",
+      networkError: "Connessione assente. Riprova quando hai rete.",
+      apiError: "Spark non risponde adesso. Andiamo avanti.",
+      retryCta: "Riprova",
+      youLabel: "tu",
+      sparkLabel: "spark",
+    },
+    rewardStep: {
+      xpBonusTemplate: "+{xp} XP",
+      archetypeEyebrow: "Il tuo archetipo",
+    },
+    interactiveStep: {
+      hint: "Io non vedo il sito come lo vedi tu. Descrivimi cosa noti.",
+      attemptCounterTemplate: "Tentativo {current} / {max}",
+      placeholder: "Scrivi qui il prompt che useresti…",
+      submitCta: "Invia a Spark",
+      submitting: "Sto valutando…",
+      retryCta: "Riprova",
+      finalCta: "Continua →",
+      networkError: "Connessione assente. Riprova.",
+      rateLimitError: "Troppi tentativi ravvicinati. Aspetta un momento.",
+      apiError: "Qualcosa è andato storto. Riprova tra poco.",
+      awaitingPrompt: "Aspetto il tuo prompt. Guarda il sito e dimmi cosa non torna.",
+      reactions: {
+        vague: "Aspetta. Hai scritto qualcosa, ma posso solo tirare a indovinare. È come se mi chiedessi «cucinami qualcosa» senza dirmi cosa hai nel frigo. Guarda di nuovo il sito di Lucia: cosa vedi che non funziona?",
+        photoOnly: "Ok, qualcosa hai visto. Hai notato la foto rotta. L'ho sistemata — la vedi adesso? Ma c'è altro che non va. Continua a guardare con attenzione.",
+        twoBugs: "Quasi. Hai trovato due dei tre problemi. Ho sistemato entrambi. Manca ancora un elemento. Ti do un indizio: c'è qualcosa che dovrebbe essere visibile e non lo è.",
+        allBugsLowScore: "Hai notato tutti i problemi, complimenti per la vista. Ma il prompt è ancora vago. Mi hai detto cosa è rotto, non come sistemarlo. Riformula: cosa vuoi che IO faccia con quello che hai notato?",
+        allBugsHighScore: "Ecco. Questo è un prompt vero. Mi hai detto cosa vedi, cosa vuoi, e mi hai dato i dettagli per non sbagliare. Guarda — ho sistemato tutto. Hai appena diretto un'AI come una professionista.",
+        finalEncouragePartial: "Va bene così. Hai imparato la cosa più importante: per farmi funzionare devi dirmi cosa fare. Tornerai qui in futuro e farai un prompt perfetto.",
+        finalEncourageFull: "Hai fatto un lavoro vero. Te lo segno mentalmente — sei già più avanti di quello che pensi.",
+        secondAttemptHintPhoto: "Meglio. Stavolta mi hai dato qualcosa di concreto. L'ho sistemato. Continua così — guarda gli altri elementi della pagina.",
+        secondAttemptHintImproved: "Buon lavoro. Stai aggiungendo specificità. Ora il prompt è più completo. Manca ancora qualcosa.",
+        thirdAttemptDirect: "Ultimo tentativo. Te lo dico chiaro: ci sono tre problemi sul sito di Lucia. Foto. Titolo. Bottone. Adesso che li sai tutti, scrivimi un prompt completo per sistemarli.",
+      },
+    },
+    chat: {
+      launcherLabel: "Chiedi a Spark",
+      modalTitle: "Spark",
+      modalSubtitleTemplate: "{remaining} di {limit} messaggi rimasti in questa lezione",
+      closeLabel: "Chiudi chat",
+      placeholder: "Scrivi a Spark…",
+      sendCta: "Invia",
+      sending: "Sto pensando…",
+      emptyHint: "Chiedimi qualcosa sulla lezione, sul vibe coding, su quello che ti blocca. Risposte brevi, in personaggio.",
+      quotaExhausted: "Hai usato tutti i messaggi per questa lezione. Riprovi nella prossima.",
+      networkError: "Connessione assente. Riprova.",
+      apiError: "Non riesco a risponderti adesso. Riprova tra un momento.",
+      unauthorized: "Devi essere loggato per chattare con me.",
+      hintExamples: [
+        "Cosa significa «fare un prompt specifico»?",
+        "Perché hai detto che non sei intelligente?",
+        "Da dove vengo io? Dimmi qualcosa di te.",
+      ],
+    },
+  },
 };
 
 const en: LessonsCopy = {
@@ -309,6 +461,79 @@ const en: LessonsCopy = {
     completion: {
       finishCta: "Complete the lesson →",
       alreadyCompleted: "You've already completed this lesson.",
+    },
+  },
+  v3: {
+    header: {
+      stepCounterTemplate: "Step {current} / {total}",
+      exitLabel: "Exit lesson",
+      vignetteCloseLabel: "Close thought",
+    },
+    navigation: {
+      backCta: "Back",
+      nextCta: "Next",
+      finishCta: "Finish",
+      cliffhangerLabel: "Continue",
+      pathHrefLabel: "Back to path",
+      replayBadge: "You replayed this lesson.",
+    },
+    inputStep: {
+      submitCta: "Send",
+      submitting: "Reading…",
+      charCounterTemplate: "{current} / {max}",
+      networkError: "No connection. Retry when you're back online.",
+      apiError: "Spark isn't replying right now. Let's keep moving.",
+      retryCta: "Retry",
+      youLabel: "you",
+      sparkLabel: "spark",
+    },
+    rewardStep: {
+      xpBonusTemplate: "+{xp} XP",
+      archetypeEyebrow: "Your archetype",
+    },
+    interactiveStep: {
+      hint: "I don't see the site the way you do. Tell me what catches your eye.",
+      attemptCounterTemplate: "Try {current} / {max}",
+      placeholder: "Write the prompt you'd use…",
+      submitCta: "Send to Spark",
+      submitting: "Evaluating…",
+      retryCta: "Retry",
+      finalCta: "Continue →",
+      networkError: "No connection. Retry.",
+      rateLimitError: "Too many tries too fast. Hold on a moment.",
+      apiError: "Something went wrong. Try again in a bit.",
+      awaitingPrompt: "Waiting on your prompt. Look at the site and tell me what's off.",
+      reactions: {
+        vague: "Wait. You wrote something, but I can only guess. It's like asking me to «cook something» without telling me what's in the fridge. Look at Lucia's site again — what's not working?",
+        photoOnly: "Okay, you spotted something. You noticed the broken photo. I fixed it — see it now? But there's more. Keep looking carefully.",
+        twoBugs: "Almost. You found two of the three problems. Fixed both. Still one element missing. Hint: there's something that should be visible but isn't.",
+        allBugsLowScore: "You spotted every problem — good eye. But the prompt is still vague. You told me what's broken, not how to fix it. Try again: what do you want ME to do with what you noticed?",
+        allBugsHighScore: "There it is. That's a real prompt. You told me what you see, what you want, and gave me the details to get it right. Look — everything's fixed. You just directed an AI like a pro.",
+        finalEncouragePartial: "It's fine. You learned the most important thing: to make me work, you have to tell me what to do. You'll come back to this and write a perfect prompt.",
+        finalEncourageFull: "You did real work. I'm noting it — you're further along than you think.",
+        secondAttemptHintPhoto: "Better. This time you gave me something concrete. Fixed. Keep going — look at the other elements on the page.",
+        secondAttemptHintImproved: "Good. You're adding specificity. The prompt is more complete now. Still missing one thing.",
+        thirdAttemptDirect: "Last try. I'll be straight: there are three problems on Lucia's site. Photo. Title. Button. Now that you know all three, write me a complete prompt to fix them.",
+      },
+    },
+    chat: {
+      launcherLabel: "Ask Spark",
+      modalTitle: "Spark",
+      modalSubtitleTemplate: "{remaining} of {limit} messages left in this lesson",
+      closeLabel: "Close chat",
+      placeholder: "Write to Spark…",
+      sendCta: "Send",
+      sending: "Thinking…",
+      emptyHint: "Ask me about the lesson, vibe coding, or whatever's blocking you. Short answers, in character.",
+      quotaExhausted: "You've used all your messages for this lesson. Try again in the next one.",
+      networkError: "No connection. Retry.",
+      apiError: "I can't reply right now. Try again in a moment.",
+      unauthorized: "You need to be logged in to chat with me.",
+      hintExamples: [
+        "What does «a specific prompt» actually mean?",
+        "Why did you say you're not smart?",
+        "Where do you come from? Tell me about yourself.",
+      ],
     },
   },
 };

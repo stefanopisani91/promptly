@@ -6,6 +6,7 @@ import { Check, Lock } from "lucide-react";
 import {
   isActivePathSlug,
   isLang,
+  isLessonV3Content,
   type Lang,
   type AnyLessonContent,
   type PathSlug,
@@ -41,7 +42,14 @@ function buildPlannedSlots(
   available: AnyLessonContent[],
 ): Array<{ id: string; lesson: AnyLessonContent | null; order: number }> {
   const total = PATH_META[pathSlug].totalLessons;
-  const byOrder = new Map(available.map((l) => [l.order, l]));
+  // V3 rollout: surface only V3 lessons on the path overview. Anything in
+  // an older format renders as "Coming soon" (lesson=null) — the legacy
+  // page renderers still exist for safety but nothing links there.
+  const byOrder = new Map(
+    available
+      .filter((l) => isLessonV3Content(l))
+      .map((l) => [l.order, l]),
+  );
   return Array.from({ length: total }, (_, idx) => {
     const order = idx + 1;
     const id = `${pathSlug}-${String(order).padStart(2, "0")}`;
