@@ -355,6 +355,44 @@ di Path 1, oppure tutto Path 1+2). Messaggio suggerito:
 
 ---
 
+## Spark — Feedback "quota esaurita" sul bubble disabled
+
+**Stato:** ⏳ proposed (legato alla grafica definitiva del bubble)
+**Priorità:** 🟡 media
+**Aperta:** 6 May 2026
+
+### Contesto
+
+Il bubble dorato "?" attuale (`AskSparkBubble.tsx`) è grafica **provvisoria** — sarà sostituito dalla versione finale che Giuseppe disegnerà in linea con l'estetica visiva di Spark. Quando l'utente esaurisce i 5 messaggi/lezione (o i 20/giorno), il bubble entra in stato `disabled`: opacity 50% + click ignorato dal browser per via dell'attributo `<button disabled>`.
+
+Problema scoperto in test del 6 May 2026: l'utente vede il bubble "morto" senza capire **perché** non risponde. Esiste già un tooltip `quotaExhausted` / `dailyQuotaExhausted` (vedi `lib/i18n/lessons.ts`), ma:
+
+1. Il tooltip esce solo all'**hover desktop**. Su mobile non si vede mai.
+2. Anche su desktop, l'utente potrebbe non hover-are esattamente sul bubble (28×28 px è piccolo).
+
+### Cosa fare quando la grafica è definitiva
+
+Riprogettare il flusso "quota esaurita" insieme al redesign del bubble. Tre opzioni da valutare:
+
+1. **Click-to-explain**: rimuovere `disabled` e permettere sempre il click; in stato esaurito la modale si apre comunque ma mostra solo il messaggio quota-esaurita + CTA "torna nella prossima lezione" / "torna domani". Più scoperto, costa 5 minuti.
+2. **Stato visivo persistente**: bubble disabled ottiene un badge testuale (`0/5`) o un'icona diversa (lucchetto, X, stop). Leggibile senza hover.
+3. **Microcopy nella vignetta**: una delle vignette orbitanti diventa una linea di Spark stessa che dice *"Per oggi su questa lezione abbiamo parlato abbastanza. Vai avanti."* — coerente con la voce di Spark e nessuna nuova UI da progettare.
+
+L'opzione 3 si sposa meglio con l'estetica "Spark è viva" del Master Config, ma richiede orchestrazione lato backend (la vignetta deve apparire solo quando lo stato lo merita).
+
+### File toccati nella scelta
+
+- `components/lessons/v3/AskSparkBubble.tsx` — il bubble stesso
+- `components/lessons/v3/SparkChat.tsx` — eventuale modale "esaurita"
+- `lib/i18n/lessons.ts` — copy IT/EN già presente (`quotaExhausted`, `dailyQuotaExhausted`)
+- `components/lessons/v3/VignetteCloud.tsx` — solo se si sceglie l'opzione 3
+
+### Quando affrontarlo
+
+Quando Giuseppe consegna la grafica finale del bubble di Spark. Da non fare prima — sarebbe lavoro buttato se la grafica cambia struttura (es. un avatar invece di un cerchio, o un balloon di chat invece di un bubble).
+
+---
+
 ## Auth — Abilitare leaked-password protection
 
 **Stato:** ⏳ proposed
