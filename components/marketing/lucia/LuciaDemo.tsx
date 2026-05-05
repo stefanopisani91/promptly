@@ -312,7 +312,7 @@ export function LuciaDemo({ copy, lang }: Props) {
     <section
       id="prompt-evaluator"
       aria-labelledby="lucia-demo-title"
-      className="relative py-16 sm:py-20 lg:py-24"
+      className="relative overflow-hidden py-16 sm:py-20 lg:py-24"
     >
       <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
         {/* Spark narrator — mobile-first: Spark on top, bubble below.

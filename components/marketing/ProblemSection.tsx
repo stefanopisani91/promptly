@@ -29,7 +29,11 @@ export function ProblemSection({ copy }: Props) {
     <section
       id="bug-loop"
       aria-labelledby="bug-loop-title"
-      className="py-16 sm:py-20 lg:py-24"
+      // overflow-hidden is load-bearing: the InfinityBugAnimation watermark
+      // is 540px wide and sits absolutely centred behind the title. On a
+      // 375px mobile viewport it sticks out ~80px per side and would let
+      // the page scroll horizontally without this clip.
+      className="relative overflow-hidden py-16 sm:py-20 lg:py-24"
     >
       {/* Titolo con animazione SVG in trasparenza */}
       <div className="relative mx-auto max-w-3xl px-4 text-center sm:px-6">

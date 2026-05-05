@@ -66,7 +66,7 @@ export function SocialProofSection({ copy }: Props) {
       ref={sectionRef}
       id="social-proof"
       aria-labelledby="social-proof-title"
-      className="bg-surface-muted py-16 sm:py-20 lg:py-24"
+      className="overflow-hidden bg-surface-muted py-16 sm:py-20 lg:py-24"
     >
       <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary-deep">

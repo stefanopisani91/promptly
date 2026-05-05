@@ -10,7 +10,7 @@ export function SolutionSection({ copy }: Props) {
     <section
       id="solution"
       aria-labelledby="solution-title"
-      className="bg-surface-muted py-16 sm:py-20 lg:py-24"
+      className="overflow-hidden bg-surface-muted py-16 sm:py-20 lg:py-24"
     >
       <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
         <h2

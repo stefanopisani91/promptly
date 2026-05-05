@@ -25,7 +25,7 @@ export function CurriculumPreview({ copy }: Props) {
     <section
       id="curriculum"
       aria-labelledby="curriculum-title"
-      className="py-16 sm:py-20 lg:py-24"
+      className="overflow-hidden py-16 sm:py-20 lg:py-24"
     >
       <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
         <h2
