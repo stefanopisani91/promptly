@@ -2,6 +2,11 @@
 // the per-lesson `spark_chat_count` counter to enforce a 5-message quota
 // per (user, lesson) regardless of session. Once a user runs out we 403
 // with a structured error so the client can show the right message.
+//
+// Backed by Anthropic Claude Haiku 4.5 via lib/ai/anthropic.ts (NOT OpenAI —
+// see Promptly_Spark_Master_Configuration.md §6, "Sessione 1"). The persona
+// block is sent with prompt-cache headers; the per-call session context is
+// not cached.
 
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
@@ -9,10 +14,12 @@ import {
   getLessonProgress,
   incrementSparkChatCount,
 } from "@/lib/supabase/queries";
-import { requestCommentary } from "@/lib/ai/openai";
+import { requestSparkReply } from "@/lib/ai/anthropic";
 import {
-  sparkSystemPromptEN,
-  sparkSystemPromptIT,
+  SPARK_PERSONA_EN,
+  SPARK_PERSONA_IT,
+  sparkSessionContextEN,
+  sparkSessionContextIT,
 } from "@/lib/ai/spark-system-prompt";
 import { isLang, isPathSlug, type Lang } from "@/types";
 
@@ -87,7 +94,10 @@ export async function POST(request: Request) {
     ? (profileRow!.language as Lang)
     : "it";
 
-  const systemPrompt = (lang === "en" ? sparkSystemPromptEN : sparkSystemPromptIT)({
+  const persona = lang === "en" ? SPARK_PERSONA_EN : SPARK_PERSONA_IT;
+  const sessionContext = (
+    lang === "en" ? sparkSessionContextEN : sparkSessionContextIT
+  )({
     lessonTitle: body.lessonTitle,
     stepIndex: Math.max(0, Math.floor(body.stepIndex)),
     totalSteps: Math.max(1, Math.floor(body.totalSteps)),
@@ -97,9 +107,14 @@ export async function POST(request: Request) {
         : undefined,
   });
 
-  const result = await requestCommentary({
-    systemPrompt,
-    userAnswer: message,
+  const result = await requestSparkReply({
+    persona,
+    sessionContext,
+    userMessage: message,
+    // Hard budget on response length — Spark's persona prescribes max 4
+    // sentences (~80–110 tokens). 220 leaves room without inviting the
+    // model to drift into multi-paragraph essays. See coherence-test
+    // length compliance metric in scripts/spark-coherence-test.mjs.
     maxOutputTokens: 220,
     temperature: 0.7,
   });
@@ -131,7 +146,7 @@ export async function POST(request: Request) {
   const newRemaining = Math.max(0, PER_LESSON_QUOTA - (usedSoFar + 1));
 
   return NextResponse.json({
-    reply: result.comment,
+    reply: result.reply,
     remaining: newRemaining,
     limit: PER_LESSON_QUOTA,
   });

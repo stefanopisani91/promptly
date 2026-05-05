@@ -4,9 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "tsx scripts/check-spark-tokens.ts",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "check-spark": "tsx scripts/check-spark-tokens.ts"
   },
   "dependencies": {
     "@dicebear/collection": "^9.4.2",
@@ -36,6 +38,7 @@
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }

@@ -38,3 +38,7 @@ next-env.d.ts
 # personal guides (private notes for the developer, never on git)
 GUIDA-*.md
 NOTE-*.md
+
+# spark coherence test outputs (raw model responses + scratch files)
+scripts/_spark-test-output.json
+scripts/_*.json

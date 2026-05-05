@@ -296,4 +296,60 @@ Output vuoto = OK.
 
 ---
 
+## 9. 🟢 Rotazione `OPENAI_API_KEY` — esposizione in conversazione Claude
+
+**Stato:** ⏳ pending
+**Priorità:** 🟢 bassa
+**Aperta:** 5 May 2026
+
+### Contesto
+
+Durante la sessione di vibe coding del 5 May 2026 (switch di Spark ad
+Anthropic — vedi `Promptly_Spark_Master_Configuration.md` §6, "Sessione 1"),
+il valore completo di `OPENAI_API_KEY` è transitato nel context della
+conversazione Claude almeno 3 volte:
+
+1. Lettura iniziale di `.env.local` per esplorare il progetto.
+2. Re-lettura di `.env.local` dopo aggiunta della sezione Anthropic.
+3. Lettura delle env vars Netlify via MCP — il `dev` context ritornava il
+   valore non mascherato.
+
+L'assistant non ha mai echo-ato la chiave nel proprio output di testo
+(sempre referenziata come `sk-proj-FvJumZ3g…uAsA`), ma i tool result sono
+parte della conversation log a tutti gli effetti.
+
+### Perché bassa priorità
+
+- Modello prepagato OpenAI (no addebito automatico sulla carta).
+- Project budget cap $10/mese.
+- La conversazione gira sull'infrastruttura Anthropic, non è pubblica.
+- Stessa key è già destinata a essere ruotata e scoped (vedi voce #1) —
+  questa task è un'occasione per chiudere entrambe insieme.
+
+### Fix (5 minuti)
+
+Combina questa task con la voce #1 (scope a `Model capabilities → Write`)
+e #5 (whitelist modello a livello Project) — un giro solo.
+
+1. https://platform.openai.com/api-keys → revoca `sk-proj-FvJumZ3g…uAsA`
+2. Crea nuova key Restricted (vedi voce #1) → name `Promptly v3`
+3. Aggiorna in 2 posti:
+   - `.env.local` riga `OPENAI_API_KEY=` → riavvia `npm run dev`
+   - Netlify → Environment variables → `OPENAI_API_KEY` context
+     **production** → paste nuovo valore → save. **Lasciare vuoti** gli
+     altri context (`deploy-preview`, `branch-deploy`, `dev`,
+     `dev-server`) come già configurato 5 May 2026.
+4. Netlify → Deploys → Trigger deploy → **Clear cache and deploy site**
+5. Dopo deploy "Published": testa una risposta aperta in una lezione V2 e
+   prova la demo Lucia sulla landing — entrambe devono rispondere.
+6. Aggiorna la tabella di rotation in voce #2 con la nuova data.
+
+### Nota — perché Anthropic NON ha questo issue
+
+`ANTHROPIC_API_KEY` è già stata ruotata il 5 May 2026 (l'utente l'ha
+revocata + rigenerata dopo aver notato un'esposizione equivalente nello
+stesso flusso). Buona prassi: stesso passo per OpenAI quando c'è tempo.
+
+---
+
 *File creato 2 May 2026. Aggiornare ogni volta che emerge una nuova voce.*

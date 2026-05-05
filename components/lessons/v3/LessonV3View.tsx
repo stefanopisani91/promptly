@@ -217,6 +217,13 @@ export function LessonV3View({
         sparkState={sparkState}
         vignettes={step.vignettes ?? []}
         copy={strings.header}
+        askSpark={{
+          onOpen: () => setChatOpen(true),
+          remaining: chatRemaining,
+          limit: chatLimit,
+          label: strings.chat.launcherLabel,
+          exhaustedLabel: strings.chat.quotaExhausted,
+        }}
       />
 
       <main className="flex flex-1 flex-col items-center justify-start gap-6 px-4 py-8 sm:px-6 sm:py-10">
@@ -259,12 +266,10 @@ export function LessonV3View({
         onNext={goNext}
       />
 
-      <SparkChatLauncher
-        chatLimit={chatLimit}
-        chatRemaining={chatRemaining}
-        onOpen={() => setChatOpen(true)}
-        copy={strings.chat}
-      />
+      {/* SparkChatLauncher (the bottom-right floating button) is gone:
+          the chat affordance is now anchored to Spark via the
+          AskSparkBubble inside SparkHeader. See
+          Promptly_Spark_Master_Configuration.md §2 ("Sessione 2"). */}
 
       {chatOpen && (
         <SparkChat
@@ -459,36 +464,6 @@ function CompletionCard({
         {backToPathLabel}
       </a>
     </div>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Spark chat launcher (visible always, opens the modal)
-// ---------------------------------------------------------------------------
-
-function SparkChatLauncher({
-  chatRemaining,
-  chatLimit,
-  onOpen,
-  copy,
-}: {
-  chatRemaining: number;
-  chatLimit: number;
-  onOpen: () => void;
-  copy: import("./SparkChat").SparkChatStrings;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onOpen}
-      className="fixed bottom-20 right-4 z-30 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-surface px-4 py-2 text-xs font-medium text-text-primary shadow-md transition-colors hover:bg-surface-muted sm:right-6"
-      aria-label={copy.launcherLabel}
-    >
-      💬 {copy.launcherLabel}
-      <span className="rounded-full bg-primary-light px-2 py-0.5 text-[10px] font-semibold text-primary-deep">
-        {chatRemaining}/{chatLimit}
-      </span>
-    </button>
   );
 }
 

@@ -12,6 +12,7 @@ import { ArrowLeft } from "lucide-react";
 import type { SparkState, Vignette } from "@/types";
 import { Spark } from "./Spark";
 import { VignetteCloud } from "./VignetteCloud";
+import { AskSparkBubble } from "./AskSparkBubble";
 
 interface Props {
   lessonTitle: string;
@@ -25,6 +26,16 @@ interface Props {
     exitLabel: string;
     vignetteCloseLabel: string;
   };
+  // Free-chat affordance: opens the SparkChat modal in LessonV3View. The
+  // bubble lives next to Spark instead of being a separate floating button
+  // (Promptly_Spark_Master_Configuration.md §2).
+  askSpark: {
+    onOpen: () => void;
+    remaining: number;
+    limit: number;
+    label: string;
+    exhaustedLabel: string;
+  };
 }
 
 export function SparkHeader({
@@ -35,6 +46,7 @@ export function SparkHeader({
   sparkState,
   vignettes,
   copy,
+  askSpark,
 }: Props) {
   const counter = copy.stepCounterTemplate
     .replace("{current}", String(stepIndex + 1))
@@ -83,6 +95,16 @@ export function SparkHeader({
               closeLabel={copy.vignetteCloseLabel}
             />
           )}
+          {/* Always-present chat affordance — anchored to Spark, not to
+              the page. Higher z-index than orbit chips so the bubble is
+              never occluded by a chip passing in front. */}
+          <AskSparkBubble
+            onOpen={askSpark.onOpen}
+            remaining={askSpark.remaining}
+            limit={askSpark.limit}
+            label={askSpark.label}
+            exhaustedLabel={askSpark.exhaustedLabel}
+          />
         </div>
 
         {/* Mobile spacer-right: mirrors spacer-left to keep Spark
