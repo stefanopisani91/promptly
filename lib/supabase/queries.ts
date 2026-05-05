@@ -544,3 +544,98 @@ export async function upsertLessonCompletion(
 
   return { xpDelta };
 }
+
+// ─────────────────────────────────────────────────────────────────────────
+// Spark — daily rate limit + safety log (Sessione 3, Master Config §6)
+// ─────────────────────────────────────────────────────────────────────────
+
+/**
+ * Today's UTC date as YYYY-MM-DD. Used as the natural key for the
+ * spark_usage_daily counter. UTC chosen over local timezone because we
+ * don't store a per-user timezone reliably; the cost of a few hours of
+ * "early reset" for users in CET/EST is acceptable for the simplicity.
+ */
+export function todayUtcDate(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+/**
+ * Read today's Spark message count for a user. Returns 0 when the row
+ * doesn't exist yet (first message of the day).
+ */
+export async function getDailySparkUsage(
+  supabase: AppSupabaseClient,
+  userId: string,
+  date: string,
+): Promise<number> {
+  const { data, error } = await supabase
+    .from("spark_usage_daily")
+    .select("message_count")
+    .eq("user_id", userId)
+    .eq("usage_date", date)
+    .maybeSingle();
+  if (error) throw error;
+  return data?.message_count ?? 0;
+}
+
+/**
+ * Read-then-write counter increment, mirroring the per-lesson
+ * incrementSparkChatCount style above. A double-click race could let a
+ * user squeeze in one extra message; acceptable at our volumes and
+ * consistent with the existing per-lesson behaviour.
+ */
+export async function incrementDailySparkUsage(
+  supabase: AppSupabaseClient,
+  params: { userId: string; date: string },
+): Promise<{ count: number }> {
+  const { data: existing, error: readErr } = await supabase
+    .from("spark_usage_daily")
+    .select("message_count")
+    .eq("user_id", params.userId)
+    .eq("usage_date", params.date)
+    .maybeSingle();
+  if (readErr) throw readErr;
+
+  const newCount = (existing?.message_count ?? 0) + 1;
+  const { error: writeErr } = await supabase.from("spark_usage_daily").upsert(
+    {
+      user_id: params.userId,
+      usage_date: params.date,
+      message_count: newCount,
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: "user_id,usage_date" },
+  );
+  if (writeErr) throw writeErr;
+  return { count: newCount };
+}
+
+const SAFETY_EXCERPT_MAX_CHARS = 200;
+
+/**
+ * Append-only insert into the safety log. Excerpt is clamped to 200 chars
+ * here so we never store the full message. Caller passes the raw user
+ * input; this helper does the trim. Fire-and-forget at the call site:
+ * a logging failure must not block the chat reply.
+ */
+export async function logSafetyEvent(
+  supabase: AppSupabaseClient,
+  params: {
+    userId: string;
+    lessonId?: string | null;
+    signal: string;
+    excerpt: string;
+  },
+): Promise<void> {
+  const excerpt =
+    params.excerpt.length > SAFETY_EXCERPT_MAX_CHARS
+      ? params.excerpt.slice(0, SAFETY_EXCERPT_MAX_CHARS)
+      : params.excerpt;
+  const { error } = await supabase.from("spark_safety_log").insert({
+    user_id: params.userId,
+    lesson_id: params.lessonId ?? null,
+    signal: params.signal,
+    excerpt,
+  });
+  if (error) throw error;
+}

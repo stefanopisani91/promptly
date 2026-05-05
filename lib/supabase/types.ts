@@ -157,6 +157,54 @@ export type Database = {
         };
         Relationships: [];
       };
+      spark_usage_daily: {
+        Row: {
+          user_id: string;
+          usage_date: string; // YYYY-MM-DD
+          message_count: number;
+          updated_at: string;
+        };
+        Insert: {
+          user_id: string;
+          usage_date: string;
+          message_count?: number;
+          updated_at?: string;
+        };
+        Update: {
+          user_id?: string;
+          usage_date?: string;
+          message_count?: number;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      spark_safety_log: {
+        Row: {
+          id: number;
+          user_id: string;
+          lesson_id: string | null;
+          signal: string;
+          excerpt: string | null;
+          occurred_at: string;
+        };
+        Insert: {
+          id?: number;
+          user_id: string;
+          lesson_id?: string | null;
+          signal: string;
+          excerpt?: string | null;
+          occurred_at?: string;
+        };
+        Update: {
+          id?: number;
+          user_id?: string;
+          lesson_id?: string | null;
+          signal?: string;
+          excerpt?: string | null;
+          occurred_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;

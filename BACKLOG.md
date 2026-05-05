@@ -318,4 +318,62 @@ di Path 1, oppure tutto Path 1+2). Messaggio suggerito:
 
 ---
 
+## Spark — Pro tier (rate limit + memoria settimanale)
+
+**Stato:** ⏳ proposed (deferred — depends on Stripe wiring)
+**Priorità:** 🟡 media (gating del piano Pro è una feature monetizzabile)
+**Aperta:** 6 May 2026
+
+### Contesto
+
+`Promptly_Spark_Master_Configuration.md` §3 prescrive due tier:
+
+| Feature | Free | Pro |
+|---|---|---|
+| Spark — messaggi per lezione | 5 | 20 |
+| Spark — messaggi totali al giorno | 20 | 80 |
+| Memoria di Spark tra sessioni | Solo sessione corrente | Cronologia ultima settimana |
+
+**Stato attuale (Sessione 3 del 6 May 2026, commit successivo a `f8e59f4`):**
+- ✅ Per-lezione (5) attivo via `user_progress.spark_chat_count`
+- ✅ Daily (20) attivo via `spark_usage_daily.message_count`
+- ❌ Pro tier non raggiungibile — Stripe non è ancora wired (vedi voce esistente "Stripe checkout" in questa stessa BACKLOG).
+- ❌ Memoria conversazionale: nessuna (ogni messaggio a `/api/spark-chat` è single-turn).
+
+### Cosa fare quando Stripe è online
+
+1. Aggiungere colonna `tier text not null default 'free'` a `public.users`, con check constraint `tier in ('free', 'pro')`.
+2. Webhook Stripe `checkout.session.completed` + `customer.subscription.deleted` aggiornano la colonna.
+3. In `app/api/spark-chat/route.ts`:
+   ```ts
+   const tier = profileRow?.tier ?? 'free';
+   const PER_LESSON_QUOTA = tier === 'pro' ? 20 : 5;
+   const DAILY_QUOTA = tier === 'pro' ? 80 : 20;
+   ```
+4. Memoria settimanale (Pro): nuova tabella `spark_chat_history` con `(user_id, created_at, role, content)`. La rotta carica gli ultimi N turni (es. ultimi 10) della stessa lesson + lo manda come `messages: [...]` invece del solo turno corrente. Solo per tier Pro.
+5. UI: il bubble "Chiedi a Spark" mostra il counter giusto in base al tier.
+
+---
+
+## Auth — Abilitare leaked-password protection
+
+**Stato:** ⏳ proposed
+**Priorità:** 🟢 bassa
+**Aperta:** 6 May 2026
+
+### Contesto
+
+Il Supabase Advisor scan (`mcp__claude_ai_Supabase__get_advisors` security) segnala:
+> `auth_leaked_password_protection` — WARN — *Leaked password protection is currently disabled. Supabase Auth prevents the use of compromised passwords by checking against HaveIBeenPwned.org.*
+
+Documentazione: https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection
+
+### Cosa fare (2 minuti)
+
+1. Vai su Supabase Dashboard → **Authentication** → **Providers** → **Email** → **Password Strength**
+2. Attiva **"Check passwords against HaveIBeenPwned"**
+3. Ri-esegui `get_advisors` per verificare che la voce sia sparita
+
+---
+
 *Aggiornare questo file ogni volta che emerge una nuova richiesta secondaria. È il "diario di bordo" delle iterazioni post-MVP.*

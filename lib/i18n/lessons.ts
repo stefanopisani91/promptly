@@ -149,6 +149,10 @@ export interface LessonsCopy {
       sending: string;
       emptyHint: string;
       quotaExhausted: string;
+      // Shown when the per-day cap (across all lessons) is reached.
+      // Different from quotaExhausted (per-lesson) — moving to another
+      // lesson won't help.
+      dailyQuotaExhausted: string;
       networkError: string;
       apiError: string;
       unauthorized: string;
@@ -347,6 +351,7 @@ const it: LessonsCopy = {
       sending: "Sto pensando…",
       emptyHint: "Chiedimi qualcosa sulla lezione, sul vibe coding, su quello che ti blocca. Risposte brevi, in personaggio.",
       quotaExhausted: "Hai usato tutti i messaggi per questa lezione. Riprovi nella prossima.",
+      dailyQuotaExhausted: "Per oggi abbiamo parlato abbastanza. Torna domani.",
       networkError: "Connessione assente. Riprova.",
       apiError: "Non riesco a risponderti adesso. Riprova tra un momento.",
       unauthorized: "Devi essere loggato per chattare con me.",
@@ -526,6 +531,7 @@ const en: LessonsCopy = {
       sending: "Thinking…",
       emptyHint: "Ask me about the lesson, vibe coding, or whatever's blocking you. Short answers, in character.",
       quotaExhausted: "You've used all your messages for this lesson. Try again in the next one.",
+      dailyQuotaExhausted: "We've talked enough for today. Come back tomorrow.",
       networkError: "No connection. Retry.",
       apiError: "I can't reply right now. Try again in a moment.",
       unauthorized: "You need to be logged in to chat with me.",

@@ -22,6 +22,8 @@ export interface SparkChatStrings {
   sending: string;
   emptyHint: string;
   quotaExhausted: string;
+  /** Shown when the per-day cap (across all lessons) is hit. */
+  dailyQuotaExhausted: string;
   networkError: string;
   apiError: string;
   unauthorized: string;
@@ -107,7 +109,26 @@ export function SparkChat({
           return;
         }
         if (res.status === 403) {
-          setError(strings.quotaExhausted);
+          // The route returns either { error: "quota_exceeded" } (per-lesson)
+          // or { error: "daily_quota_exceeded" } (per-day). They differ in
+          // the recovery path the user is offered: per-lesson exhausts in
+          // this lesson only (move on); per-day exhausts everywhere
+          // (come back tomorrow).
+          let errorCode: string | undefined;
+          try {
+            const errBody = (await res.json()) as { error?: string };
+            errorCode = errBody.error;
+          } catch {
+            /* keep errorCode undefined */
+          }
+          setError(
+            errorCode === "daily_quota_exceeded"
+              ? strings.dailyQuotaExhausted
+              : strings.quotaExhausted,
+          );
+          // Both flavours zero-out remaining for THIS lesson — the bubble
+          // becomes disabled either way. The daily case will stay disabled
+          // even on other lessons (server enforces independently).
           onMessageSent(0);
           return;
         }
