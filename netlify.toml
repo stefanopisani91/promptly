@@ -1,0 +1,24 @@
+# Netlify configuration for Promptly.
+#
+# We deliberately do NOT redeclare `command`, `publish`, or plugins here:
+# those stay configured in the Netlify UI (Next.js plugin is auto-applied)
+# so this file only adds the one rule the UI doesn't expose — `ignore`.
+#
+# `ignore` runs on every push. Exit code 0 → Netlify SKIPS the build (and
+# burns no credits). Exit code 1 → Netlify BUILDS. The git diff below
+# returns 0 when the new commit changes ONLY files in the listed exclusions,
+# i.e. files that don't actually ship to learnpromptly.app.
+#
+# Excluded paths (touch them freely — no build, no credit spent):
+#   *.md         all markdown (PROMPTLY.md, brief, BACKLOG…)
+#   .claude/     Claude Code agent definitions, slash commands, settings
+#   .vscode/     editor settings
+#   .cursor/     Cursor IDE settings
+#   docs/        future docs folder (not present yet but reserved)
+#   .gitignore   gitignore tweaks
+#
+# Anything else (TS/TSX, CSS, JSON content, SVG brand assets, package.json,
+# next.config, this very netlify.toml) → BUILDS. Safe by default.
+
+[build]
+  ignore = "git diff --quiet HEAD^ HEAD ':!*.md' ':!.claude/' ':!.vscode/' ':!.cursor/' ':!docs/' ':!.gitignore'"
