@@ -51,7 +51,7 @@ export function AskSparkBubble({
       disabled={isExhausted}
       aria-label={tooltip}
       title={tooltip}
-      className="ask-spark-bubble absolute z-[5] inline-flex h-7 w-7 items-center justify-center rounded-full text-white shadow-md transition-transform hover:scale-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-deep disabled:opacity-50"
+      className="ask-spark-bubble pointer-events-auto absolute inline-flex h-7 w-7 items-center justify-center rounded-full text-white shadow-md transition-transform hover:scale-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-deep disabled:opacity-50"
       style={{
         // Anchor to Spark's bottom-right just outside the 48px frame so
         // it reads as "attached to Spark" without overlapping her face.
@@ -59,6 +59,14 @@ export function AskSparkBubble({
         right: "-10px",
         background: "var(--xp-gold)",
         border: "1.5px solid #fff",
+        // Inline z-index (instead of Tailwind's z-[N] arbitrary value)
+        // because the orbit chips animate their z-index up to 3 and we
+        // need the bubble to sit unconditionally above them. An inline
+        // style guarantees the value lands in the build regardless of
+        // Tailwind JIT's content scanning. pointer-events-auto is
+        // belt-and-braces against any ancestor that might set
+        // pointer-events-none in a future refactor.
+        zIndex: 40,
       }}
     >
       <HelpCircle size={14} strokeWidth={2.5} aria-hidden="true" />
