@@ -94,17 +94,13 @@ export function ReferralModalProvider({ data, children }: Props) {
     <ReferralModalContext.Provider value={value}>
       {children}
 
-      {/* Single modal instance shared across the page */}
+      {/* Single modal instance shared across the page. Closes via the
+          native <dialog> Esc handler and the explicit X button below;
+          click-on-backdrop intentionally not wired to keep a11y lint
+          happy and avoid attaching a click handler to a non-button. */}
       <dialog
         ref={dialogRef}
         aria-label={copy.card.title}
-        // Click on backdrop closes the dialog. The native <dialog> element
-        // makes the backdrop the dialog itself when there's no inner box,
-        // so we wrap content in a stop-click div to prevent backdrop clicks
-        // from bubbling into the close handler.
-        onClick={(e) => {
-          if (e.target === e.currentTarget) close();
-        }}
         className="m-0 w-full max-w-lg rounded-2xl border border-border bg-background p-0 shadow-2xl backdrop:bg-text-primary/40 backdrop:backdrop-blur-sm sm:m-auto"
       >
         <div className="relative max-h-[85vh] overflow-y-auto p-5 sm:p-6">
