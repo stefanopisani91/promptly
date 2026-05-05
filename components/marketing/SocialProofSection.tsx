@@ -10,7 +10,6 @@
 // (gradient + icon) per card so the layout is shippable today and the file
 // drop-in is a one-line replacement when the screenshots are ready.
 
-import Image from "next/image";
 import { useEffect, useRef } from "react";
 import { Map as MapIcon, Sparkles, Wand2 } from "lucide-react";
 import { track } from "@/lib/analytics/posthog";
@@ -106,24 +105,26 @@ export function SocialProofSection({ copy }: Props) {
                 className="flex w-72 shrink-0 snap-start flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg md:w-auto"
               >
                 {/* Screenshot frame — keeps a consistent 4:3 aspect even
-                    when the PNG is missing (fallback gradient renders). */}
+                    when the PNG is missing (fallback gradient renders).
+                    Uses a plain <img> (not next/image) so a missing file
+                    fails silently with onError instead of producing a
+                    next/image pipeline warning in dev logs. */}
                 <div
                   className={`relative aspect-[4/3] w-full overflow-hidden bg-gradient-to-br ${asset.tone}`}
                 >
-                  <Image
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
                     src={asset.src}
                     alt=""
-                    fill
-                    sizes="(min-width: 768px) 33vw, 80vw"
-                    className="object-cover"
+                    loading="lazy"
+                    decoding="async"
+                    className="absolute inset-0 h-full w-full object-cover"
                     onError={(e) => {
-                      // If the PNG isn't on disk yet, hide the <img> and
-                      // let the gradient + decorative icon stand alone.
                       e.currentTarget.style.display = "none";
                     }}
                   />
-                  {/* Decorative icon under the image — visible only when
-                      the image fails to load (z-0 below the img). */}
+                  {/* Decorative icon — sits behind the image and shows
+                      through when the PNG is absent. */}
                   <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center">
                     <asset.Icon
                       className="h-12 w-12 text-primary/50"

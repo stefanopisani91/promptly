@@ -33,9 +33,13 @@ function pickGreet(
   greet: AuthCopy["dashboard"]["sparkCompanion"]["bubble"],
 ): string {
   const h = new Date().getHours();
-  if (h < 12) return greet.greetMorning(name);
-  if (h >= 18) return greet.greetEvening(name);
-  return greet.greetGeneric(name);
+  const template =
+    h < 12
+      ? greet.greetMorning
+      : h >= 18
+        ? greet.greetEvening
+        : greet.greetGeneric;
+  return template.replace("{name}", name);
 }
 
 export function SparkCompanionCard({

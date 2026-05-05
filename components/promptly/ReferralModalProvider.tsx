@@ -21,11 +21,14 @@ import {
 } from "react";
 import { X } from "lucide-react";
 import type { Lang } from "@/types";
-import type { ReferralCopy } from "@/lib/i18n/referral";
+import { getReferralCopy } from "@/lib/i18n/referral";
 import { ReferralCardView } from "./ReferralCardView";
 
+// Only serializable fields cross the server→client boundary. The copy
+// object lives entirely on the client (loaded from `getReferralCopy(lang)`
+// inside this provider) because it contains a function, `share.nativeText`,
+// which Next.js refuses to pass through to a client component.
 interface ReferralData {
-  copy: ReferralCopy;
   referralUrl: string;
   count: number;
   activatedAt: string | null;
@@ -53,11 +56,12 @@ export function useReferralModal(): Ctx {
 
 interface Props {
   data: ReferralData;
-  closeLabel: string;
   children: ReactNode;
 }
 
-export function ReferralModalProvider({ data, closeLabel, children }: Props) {
+export function ReferralModalProvider({ data, children }: Props) {
+  const copy = getReferralCopy(data.lang);
+  const closeLabel = copy.trigger.closeLabel;
   const [isOpen, setIsOpen] = useState(false);
   const dialogRef = useRef<HTMLDialogElement | null>(null);
 
@@ -93,7 +97,7 @@ export function ReferralModalProvider({ data, closeLabel, children }: Props) {
       {/* Single modal instance shared across the page */}
       <dialog
         ref={dialogRef}
-        aria-label={data.copy.card.title}
+        aria-label={copy.card.title}
         // Click on backdrop closes the dialog. The native <dialog> element
         // makes the backdrop the dialog itself when there's no inner box,
         // so we wrap content in a stop-click div to prevent backdrop clicks
@@ -113,7 +117,7 @@ export function ReferralModalProvider({ data, closeLabel, children }: Props) {
             <X className="h-4 w-4" aria-hidden />
           </button>
           <ReferralCardView
-            copy={data.copy}
+            copy={copy}
             referralUrl={data.referralUrl}
             count={data.count}
             activatedAt={data.activatedAt}

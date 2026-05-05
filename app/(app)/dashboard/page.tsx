@@ -66,7 +66,9 @@ export default async function DashboardPage() {
   // Load referral data alongside the rest of the dashboard payload so the
   // shared <ReferralModalProvider> below has everything it needs to mount
   // a fully populated modal — no second round-trip when the user clicks
-  // the trigger.
+  // the trigger. Note: the *copy* itself isn't passed across the boundary
+  // (it contains a function — `share.nativeText` — which Next.js refuses
+  // to serialize). The provider re-loads it on the client from `lang`.
   const referralCopy = getReferralCopy(lang);
   const [progress, mapData, referralCode, referralStats] = await Promise.all([
     getAllUserProgress(supabase, user.id),
@@ -183,14 +185,12 @@ export default async function DashboardPage() {
   return (
     <ReferralModalProvider
       data={{
-        copy: referralCopy,
         referralUrl,
         count: referralStats.count,
         activatedAt: referralStats.activatedAt,
         fullName: profile.full_name,
         lang,
       }}
-      closeLabel={referralCopy.trigger.closeLabel}
     >
       <main className="flex flex-1 flex-col gap-6 py-8 sm:py-12">
         {showWelcome && (
