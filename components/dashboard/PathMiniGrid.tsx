@@ -71,7 +71,7 @@ export function PathMiniGrid({ paths, copy }: Props) {
           const inner = (
             <article
               className={cn(
-                "flex h-full flex-col rounded-2xl border border-[#d1d5db] bg-surface p-3 shadow-sm transition-all sm:p-4",
+                "flex h-full flex-col rounded-2xl border border-border bg-surface p-3 shadow-sm transition-all sm:p-4",
                 isInteractive && "hover:-translate-y-0.5 hover:shadow-md",
                 (isLocked || isProLocked) && "opacity-70",
               )}

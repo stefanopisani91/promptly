@@ -13,7 +13,7 @@ export function LuciaConsole({ copy }: Props) {
   return (
     <div
       style={{
-        background: "#0A0A0A",
+        background: "var(--tool-bg)",
         // Round 6 spec: vertical padding 12px (horizontal stays 20px).
         padding: "12px 20px",
         fontFamily: "var(--font-jetbrains), ui-monospace, monospace",
@@ -26,7 +26,7 @@ export function LuciaConsole({ copy }: Props) {
           // Round 6 spec: 12px.
           fontSize: 12,
           lineHeight: 1.5,
-          color: "#FF4444",
+          color: "var(--tool-error)",
           background: "transparent",
           whiteSpace: "pre-wrap",
           wordBreak: "break-word",

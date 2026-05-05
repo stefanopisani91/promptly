@@ -26,12 +26,12 @@ export interface LandingCopy {
       url: string;
       lessonTitle: string;
       lessonStep: string;
-      promptLabel: string;
-      promptText: string;
-      blank1: string;
-      blank2: string;
-      check: string;
-      correct: string;
+      sparkLabel: string;
+      cardEyebrow: string;
+      cardTitle: string;
+      cardBody: string;
+      chip1: string;
+      chip2: string;
       xpToast: string;
     };
   };
@@ -110,7 +110,15 @@ export interface LandingCopy {
     title: string;
     sub: string;
     counter: string;
-    placeholder: string;
+    /** Three product-screenshot cards. Each one is a real moment from
+     * the app. The image src is a path under /public/brand/preview-*.png
+     * declared in the consuming component (kept out of the copy so the
+     * copy stays text-only). */
+    previews: {
+      kicker: string;
+      title: string;
+      caption: string;
+    }[];
   };
   faq: {
     title: string;
@@ -133,6 +141,11 @@ export interface LandingCopy {
       legal: { heading: string; links: { label: string; href: string }[] };
     };
     socialHeading: string;
+    socialLinks: {
+      label: string; // visible name + aria-label
+      href: string;
+      platform: "twitter" | "linkedin" | "github";
+    }[];
     rights: string;
     builtWith: string;
   };

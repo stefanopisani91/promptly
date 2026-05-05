@@ -23,7 +23,8 @@ import type {
   LuciaEvaluation,
 } from "@/lib/landing-demo/types";
 import { NO_BUGS_FIXED, deriveOutcome } from "@/lib/landing-demo/types";
-import type { Lang } from "@/types";
+import type { Lang, SparkState } from "@/types";
+import { Spark } from "@/components/lessons/v3/Spark";
 import { LuciaHomepage } from "./LuciaHomepage";
 import { LuciaConsole } from "./LuciaConsole";
 import {
@@ -296,6 +297,17 @@ export function LuciaDemo({ copy, lang }: Props) {
 
   const message = phase === "result" ? buildMessage(copy, outcome, evaluation) : null;
 
+  // Spark narrator — drives mascot state + bubble copy from the same demo
+  // phases the rest of the UI reacts to. Kept declarative so it stays
+  // readable as we add more outcomes.
+  const sparkNarration = resolveSparkNarration(
+    copy.spark,
+    phase,
+    outcome,
+    attemptCount,
+    victoryLocked,
+  );
+
   return (
     <section
       id="prompt-evaluator"
@@ -303,12 +315,35 @@ export function LuciaDemo({ copy, lang }: Props) {
       className="relative py-16 sm:py-20 lg:py-24"
     >
       <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
-        <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-text-primary px-3 py-1 text-xs font-semibold uppercase tracking-[0.05em] text-[#C5F432]">
+        {/* Spark narrator — mobile-first: Spark on top, bubble below.
+            Desktop: same stack but slightly larger. The bubble has a
+            tail pointing up to Spark and uses the same "thought-bubble"
+            language as inside the lesson view (italic, surface card). */}
+        <div className="mb-6 flex flex-col items-center gap-2.5">
+          <Spark
+            state={sparkNarration.state}
+            size={56}
+            ariaLabel={copy.spark.label}
+          />
+          <p
+            role="status"
+            aria-live="polite"
+            className="relative max-w-xs rounded-2xl border border-border bg-surface px-4 py-2 text-sm italic leading-snug text-text-secondary shadow-sm sm:max-w-sm sm:text-base"
+          >
+            <span
+              aria-hidden
+              className="absolute -top-1.5 left-1/2 h-3 w-3 -translate-x-1/2 rotate-45 border-l border-t border-border bg-surface"
+            />
+            {sparkNarration.message}
+          </p>
+        </div>
+
+        <div className="inline-flex items-center gap-2 rounded-full bg-text-primary px-3 py-1 text-xs font-semibold uppercase tracking-[0.05em] text-tool-accent">
           {copy.badge}
         </div>
         <h2
           id="lucia-demo-title"
-          className="font-heading text-3xl font-bold leading-tight text-text-primary text-balance sm:text-4xl"
+          className="mt-4 font-heading text-3xl font-bold leading-tight text-text-primary text-balance sm:text-4xl"
         >
           {copy.title}
           <br />
@@ -326,12 +361,14 @@ export function LuciaDemo({ copy, lang }: Props) {
         <div
           aria-label={copy.homepage.addressBar}
           style={{
-            background: "#0A0A0A",
+            background: "var(--tool-bg)",
             borderRadius: "16px",
             overflow: "hidden",
             boxShadow: "0 4px 24px rgba(0, 0, 0, 0.10)",
             borderLeft: `4px solid ${
-              victoryLocked ? "#00C853" : "#9FFF00"
+              victoryLocked
+                ? "var(--tool-accent-victory)"
+                : "var(--tool-accent-bright)"
             }`,
             display: "flex",
             flexDirection: "column",
@@ -469,12 +506,12 @@ function BrowserChrome({ address }: { address: string }) {
   return (
     <div
       style={{
-        background: "#1A1A1A",
+        background: "#1a1a1a",
         padding: "0.55rem 0.95rem",
         display: "flex",
         alignItems: "center",
         gap: "0.85rem",
-        borderBottom: "1px solid #2A2A2A",
+        borderBottom: "1px solid var(--tool-divider-soft)",
       }}
     >
       <div style={{ display: "flex", gap: "0.4rem", flex: "0 0 auto" }}>
@@ -483,7 +520,7 @@ function BrowserChrome({ address }: { address: string }) {
             width: 11,
             height: 11,
             borderRadius: "50%",
-            background: "#FF5F57",
+            background: "var(--macos-red)",
           }}
         />
         <span
@@ -491,7 +528,7 @@ function BrowserChrome({ address }: { address: string }) {
             width: 11,
             height: 11,
             borderRadius: "50%",
-            background: "#FEBC2E",
+            background: "var(--macos-yellow)",
           }}
         />
         <span
@@ -499,7 +536,7 @@ function BrowserChrome({ address }: { address: string }) {
             width: 11,
             height: 11,
             borderRadius: "50%",
-            background: "#28C840",
+            background: "var(--macos-green)",
           }}
         />
       </div>
@@ -508,7 +545,7 @@ function BrowserChrome({ address }: { address: string }) {
           flex: "0 1 320px",
           maxWidth: "60%",
           padding: "6px 16px",
-          background: "#FAF7F2",
+          background: "#faf7f2",
           border: "1px solid rgba(0, 0, 0, 0.1)",
           borderRadius: 999,
           fontFamily: "var(--font-jetbrains), ui-monospace, monospace",
@@ -576,10 +613,10 @@ function LimitPanel({
       role="region"
       aria-label={copy.messages.limitTitle}
       style={{
-        background: "#0F1218",
+        background: "var(--tool-bg-result)",
         borderRadius: "12px",
-        boxShadow: "6px 6px 0 #0A0A0A",
-        border: "2px solid #0A0A0A",
+        boxShadow: "6px 6px 0 var(--tool-bg)",
+        border: "2px solid var(--tool-bg)",
         padding: "2rem 1.5rem",
         display: "flex",
         flexDirection: "column",
@@ -593,7 +630,7 @@ function LimitPanel({
       <p
         className="font-heading"
         style={{
-          color: "#FFFFFF",
+          color: "#ffffff",
           fontSize: "1.5rem",
           fontWeight: 700,
           margin: 0,
@@ -603,7 +640,7 @@ function LimitPanel({
       </p>
       <p
         style={{
-          color: "#ABB2BF",
+          color: "var(--tool-text)",
           fontSize: "0.95rem",
           lineHeight: 1.55,
           margin: 0,
@@ -619,8 +656,8 @@ function LimitPanel({
           display: "inline-flex",
           alignItems: "center",
           gap: "0.5rem",
-          background: "#E8703F",
-          color: "#FFFFFF",
+          background: "var(--primary)",
+          color: "#ffffff",
           padding: "0.7rem 1.4rem",
           borderRadius: "999px",
           textDecoration: "none",
@@ -633,6 +670,41 @@ function LimitPanel({
       </a>
     </div>
   );
+}
+
+// Spark narrator — translates (phase, outcome, attemptCount) into the
+// mascot state + the line she says above the demo. Pure function, no
+// effects, no DOM. Matches the rule from PROMPTLY.md: Spark must always
+// have a state defined for every UI moment.
+function resolveSparkNarration(
+  spark: LuciaDemoCopy["spark"],
+  phase: PanelPhase,
+  outcome: DemoOutcome | null,
+  attemptCount: number,
+  victoryLocked: boolean,
+): { state: SparkState; message: string } {
+  if (phase === "limit") {
+    return { state: "sad", message: spark.limit };
+  }
+  if (phase === "evaluating") {
+    return { state: "thinking", message: spark.thinking };
+  }
+  if (phase === "result" && outcome) {
+    if (outcome.victory) {
+      return { state: "happy", message: spark.victory };
+    }
+    if (outcome.messageKey === "scoreLow") {
+      return { state: "sad", message: spark.low };
+    }
+    return { state: "idle", message: spark.partial };
+  }
+  // Default editing state — Spark is patient and watching.
+  // After at least one attempt without victory she stays in "listening"
+  // mode (leaning forward) to communicate continuity.
+  if (attemptCount > 0 && !victoryLocked) {
+    return { state: "listening", message: spark.partial };
+  }
+  return { state: "idle", message: spark.intro };
 }
 
 function buildMessage(

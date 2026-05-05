@@ -125,6 +125,24 @@ export interface AuthCopy {
       completedBadge: string;
       lockedHint: string;
     };
+    sparkCompanion: {
+      eyebrow: string;
+      sparkLabel: string;
+      // Rotating Spark-voice messages. The card cycles through them based
+      // on the user's state (no active lesson, has active lesson, no
+      // referral yet). Voice rules from PROMPTLY.md: dry, warm, first
+      // person, no emoticons, max 1-2 sentences.
+      bubble: {
+        greetGeneric: (name: string) => string;
+        greetMorning: (name: string) => string;
+        greetEvening: (name: string) => string;
+        nudgeReferral: string;
+        nudgeContinue: string;
+      };
+      ctaContinue: string;
+      ctaInvite: string;
+      ctaStart: string;
+    };
   };
 }
 
@@ -269,6 +287,21 @@ const it: AuthCopy = {
       completedBadge: "Completato",
       lockedHint: "Bloccato",
     },
+    sparkCompanion: {
+      eyebrow: "SPARK",
+      sparkLabel: "Spark, la tua compagna di percorso",
+      bubble: {
+        greetGeneric: (name) => `Ciao ${name}. Cosa facciamo oggi?`,
+        greetMorning: (name) => `Buongiorno ${name}. Da dove iniziamo?`,
+        greetEvening: (name) => `Sei tornato, ${name}. Riprendiamo.`,
+        nudgeReferral:
+          "Se porti con te qualcuno, ti sblocco un percorso bonus.",
+        nudgeContinue: "La prossima lezione ti aspetta. Cinque minuti.",
+      },
+      ctaContinue: "Riprendi",
+      ctaInvite: "Invita un amico",
+      ctaStart: "Inizia la prima lezione",
+    },
   },
 };
 
@@ -412,6 +445,21 @@ const en: AuthCopy = {
       title: "Your paths",
       completedBadge: "Completed",
       lockedHint: "Locked",
+    },
+    sparkCompanion: {
+      eyebrow: "SPARK",
+      sparkLabel: "Spark, your learning companion",
+      bubble: {
+        greetGeneric: (name) => `Hey ${name}. What are we doing today?`,
+        greetMorning: (name) => `Morning ${name}. Where shall we start?`,
+        greetEvening: (name) => `Welcome back, ${name}. Let's pick up.`,
+        nudgeReferral:
+          "Bring a friend along — I'll unlock a bonus path for you.",
+        nudgeContinue: "Your next lesson is waiting. Five minutes.",
+      },
+      ctaContinue: "Resume",
+      ctaInvite: "Invite a friend",
+      ctaStart: "Start the first lesson",
     },
   },
 };

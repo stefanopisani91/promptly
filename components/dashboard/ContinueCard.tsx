@@ -31,7 +31,7 @@ export function ContinueCard({
   return (
     <Link
       href={href}
-      className="group block rounded-2xl border border-[#d1d5db] bg-surface p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md sm:p-6"
+      className="group block rounded-2xl border border-border bg-surface p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md sm:p-6"
     >
       <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-primary-deep">
         {copy.eyebrow}

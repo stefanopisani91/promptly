@@ -9,7 +9,10 @@ interface Props {
 const LEVEL_BAR: Record<"beginner" | "intermediate" | "advanced", string> = {
   beginner: "bg-success",
   intermediate: "bg-warning",
-  advanced: "bg-error",
+  // Advanced was `bg-error` (red) — same hue as `--error` and `--streak-fire`.
+  // Switched to `bg-primary-deep` so the difficulty scale stays inside the
+  // brand temperature without colliding with feedback-error semantics.
+  advanced: "bg-primary-deep",
 };
 
 const TIER_BADGE: Record<"free" | "pro", string> = {

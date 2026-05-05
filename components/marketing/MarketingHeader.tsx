@@ -37,10 +37,14 @@ export function MarketingHeader({ lang, copy }: Props) {
 
   return (
     <header
+      // Border is always `border-border` — what changes is the background
+      // and the border opacity. Switching the border *colour class* on
+      // scroll caused a visible "snap" the moment the threshold flipped;
+      // animating opacity keeps the transition continuous.
       className={cn(
-        "sticky top-0 z-40 w-full border-b transition-all duration-200",
+        "sticky top-0 z-40 w-full border-b border-border transition-all duration-200",
         scrolled
-          ? "border-border bg-surface/80 backdrop-blur-md"
+          ? "bg-surface/80 backdrop-blur-md"
           : "border-transparent bg-surface",
       )}
     >

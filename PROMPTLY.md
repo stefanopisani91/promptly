@@ -277,6 +277,49 @@ The brand color is taken directly from the logo: a warm coral-orange that's dist
 
 **Color rationale:** the orange brand stays exclusively for primary actions and identity. XP gold is shifted to a yellow-leaning tone to avoid blending into the orange. Streak fire is red, not orange, to remain distinct. Pro purple is the deliberate "premium" contrast — purple + orange is a classic complementary pair that signals upgrade clearly.
 
+### Tool view — a formalized dialect (added May 2026)
+
+Some surfaces represent a *tool* — an editor, an IDE, a terminal, a code preview. The Lucia landing demo is the first one shipped; future Path 3-5 build/debug exercises will reuse the same surface. Tool view is a deliberate exception to the "Focused Academy" calm: it's the only place where Promptly trades cream warmth for IDE-dark autonomy, because a simulated coding tool that *doesn't* feel like a real tool is uncanny.
+
+```css
+/* Tool view tokens — declared in globals.css. Use ONLY inside components
+   that explicitly represent an editor/IDE/terminal scene. Never as
+   decoration on marketing or app surfaces. */
+--tool-bg:              #0A0A0A;   /* deepest canvas — outer console */
+--tool-bg-elevated:     #282C34;   /* editor area (Atom One Dark feel) */
+--tool-bg-result:       #0F1218;   /* result/score panel */
+--tool-bg-chrome:       #21252B;   /* tab bar, status bar, terminal chrome */
+--tool-bg-action:       #1C1F25;   /* action bar background */
+--tool-bg-card:         #3A3F4B;   /* disabled buttons, neutral on dark */
+--tool-divider:         #181A1F;   /* hard separators in tool chrome */
+--tool-divider-soft:    #2A2A2A;   /* soft separator */
+--tool-text:            #ABB2BF;   /* primary text on tool bg */
+--tool-text-muted:      #5C6370;   /* metadata, line numbers active */
+--tool-text-subtle:     #4B5263;   /* line numbers inactive */
+--tool-text-faint:      #7A8190;   /* subtle hints */
+--tool-accent:          #C5F432;   /* "tool brand" — lime, signals action */
+--tool-accent-bright:   #9FFF00;   /* brighter lime — focused border */
+--tool-accent-victory:  #00C853;   /* locked-in success state */
+--tool-error:           #FF4444;   /* terminal error red — diegetic, not feedback */
+
+/* macOS chrome dots — iconic, reused across all browser/IDE mockups */
+--macos-red:    #FF5F57;
+--macos-yellow: #FEBC2E;
+--macos-green:  #28C840;
+```
+
+**Tailwind aliases** (declared in `tailwind.config.ts`):
+- `bg-tool-bg`, `text-tool-text`, `border-tool-divider`, `text-tool-accent`, etc.
+- `bg-macos-red`, `bg-macos-yellow`, `bg-macos-green`
+
+**Rules of use**:
+1. Tool view tokens are scoped to **editor/IDE/terminal scenes only**. The `LuciaDemo`, `LuciaPromptPanel`, `LuciaConsole` use them. A future Path 3 build exercise that simulates Claude Code will reuse them. Marketing copy, dashboards, lesson cards, navbars: **forbidden**.
+2. Promptly's brand orange (`--primary`) is allowed inside tool view as **the user's voice** — caret colour, action-button background, "your side" border-left. Lime is the tool's voice (the IDE itself). Orange + lime are NOT decorative — they're a deliberate two-character dialogue.
+3. Some inline glow/shadow strings concatenate alpha suffixes (e.g. `${scoreColor}40`) and CSS `var(...)` doesn't support that. In those rare cases the hex is duplicated as a local constant with a comment pointing back to the matching token. Keep them in sync.
+4. The `LuciaHomepage` panel is **diegetic** — it represents a fictional third-party site Lucia built. Its colours (`#F8F5F0`, `#5C8C5E`, etc.) are *not* tool view tokens; they're props of the scene. Keep them as local constants in that file, not promoted to the DS.
+
+**The orange spine (`border-left: 4px solid var(--primary)`)** on the right panel of the Lucia demo is the visual signature that says "this side belongs to Promptly". The lime spine on the left says "this side is the tool / the world to fix". Replicate this convention in any future tool view surface that has a "your input" / "external state" split.
+
 ### Typography
 
 - **Headings:** Plus Jakarta Sans (weight 600-700)

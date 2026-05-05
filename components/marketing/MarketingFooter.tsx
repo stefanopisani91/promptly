@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { ComponentType, SVGProps } from "react";
 import type { Lang } from "@/types";
 import type { LandingCopy } from "@/lib/i18n/landing";
 import { LangSwitcher } from "@/components/i18n/LangSwitcher";
@@ -8,6 +9,40 @@ interface Props {
   lang: Lang;
   copy: LandingCopy["footer"];
 }
+
+// Lucide-react 1.12 (the version pinned in this project) removed the
+// branded social icons. We render minimal inline SVG glyphs instead —
+// stroke-only, currentColor, ~16px target.
+type SvgProps = SVGProps<SVGSVGElement>;
+
+const TwitterGlyph: ComponentType<SvgProps> = (props) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="M4 4l7.5 9.5M20 4l-7.5 9.5M4 20l7.5-9.5M20 20l-7.5-9.5" />
+  </svg>
+);
+
+const LinkedinGlyph: ComponentType<SvgProps> = (props) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <rect x="3" y="3" width="18" height="18" rx="2.5" />
+    <path d="M7 10v7" />
+    <circle cx="7" cy="7.2" r="0.6" fill="currentColor" />
+    <path d="M11 17v-4a2.5 2.5 0 0 1 5 0v4" />
+    <path d="M11 17v-7" />
+  </svg>
+);
+
+const GithubGlyph: ComponentType<SvgProps> = (props) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="M9 19c-4 1.5-4-2.5-6-3" />
+    <path d="M15 22v-3.9a3.4 3.4 0 0 0-.9-2.6c2.9-.3 5.9-1.4 5.9-6.4a4.9 4.9 0 0 0-1.4-3.4 4.6 4.6 0 0 0-.1-3.4s-1.1-.3-3.6 1.4a12.4 12.4 0 0 0-6.4 0C5.9 1.9 4.8 2.2 4.8 2.2a4.6 4.6 0 0 0-.1 3.4 4.9 4.9 0 0 0-1.4 3.4c0 4.9 3 6 5.9 6.4a3.4 3.4 0 0 0-.9 2.6V22" />
+  </svg>
+);
+
+const SOCIAL_ICON = {
+  twitter: TwitterGlyph,
+  linkedin: LinkedinGlyph,
+  github: GithubGlyph,
+} as const;
 
 export function MarketingFooter({ lang, copy }: Props) {
   const cols = [copy.columns.product, copy.columns.resources, copy.columns.legal];
@@ -53,8 +88,34 @@ export function MarketingFooter({ lang, copy }: Props) {
           ))}
         </div>
 
-        <div className="mt-10 border-t border-border pt-6">
+        {/* Social row — accounts are placeholders until launch. The links
+            still work as soon as the handles go live; until then they
+            404 visibly which is preferable to silently breaking. */}
+        <div className="mt-10 flex flex-col gap-3 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-xs text-text-muted">{copy.rights}</p>
+          <div className="flex items-center gap-3">
+            <span className="text-xs font-semibold uppercase tracking-wider text-text-muted">
+              {copy.socialHeading}
+            </span>
+            <ul className="flex items-center gap-2">
+              {copy.socialLinks.map((social) => {
+                const Icon = SOCIAL_ICON[social.platform];
+                return (
+                  <li key={social.href}>
+                    <a
+                      href={social.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={social.label}
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border bg-surface text-text-secondary transition-colors hover:border-primary/40 hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-deep"
+                    >
+                      <Icon className="h-4 w-4" aria-hidden />
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
         </div>
       </div>
     </footer>

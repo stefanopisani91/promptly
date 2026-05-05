@@ -52,6 +52,35 @@ const config: Config = {
           accent: "var(--pro-accent)",
           light: "var(--pro-light)",
         },
+
+        // Tool view dialect — see PROMPTLY.md "Tool view" section.
+        // Only valid inside editor/IDE/terminal scenes.
+        tool: {
+          bg: "var(--tool-bg)",
+          "bg-elevated": "var(--tool-bg-elevated)",
+          "bg-result": "var(--tool-bg-result)",
+          "bg-chrome": "var(--tool-bg-chrome)",
+          "bg-action": "var(--tool-bg-action)",
+          "bg-card": "var(--tool-bg-card)",
+          divider: "var(--tool-divider)",
+          "divider-soft": "var(--tool-divider-soft)",
+          text: "var(--tool-text)",
+          "text-muted": "var(--tool-text-muted)",
+          "text-subtle": "var(--tool-text-subtle)",
+          "text-faint": "var(--tool-text-faint)",
+          accent: "var(--tool-accent)",
+          "accent-bright": "var(--tool-accent-bright)",
+          "accent-victory": "var(--tool-accent-victory)",
+          error: "var(--tool-error)",
+        },
+
+        // macOS chrome dots + the rare deep surface used by ProblemSection.
+        macos: {
+          red: "var(--macos-red)",
+          yellow: "var(--macos-yellow)",
+          green: "var(--macos-green)",
+        },
+        "surface-deep": "var(--surface-deep)",
       },
       fontFamily: {
         sans: ["var(--font-inter)", "system-ui", "sans-serif"],

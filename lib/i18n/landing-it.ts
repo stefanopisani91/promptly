@@ -23,14 +23,15 @@ export const landingCopyIt: LandingCopy = {
     mockup: {
       url: "learnpromptly.app/lezione/1",
       lessonTitle: "Cos'è il vibe coding?",
-      lessonStep: "Lezione 1 · Esercizio",
-      promptLabel: "Completa la definizione",
-      promptText: "Vibe coding è la pratica di costruire ___ usando ___ invece di scrivere codice manualmente.",
-      blank1: "software",
-      blank2: "linguaggio naturale",
-      check: "Controlla risposta",
-      correct: "Corretto! ✓",
-      xpToast: "+150 XP ⚡",
+      lessonStep: "Lezione 1 · 3 di 7",
+      sparkLabel: "Spark, la tua compagna di percorso",
+      cardEyebrow: "PRINCIPIO",
+      cardTitle: "Pensa per risultati,\nnon per passi.",
+      cardBody:
+        "Non dire all'AI come fare. Dille cosa vuoi ottenere — e lasciale scegliere la strada.",
+      chip1: "Aspetta, e se sbaglio?",
+      chip2: "Dammi un esempio",
+      xpToast: "+150 XP",
     },
   },
   problem: {
@@ -292,15 +293,43 @@ export const landingCopyIt: LandingCopy = {
         "Il prompt che invii viene elaborato da un'IA (OpenAI, USA) per generare la valutazione. Non inserire dati personali.",
       linkLabel: "Privacy Policy",
     },
+    spark: {
+      label: "Spark, la tua compagna",
+      intro: "Lucia ha bisogno di una mano. Scrivi tu il prompt — io guardo.",
+      thinking: "Sto leggendo. Un secondo.",
+      victory: "Bingo. Sistemato. Ora lo sai fare anche tu.",
+      low: "Non ancora. I bug sono tre — riguardali e riprova.",
+      partial: "Quasi. Manca qualcosa. Rileggi gli errori e riscrivi.",
+      limit: "Per ora basta. Iscriviti se vuoi continuare con me.",
+    },
     footer:
       "Un piccolo assaggio di Promptly — l'app che ti insegna a fare vibe coding davvero.",
   },
   socialProof: {
-    eyebrow: "COMUNITÀ",
-    title: "Una comunità che inizia oggi.",
-    sub: "Stiamo raccogliendo le prime storie. Vuoi essere tra i protagonisti?",
+    eyebrow: "PROMPTLY DENTRO",
+    title: "Ecco com'è dentro.",
+    sub: "Tre momenti veri del prodotto. Niente promesse — solo quello che vedrai dopo il primo click.",
     counter: "Tra i primi studenti del programma",
-    placeholder: "Le storie dei nostri studenti arrivano presto",
+    previews: [
+      {
+        kicker: "LEZIONE",
+        title: "Le card di una lezione, una alla volta.",
+        caption:
+          "Niente muri di testo. Un concetto per card, Spark che ti accompagna, e la tua risposta sempre a portata di mano.",
+      },
+      {
+        kicker: "MAPPA",
+        title: "Il tuo viaggio, una mappa.",
+        caption:
+          "Cinque biomi. Ogni lezione un nodo. Tu ti muovi sopra come un piccolo robot — e vedi sempre dove sei e dove vai.",
+      },
+      {
+        kicker: "DEMO LIVE",
+        title: "Sistema un sito vero, qui sopra.",
+        caption:
+          "L'esercizio della demo non è finto. È una lezione vera del Path 4, accessibile prima ancora di iscriverti.",
+      },
+    ],
   },
   faq: {
     title: "Domande frequenti.",
@@ -390,6 +419,19 @@ export const landingCopyIt: LandingCopy = {
       },
     },
     socialHeading: "Seguici",
+    // Social URLs are placeholders today — user confirmed accounts are
+    // coming "shortly". Link rel="noopener" + aria-label make them safe
+    // even before the targets are live; broken links fail visibly which
+    // is what we want during launch week.
+    socialLinks: [
+      { label: "X / Twitter", href: "https://x.com/promptly_app", platform: "twitter" },
+      {
+        label: "LinkedIn",
+        href: "https://www.linkedin.com/company/learnpromptly",
+        platform: "linkedin",
+      },
+      { label: "GitHub", href: "https://github.com/stefanopisani91", platform: "github" },
+    ],
     rights: "© 2026 Promptly · Tutti i diritti riservati",
     builtWith: "Costruito con ❤ in Italia",
   },

@@ -25,7 +25,7 @@ export function DailyGoalCard({ copy, minutesToday, goalMinutes }: Props) {
   const minutesLeft = Math.max(0, goalMinutes - minutesToday);
 
   return (
-    <div className="flex items-center gap-4 rounded-2xl border border-[#d1d5db] bg-surface p-5 shadow-sm sm:p-6">
+    <div className="flex items-center gap-4 rounded-2xl border border-border bg-surface p-5 shadow-sm sm:p-6">
       <svg
         width={RING_SIZE}
         height={RING_SIZE}

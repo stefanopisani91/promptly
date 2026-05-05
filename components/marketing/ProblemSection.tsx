@@ -67,7 +67,7 @@ export function ProblemSection({ copy }: Props) {
                     aria-hidden
                   />
                 </div>
-                <article className="rounded-2xl bg-text-primary p-8 text-white ring-1 ring-primary/20 sm:p-10">
+                <article className="rounded-2xl bg-gradient-to-br from-text-primary to-surface-deep p-8 text-white ring-1 ring-primary/20 sm:p-10">
                   {step.kickerEyebrow && (
                     <p className="font-mono text-xs font-medium uppercase tracking-[0.18em] text-primary">
                       {step.kickerEyebrow}

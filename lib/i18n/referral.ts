@@ -24,6 +24,11 @@ export interface ReferralCopy {
     nativeTitle: string; // browser share-sheet title
     nativeText: (referrerName: string | null) => string; // share message body
   };
+  trigger: {
+    label: string; // "Invita" — short text for the MapTopBar pill
+    ariaLabel: string; // full sentence for screen readers
+    closeLabel: string; // close-button label inside the modal
+  };
   errors: {
     generic: string;
   };
@@ -53,6 +58,11 @@ const it: ReferralCopy = {
         ? `${referrerName} ti invita su Promptly. Iscriviti col mio link e guadagniamo entrambi XP bonus 🚀`
         : "Iscriviti a Promptly col mio link e guadagniamo entrambi XP bonus 🚀",
   },
+  trigger: {
+    label: "Invita",
+    ariaLabel: "Invita un amico e sblocca un percorso bonus",
+    closeLabel: "Chiudi",
+  },
   errors: {
     generic: "Qualcosa è andato storto. Riprova tra un attimo.",
   },
@@ -81,6 +91,11 @@ const en: ReferralCopy = {
       referrerName
         ? `${referrerName} invites you to Promptly. Sign up with my link and we both earn bonus XP 🚀`
         : "Sign up to Promptly with my link and we both earn bonus XP 🚀",
+  },
+  trigger: {
+    label: "Invite",
+    ariaLabel: "Invite a friend and unlock a bonus path",
+    closeLabel: "Close",
   },
   errors: {
     generic: "Something went wrong. Try again in a moment.",

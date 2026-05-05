@@ -23,14 +23,15 @@ export const landingCopyEn: LandingCopy = {
     mockup: {
       url: "learnpromptly.app/lesson/1",
       lessonTitle: "What is vibe coding?",
-      lessonStep: "Lesson 1 · Exercise",
-      promptLabel: "Complete the definition",
-      promptText: "Vibe coding is the practice of building ___ using ___ instead of writing code manually.",
-      blank1: "software",
-      blank2: "natural language",
-      check: "Check answer",
-      correct: "Correct! ✓",
-      xpToast: "+150 XP ⚡",
+      lessonStep: "Lesson 1 · 3 of 7",
+      sparkLabel: "Spark, your learning companion",
+      cardEyebrow: "PRINCIPLE",
+      cardTitle: "Think in outcomes,\nnot in steps.",
+      cardBody:
+        "Don't tell AI how to do it. Tell it what you want — and let it choose the path.",
+      chip1: "Wait, what if I'm wrong?",
+      chip2: "Give me an example",
+      xpToast: "+150 XP",
     },
   },
   problem: {
@@ -289,15 +290,43 @@ export const landingCopyEn: LandingCopy = {
         "The prompt you submit is processed by an AI (OpenAI, US) to generate the evaluation. Don't include personal data.",
       linkLabel: "Privacy Policy",
     },
+    spark: {
+      label: "Spark, your companion",
+      intro: "Lucia needs a hand. You write the prompt — I'll watch.",
+      thinking: "Reading. One second.",
+      victory: "Bingo. Fixed. Now you know how to do it too.",
+      low: "Not yet. There are three bugs — look again and try once more.",
+      partial: "Close. Something's missing. Re-read the errors and rewrite.",
+      limit: "Enough for now. Sign up if you want to keep going with me.",
+    },
     footer:
       "A small taste of Promptly — the app that teaches you real vibe coding.",
   },
   socialProof: {
-    eyebrow: "COMMUNITY",
-    title: "A community starting today.",
-    sub: "We're gathering the first stories. Want to be one of them?",
+    eyebrow: "INSIDE PROMPTLY",
+    title: "Here's what it looks like inside.",
+    sub: "Three real moments from the product. No promises — just what you'll see after the first click.",
     counter: "Among the first students of the program",
-    placeholder: "Real student stories coming soon",
+    previews: [
+      {
+        kicker: "LESSON",
+        title: "One concept per card, one card at a time.",
+        caption:
+          "No walls of text. One concept per card, Spark walking with you, your answer always at hand.",
+      },
+      {
+        kicker: "MAP",
+        title: "Your journey, mapped.",
+        caption:
+          "Five biomes. Each lesson a node. You move on top like a little robot — always knowing where you are and where you're heading.",
+      },
+      {
+        kicker: "LIVE DEMO",
+        title: "Fix a real site, right here.",
+        caption:
+          "The demo exercise isn't mock. It's a real Path 4 lesson, playable before you even sign up.",
+      },
+    ],
   },
   faq: {
     title: "Frequently asked questions.",
@@ -387,6 +416,15 @@ export const landingCopyEn: LandingCopy = {
       },
     },
     socialHeading: "Follow",
+    socialLinks: [
+      { label: "X / Twitter", href: "https://x.com/promptly_app", platform: "twitter" },
+      {
+        label: "LinkedIn",
+        href: "https://www.linkedin.com/company/learnpromptly",
+        platform: "linkedin",
+      },
+      { label: "GitHub", href: "https://github.com/stefanopisani91", platform: "github" },
+    ],
     rights: "© 2026 Promptly · All rights reserved",
     builtWith: "Built with ❤ in Italy",
   },

@@ -40,20 +40,24 @@ const DIMENSION_ORDER: DimensionKey[] = [
   "protezione",
 ];
 
+// Cyberpunk dimension colours — diegetic to the "tool view" result panel
+// only. Kept as hex (not CSS variables) because they're concatenated with
+// alpha suffixes (e.g. `${c}80`) in inline glow/shadow strings, which
+// `var(--token)` can't satisfy. `obiettivo` mirrors `--tool-accent`,
+// `great`/`perfect` mirror `--tool-accent-victory` — keep them in sync.
 const DIM_COLORS: Record<DimensionKey, string> = {
-  chiarezza: "#00F0FF",
-  contesto: "#FF00E5",
-  obiettivo: "#C5F432",
-  protezione: "#FFB800",
+  chiarezza: "#00f0ff",
+  contesto: "#ff00e5",
+  obiettivo: "#c5f432",
+  protezione: "#ffb800",
 };
 
-// Score bands → colour. 5 tiers from the blueprint.
 const BAND_COLORS: Record<ScoreBand, string> = {
-  review: "#FF6B4A",
-  improve: "#FFD700",
-  good: "#B8FF00",
-  great: "#00C853",
-  perfect: "#00C853",
+  review: "#ff6b4a",
+  improve: "#ffd700",
+  good: "#b8ff00",
+  great: "#00c853",
+  perfect: "#00c853",
 };
 
 const ZERO_DIMS: Record<DimensionKey, number> = {
@@ -64,7 +68,7 @@ const ZERO_DIMS: Record<DimensionKey, number> = {
 };
 
 const TERMINAL_BAR_STYLE: CSSProperties = {
-  background: "#21252B",
+  background: "var(--tool-bg-chrome)",
   padding: "0.55rem 0.95rem",
   display: "flex",
   alignItems: "center",
@@ -226,7 +230,7 @@ export function LuciaPromptPanel({
   const band: ScoreBand | null = evaluation
     ? bandFromScore(evaluation.totale)
     : null;
-  const scoreColor = band ? BAND_COLORS[band] : "#C5F432";
+  const scoreColor = band ? BAND_COLORS[band] : "#c5f432";
   const scoreLabel = band ? copy.result.scoreLabels[band] : "";
 
   const editButtonDisabled =
@@ -240,17 +244,19 @@ export function LuciaPromptPanel({
     <div
       aria-busy={isLoading}
       style={{
-        background: showResult ? "#0F1218" : "#282C34",
+        background: showResult
+          ? "var(--tool-bg-result)"
+          : "var(--tool-bg-elevated)",
         borderRadius: "8px",
         overflow: "hidden",
         boxShadow:
           showResult && evaluation && evaluation.totale >= 75
             ? `6px 6px 0 ${scoreColor}, 0 0 30px ${scoreColor}40`
-            : "6px 6px 0 #0A0A0A",
+            : "6px 6px 0 var(--tool-bg)",
         // Round 4 vignettazione: orange brand bar identifies V3 as "the
         // user's tool" (Promptly's side), distinct from the lime-bordered
         // Lucia + console vignettes on the left.
-        borderLeft: "4px solid #E85D2C",
+        borderLeft: "4px solid var(--primary)",
         display: "flex",
         flexDirection: "column",
         position: "relative",
@@ -260,15 +266,15 @@ export function LuciaPromptPanel({
       {/* macOS chrome */}
       <div style={TERMINAL_BAR_STYLE}>
         <div style={DOTS_STYLE}>
-          <span style={dotStyle("#FF5F57")} />
-          <span style={dotStyle("#FEBC2E")} />
-          <span style={dotStyle("#28C840")} />
+          <span style={dotStyle("var(--macos-red)")} />
+          <span style={dotStyle("var(--macos-yellow)")} />
+          <span style={dotStyle("var(--macos-green)")} />
         </div>
         <div
           style={{
             flex: 1,
             textAlign: "center",
-            color: "#888",
+            color: "var(--tool-text-faint)",
             fontSize: "0.74rem",
             fontFamily: "var(--font-jetbrains), ui-monospace, monospace",
             display: "flex",
@@ -284,35 +290,37 @@ export function LuciaPromptPanel({
       {/* Tab bar */}
       <div
         style={{
-          background: "#21252B",
+          background: "var(--tool-bg-chrome)",
           display: "flex",
           alignItems: "center",
-          borderBottom: "1px solid #181A1F",
+          borderBottom: "1px solid var(--tool-divider)",
           position: "relative",
           zIndex: 2,
         }}
       >
         <div
           style={{
-            background: showResult ? "#0F1218" : "#282C34",
+            background: showResult
+              ? "var(--tool-bg-result)"
+              : "var(--tool-bg-elevated)",
             padding: "0.5rem 0.95rem",
             display: "flex",
             alignItems: "center",
             gap: "0.5rem",
             fontFamily: "var(--font-jetbrains), ui-monospace, monospace",
             fontSize: "0.75rem",
-            color: "#ABB2BF",
+            color: "var(--tool-text)",
             borderTop: `2px solid ${
-              showResult ? scoreColor : "#E8703F"
+              showResult ? scoreColor : "var(--primary)"
             }`,
-            borderRight: "1px solid #181A1F",
+            borderRight: "1px solid var(--tool-divider)",
             transition: "all 0.3s",
           }}
         >
           {showResult ? (
             <FileJson size={13} color={scoreColor} aria-hidden />
           ) : (
-            <FileCode size={13} color="#E8703F" aria-hidden />
+            <FileCode size={13} color="var(--primary)" aria-hidden />
           )}
           {showResult ? "result.json" : "prompt.md"}
           <span
@@ -324,7 +332,7 @@ export function LuciaPromptPanel({
                 userPrompt || showResult
                   ? showResult
                     ? scoreColor
-                    : "#E8703F"
+                    : "var(--primary)"
                   : "transparent",
               marginLeft: "0.25rem",
               boxShadow: showResult ? `0 0 8px ${scoreColor}` : "none",
@@ -341,7 +349,7 @@ export function LuciaPromptPanel({
               paddingRight: "0.9rem",
               fontFamily: "var(--font-jetbrains), ui-monospace, monospace",
               fontSize: "0.66rem",
-              color: "#7A8190",
+              color: "var(--tool-text-faint)",
               letterSpacing: "0.05em",
             }}
           >
@@ -400,15 +408,15 @@ export function LuciaPromptPanel({
       {/* Status bar */}
       <div
         style={{
-          background: "#21252B",
+          background: "var(--tool-bg-chrome)",
           padding: "0.4rem 0.95rem",
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
           fontFamily: "var(--font-jetbrains), ui-monospace, monospace",
           fontSize: "0.68rem",
-          color: "#ABB2BF",
-          borderTop: "1px solid #181A1F",
+          color: "var(--tool-text)",
+          borderTop: "1px solid var(--tool-divider)",
           flexWrap: "wrap",
           gap: "0.5rem",
           position: "relative",
@@ -422,7 +430,7 @@ export function LuciaPromptPanel({
             alignItems: "center",
           }}
         >
-          <span style={{ color: showResult ? scoreColor : "#E8703F" }}>
+          <span style={{ color: showResult ? scoreColor : "var(--primary)" }}>
             ●{" "}
             {isLoading
               ? copy.editor.statusEvaluating
@@ -439,7 +447,13 @@ export function LuciaPromptPanel({
             <span>score: {evaluation.totale}/100</span>
           )}
         </div>
-        <div style={{ display: "flex", gap: "0.85rem", color: "#5C6370" }}>
+        <div
+          style={{
+            display: "flex",
+            gap: "0.85rem",
+            color: "var(--tool-text-muted)",
+          }}
+        >
           <span>
             {userPrompt.length} {copy.editor.charsLabel}
           </span>
@@ -450,13 +464,13 @@ export function LuciaPromptPanel({
       {/* Action bar */}
       <div
         style={{
-          background: "#1C1F25",
+          background: "var(--tool-bg-action)",
           padding: "0.8rem 0.95rem",
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
           gap: "0.5rem",
-          borderTop: "1px solid #181A1F",
+          borderTop: "1px solid var(--tool-divider)",
           position: "relative",
           zIndex: 2,
         }}
@@ -467,7 +481,7 @@ export function LuciaPromptPanel({
           style={{
             fontFamily: "var(--font-jetbrains), ui-monospace, monospace",
             fontSize: "0.68rem",
-            color: errorMessage ? "#FCA5A5" : "transparent",
+            color: errorMessage ? "#fca5a5" : "transparent",
             minHeight: "1.2em",
             flex: 1,
             textAlign: "left",
@@ -486,8 +500,12 @@ export function LuciaPromptPanel({
               display: "inline-flex",
               alignItems: "center",
               gap: "0.5rem",
-              background: editButtonDisabled ? "#3A3F4B" : "#E8703F",
-              color: editButtonDisabled ? "#5C6370" : "#FFFFFF",
+              background: editButtonDisabled
+                ? "var(--tool-bg-card)"
+                : "var(--primary)",
+              color: editButtonDisabled
+                ? "var(--tool-text-muted)"
+                : "#ffffff",
               border: "none",
               padding: "0.55rem 1.2rem",
               borderRadius: "6px",
@@ -525,8 +543,8 @@ export function LuciaPromptPanel({
               alignItems: "center",
               gap: "0.5rem",
               background: "transparent",
-              color: "#ABB2BF",
-              border: "1.5px solid #3A3F4B",
+              color: "var(--tool-text)",
+              border: "1.5px solid var(--tool-bg-card)",
               padding: "0.5rem 1.1rem",
               borderRadius: "6px",
               fontWeight: 600,
@@ -606,23 +624,26 @@ function EditorBody({
       <div
         aria-hidden
         style={{
-          background: "#282C34",
+          background: "var(--tool-bg-elevated)",
           padding: "0.85rem 0.55rem 0.85rem 0.95rem",
           fontFamily: "var(--font-jetbrains), ui-monospace, monospace",
           fontSize: "0.78rem",
           lineHeight: 1.55,
-          color: "#5C6370",
+          color: "var(--tool-text-muted)",
           textAlign: "right",
           userSelect: "none",
           minWidth: "2.5rem",
-          borderRight: "1px solid #21252B",
+          borderRight: "1px solid var(--tool-bg-chrome)",
         }}
       >
         {lineNumbers.map((n) => (
           <div
             key={n}
             style={{
-              color: n === cursorLine ? "#ABB2BF" : "#4B5263",
+              color:
+                n === cursorLine
+                  ? "var(--tool-text)"
+                  : "var(--tool-text-subtle)",
             }}
           >
             {n}
@@ -650,9 +671,9 @@ function EditorBody({
           border: "none",
           outline: "none",
           resize: "none",
-          background: "#282C34",
-          color: "#ABB2BF",
-          caretColor: "#E8703F",
+          background: "var(--tool-bg-elevated)",
+          color: "var(--tool-text)",
+          caretColor: "var(--primary)",
           boxSizing: "border-box",
           opacity: isLoading ? 0.5 : 1,
           transition: "opacity 0.2s",
@@ -726,7 +747,7 @@ function ResultBody({
             style={{
               fontFamily: "var(--font-jetbrains), ui-monospace, monospace",
               fontSize: "0.62rem",
-              color: "#5C6370",
+              color: "var(--tool-text-muted)",
               letterSpacing: "0.25em",
             }}
           >
@@ -756,7 +777,7 @@ function ResultBody({
             style={{
               fontFamily: "var(--font-jetbrains), ui-monospace, monospace",
               fontSize: "0.7rem",
-              color: "#5C6370",
+              color: "var(--tool-text-muted)",
               letterSpacing: "0.2em",
             }}
           >
@@ -815,7 +836,7 @@ function ResultBody({
                   }}
                 >
                   <span>
-                    <span aria-hidden style={{ color: "#5C6370" }}>
+                    <span aria-hidden style={{ color: "var(--tool-text-muted)" }}>
                       {"> "}
                     </span>
                     <span
@@ -830,7 +851,7 @@ function ResultBody({
                     <span
                       aria-hidden
                       style={{
-                        color: "#4B5263",
+                        color: "var(--tool-text-subtle)",
                         marginLeft: "0.45rem",
                         fontSize: "0.68rem",
                       }}
@@ -862,7 +883,7 @@ function ResultBody({
                   aria-valuemax={100}
                   style={{
                     height: 5,
-                    background: "#0A0D12",
+                    background: "var(--tool-bg)",
                     borderRadius: 2,
                     overflow: "hidden",
                     border: `1px solid ${c}40`,
@@ -914,7 +935,7 @@ function ResultBody({
           <div
             aria-hidden
             style={{
-              color: "#5C6370",
+              color: "var(--tool-text-muted)",
               fontSize: "0.66rem",
               letterSpacing: "0.18em",
               marginBottom: "0.35rem",
@@ -928,9 +949,9 @@ function ResultBody({
               padding: "0.7rem 0.85rem",
               background: "rgba(197, 244, 50, 0.06)",
               border: "1px solid rgba(197, 244, 50, 0.25)",
-              borderLeft: "2px solid #C5F432",
+              borderLeft: "2px solid var(--tool-accent)",
               borderRadius: "4px",
-              color: "#D7DCE3",
+              color: "#d7dce3",
               fontSize: "0.76rem",
               lineHeight: 1.55,
               boxShadow:

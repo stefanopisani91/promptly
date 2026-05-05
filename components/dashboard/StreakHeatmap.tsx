@@ -42,7 +42,7 @@ export function StreakHeatmap({ activeDates }: Props) {
             "h-2.5 w-2.5 rounded-[2px]",
             c.isActive
               ? "bg-primary"
-              : "border border-[#d1d5db] bg-transparent",
+              : "border border-border bg-transparent",
           )}
         />
       ))}

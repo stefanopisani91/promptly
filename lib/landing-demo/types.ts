@@ -296,5 +296,26 @@ export interface LuciaDemoCopy {
     linkLabel: string;
   };
 
+  /** Spark narrator copy — short Spark-voice lines shown above the demo
+   * cards. Must follow PROMPTLY.md voice: dry, warm, direct, first person,
+   * no emoticons, max 1-2 sentences. */
+  spark: {
+    /** Aria-label for the Spark mascot (decorative only, but a label is
+     * still useful for screen readers when she stands alone). */
+    label: string;
+    /** Initial state, before the first attempt. */
+    intro: string;
+    /** While GPT-4o is reasoning. */
+    thinking: string;
+    /** Score >= 85 AND all 3 bugs mentioned — fresh victory. */
+    victory: string;
+    /** Score < 50 — gentle nudge, no judgement. */
+    low: string;
+    /** Mid score, partial coverage. */
+    partial: string;
+    /** User hit the per-session attempt cap. */
+    limit: string;
+  };
+
   footer: string;
 }

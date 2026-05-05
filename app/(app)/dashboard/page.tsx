@@ -4,22 +4,28 @@ import { isLang, type Lang } from "@/types";
 import { resolveLangFromRequest } from "@/lib/i18n/server-lang";
 import { getAuthCopy } from "@/lib/i18n/auth";
 import { getMapCopy } from "@/lib/i18n/map";
+import { getReferralCopy } from "@/lib/i18n/referral";
 import { createClient } from "@/lib/supabase/server";
 import {
   getAllUserProgress,
+  getOrCreateReferralCode,
+  getReferralStats,
   getUserProfile,
 } from "@/lib/supabase/queries";
+import { getReferralUrl } from "@/lib/referral";
 import { buildMapData } from "@/lib/map/data";
 import { DashboardGreeting } from "@/components/dashboard/DashboardGreeting";
 import { DashboardStatsGrid } from "@/components/dashboard/DashboardStatsGrid";
 import { ContinueCard } from "@/components/dashboard/ContinueCard";
 import { DailyGoalCard } from "@/components/dashboard/DailyGoalCard";
 import type { RecentLessonItem } from "@/components/dashboard/RecentLessonsList";
+import { SparkCompanionCard } from "@/components/dashboard/SparkCompanionCard";
 import { WelcomeCard } from "@/components/dashboard/WelcomeCard";
 import { LevelUpModal } from "@/components/promptly/LevelUpModal";
-import { ReferralCard } from "@/components/promptly/ReferralCard";
+import { ReferralModalProvider } from "@/components/promptly/ReferralModalProvider";
 import { LearningMap } from "@/components/promptly/map/LearningMap";
 import { MapTopBar } from "@/components/promptly/map/MapTopBar";
+import { MapTopBarInviteButton } from "@/components/promptly/map/MapTopBarInviteButton";
 import { getLevelFromXP } from "@/lib/levels";
 
 export const dynamic = "force-dynamic";
@@ -57,7 +63,12 @@ export default async function DashboardPage() {
   const authCopy = getAuthCopy(lang).dashboard;
   const mapCopy = getMapCopy(lang);
 
-  const [progress, mapData] = await Promise.all([
+  // Load referral data alongside the rest of the dashboard payload so the
+  // shared <ReferralModalProvider> below has everything it needs to mount
+  // a fully populated modal — no second round-trip when the user clicks
+  // the trigger.
+  const referralCopy = getReferralCopy(lang);
+  const [progress, mapData, referralCode, referralStats] = await Promise.all([
     getAllUserProgress(supabase, user.id),
     buildMapData(
       supabase,
@@ -78,7 +89,10 @@ export default async function DashboardPage() {
         ship: mapCopy.paths.ship.tagline,
       },
     ),
+    getOrCreateReferralCode(supabase, user.id, profile.full_name),
+    getReferralStats(supabase, user.id),
   ]);
+  const referralUrl = getReferralUrl(referralCode, lang);
 
   const showWelcome = profile.welcome_seen_at === null;
   const displayName =
@@ -167,86 +181,104 @@ export default async function DashboardPage() {
     !!activeSection && !!activeNode && !!activeLessonHref && !!activeNode.title;
 
   return (
-    <main className="flex flex-1 flex-col gap-6 py-8 sm:py-12">
-      {showWelcome && (
-        <div className="mx-auto w-full max-w-3xl px-4 sm:px-6">
-          <WelcomeCard
-            title={authCopy.welcomeCard.title(displayName)}
-            sub={authCopy.welcomeCard.sub}
-            cta={authCopy.welcomeCard.cta}
-            submitting={authCopy.welcomeCard.submitting}
-          />
-        </div>
-      )}
-      {showLevelUp && (
-        <LevelUpModal
-          fromLevel={profile.last_level_up_notified}
-          toLevel={currentLevel}
-          language={lang}
-        />
-      )}
-
-      <div className="mx-auto w-full max-w-3xl px-4 sm:px-6">
-        <DashboardGreeting copy={authCopy} name={displayName} />
-      </div>
-
-      {showContinue && activeSection && activeNode && activeLessonHref && (
-        <div className="mx-auto w-full max-w-3xl px-4 sm:px-6">
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.4fr_1fr]">
-            <ContinueCard
-              copy={authCopy.continueCard}
-              pathTitle={activeSection.title}
-              lessonNumber={activeNode.index + 1}
-              lessonTitle={activeNode.title!}
-              href={activeLessonHref}
-              pathProgress={
-                activeSection.totalLessons > 0
-                  ? activeSection.completedLessons / activeSection.totalLessons
-                  : 0
-              }
-              estimatedMinutes={activeNode.estimatedMinutes}
-            />
-            <DailyGoalCard
-              copy={authCopy.dailyGoal}
-              minutesToday={minutesToday}
-              goalMinutes={DAILY_GOAL_MINUTES}
+    <ReferralModalProvider
+      data={{
+        copy: referralCopy,
+        referralUrl,
+        count: referralStats.count,
+        activatedAt: referralStats.activatedAt,
+        fullName: profile.full_name,
+        lang,
+      }}
+      closeLabel={referralCopy.trigger.closeLabel}
+    >
+      <main className="flex flex-1 flex-col gap-6 py-8 sm:py-12">
+        {showWelcome && (
+          <div className="mx-auto w-full max-w-3xl px-4 sm:px-6">
+            <WelcomeCard
+              title={authCopy.welcomeCard.title(displayName)}
+              sub={authCopy.welcomeCard.sub}
+              cta={authCopy.welcomeCard.cta}
+              submitting={authCopy.welcomeCard.submitting}
             />
           </div>
+        )}
+        {showLevelUp && (
+          <LevelUpModal
+            fromLevel={profile.last_level_up_notified}
+            toLevel={currentLevel}
+            language={lang}
+          />
+        )}
+
+        <div className="mx-auto w-full max-w-3xl px-4 sm:px-6">
+          <DashboardGreeting copy={authCopy} name={displayName} />
         </div>
-      )}
 
-      <div className="mx-auto w-full max-w-3xl px-4 sm:px-6">
-        <DashboardStatsGrid
-          copy={authCopy}
-          totalXp={profile.total_xp}
-          currentStreak={derivedStreak}
-          lessonsCompleted={lessonsCompleted}
-          activeDates={activeDates}
-          recentLessons={recentLessons}
-        />
-      </div>
+        {showContinue && activeSection && activeNode && activeLessonHref && (
+          <div className="mx-auto w-full max-w-3xl px-4 sm:px-6">
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.4fr_1fr]">
+              <ContinueCard
+                copy={authCopy.continueCard}
+                pathTitle={activeSection.title}
+                lessonNumber={activeNode.index + 1}
+                lessonTitle={activeNode.title!}
+                href={activeLessonHref}
+                pathProgress={
+                  activeSection.totalLessons > 0
+                    ? activeSection.completedLessons / activeSection.totalLessons
+                    : 0
+                }
+                estimatedMinutes={activeNode.estimatedMinutes}
+              />
+              <DailyGoalCard
+                copy={authCopy.dailyGoal}
+                minutesToday={minutesToday}
+                goalMinutes={DAILY_GOAL_MINUTES}
+              />
+            </div>
+          </div>
+        )}
 
-      <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 lg:max-w-5xl">
-        <MapTopBar
-          level={currentLevel}
-          totalXp={profile.total_xp}
-          language={lang}
-        />
-        <LearningMap
-          data={mapData}
-          copy={mapCopy}
-          lang={lang}
-          level={currentLevel}
-        />
-      </div>
+        <div className="mx-auto w-full max-w-3xl px-4 sm:px-6">
+          <DashboardStatsGrid
+            copy={authCopy}
+            totalXp={profile.total_xp}
+            currentStreak={derivedStreak}
+            lessonsCompleted={lessonsCompleted}
+            activeDates={activeDates}
+            recentLessons={recentLessons}
+            companionSlot={
+              <SparkCompanionCard
+                copy={authCopy.sparkCompanion}
+                name={displayName}
+                continueHref={activeLessonHref}
+                hasContinue={showContinue}
+              />
+            }
+          />
+        </div>
 
-      <div className="mx-auto w-full max-w-3xl px-4 sm:px-6">
-        <ReferralCard
-          userId={user.id}
-          fullName={profile.full_name}
-          lang={lang}
-        />
-      </div>
-    </main>
+        <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 lg:max-w-5xl">
+          <MapTopBar
+            level={currentLevel}
+            totalXp={profile.total_xp}
+            language={lang}
+            rightSlot={
+              <MapTopBarInviteButton
+                label={referralCopy.trigger.label}
+                ariaLabel={referralCopy.trigger.ariaLabel}
+              />
+            }
+          />
+          <LearningMap
+            data={mapData}
+            copy={mapCopy}
+            lang={lang}
+            level={currentLevel}
+          />
+        </div>
+      </main>
+    </ReferralModalProvider>
   );
 }

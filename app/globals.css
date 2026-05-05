@@ -42,6 +42,39 @@
   --pro-accent: #7c3aed;
   --pro-light: #f5f3ff;
 
+  /* Tool view — formalized dialect of the DS for any "editor / IDE / terminal"
+     scene we render inside Promptly (Lucia demo today, future Path 3 IDE
+     simulations tomorrow). These tokens are ONLY allowed inside components
+     that explicitly represent a tool/editor surface — never as decoration
+     elsewhere. See PROMPTLY.md "Tool view" section for the full rule set. */
+  --tool-bg: #0a0a0a;              /* deepest canvas — outer console, dark seal */
+  --tool-bg-elevated: #282c34;     /* editor area — Atom One Dark feel */
+  --tool-bg-result: #0f1218;       /* result panel — score view */
+  --tool-bg-chrome: #21252b;       /* tab bar, status bar, terminal chrome */
+  --tool-bg-action: #1c1f25;       /* action bar background */
+  --tool-bg-card: #3a3f4b;         /* disabled buttons, neutral card on dark */
+  --tool-divider: #181a1f;         /* hard separators inside tool chrome */
+  --tool-divider-soft: #2a2a2a;    /* soft separator for less hierarchy */
+  --tool-text: #abb2bf;            /* primary text on tool bg */
+  --tool-text-muted: #5c6370;      /* metadata, line numbers active */
+  --tool-text-subtle: #4b5263;     /* line numbers inactive, captions */
+  --tool-text-faint: #7a8190;      /* subtle hints */
+  --tool-accent: #c5f432;          /* the "tool brand" — lime, signals user action */
+  --tool-accent-bright: #9fff00;   /* brighter lime — focused/editing border */
+  --tool-accent-victory: #00c853;  /* success in tool — locked-in state */
+  --tool-error: #ff4444;           /* console error red — diegetic, not feedback */
+
+  /* macOS chrome dots — iconic and reused across mockups. Diegetic colours,
+     not part of the brand palette. Centralised here so they stay consistent
+     across HeroMockup and the Lucia demo. */
+  --macos-red: #ff5f57;
+  --macos-yellow: #febc2e;
+  --macos-green: #28c840;
+
+  /* Surface deep — the only "near-black" panel allowed in marketing surfaces.
+     Used for the ProblemSection "loop" card. Avoid for body text bg. */
+  --surface-deep: #1a1f2e;
+
   /* Map biomes (Dashboard V2 — Phase 4, earth-tones palette)
      Paired colours from a curated muted palette — each bioma keeps its
      own atmosphere while reading as part of one coherent world. */

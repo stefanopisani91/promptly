@@ -81,24 +81,26 @@ export function AlternatingDemoButton({ label, bugLabel, onClick }: Props) {
         } as React.CSSProperties
       }
       className={[
-        "relative inline-flex items-center justify-center gap-2 overflow-hidden",
+        "group relative inline-flex items-center justify-center gap-2 overflow-hidden",
         "rounded-md px-6 py-3 text-base font-semibold",
         "transition-all duration-300 ease-in-out select-none cursor-pointer",
         transitioning ? "opacity-0 scale-95" : "opacity-100 scale-100",
         isExample
-          ? // viola AI variant
-            "bg-violet-600 text-white shadow-[0_0_18px_3px_rgba(139,92,246,0.45)] hover:bg-violet-700 hover:shadow-[0_0_24px_6px_rgba(139,92,246,0.55)]"
-          : // terminal / bug variant
-            "border border-green-500/60 bg-[#0d1117] text-green-400 font-mono text-sm shadow-[0_0_14px_2px_rgba(34,197,94,0.25)] hover:shadow-[0_0_20px_4px_rgba(34,197,94,0.4)] hover:border-green-400",
+          ? // viola AI variant — subdued by default, glow only on hover
+            "bg-violet-600/90 text-white shadow-sm hover:bg-violet-700 hover:shadow-[0_0_24px_6px_rgba(139,92,246,0.45)]"
+          : // terminal / bug variant — subdued by default
+            "border border-green-500/50 bg-[#0d1117] text-green-400 font-mono text-sm shadow-sm hover:border-green-400 hover:shadow-[0_0_20px_4px_rgba(34,197,94,0.35)]",
       ].join(" ")}
     >
-      {/* Sparkle particles — only for viola variant */}
+      {/* Sparkle particles — only on hover/focus, only for viola variant.
+          Removed the always-on loop so this CTA stays clearly secondary
+          to the primary "Inizia gratis" button on the hero. */}
       {isExample &&
         sparkles.map((s) => (
           <span
             key={s.id}
             aria-hidden
-            className="pointer-events-none absolute animate-ping rounded-full bg-white/80"
+            className="pointer-events-none absolute hidden rounded-full bg-white/80 group-hover:block group-hover:animate-ping group-focus-visible:block group-focus-visible:animate-ping"
             style={{
               left: `${s.x}%`,
               top: `${s.y}%`,
@@ -110,11 +112,11 @@ export function AlternatingDemoButton({ label, bugLabel, onClick }: Props) {
           />
         ))}
 
-      {/* Shimmer sweep — only for viola variant */}
+      {/* Shimmer sweep — only on hover/focus, only for viola variant. */}
       {isExample && (
         <span
           aria-hidden
-          className="pointer-events-none absolute inset-0 -skew-x-12 animate-[shimmer_2.2s_ease-in-out_infinite]"
+          className="pointer-events-none absolute inset-0 -skew-x-12 opacity-0 transition-opacity duration-300 group-hover:animate-[shimmer_2.2s_ease-in-out_infinite] group-hover:opacity-100 group-focus-visible:animate-[shimmer_2.2s_ease-in-out_infinite] group-focus-visible:opacity-100"
           style={{
             background:
               "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.22) 50%, transparent 100%)",
@@ -135,11 +137,11 @@ export function AlternatingDemoButton({ label, bugLabel, onClick }: Props) {
         {isExample ? label : bugLabel}
       </span>
 
-      {/* Terminal cursor blink — only for bug variant */}
+      {/* Terminal cursor blink — only on hover/focus, only for bug variant. */}
       {!isExample && (
         <span
           aria-hidden
-          className="animate-[blink_1s_step-end_infinite] font-mono text-green-300"
+          className="font-mono text-green-300 opacity-0 transition-opacity duration-200 group-hover:animate-[blink_1s_step-end_infinite] group-hover:opacity-100 group-focus-visible:animate-[blink_1s_step-end_infinite] group-focus-visible:opacity-100"
         >
           _
         </span>
