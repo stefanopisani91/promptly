@@ -230,20 +230,20 @@ Clean, professional, results-oriented. The user came to learn something useful, 
 
 ### Color Palette (CSS Variables → globals.css)
 
-The brand color is taken directly from the logo: a warm coral-orange that's distinctive in the AI/learning space (most competitors use blue or purple) and reduces the "intimidating tech" feel for non-technical users.
+The brand color is taken directly from the logo: a coral-orange that's distinctive in the AI/learning space (most competitors use blue or purple) and reduces the "intimidating tech" feel for non-technical users. The supporting palette is **neutral** (Aceternity-style, refreshed May 2026): the canvas, surfaces and borders sit on a calm achromatic grey scale so the orange brand and Spark's gold can carry all the warmth.
 
 ```css
 :root {
-  /* Backgrounds */
-  --background:       #F8F7F4;
+  /* Backgrounds — neutral grey scale */
+  --background:       #FAFAFA;
   --surface:          #FFFFFF;
-  --surface-muted:    #F1F0ED;
-  --border:           #E4E2DC;
+  --surface-muted:    #F5F5F5;
+  --border:           #E5E5E5;
 
   /* Brand — orange (from logo) */
   --primary:          #E8703F;   /* Brand orange — primary actions, links, accents */
   --primary-hover:    #C8521F;   /* Darker orange — hover state */
-  --primary-light:    #FFF1EB;   /* Pale orange — backgrounds, badges */
+  --primary-light:    #FFF4EF;   /* Pale orange — backgrounds, badges */
   --primary-deep:     #A23E12;   /* Deepest shade — used sparingly for emphasis */
 
   /* Feedback */
@@ -258,10 +258,10 @@ The brand color is taken directly from the logo: a warm coral-orange that's dist
   --streak-fire:      #DC2626;   /* Red — distinct from brand orange */
   --streak-freeze:    #38BDF8;   /* Cyan — freeze indicator (snowflake icon) */
 
-  /* Text */
-  --text-primary:     #111827;
-  --text-secondary:   #4B5563;
-  --text-muted:       #9CA3AF;
+  /* Text — neutral grey scale */
+  --text-primary:     #0A0A0A;
+  --text-secondary:   #525252;
+  --text-muted:       #A3A3A3;
 
   /* Prompt exercise area */
   --prompt-bg:        #1E293B;
@@ -275,11 +275,11 @@ The brand color is taken directly from the logo: a warm coral-orange that's dist
 }
 ```
 
-**Color rationale:** the orange brand stays exclusively for primary actions and identity. XP gold is shifted to a yellow-leaning tone to avoid blending into the orange. Streak fire is red, not orange, to remain distinct. Pro purple is the deliberate "premium" contrast — purple + orange is a classic complementary pair that signals upgrade clearly.
+**Color rationale:** the orange brand stays exclusively for primary actions and identity. XP gold is shifted to a yellow-leaning tone to avoid blending into the orange. Streak fire is red, not orange, to remain distinct. Pro purple is the deliberate "premium" contrast — purple + orange is a classic complementary pair that signals upgrade clearly. The neutral grey canvas (May 2026 refresh) replaced the previous warm-cream foundation: cream tinted everything orange-adjacent and made Spark's gold dots blend in. On a clean neutral, both the orange CTAs and Spark's gold halo read as deliberate accents instead of variations of the same warm temperature.
 
 ### Tool view — a formalized dialect (added May 2026)
 
-Some surfaces represent a *tool* — an editor, an IDE, a terminal, a code preview. The Lucia landing demo is the first one shipped; future Path 3-5 build/debug exercises will reuse the same surface. Tool view is a deliberate exception to the "Focused Academy" calm: it's the only place where Promptly trades cream warmth for IDE-dark autonomy, because a simulated coding tool that *doesn't* feel like a real tool is uncanny.
+Some surfaces represent a *tool* — an editor, an IDE, a terminal, a code preview. The Lucia landing demo is the first one shipped; future Path 3-5 build/debug exercises will reuse the same surface. Tool view is a deliberate exception to the "Focused Academy" calm: it's the only place where Promptly trades the neutral grey canvas for IDE-dark autonomy, because a simulated coding tool that *doesn't* feel like a real tool is uncanny.
 
 ```css
 /* Tool view tokens — declared in globals.css. Use ONLY inside components
@@ -1166,5 +1166,5 @@ Content must be rewritten and transformed into exercises — never copied verbat
 
 ---
 
-*Version: 2.1 — Updated 29 April 2026 (brand color + logo assets).*
+*Version: 2.2 — Updated 6 May 2026 (neutral palette refresh: warm cream → Aceternity-style grey canvas).*
 *Update this file whenever architecture, naming, curriculum, or design system changes.*
