@@ -10,7 +10,7 @@
 // (gradient + icon) per card so the layout is shippable today and the file
 // drop-in is a one-line replacement when the screenshots are ready.
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Map as MapIcon, Sparkles, Wand2 } from "lucide-react";
 import { track } from "@/lib/analytics/posthog";
 import type { LandingCopy } from "@/lib/i18n/landing";
@@ -38,9 +38,26 @@ const PREVIEW_ASSETS = [
   },
 ] as const;
 
+function useReveal(threshold = 0.1) {
+  const ref = useRef<HTMLElement | null>(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setVisible(true); obs.disconnect(); } },
+      { threshold },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [threshold]);
+  return [ref, visible] as const;
+}
+
 export function SocialProofSection({ copy }: Props) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const viewedRef = useRef(false);
+  const [listRef, listVisible] = useReveal(0.08);
 
   useEffect(() => {
     const node = sectionRef.current;
@@ -96,13 +113,17 @@ export function SocialProofSection({ copy }: Props) {
 
       {/* Mobile: horizontal scroll-snap. Desktop ≥md: 3-column grid. */}
       <div className="mx-auto mt-10 max-w-5xl">
-        <ul className="flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 sm:px-6 md:grid md:grid-cols-3 md:gap-6 md:overflow-visible md:pb-0">
+        <ul
+          ref={listRef as React.RefObject<HTMLUListElement>}
+          className="flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 sm:px-6 md:grid md:grid-cols-3 md:gap-6 md:overflow-visible md:pb-0"
+        >
           {copy.previews.map((preview, i) => {
             const asset = PREVIEW_ASSETS[i];
             return (
               <li
                 key={preview.title}
-                className="flex w-72 shrink-0 snap-start flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg md:w-auto"
+                className={`scroll-reveal flex w-72 shrink-0 snap-start flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg md:w-auto ${listVisible ? "in-view" : ""}`}
+                style={{ transitionDelay: listVisible ? `${i * 110}ms` : "0ms" }}
               >
                 {/* Screenshot frame — keeps a consistent 4:3 aspect even
                     when the PNG is missing (fallback gradient renders).

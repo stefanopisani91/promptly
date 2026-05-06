@@ -58,24 +58,34 @@ export function HeroSection({ copy, lang }: Props) {
         <div className="grid items-center gap-10 lg:grid-cols-5 lg:gap-12">
           {/* Text — 60% (3/5) */}
           <div className="lg:col-span-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary-deep">
+            <p
+              className="hero-item text-xs font-semibold uppercase tracking-[0.18em] text-primary-deep"
+              style={{ animationDelay: "0ms" }}
+            >
               {copy.eyebrow}
             </p>
             <h1
               id="hero-headline"
-              className="mt-4 whitespace-pre-line font-heading text-4xl font-bold leading-[1.05] text-text-primary text-balance sm:text-5xl lg:text-6xl"
+              className="hero-item mt-4 whitespace-pre-line font-heading text-4xl font-bold leading-[1.05] text-text-primary text-balance sm:text-5xl lg:text-6xl"
+              style={{ animationDelay: "80ms" }}
             >
               {copy.headline}
             </h1>
-            <p className="mt-5 max-w-xl text-base leading-relaxed text-text-secondary sm:text-lg">
+            <p
+              className="hero-item mt-5 max-w-xl text-base leading-relaxed text-text-secondary sm:text-lg"
+              style={{ animationDelay: "200ms" }}
+            >
               {copy.sub}
             </p>
 
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div
+              className="hero-item mt-8 flex flex-col gap-3 sm:flex-row sm:items-center"
+              style={{ animationDelay: "320ms" }}
+            >
               <Link
                 href={`/auth?source=hero_primary&lang=${lang}`}
                 onClick={onPrimary}
-                className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-6 py-3 text-base font-semibold text-white shadow-sm transition-colors hover:bg-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-deep"
+                className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-6 py-3 text-base font-semibold text-white shadow-sm transition-all duration-150 hover:bg-primary-hover hover:scale-[1.02] active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-deep"
               >
                 {copy.ctaPrimary}
                 <ArrowRight className="h-4 w-4" />
@@ -87,11 +97,16 @@ export function HeroSection({ copy, lang }: Props) {
               />
             </div>
 
-            <p className="mt-5 text-sm text-text-muted">{copy.reminder}</p>
+            <p
+              className="hero-item mt-5 text-sm text-text-muted"
+              style={{ animationDelay: "440ms" }}
+            >
+              {copy.reminder}
+            </p>
           </div>
 
-          {/* Mockup — 40% (2/5) */}
-          <div className="lg:col-span-2">
+          {/* Mockup — 40% (2/5): entrance slide-in + perpetual float */}
+          <div className="hero-mockup-wrap lg:col-span-2">
             <HeroMockup copy={copy.mockup} />
           </div>
         </div>

@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
 import {
   ArrowDown,
   Bug,
@@ -24,21 +27,43 @@ const ICON_COLOR = {
   loop: "text-primary",
 } as const;
 
+/** One-shot reveal hook: returns [ref, isVisible] */
+function useReveal(threshold = 0.18) {
+  const ref = useRef<HTMLElement | null>(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setVisible(true); obs.disconnect(); } },
+      { threshold },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [threshold]);
+  return [ref, visible] as const;
+}
+
 export function ProblemSection({ copy }: Props) {
+  const [headerRef, headerVisible] = useReveal(0.25);
+  const [listRef, listVisible] = useReveal(0.1);
+  const [conclusionRef, conclusionVisible] = useReveal(0.35);
+
   return (
     <section
       id="bug-loop"
       aria-labelledby="bug-loop-title"
-      // overflow-hidden is load-bearing: the InfinityBugAnimation watermark
-      // is 540px wide and sits absolutely centred behind the title. On a
-      // 375px mobile viewport it sticks out ~80px per side and would let
-      // the page scroll horizontally without this clip.
       className="relative overflow-hidden py-16 sm:py-20 lg:py-24"
     >
       {/* Titolo con animazione SVG in trasparenza */}
-      <div className="relative mx-auto max-w-3xl px-4 text-center sm:px-6">
+      <div
+        ref={headerRef as React.RefObject<HTMLDivElement>}
+        className="relative mx-auto max-w-3xl px-4 text-center sm:px-6"
+      >
         <InfinityBugAnimation />
-        <div className="relative z-[1]">
+        <div
+          className={`scroll-reveal relative z-[1] ${headerVisible ? "in-view" : ""}`}
+        >
           <div className="mb-4 inline-block rounded-full bg-error/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.05em] text-error">
             {copy.eyebrow}
           </div>
@@ -54,15 +79,23 @@ export function ProblemSection({ copy }: Props) {
         </div>
       </div>
 
-      <ol className="mx-auto mt-12 max-w-2xl space-y-0 px-4 sm:mt-14 sm:px-6">
+      <ol
+        ref={listRef as React.RefObject<HTMLOListElement>}
+        className="mx-auto mt-12 max-w-2xl space-y-0 px-4 sm:mt-14 sm:px-6"
+      >
         {copy.steps.map((step, idx) => {
           const Icon = ICON_MAP[step.iconSlug];
           const isLoop = step.iconSlug === "loop";
+          const delay = idx * 130;
 
           /* ── Scheda blue (loop) ── */
           if (isLoop) {
             return (
-              <li key={step.iconSlug} className="mt-8 sm:mt-10">
+              <li
+                key={step.iconSlug}
+                className={`scroll-reveal mt-8 sm:mt-10 ${listVisible ? "in-view" : ""}`}
+                style={{ transitionDelay: listVisible ? `${delay}ms` : "0ms" }}
+              >
                 {/* Freccia connettore tra 02 e 03 */}
                 <div className="mb-4 flex justify-center">
                   <ArrowDown
@@ -77,7 +110,6 @@ export function ProblemSection({ copy }: Props) {
                       {step.kickerEyebrow}
                     </p>
                   )}
-                  {/* Icona grande + testo — senza numero "03" */}
                   <div className="mt-4 flex items-start gap-6">
                     <Icon
                       className="h-14 w-14 flex-shrink-0 text-primary motion-safe:animate-spin-slow sm:h-16 sm:w-16"
@@ -105,8 +137,11 @@ export function ProblemSection({ copy }: Props) {
 
           /* ── Step normale (01 e 02) ── */
           return (
-            <li key={step.iconSlug} className={idx > 0 ? "mt-8 sm:mt-10" : ""}>
-              {/* Freccia connettore tra 01 e 02 */}
+            <li
+              key={step.iconSlug}
+              className={`scroll-reveal ${listVisible ? "in-view" : ""} ${idx > 0 ? "mt-8 sm:mt-10" : ""}`}
+              style={{ transitionDelay: listVisible ? `${delay}ms` : "0ms" }}
+            >
               {idx > 0 && (
                 <div className="mb-4 flex justify-center">
                   <ArrowDown
@@ -117,7 +152,6 @@ export function ProblemSection({ copy }: Props) {
                 </div>
               )}
               <div className="grid grid-cols-[auto_1fr] items-start gap-5 sm:gap-8">
-                {/* Icona grande al posto del numero */}
                 <div className="flex items-center justify-center pt-1">
                   <Icon
                     className={`h-14 w-14 sm:h-16 sm:w-16 ${ICON_COLOR[step.iconSlug]}`}
@@ -139,7 +173,10 @@ export function ProblemSection({ copy }: Props) {
         })}
       </ol>
 
-      <div className="mx-auto mt-12 max-w-prose px-4 text-center sm:mt-14 sm:px-6">
+      <div
+        ref={conclusionRef as React.RefObject<HTMLDivElement>}
+        className={`scroll-reveal mx-auto mt-12 max-w-prose px-4 text-center sm:mt-14 sm:px-6 ${conclusionVisible ? "in-view" : ""}`}
+      >
         <p className="text-lg leading-relaxed text-text-primary">
           {copy.conclusion.line1}
         </p>

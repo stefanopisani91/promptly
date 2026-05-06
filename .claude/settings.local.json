@@ -107,7 +107,17 @@
       "Bash(/usr/bin/grep -rn -i \"spark\" /Users/stefanopisani/DEV/01_Progetti/PROMPTLY/lib/i18n/lessons.ts)",
       "Bash(/usr/bin/grep -rn \"Scrivi a Spark\\\\|Write to Spark\\\\|placeholder\" /Users/stefanopisani/DEV/01_Progetti/PROMPTLY/components/lessons/v3/SparkChat.tsx)",
       "Bash(/usr/bin/grep -rn \"text-sm\" /Users/stefanopisani/DEV/01_Progetti/PROMPTLY/components/lessons/v3/SparkChat.tsx /Users/stefanopisani/DEV/01_Progetti/PROMPTLY/components/lessons/v3/steps/InputStep.tsx /Users/stefanopisani/DEV/01_Progetti/PROMPTLY/components/lessons/v3/steps/InteractiveStep.tsx)",
-      "Bash(/usr/bin/grep -i \"input\\\\|textarea\\\\|placeholder\\\\|p-3\\\\|p-4\\\\|resize\")"
+      "Bash(/usr/bin/grep -i \"input\\\\|textarea\\\\|placeholder\\\\|p-3\\\\|p-4\\\\|resize\")",
+      "Bash(/usr/bin/grep -n \"background\\\\|surface\\\\|border\\\\|primary\\\\|text-\\\\|success\\\\|warning\\\\|error\\\\|xp-\\\\|streak\\\\|prompt-\\\\|pro-\" /Users/stefanopisani/DEV/01_Progetti/PROMPTLY/app/globals.css)",
+      "Bash(/usr/bin/grep -E \"^\\\\s*[0-9]+:\\\\s*--\")",
+      "Bash(/usr/bin/grep -n \"palette\\\\|colour\\\\|color\\\\|#F8F7F4\\\\|#FFFFFF\\\\|--background\\\\|--surface\\\\|--primary\\\\|--border\" /Users/stefanopisani/DEV/01_Progetti/PROMPTLY/PROMPTLY.md)",
+      "Bash(/usr/bin/grep -i \"[g]it\")",
+      "Bash(/usr/bin/grep -v \"claude\\\\|grep\")",
+      "Bash(rm /Users/stefanopisani/DEV/01_Progetti/PROMPTLY/.git/HEAD.lock *)",
+      "Bash(/usr/bin/grep -n \"goalMinutes\" /Users/stefanopisani/DEV/01_Progetti/PROMPTLY/components/dashboard/DailyGoalInteractive.tsx /Users/stefanopisani/DEV/01_Progetti/PROMPTLY/components/dashboard/DailyGoalCard.tsx)"
+    ],
+    "additionalDirectories": [
+      "/Users/stefanopisani/DEV/01_Progetti/PROMPTLY/.git"
     ]
   }
 }

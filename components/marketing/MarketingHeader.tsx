@@ -100,7 +100,7 @@ export function MarketingHeader({ lang, copy }: Props) {
 
       {/* Mobile panel */}
       {open && (
-        <div className="border-t border-border bg-surface md:hidden">
+        <div className="animate-header-panel border-t border-border bg-surface md:hidden">
           <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-4 sm:px-6">
             <Link
               href={`/auth?source=header_login&lang=${lang}`}
