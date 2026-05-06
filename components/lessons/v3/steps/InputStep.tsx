@@ -100,7 +100,7 @@ export function InputStep({ step, lessonId, state, onChange, strings }: Props) {
               onChange={(e) => setDraft(e.target.value.slice(0, max))}
               placeholder={step.placeholder}
               rows={5}
-              className="w-full resize-none rounded-2xl border border-border bg-surface p-4 text-base leading-relaxed text-text-primary placeholder:text-text-muted focus-visible:border-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary"
+              className="w-full resize-none rounded-xl border border-border bg-surface p-4 text-base leading-relaxed text-text-primary placeholder:text-text-muted focus-visible:border-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary"
               disabled={submitting}
             />
             <div className="flex items-center justify-between gap-3">
@@ -121,7 +121,7 @@ export function InputStep({ step, lessonId, state, onChange, strings }: Props) {
             )}
           </div>
         ) : (
-          <div className="flex flex-col gap-4 rounded-2xl border border-border/60 bg-surface-muted/40 p-4 sm:p-5">
+          <div className="flex flex-col gap-4 rounded-xl border border-border/60 bg-surface-muted/40 p-4 sm:p-5">
             <div>
               <p className="eyebrow mb-1 text-text-muted">{strings.youLabel}</p>
               <p className="text-base text-text-secondary">{state?.answer}</p>

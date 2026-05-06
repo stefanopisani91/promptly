@@ -1,12 +1,15 @@
-// Three-card stats grid pinned below the dashboard greeting. Streak and
-// XP are static cards; the third slot is owned by the parent so it can
-// inject any contextual companion card (today: <SparkCompanionCard>).
+// Two-card stats grid (Streak + XP) pinned below the Spark companion on
+// the dashboard. Originally a 3-slot grid that included the Spark
+// companion as the third tile — that was demoted in the May 2026 design
+// pass: Spark is a "live" card with its own CTA and voice, not a passive
+// stat, so she now sits above this grid as a standalone block. The
+// remaining two tiles squeeze together on mobile (2 cols) instead of
+// stacking, keeping the dashboard's first fold compact.
 //
 // All borders use `border-border` from the design system — earlier
 // iterations leaked an arbitrary `#d1d5db` value that didn't match
 // `--border` (#E4E2DC). Aligned in May 2026 design pass.
 
-import type { ReactNode } from "react";
 import type { AuthCopy } from "@/lib/i18n/auth";
 import { StreakHeatmap } from "./StreakHeatmap";
 import { StreakFlame } from "./StreakFlame";
@@ -22,8 +25,6 @@ interface Props {
   activeDates: string[];
   /** Up to 3 most recently completed lessons, newest first. */
   recentLessons: RecentLessonItem[];
-  /** Third slot — typically Spark companion card. */
-  companionSlot: ReactNode;
 }
 
 export function DashboardStatsGrid({
@@ -31,10 +32,9 @@ export function DashboardStatsGrid({
   totalXp,
   currentStreak,
   activeDates,
-  companionSlot,
 }: Props) {
   return (
-    <dl className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+    <dl className="grid grid-cols-2 gap-3">
       <div className="relative overflow-hidden rounded-2xl border border-border bg-surface p-5 shadow-sm">
         <StreakFlame />
         <div className="relative z-10">
@@ -61,9 +61,6 @@ export function DashboardStatsGrid({
           </dd>
         </div>
       </div>
-
-      {/* Third slot — provided by the parent. Today: <SparkCompanionCard>. */}
-      {companionSlot}
     </dl>
   );
 }

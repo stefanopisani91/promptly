@@ -9,6 +9,7 @@
 // individual step files.
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import { ArrowRight, ChevronLeft } from "lucide-react";
 import {
   completeLessonAction,
@@ -249,8 +250,6 @@ export function LessonV3View({
             xpDelta={creditedXp}
             alreadyCompleted={alreadyCompleted}
             cliffhanger={lesson.cliffhanger}
-            pathHref={pathHref}
-            backToPathLabel={strings.navigation.pathHrefLabel}
             replayLabel={strings.navigation.replayBadge}
           />
         )}
@@ -264,6 +263,7 @@ export function LessonV3View({
         labels={strings.navigation}
         onBack={goBack}
         onNext={goNext}
+        completionHref={pathHref}
       />
 
       {/* SparkChatLauncher (the bottom-right floating button) is gone:
@@ -379,6 +379,7 @@ function Footer({
   labels,
   onBack,
   onNext,
+  completionHref,
 }: {
   canBack: boolean;
   canAdvance: boolean;
@@ -387,8 +388,30 @@ function Footer({
   labels: LessonV3ViewStrings["navigation"];
   onBack: () => void;
   onNext: () => void;
+  completionHref: string;
 }) {
-  if (completed && isLast) return null;
+  // After completion the lesson navigation is over — the only action that
+  // makes sense is "back to path". Keep the sticky footer mounted (so the
+  // CTA stays in thumb zone instead of floating above the fold) but
+  // collapse it down to a single primary button.
+  if (completed && isLast) {
+    return (
+      <div
+        className="sticky bottom-0 z-20 mt-auto border-t border-border/60 bg-background/95 px-4 py-3 backdrop-blur sm:px-6"
+        style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 0.75rem)" }}
+      >
+        <div className="mx-auto flex w-full max-w-3xl items-center justify-end gap-4">
+          <Link
+            href={completionHref}
+            className="inline-flex h-12 items-center gap-2 rounded-full bg-primary px-6 text-sm font-semibold text-white transition-all hover:bg-primary-hover active:scale-[0.97]"
+          >
+            {labels.pathHrefLabel}
+            <ArrowRight size={16} />
+          </Link>
+        </div>
+      </div>
+    );
+  }
   return (
     <div
       className="sticky bottom-0 z-20 mt-auto border-t border-border/60 bg-background/95 px-4 py-3 backdrop-blur sm:px-6"
@@ -408,7 +431,7 @@ function Footer({
           type="button"
           onClick={onNext}
           disabled={!canAdvance}
-          className="inline-flex h-11 items-center gap-2 rounded-full bg-primary px-6 text-sm font-semibold text-white transition-colors hover:bg-primary-hover disabled:opacity-40"
+          className="inline-flex h-11 items-center gap-2 rounded-full bg-primary px-6 text-sm font-semibold text-white transition-all hover:bg-primary-hover active:scale-[0.97] disabled:opacity-40 disabled:active:scale-100"
         >
           {isLast ? labels.finishCta : labels.nextCta}
           <ArrowRight size={16} />
@@ -427,16 +450,12 @@ function CompletionCard({
   xpDelta,
   alreadyCompleted,
   cliffhanger,
-  pathHref,
-  backToPathLabel,
   replayLabel,
 }: {
   xpTotal: number;
   xpDelta: number | null;
   alreadyCompleted: boolean;
   cliffhanger: string;
-  pathHref: string;
-  backToPathLabel: string;
   replayLabel: string;
 }) {
   // Three display states:
@@ -444,6 +463,9 @@ function CompletionCard({
   //     amount the server credited
   //   - replay with no improvement: show a neutral "Hai ripassato" badge
   //   - server didn't return yet: show the full XP placeholder
+  // The "back to path" CTA lives in the sticky footer (always in thumb
+  // zone) — see <Footer> above. Keeping it out of the card avoids the
+  // primary action sitting above the fold on shorter mobile screens.
   const shownXp = xpDelta ?? xpTotal;
   const isReplayNoGain = alreadyCompleted && xpDelta === 0;
 
@@ -457,12 +479,6 @@ function CompletionCard({
       <p className="mt-3 text-base italic leading-relaxed text-text-primary sm:text-lg">
         {cliffhanger}
       </p>
-      <a
-        href={pathHref}
-        className="mt-6 inline-flex items-center justify-center rounded-full bg-primary px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-primary-hover"
-      >
-        {backToPathLabel}
-      </a>
     </div>
   );
 }

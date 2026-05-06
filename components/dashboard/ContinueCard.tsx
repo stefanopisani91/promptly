@@ -31,7 +31,7 @@ export function ContinueCard({
   return (
     <Link
       href={href}
-      className="group block rounded-2xl border border-border bg-surface p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md sm:p-6"
+      className="group block rounded-2xl border border-border bg-surface p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md active:scale-[0.99] active:transition-transform sm:p-6"
     >
       <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-primary-deep">
         {copy.eyebrow}
@@ -55,7 +55,7 @@ export function ContinueCard({
         />
       </div>
 
-      <div className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors group-hover:bg-primary-hover">
+      <div className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white transition-all group-hover:bg-primary-hover group-active:scale-[0.97]">
         {copy.resumeCta}
         <ArrowRight className="h-4 w-4" aria-hidden />
       </div>

@@ -8,6 +8,13 @@
 // (resume the lesson / invite a friend). The CTA on the card mirrors the
 // dominant nudge so the card is always actionable, never decorative.
 //
+// Two layout variants:
+//   - "default": compact card sitting above the stats grid, modest Spark
+//   - "hero":    promoted into the slot the ContinueCard would otherwise
+//                occupy when the user has no active lesson yet. Bigger
+//                Spark, more padding, larger greeting type. Keeps the
+//                dashboard from ever feeling cold on first open.
+//
 // Voice rules from PROMPTLY.md: dry, warm, first person, no emoticons.
 
 import Link from "next/link";
@@ -18,6 +25,7 @@ import { useReferralModal } from "@/components/promptly/ReferralModalProvider";
 import type { AuthCopy } from "@/lib/i18n/auth";
 
 type Variant = "continue" | "invite" | "start";
+type Layout = "default" | "hero";
 
 interface Props {
   copy: AuthCopy["dashboard"]["sparkCompanion"];
@@ -26,6 +34,8 @@ interface Props {
   continueHref: string | null;
   /** Whether the user has an active lesson to resume. */
   hasContinue: boolean;
+  /** Visual layout. Defaults to "default". */
+  variant?: Layout;
 }
 
 function pickGreet(
@@ -47,7 +57,9 @@ export function SparkCompanionCard({
   name,
   continueHref,
   hasContinue,
+  variant: layout = "default",
 }: Props) {
+  const isHero = layout === "hero";
   const { open: openReferral } = useReferralModal();
   // Pick the variant once on mount so it doesn't flip during a session.
   // Even split between "continue" and "invite" when both are possible.
@@ -79,7 +91,18 @@ export function SparkCompanionCard({
         ? { label: copy.ctaContinue, kind: "link" as const, href: continueHref }
         : { label: copy.ctaStart, kind: "link" as const, href: continueHref };
 
-  const ctaInner = (
+  // Default variant gets a quiet text-link CTA; hero variant gets a
+  // proper filled primary button (it IS the dashboard's primary action
+  // when no Continue card exists).
+  const ctaInner = isHero ? (
+    <span className="inline-flex h-11 items-center gap-1.5 rounded-full bg-primary px-5 text-sm font-semibold text-white transition-all hover:bg-primary-hover active:scale-[0.97]">
+      {cta.label}
+      <ArrowRight
+        aria-hidden
+        className="h-4 w-4 shrink-0"
+      />
+    </span>
+  ) : (
     <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary">
       {cta.label}
       <ArrowRight
@@ -90,7 +113,11 @@ export function SparkCompanionCard({
   );
 
   return (
-    <div className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-surface p-5 shadow-sm transition-all duration-200 hover:border-primary/40 hover:shadow-md">
+    <div
+      className={`group relative flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-sm transition-all duration-200 hover:border-primary/40 hover:shadow-md ${
+        isHero ? "p-6 sm:p-8" : "p-5"
+      }`}
+    >
       {/* Subtle warm gradient on hover, same language as ContinueCard */}
       <span
         aria-hidden
@@ -102,27 +129,45 @@ export function SparkCompanionCard({
           <p className="text-xs font-medium uppercase tracking-wide text-text-muted">
             {copy.eyebrow}
           </p>
-          <Spark state="idle" size={32} ariaLabel={copy.sparkLabel} />
+          <Spark
+            state="idle"
+            size={isHero ? 56 : 32}
+            ariaLabel={copy.sparkLabel}
+          />
         </div>
 
-        <p className="mt-3 font-heading text-base font-bold leading-snug text-text-primary sm:text-lg">
+        <p
+          className={`mt-3 font-heading font-bold leading-snug text-text-primary ${
+            isHero
+              ? "text-xl sm:text-2xl"
+              : "text-base sm:text-lg"
+          }`}
+        >
           {greeting}
         </p>
 
         {nudge && (
-          <p className="mt-1.5 text-sm italic leading-snug text-text-secondary">
+          <p
+            className={`mt-1.5 italic leading-snug text-text-secondary ${
+              isHero ? "text-base" : "text-sm"
+            }`}
+          >
             {nudge}
           </p>
         )}
 
         <div className="flex-1" />
 
-        <div className="mt-4">
+        <div className={isHero ? "mt-6" : "mt-4"}>
           {cta.kind === "modal" ? (
             <button
               type="button"
               onClick={openReferral}
-              className="inline-flex items-center gap-1.5 rounded-md text-sm font-semibold text-primary transition-colors hover:text-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-deep"
+              className={
+                isHero
+                  ? "inline-flex items-center rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-deep"
+                  : "inline-flex items-center gap-1.5 rounded-md text-sm font-semibold text-primary transition-colors hover:text-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-deep"
+              }
             >
               {ctaInner}
             </button>

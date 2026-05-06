@@ -11,10 +11,10 @@ export function PrincipleStep({ step }: Props) {
   return (
     <StepCard variant="principle">
       <div className="flex flex-col items-center gap-6 py-4 text-center sm:py-8">
-        <p className="font-heading text-3xl font-bold leading-tight text-text-primary sm:text-5xl">
+        <p className="font-heading text-3xl font-bold leading-tight tracking-tight text-text-primary sm:text-5xl">
           {step.headline}
         </p>
-        <p className="font-heading text-3xl font-extrabold leading-tight text-primary-deep sm:text-5xl">
+        <p className="font-heading text-4xl font-bold leading-tight tracking-tight text-primary-deep sm:text-6xl">
           {step.emphasis}
         </p>
         {step.caption && (

@@ -267,7 +267,7 @@ const it: AuthCopy = {
     logoutCta: "Esci",
     welcomeCard: {
       title: (name: string) => `🎉 Benvenuto in Promptly, ${name}!`,
-      sub: "Inizia con la prima lezione: \"Cos'è il vibe coding?\"",
+      sub: "Inizia il tuo percorso. Cinque minuti veri.",
       cta: "Inizia →",
       submitting: "Un attimo...",
     },
@@ -426,7 +426,7 @@ const en: AuthCopy = {
     logoutCta: "Log out",
     welcomeCard: {
       title: (name: string) => `🎉 Welcome to Promptly, ${name}!`,
-      sub: "Start with the first lesson: \"What is vibe coding?\"",
+      sub: "Start your path. Five real minutes.",
       cta: "Start →",
       submitting: "One moment...",
     },

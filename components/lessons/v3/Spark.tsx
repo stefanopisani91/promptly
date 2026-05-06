@@ -154,9 +154,12 @@ export function Spark({ state = "idle", size = 64, ariaLabel }: Props) {
           animation: spark-dot-dance 1.1s ease-in-out infinite;
         }
 
-        /* SURPRISED — burst pose */
+        /* SURPRISED — burst pose followed by a gentle breathing settle so
+           Spark stays alive while the user reads a principle card. The
+           keyframes peak at ~15% (the burst), ease back to the resting
+           1.08 scale, then bob softly for the rest of the cycle. */
         .spark-surprised .spark-core {
-          animation: spark-surprised 0.6s ease-out 1 forwards;
+          animation: spark-surprised 3.6s ease-in-out infinite;
         }
         .spark-surprised .spark-dot {
           animation: spark-dot-burst 1.4s ease-out infinite;
@@ -233,13 +236,19 @@ export function Spark({ state = "idle", size = 64, ariaLabel }: Props) {
         }
         @keyframes spark-surprised {
           0% {
-            transform: scale(1);
+            transform: scale(1) translateY(0);
           }
-          40% {
-            transform: scale(1.18);
+          15% {
+            transform: scale(1.18) translateY(-2px);
+          }
+          30% {
+            transform: scale(1.08) translateY(0);
+          }
+          65% {
+            transform: scale(1.08) translateY(-3px);
           }
           100% {
-            transform: scale(1.08);
+            transform: scale(1.08) translateY(0);
           }
         }
         @keyframes spark-dot-burst {

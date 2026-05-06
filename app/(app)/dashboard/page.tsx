@@ -215,7 +215,11 @@ export default async function DashboardPage() {
           <DashboardGreeting copy={authCopy} name={displayName} />
         </div>
 
-        {showContinue && activeSection && activeNode && activeLessonHref && (
+        {/* Hierarchy on mobile (and first fold on desktop):
+              greeting → primary action (Continue / Spark hero) → Spark
+              companion → compact stats → map. The primary CTA always lives
+              above the stats grid so the thumb zone reaches it first. */}
+        {showContinue && activeSection && activeNode && activeLessonHref ? (
           <div className="mx-auto w-full max-w-3xl px-4 sm:px-6">
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.4fr_1fr]">
               <ContinueCard
@@ -238,6 +242,35 @@ export default async function DashboardPage() {
               />
             </div>
           </div>
+        ) : (
+          // No active lesson yet — first-time user or path completed.
+          // Promote the Spark companion as the hero block in the slot the
+          // ContinueCard would have occupied so the dashboard never feels
+          // cold on first open. Using `variant="hero"` to give Spark room
+          // to breathe and a larger mascot size (see C3 + C5 spec).
+          <div className="mx-auto w-full max-w-3xl px-4 sm:px-6">
+            <SparkCompanionCard
+              copy={authCopy.sparkCompanion}
+              name={displayName}
+              continueHref={activeLessonHref}
+              hasContinue={showContinue}
+              variant="hero"
+            />
+          </div>
+        )}
+
+        {/* Spark companion as a standalone block, only when the
+            ContinueCard is showing above. When the hero variant is
+            already on screen we don't repeat it. */}
+        {showContinue && (
+          <div className="mx-auto w-full max-w-3xl px-4 sm:px-6">
+            <SparkCompanionCard
+              copy={authCopy.sparkCompanion}
+              name={displayName}
+              continueHref={activeLessonHref}
+              hasContinue={showContinue}
+            />
+          </div>
         )}
 
         <div className="mx-auto w-full max-w-3xl px-4 sm:px-6">
@@ -248,14 +281,6 @@ export default async function DashboardPage() {
             lessonsCompleted={lessonsCompleted}
             activeDates={activeDates}
             recentLessons={recentLessons}
-            companionSlot={
-              <SparkCompanionCard
-                copy={authCopy.sparkCompanion}
-                name={displayName}
-                continueHref={activeLessonHref}
-                hasContinue={showContinue}
-              />
-            }
           />
         </div>
 
