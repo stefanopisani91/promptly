@@ -87,7 +87,7 @@ export function SparkHeader({
               its front layer (z-index 3), so chips passing top/bottom of
               the orbit slide visibly behind her. */}
           <span className="relative z-[2]">
-            <Spark state={sparkState} size={48} />
+            <Spark state={sparkState} size={60} />
           </span>
           {vignettes.length > 0 && (
             <VignetteCloud
@@ -140,12 +140,18 @@ function ProgressBar({ current, total }: { current: number; total: number }) {
       aria-valuenow={current}
       aria-valuemin={0}
       aria-valuemax={total}
-      className="h-1.5 w-full bg-surface-muted"
+      className="h-2 w-full bg-surface-muted"
     >
       <div
-        className="h-full bg-primary transition-[width] duration-500 ease-out"
+        className="relative h-full overflow-hidden bg-primary transition-[width] duration-500 ease-out"
         style={{ width: `${pct}%` }}
-      />
+      >
+        {/* Shimmer sweep that travels left→right inside the filled region */}
+        <span
+          aria-hidden
+          className="animate-shimmer-slide pointer-events-none absolute inset-y-0 w-1/2 bg-gradient-to-r from-transparent via-white/40 to-transparent"
+        />
+      </div>
     </div>
   );
 }

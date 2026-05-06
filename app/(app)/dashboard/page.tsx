@@ -280,7 +280,8 @@ export default async function DashboardPage() {
         {lessonsCompleted > 0 && (
           <div className="mx-auto w-full max-w-3xl px-4 sm:px-6">
             <DashboardStatsGrid
-              copy={authCopy}
+              streakLabel={authCopy.stats.streak}
+              xpLabel={authCopy.stats.xp}
               totalXp={profile.total_xp}
               currentStreak={derivedStreak}
               lessonsCompleted={lessonsCompleted}

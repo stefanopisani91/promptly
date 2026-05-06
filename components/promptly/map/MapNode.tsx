@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, type ReactNode } from "react";
-import { Check, Crown, Lock } from "lucide-react";
+import { Crown, Lock } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import type { Lang, PathSlug } from "@/types";
@@ -29,6 +29,33 @@ interface Props {
 }
 
 const NODE_SIZE_CLASS = "h-14 w-14 sm:h-16 sm:w-16";
+
+/**
+ * Animated SVG checkmark — draw-on effect via CSS stroke-dashoffset
+ * animation. Replaces the static Lucide <Check> on completed nodes so
+ * the check "writes itself" on every render (e.g. after a lesson is
+ * just completed and the map re-renders).
+ */
+function AnimatedCheck() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width="22"
+      height="22"
+      fill="none"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path
+        d="M5 13l4 4L19 7"
+        stroke="white"
+        strokeWidth={2.8}
+        className="animate-check-draw"
+      />
+    </svg>
+  );
+}
 
 export function MapNode({
   node,
@@ -84,7 +111,7 @@ export function MapNode({
 
   switch (node.state) {
     case "completed": {
-      content = <Check className="h-6 w-6 text-white" strokeWidth={3} aria-hidden />;
+      content = <AnimatedCheck />;
       stateClass = "border-transparent text-white shadow-md hover:scale-110";
       stateStyle = { background: accent };
       stateLabel = copy.legend.completed;

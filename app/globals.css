@@ -3,16 +3,16 @@
 @tailwind utilities;
 
 :root {
-  /* Backgrounds */
-  --background: #f8f7f4;
+  /* Backgrounds — neutral palette (Aceternity-style, zero warm tint) */
+  --background: #fafafa;
   --surface: #ffffff;
-  --surface-muted: #f1f0ed;
-  --border: #e4e2dc;
+  --surface-muted: #f5f5f5;
+  --border: #e5e5e5;
 
   /* Brand — orange (from logo) */
   --primary: #e8703f;
   --primary-hover: #c8521f;
-  --primary-light: #fff1eb;
+  --primary-light: #fff4ef;
   --primary-deep: #a23e12;
 
   /* Feedback */
@@ -27,10 +27,10 @@
   --streak-fire: #dc2626;
   --streak-freeze: #38bdf8;
 
-  /* Text */
-  --text-primary: #111827;
-  --text-secondary: #4b5563;
-  --text-muted: #9ca3af;
+  /* Text — slightly cooler to match neutral background */
+  --text-primary: #0a0a0a;
+  --text-secondary: #525252;
+  --text-muted: #a3a3a3;
 
   /* Prompt exercise area */
   --prompt-bg: #1e293b;
@@ -280,6 +280,65 @@ h6 {
   }
 }
 
+/* ─── Dashboard V2 — visual refresh animations (May 2026) ─────────── */
+
+/* Progress bar shimmer sweep */
+@keyframes shimmer-slide {
+  0%   { transform: translateX(-150%); }
+  100% { transform: translateX(300%); }
+}
+.animate-shimmer-slide {
+  animation: shimmer-slide 2s ease-in-out infinite;
+}
+
+/* Spark companion idle bob */
+@keyframes spark-bob {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-5px); }
+}
+.animate-spark-bob {
+  animation: spark-bob 2.6s ease-in-out infinite;
+}
+
+/* Typing cursor blink */
+@keyframes typing-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+.animate-typing-blink {
+  animation: typing-blink 0.75s step-end infinite;
+}
+
+/* Animated SVG checkmark draw-on */
+@keyframes check-draw {
+  from { stroke-dashoffset: 22; }
+  to   { stroke-dashoffset: 0;  }
+}
+.animate-check-draw {
+  stroke-dasharray: 22;
+  stroke-dashoffset: 0;
+  animation: check-draw 0.45s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* XP gold glow pulse */
+@keyframes xp-glow {
+  0%, 100% { opacity: 0.7; }
+  50%       { opacity: 1;   }
+}
+.animate-xp-glow {
+  animation: xp-glow 1.8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-shimmer-slide,
+  .animate-spark-bob,
+  .animate-typing-blink,
+  .animate-check-draw,
+  .animate-xp-glow {
+    animation: none;
+  }
+}
+
 /* ─── V3 lesson — Spark vignette orbit ────────────────────────────── */
 /* True 3D-feel orbit: chips travel a horizontal RING around Spark on
    the X-Z axis, viewed from slightly above.
@@ -391,21 +450,27 @@ h6 {
 /* "Chiedi a Spark" bubble pulse — slow gold halo so the affordance
    stays discoverable without competing with the orbiting vignettes
    above. See components/lessons/v3/AskSparkBubble.tsx. */
+/* "Chiedi a Spark" bubble — two-ring glow pulse so the affordance stays
+   clearly visible even next to the orbiting vignettes. The inner ring
+   fires first (tighter, more gold), the outer ring follows half a beat
+   later (wider, fully transparent at peak). Net effect: a "heartbeat"
+   that feels alive without being distracting. */
 @keyframes ask-spark-pulse {
-  0%, 100% {
-    box-shadow:
-      0 2px 6px rgba(0, 0, 0, 0.12),
-      0 0 0 0 rgba(234, 179, 8, 0.55);
-  }
-  50% {
-    box-shadow:
-      0 2px 6px rgba(0, 0, 0, 0.12),
-      0 0 0 7px rgba(234, 179, 8, 0);
-  }
+  0%, 100% { transform: scale(1);    box-shadow: 0 4px 12px rgba(0,0,0,0.18); }
+  50%       { transform: scale(1.22); box-shadow: 0 6px 18px rgba(0,0,0,0.22); }
 }
 
 .ask-spark-bubble {
-  animation: ask-spark-pulse 2.4s ease-in-out infinite;
+  animation: ask-spark-pulse 1.8s ease-in-out infinite;
+  will-change: transform;
+}
+.ask-spark-bubble:hover {
+  animation-play-state: paused;
+  transform: scale(1.15);
+}
+.ask-spark-bubble:active {
+  animation-play-state: paused;
+  transform: scale(0.92);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -467,6 +532,120 @@ h6 {
   .completion-xp-fade,
   .completion-cliffhanger-fade {
     animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ─── SparkChat modal — entrance from above (May 2026) ────────────── */
+
+@keyframes spark-chat-backdrop-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.spark-chat-backdrop {
+  animation: spark-chat-backdrop-in 220ms ease-out both;
+}
+
+@keyframes spark-chat-panel-in {
+  0%   { opacity: 0; transform: translateY(-22px) scale(0.96); }
+  65%  {             transform: translateY(4px)   scale(1.01); }
+  100% { opacity: 1; transform: translateY(0)     scale(1);    }
+}
+.spark-chat-panel {
+  animation: spark-chat-panel-in 360ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spark-chat-backdrop { animation: none; }
+  .spark-chat-panel    { animation: none; opacity: 1; transform: none; }
+}
+
+/* ─── Lesson V3 — step transitions & component animations (May 2026) ── */
+
+/* Directional step slide-in */
+@keyframes step-slide-fwd {
+  from { opacity: 0; transform: translateX(28px) scale(0.99); }
+  to   { opacity: 1; transform: translateX(0)    scale(1);    }
+}
+@keyframes step-slide-back {
+  from { opacity: 0; transform: translateX(-28px) scale(0.99); }
+  to   { opacity: 1; transform: translateX(0)     scale(1);    }
+}
+.step-slide-fwd {
+  animation: step-slide-fwd 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+  will-change: transform, opacity;
+}
+.step-slide-back {
+  animation: step-slide-back 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+  will-change: transform, opacity;
+}
+
+/* PrincipleStep — staggered headline + emphasis pop */
+@keyframes principle-headline {
+  0%   { opacity: 0; transform: scale(0.9)  translateY(10px); }
+  65%  {             transform: scale(1.02) translateY(-2px);  }
+  100% { opacity: 1; transform: scale(1)    translateY(0);     }
+}
+@keyframes principle-emphasis {
+  0%   { opacity: 0; transform: scale(0.85) translateY(14px); }
+  65%  {             transform: scale(1.04) translateY(-3px);  }
+  100% { opacity: 1; transform: scale(1)    translateY(0);     }
+}
+.principle-headline {
+  animation: principle-headline 420ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  will-change: transform, opacity;
+}
+.principle-emphasis {
+  animation: principle-emphasis 500ms cubic-bezier(0.34, 1.56, 0.64, 1) 120ms both;
+  will-change: transform, opacity;
+}
+.principle-caption {
+  animation: completion-fade-up 320ms ease-out 280ms both;
+}
+
+/* RewardStep icon bounce-pop */
+@keyframes reward-icon-pop {
+  0%   { opacity: 0; transform: scale(0.4) rotate(-10deg); }
+  55%  {             transform: scale(1.18) rotate(5deg);   }
+  75%  {             transform: scale(0.94) rotate(-2deg);  }
+  100% { opacity: 1; transform: scale(1)   rotate(0deg);   }
+}
+.reward-icon-pop {
+  animation: reward-icon-pop 500ms cubic-bezier(0.34, 1.56, 0.64, 1) 80ms both;
+  will-change: transform, opacity;
+}
+
+/* Footer Next button — glow pulse when it first unlocks */
+@keyframes next-unlock-pulse {
+  0%, 100% { box-shadow: 0 0 0 0   rgba(232, 112, 63, 0.55); }
+  50%       { box-shadow: 0 0 0 9px rgba(232, 112, 63, 0);    }
+}
+.animate-next-pulse {
+  animation: next-unlock-pulse 0.85s ease-out 2;
+}
+
+/* InputStep — Spark reply bubble slide-up */
+@keyframes spark-reply-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.spark-reply-in {
+  animation: spark-reply-in 360ms ease-out both;
+  will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .step-slide-fwd,
+  .step-slide-back,
+  .principle-headline,
+  .principle-emphasis,
+  .principle-caption,
+  .reward-icon-pop,
+  .animate-next-pulse,
+  .spark-reply-in {
+    animation: none !important;
     opacity: 1;
     transform: none;
   }

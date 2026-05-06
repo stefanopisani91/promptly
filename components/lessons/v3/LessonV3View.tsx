@@ -11,6 +11,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, ChevronLeft } from "lucide-react";
+import { LessonDirectionContext, type NavDirection } from "./LessonDirectionContext";
 import { Spark } from "./Spark";
 import {
   completeLessonAction,
@@ -95,6 +96,7 @@ export function LessonV3View({
     totalSteps - 1,
   );
   const [stepIndex, setStepIndex] = useState(safeInitialStep);
+  const [navDirection, setNavDirection] = useState<NavDirection>("forward");
   const [stepState, setStepState] = useState<Record<string, unknown>>(
     initialStepState ?? {},
   );
@@ -149,7 +151,10 @@ export function LessonV3View({
   const isLastStep = stepIndex >= totalSteps - 1;
 
   function goBack() {
-    if (stepIndex > 0) setStepIndex((i) => i - 1);
+    if (stepIndex > 0) {
+      setNavDirection("back");
+      setStepIndex((i) => i - 1);
+    }
   }
 
   function goNext() {
@@ -158,6 +163,7 @@ export function LessonV3View({
       finalize();
       return;
     }
+    setNavDirection("forward");
     setStepIndex((i) => i + 1);
   }
 
@@ -168,6 +174,7 @@ export function LessonV3View({
       finalize();
       return;
     }
+    setNavDirection("forward");
     setStepIndex((i) => Math.min(i + 1, totalSteps - 1));
   }
 
@@ -204,12 +211,14 @@ export function LessonV3View({
   function handleChoicePick(choiceStep: ChoiceStepType, optionKey: string) {
     updateStepState(choiceStep.id, { selectedKey: optionKey });
     window.setTimeout(() => {
+      setNavDirection("forward");
       setStepIndex((i) => Math.min(i + 1, totalSteps - 1));
     }, 350);
   }
 
   // ─── Render ─────────────────────────────────────────────────────────
   return (
+    <LessonDirectionContext.Provider value={navDirection}>
     <div className="flex min-h-screen flex-col bg-background">
       <SparkHeader
         lessonTitle={lesson.title}
@@ -229,21 +238,26 @@ export function LessonV3View({
       />
 
       <main className="flex flex-1 flex-col items-center justify-start gap-6 px-4 py-8 sm:px-6 sm:py-10">
-        {renderStep(
-          step,
-          {
-            lessonId: lesson.id,
-            stepState,
-            updateStepState,
-            strings,
-            steps: lesson.steps,
-            onArchetype: (key) => {
-              archetypeRef.current = key;
+        {/* key={stepIndex} forces React to remount the step subtree on
+            every navigation so the directional slide animation always
+            plays fresh — even when two adjacent steps share a type.   */}
+        <div key={stepIndex} className="w-full">
+          {renderStep(
+            step,
+            {
+              lessonId: lesson.id,
+              stepState,
+              updateStepState,
+              strings,
+              steps: lesson.steps,
+              onArchetype: (key) => {
+                archetypeRef.current = key;
+              },
+              onChoicePick: handleChoicePick,
+              goNext: goNextForce,
             },
-            onChoicePick: handleChoicePick,
-            goNext: goNextForce,
-          },
-        )}
+          )}
+        </div>
 
         {completed && isLastStep && (
           <CompletionCard
@@ -287,6 +301,7 @@ export function LessonV3View({
         />
       )}
     </div>
+    </LessonDirectionContext.Provider>
   );
 }
 
@@ -391,6 +406,18 @@ function Footer({
   onNext: () => void;
   completionHref: string;
 }) {
+  // Track when canAdvance transitions false → true to fire a pulse animation.
+  // We fire the pulse once per unlock (not on every render).
+  const prevCanAdvanceRef = useRef(canAdvance);
+  const [pulsing, setPulsing] = useState(false);
+
+  useEffect(() => {
+    if (!prevCanAdvanceRef.current && canAdvance) {
+      setPulsing(true);
+    }
+    prevCanAdvanceRef.current = canAdvance;
+  }, [canAdvance]);
+
   // After completion the lesson navigation is over — the only action that
   // makes sense is "back to path". Keep the sticky footer mounted (so the
   // CTA stays in thumb zone instead of floating above the fold) but
@@ -413,6 +440,7 @@ function Footer({
       </div>
     );
   }
+
   return (
     <div
       className="sticky bottom-0 z-20 mt-auto border-t border-border/60 bg-background/95 px-4 py-3 backdrop-blur sm:px-6"
@@ -430,9 +458,10 @@ function Footer({
         </button>
         <button
           type="button"
-          onClick={onNext}
+          onClick={() => { setPulsing(false); onNext(); }}
           disabled={!canAdvance}
-          className="inline-flex h-11 items-center gap-2 rounded-full bg-primary px-6 text-sm font-semibold text-white transition-all hover:bg-primary-hover active:scale-[0.97] disabled:opacity-40 disabled:active:scale-100"
+          onAnimationEnd={() => setPulsing(false)}
+          className={`inline-flex h-11 items-center gap-2 rounded-full bg-primary px-6 text-sm font-semibold text-white transition-all hover:bg-primary-hover active:scale-[0.97] disabled:opacity-40 disabled:active:scale-100 ${pulsing ? "animate-next-pulse" : ""}`}
         >
           {isLast ? labels.finishCta : labels.nextCta}
           <ArrowRight size={16} />

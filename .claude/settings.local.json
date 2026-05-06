@@ -98,7 +98,16 @@
       "mcp__claude_ai_Supabase__apply_migration",
       "mcp__claude_ai_Supabase__list_tables",
       "mcp__claude_ai_Supabase__get_logs",
-      "Bash(lsof -ti:3000)"
+      "Bash(lsof -ti:3000)",
+      "Bash(git commit *)",
+      "Bash(echo \"EXIT CODE: $?\")",
+      "Bash(git stash *)",
+      "Bash(/usr/bin/grep -c -i spark /Users/stefanopisani/DEV/01_Progetti/PROMPTLY/PROMPTLY.md /Users/stefanopisani/DEV/01_Progetti/PROMPTLY/LESSON-GUIDELINES.md)",
+      "Bash(/usr/bin/grep -n -i \"mascotte\\\\|scintilla\\\\|mascot\" /Users/stefanopisani/DEV/01_Progetti/PROMPTLY/PROMPTLY.md /Users/stefanopisani/DEV/01_Progetti/PROMPTLY/LESSON-GUIDELINES.md)",
+      "Bash(/usr/bin/grep -rn -i \"spark\" /Users/stefanopisani/DEV/01_Progetti/PROMPTLY/lib/i18n/lessons.ts)",
+      "Bash(/usr/bin/grep -rn \"Scrivi a Spark\\\\|Write to Spark\\\\|placeholder\" /Users/stefanopisani/DEV/01_Progetti/PROMPTLY/components/lessons/v3/SparkChat.tsx)",
+      "Bash(/usr/bin/grep -rn \"text-sm\" /Users/stefanopisani/DEV/01_Progetti/PROMPTLY/components/lessons/v3/SparkChat.tsx /Users/stefanopisani/DEV/01_Progetti/PROMPTLY/components/lessons/v3/steps/InputStep.tsx /Users/stefanopisani/DEV/01_Progetti/PROMPTLY/components/lessons/v3/steps/InteractiveStep.tsx)",
+      "Bash(/usr/bin/grep -i \"input\\\\|textarea\\\\|placeholder\\\\|p-3\\\\|p-4\\\\|resize\")"
     ]
   }
 }

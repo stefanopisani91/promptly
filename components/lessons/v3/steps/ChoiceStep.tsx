@@ -1,10 +1,13 @@
 "use client";
 
-// CHOICE step — 2-4 cliccable options. Selecting one auto-advances after a
+// CHOICE step — 2-4 clickable options. Selecting one auto-advances after a
 // short visual confirmation; the parent decides what "advance" means
 // (next step + autosave). The selected key is stored in stepState[step.id].
+//
+// Visual: selected option scales up slightly + gets an orange border flash.
+// The check icon uses the same animate-check-draw SVG path as the dashboard
+// MapNode checkmark (globals.css) for consistency.
 
-import { Check } from "lucide-react";
 import type { ChoiceStep as ChoiceStepType } from "@/types";
 import { StepCard } from "../StepCard";
 
@@ -12,6 +15,27 @@ interface Props {
   step: ChoiceStepType;
   state: { selectedKey?: string } | undefined;
   onPick: (optionKey: string) => void;
+}
+
+function AnimatedCheck() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden
+    >
+      <path
+        d="M5 13l4 4L19 7"
+        stroke="white"
+        strokeWidth={3}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="animate-check-draw"
+      />
+    </svg>
+  );
 }
 
 export function ChoiceStep({ step, state, onPick }: Props) {
@@ -38,22 +62,24 @@ export function ChoiceStep({ step, state, onPick }: Props) {
                 type="button"
                 onClick={() => onPick(option.key)}
                 aria-pressed={isSelected}
-                className={`flex w-full items-center gap-4 rounded-2xl border p-4 text-left transition-all active:scale-[0.99] ${
+                className={`flex w-full items-center gap-4 rounded-2xl border p-4 text-left transition-all duration-200 active:scale-[0.99] ${
                   isSelected
-                    ? "border-primary bg-primary-light"
+                    ? "scale-[1.015] border-primary bg-primary-light shadow-sm shadow-primary/10"
                     : "border-border bg-surface hover:border-primary/40 hover:bg-surface-muted/50"
                 }`}
               >
+                {/* Circle indicator */}
                 <span
                   aria-hidden
-                  className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition-transform ${
+                  className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition-all duration-200 ${
                     isSelected
-                      ? "scale-100 border-primary bg-primary text-white"
-                      : "scale-95 border-border bg-surface text-text-muted"
+                      ? "border-primary bg-primary text-white"
+                      : "border-border bg-surface text-text-muted"
                   }`}
                 >
-                  {isSelected ? <Check size={14} strokeWidth={3} /> : null}
+                  {isSelected ? <AnimatedCheck /> : null}
                 </span>
+
                 <span className="text-base text-text-primary sm:text-lg">
                   {option.label}
                 </span>

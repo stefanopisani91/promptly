@@ -1,11 +1,15 @@
 "use client";
 
-// Free-chat modal with Spark, mounted from LessonV3View when the user taps
-// the floating "Ask Spark" launcher. Per-lesson quota is enforced server-
-// side; this component only renders what's left and surfaces the proper
-// error states. Conversation history is session-only (lives in component
-// state) — refreshes the page wipe it. That's intentional: the lesson is
-// the "source of truth" and Spark's chat is a side helper, not a journal.
+// Free-chat modal with Spark.
+//
+// Visual design (May 2026 refresh):
+//   - Enters from ABOVE with a bounce — like a speech bubble dropped by Spark.
+//   - Speech-bubble tail at the top-right of the panel pointing toward Spark's
+//     position in SparkHeader.
+//   - No orange inside the conversation: user bubbles are dark charcoal,
+//     send button is gold (Spark's colour family), textarea uses neutral focus.
+//   - Empty state is a full hero: big Spark + bold "Chiedimi pure!" so the
+//     modal feels alive from the first frame.
 
 import { useEffect, useRef, useState } from "react";
 import { Send, X } from "lucide-react";
@@ -15,14 +19,13 @@ import { Spark } from "./Spark";
 export interface SparkChatStrings {
   launcherLabel: string;
   modalTitle: string;
-  modalSubtitleTemplate: string; // "{remaining} / {limit} messaggi rimasti"
+  modalSubtitleTemplate: string;
   closeLabel: string;
   placeholder: string;
   sendCta: string;
   sending: string;
   emptyHint: string;
   quotaExhausted: string;
-  /** Shown when the per-day cap (across all lessons) is hit. */
   dailyQuotaExhausted: string;
   networkError: string;
   apiError: string;
@@ -104,53 +107,29 @@ export function SparkChat({
         }),
       });
       if (!res.ok) {
-        if (res.status === 401) {
-          setError(strings.unauthorized);
-          return;
-        }
+        if (res.status === 401) { setError(strings.unauthorized); return; }
         if (res.status === 403) {
-          // The route returns either { error: "quota_exceeded" } (per-lesson)
-          // or { error: "daily_quota_exceeded" } (per-day). They differ in
-          // the recovery path the user is offered: per-lesson exhausts in
-          // this lesson only (move on); per-day exhausts everywhere
-          // (come back tomorrow).
           let errorCode: string | undefined;
           try {
             const errBody = (await res.json()) as { error?: string };
             errorCode = errBody.error;
-          } catch {
-            /* keep errorCode undefined */
-          }
+          } catch { /* keep errorCode undefined */ }
           setError(
             errorCode === "daily_quota_exceeded"
               ? strings.dailyQuotaExhausted
               : strings.quotaExhausted,
           );
-          // Both flavours zero-out remaining for THIS lesson — the bubble
-          // becomes disabled either way. The daily case will stay disabled
-          // even on other lessons (server enforces independently).
           onMessageSent(0);
           return;
         }
-        if (res.status === 502 || res.status === 503) {
-          setError(strings.networkError);
-          return;
-        }
+        if (res.status === 502 || res.status === 503) { setError(strings.networkError); return; }
         setError(strings.apiError);
         return;
       }
-      const body = (await res.json()) as {
-        reply?: string;
-        remaining?: number;
-      };
-      if (typeof body.reply !== "string") {
-        setError(strings.apiError);
-        return;
-      }
+      const body = (await res.json()) as { reply?: string; remaining?: number };
+      if (typeof body.reply !== "string") { setError(strings.apiError); return; }
       setMessages((prev) => [...prev, { role: "spark", content: body.reply! }]);
-      if (typeof body.remaining === "number") {
-        onMessageSent(body.remaining);
-      }
+      if (typeof body.remaining === "number") onMessageSent(body.remaining);
     } catch {
       setError(strings.networkError);
     } finally {
@@ -158,45 +137,63 @@ export function SparkChat({
     }
   }
 
+  function onKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      send();
+    }
+  }
+
   const subtitle = strings.modalSubtitleTemplate
     .replace("{remaining}", String(remaining))
     .replace("{limit}", String(totalLimit));
+
+  const isEmpty = messages.length === 0;
+  const isExhausted = remaining <= 0;
 
   return (
     <div
       role="dialog"
       aria-modal="true"
       aria-label={strings.modalTitle}
-      style={{
-        position: "fixed",
-        inset: 0,
-        zIndex: 70,
-        display: "flex",
-        alignItems: "flex-end",
-        justifyContent: "center",
-      }}
+      className="fixed inset-0 z-70 flex items-start justify-center px-4"
+      style={{ paddingTop: "72px", zIndex: 70 }}
     >
-      {/* Backdrop is its own button so click-to-close stays accessible
-          (Escape is handled by the keydown listener above). */}
+      {/* ── Backdrop ── */}
       <button
         type="button"
         aria-label={strings.closeLabel}
         onClick={onClose}
-        style={{
-          position: "absolute",
-          inset: 0,
-          background: "rgba(15, 18, 24, 0.55)",
-          backdropFilter: "blur(2px)",
-          border: "none",
-          cursor: "pointer",
-        }}
+        className="spark-chat-backdrop absolute inset-0 cursor-pointer border-none"
+        style={{ background: "rgba(10, 14, 20, 0.60)", backdropFilter: "blur(3px)" }}
       />
+
+      {/* ── Panel ── */}
       <div
-        className="relative flex h-[80vh] w-full max-w-md flex-col rounded-t-3xl border border-border bg-surface shadow-2xl sm:h-[70vh] sm:rounded-3xl"
-        style={{ maxHeight: "min(680px, 92vh)" }}
+        className="spark-chat-panel relative flex w-full max-w-md flex-col border border-border bg-surface shadow-2xl"
+        style={{ height: "min(580px, calc(100vh - 88px))", borderRadius: "28px" }}
       >
-        <header className="flex items-center gap-3 border-b border-border px-4 py-3 sm:px-5">
-          <Spark state="listening" size={36} />
+        {/* Speech-bubble tail — moved further right to point toward Spark */}
+        <span
+          aria-hidden
+          style={{
+            position: "absolute",
+            top: "-9px",
+            right: "32px",
+            width: "18px",
+            height: "18px",
+            background: "var(--surface)",
+            border: "1px solid var(--border)",
+            borderRight: "none",
+            borderBottom: "none",
+            borderRadius: "3px 0 0 0",
+            transform: "rotate(45deg)",
+            zIndex: 1,
+          }}
+        />
+
+        {/* ── Header — no Spark icon here, it lives only in the body ── */}
+        <header className="flex items-center gap-3 border-b border-border bg-surface px-4 py-3 sm:px-5" style={{ borderRadius: "28px 28px 0 0" }}>
           <div className="flex min-w-0 flex-1 flex-col">
             <p className="truncate font-heading text-sm font-semibold text-text-primary">
               {strings.modalTitle}
@@ -207,95 +204,127 @@ export function SparkChat({
             type="button"
             onClick={onClose}
             aria-label={strings.closeLabel}
-            className="inline-flex h-8 w-8 items-center justify-center rounded-full text-text-muted hover:bg-surface-muted"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-full text-text-muted transition-colors hover:bg-surface-muted"
           >
             <X size={16} />
           </button>
         </header>
 
+        {/* ── Messages area ── */}
         <div
           ref={scrollRef}
           className="flex flex-1 flex-col gap-4 overflow-y-auto px-4 py-4 sm:px-5"
         >
-          {messages.length === 0 && (
-            <div className="flex flex-col gap-3 rounded-2xl bg-surface-muted/40 p-4">
-              <p className="text-sm italic text-text-secondary">
-                {strings.emptyHint}
+          {isEmpty && isExhausted ? (
+            /* Quota esaurita senza storico — nessuna chat da mostrare */
+            <div className="flex flex-1 flex-col items-center justify-center gap-4 py-4 text-center">
+              <Spark state="sad" size={56} ariaLabel="Spark" />
+              <p className="font-heading text-lg font-semibold text-text-primary">
+                Nessuna conversazione
               </p>
-              <ul className="flex flex-col gap-1.5">
+              <p className="max-w-xs text-sm italic text-text-secondary">
+                {strings.quotaExhausted}
+              </p>
+            </div>
+          ) : isEmpty ? (
+            /* Hero empty state — "Chiedimi pure!" */
+            <div className="flex flex-1 flex-col items-center justify-center gap-5 py-4 text-center">
+              <div style={{ animation: "completion-spark-pop 380ms cubic-bezier(0.34,1.56,0.64,1) both" }}>
+                <Spark state="happy" size={72} ariaLabel="Spark" />
+              </div>
+              <div style={{ animation: "completion-fade-up 300ms ease-out 160ms both" }}>
+                <p className="font-heading text-2xl font-bold leading-tight text-text-primary">
+                  Chiedimi pure!
+                </p>
+                <p className="mt-2 text-sm italic text-text-secondary">
+                  {strings.emptyHint}
+                </p>
+              </div>
+              <ul
+                className="flex flex-col gap-2"
+                style={{ animation: "completion-fade-up 300ms ease-out 300ms both" }}
+              >
                 {strings.hintExamples.map((h, i) => (
-                  <li
-                    key={i}
-                    className="text-xs italic text-text-muted before:mr-2 before:content-['·']"
-                  >
+                  <li key={i} className="text-xs italic text-text-muted before:mr-2 before:content-['·']">
                     {h}
                   </li>
                 ))}
               </ul>
             </div>
-          )}
+          ) : (
+            <>
+              {messages.map((m, i) => (
+                <div
+                  key={i}
+                  className={`flex flex-col gap-1 ${m.role === "user" ? "items-end" : "items-start"}`}
+                >
+                  <p className="eyebrow text-text-muted">
+                    {m.role === "user" ? "tu" : "spark"}
+                  </p>
+                  <p
+                    className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm leading-relaxed ${
+                      m.role === "user"
+                        ? "rounded-tr-sm font-medium text-white"
+                        : "rounded-tl-sm bg-primary-light/50 italic text-text-primary"
+                    }`}
+                    style={
+                      m.role === "user"
+                        ? { background: "#1f2937" }
+                        : undefined
+                    }
+                  >
+                    {m.content}
+                  </p>
+                </div>
+              ))}
 
-          {messages.map((m, i) => (
-            <div
-              key={i}
-              className={`flex flex-col gap-1 ${
-                m.role === "user" ? "items-end" : "items-start"
-              }`}
-            >
-              <p className="eyebrow text-text-muted">
-                {m.role === "user" ? "tu" : "spark"}
-              </p>
-              <p
-                className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm leading-relaxed ${
-                  m.role === "user"
-                    ? "bg-primary text-white"
-                    : "bg-surface-muted/60 italic text-text-primary"
-                }`}
-              >
-                {m.content}
-              </p>
-            </div>
-          ))}
-
-          {sending && (
-            <p className="text-xs italic text-text-muted">{strings.sending}</p>
+              {sending && (
+                <div className="flex items-center gap-2">
+                  <Spark state="thinking" size={24} />
+                  <p className="text-xs italic text-text-muted">{strings.sending}</p>
+                </div>
+              )}
+              {error && (
+                <p role="status" className="text-xs italic text-error">
+                  {error}
+                </p>
+              )}
+            </>
           )}
-          {error && (
-            <p
-              role="status"
-              className="text-xs italic text-error"
-            >
-              {error}
+        </div>
+
+        {/* ── Input area / read-only notice ── */}
+        {isExhausted ? (
+          /* Quota esaurita — banner sola lettura senza Spark (già nel body) */
+          <div className="flex items-center justify-center border-t border-border bg-surface-muted/40 px-4 py-3 sm:px-5" style={{ borderRadius: "0 0 28px 28px" }}>
+            <p className="text-xs italic text-text-secondary">
+              {strings.quotaExhausted}
             </p>
-          )}
-        </div>
-
-        <div className="flex flex-col gap-2 border-t border-border px-4 py-3 sm:px-5">
-          <textarea
-            ref={inputRef}
-            value={draft}
-            onChange={(e) => setDraft(e.target.value.slice(0, 600))}
-            placeholder={
-              remaining <= 0 ? strings.quotaExhausted : strings.placeholder
-            }
-            disabled={remaining <= 0 || sending}
-            rows={2}
-            className="w-full resize-none rounded-xl border border-border bg-surface-muted/30 p-3 text-base leading-relaxed text-text-primary placeholder:text-text-muted focus-visible:border-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary disabled:opacity-60 sm:text-sm"
-          />
-          <button
-            type="button"
-            onClick={send}
-            disabled={
-              sending ||
-              draft.trim().length < 2 ||
-              remaining <= 0
-            }
-            className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-hover disabled:opacity-50"
-          >
-            {sending ? strings.sending : strings.sendCta}
-            {!sending && <Send size={14} />}
-          </button>
-        </div>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-2 border-t border-border bg-surface px-4 py-3 sm:px-5" style={{ borderRadius: "0 0 28px 28px" }}>
+            <textarea
+              ref={inputRef}
+              value={draft}
+              onChange={(e) => setDraft(e.target.value.slice(0, 600))}
+              onKeyDown={onKeyDown}
+              placeholder={strings.placeholder}
+              disabled={sending}
+              rows={2}
+              className="w-full resize-none rounded-xl border border-border bg-surface-muted/30 p-3 text-sm leading-relaxed text-text-primary placeholder:text-text-muted transition-colors focus-visible:border-text-muted focus-visible:outline-none disabled:opacity-60"
+            />
+            <button
+              type="button"
+              onClick={send}
+              disabled={sending || draft.trim().length < 2}
+              className="inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold transition-all hover:brightness-105 active:scale-[0.97] disabled:opacity-40 disabled:active:scale-100"
+              style={{ background: "var(--xp-gold)", color: "#1a1100" }}
+            >
+              {sending ? strings.sending : strings.sendCta}
+              {!sending && <Send size={14} />}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

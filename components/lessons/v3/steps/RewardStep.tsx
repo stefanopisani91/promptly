@@ -65,7 +65,7 @@ export function RewardStep({
       <div className="flex flex-col items-center gap-5 py-2 text-center sm:py-6">
         <div
           aria-hidden
-          className="flex h-14 w-14 items-center justify-center rounded-full bg-success/15 text-success sm:h-16 sm:w-16"
+          className="reward-icon-pop flex h-14 w-14 items-center justify-center rounded-full bg-success/15 text-success sm:h-16 sm:w-16"
         >
           {step.variant === "archetype_reveal" ? (
             <Sparkles className="h-7 w-7 sm:h-8 sm:w-8" />

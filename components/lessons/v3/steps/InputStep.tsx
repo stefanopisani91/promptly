@@ -7,6 +7,11 @@
 // The user can submit once; their answer + Spark's reply are persisted into
 // the per-lesson stepState bag, so a returning user lands back on this step
 // with both already filled in.
+//
+// Submitted UI: a mini chat thread — user answer on the right (grey bubble),
+// Spark's reply on the left (orange-tinted bubble with Spark avatar).
+// The Spark reply enters with spark-reply-in (globals.css) so it feels like
+// it arrives from Spark after the API responds.
 
 import { useEffect, useState } from "react";
 import type { InputStep as InputStepType } from "@/types";
@@ -95,13 +100,14 @@ export function InputStep({ step, lessonId, state, onChange, strings }: Props) {
         )}
 
         {!submitted ? (
+          /* ── Input state ───────────────────────────────────────────── */
           <div className="flex flex-col gap-3">
             <textarea
               value={draft}
               onChange={(e) => setDraft(e.target.value.slice(0, max))}
               placeholder={step.placeholder}
               rows={5}
-              className="w-full resize-none rounded-xl border border-border bg-surface p-4 text-base leading-relaxed text-text-primary placeholder:text-text-muted focus-visible:border-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary"
+              className="w-full resize-none rounded-xl border border-border bg-surface p-4 text-base leading-relaxed text-text-primary placeholder:text-text-muted transition-colors focus-visible:border-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary/40"
               disabled={submitting}
             />
             <div className="flex items-center justify-between gap-3">
@@ -128,16 +134,35 @@ export function InputStep({ step, lessonId, state, onChange, strings }: Props) {
             )}
           </div>
         ) : (
-          <div className="flex flex-col gap-4 rounded-xl border border-border/60 bg-surface-muted/40 p-4 sm:p-5">
-            <div>
-              <p className="eyebrow mb-1 text-text-muted">{strings.youLabel}</p>
-              <p className="text-base text-text-secondary">{state?.answer}</p>
+          /* ── Submitted state — mini chat thread ─────────────────────
+               User answer: right-aligned grey bubble
+               Spark reply: left-aligned orange bubble + Spark avatar       */
+          <div className="flex flex-col gap-4">
+            {/* User bubble — right */}
+            <div className="flex justify-end">
+              <div className="max-w-[85%] rounded-2xl rounded-tr-sm bg-surface-muted px-4 py-3">
+                <p className="text-sm font-medium uppercase tracking-wider text-text-muted mb-1">
+                  {strings.youLabel}
+                </p>
+                <p className="text-base text-text-secondary leading-relaxed">
+                  {state?.answer}
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="eyebrow mb-1 text-primary-deep">{strings.sparkLabel}</p>
-              <p className="text-base italic leading-relaxed text-text-primary">
-                {state?.sparkReply}
-              </p>
+
+            {/* Spark bubble — left */}
+            <div className="spark-reply-in flex items-start gap-3">
+              <div className="shrink-0 mt-1">
+                <Spark state="happy" size={36} />
+              </div>
+              <div className="max-w-[85%] rounded-2xl rounded-tl-sm border border-primary/20 bg-primary-light/60 px-4 py-3">
+                <p className="text-sm font-medium uppercase tracking-wider text-primary-deep mb-1">
+                  {strings.sparkLabel}
+                </p>
+                <p className="text-base italic leading-relaxed text-text-primary">
+                  {state?.sparkReply}
+                </p>
+              </div>
             </div>
           </div>
         )}
