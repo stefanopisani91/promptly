@@ -82,7 +82,7 @@ export function SparkCompanionCard({
       ? copy.bubble.nudgeReferral
       : variant === "continue"
         ? copy.bubble.nudgeContinue
-        : null;
+        : copy.bubble.nudgeStart;
 
   const cta =
     variant === "invite"

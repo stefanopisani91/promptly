@@ -11,6 +11,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, ChevronLeft } from "lucide-react";
+import { Spark } from "./Spark";
 import {
   completeLessonAction,
   saveLessonProgressAction,
@@ -466,19 +467,34 @@ function CompletionCard({
   // The "back to path" CTA lives in the sticky footer (always in thumb
   // zone) — see <Footer> above. Keeping it out of the card avoids the
   // primary action sitting above the fold on shorter mobile screens.
+  //
+  // Choreography (PROMPTLY.md "narrative animations"):
+  //   t=0      Spark mounts in `happy` state with a scale-from-zero pop
+  //   t=200ms  XP eyebrow fades in
+  //   t=400ms  cliffhanger line fades in
+  // Confetti fires from the parent (fireConfetti() in finalize()) — the
+  // card just lands the on-screen choreography. The sequence respects
+  // prefers-reduced-motion via the global `motion-reduce:` utilities.
   const shownXp = xpDelta ?? xpTotal;
   const isReplayNoGain = alreadyCompleted && xpDelta === 0;
 
   return (
     <div className="mx-auto w-full max-w-2xl rounded-3xl border border-success/30 bg-success-light p-6 text-center sm:p-10">
-      {isReplayNoGain ? (
-        <p className="eyebrow text-success">{replayLabel}</p>
-      ) : (
-        <p className="eyebrow text-success">+{shownXp} XP</p>
-      )}
-      <p className="mt-3 text-base italic leading-relaxed text-text-primary sm:text-lg">
-        {cliffhanger}
-      </p>
+      <div className="flex flex-col items-center">
+        <div className="completion-spark-pop">
+          <Spark state="happy" size={64} />
+        </div>
+        <div className="completion-xp-fade mt-4">
+          {isReplayNoGain ? (
+            <p className="eyebrow text-success">{replayLabel}</p>
+          ) : (
+            <p className="eyebrow text-success">+{shownXp} XP</p>
+          )}
+        </div>
+        <p className="completion-cliffhanger-fade mt-3 text-base italic leading-relaxed text-text-primary sm:text-lg">
+          {cliffhanger}
+        </p>
+      </div>
     </div>
   );
 }

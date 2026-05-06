@@ -273,16 +273,22 @@ export default async function DashboardPage() {
           </div>
         )}
 
-        <div className="mx-auto w-full max-w-3xl px-4 sm:px-6">
-          <DashboardStatsGrid
-            copy={authCopy}
-            totalXp={profile.total_xp}
-            currentStreak={derivedStreak}
-            lessonsCompleted={lessonsCompleted}
-            activeDates={activeDates}
-            recentLessons={recentLessons}
-          />
-        </div>
+        {/* First-time users (zero lessons completed) don't need a streak/XP
+            grid full of zeros — it reads as cold and over-promises gamified
+            mechanics before the user has earned anything. The grid only
+            shows once the first lesson is done. */}
+        {lessonsCompleted > 0 && (
+          <div className="mx-auto w-full max-w-3xl px-4 sm:px-6">
+            <DashboardStatsGrid
+              copy={authCopy}
+              totalXp={profile.total_xp}
+              currentStreak={derivedStreak}
+              lessonsCompleted={lessonsCompleted}
+              activeDates={activeDates}
+              recentLessons={recentLessons}
+            />
+          </div>
+        )}
 
         <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 lg:max-w-5xl">
           <MapTopBar

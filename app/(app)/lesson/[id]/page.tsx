@@ -135,6 +135,8 @@ export default async function LessonPage({ params }: PageProps) {
         rateLimitError: lessonsCopy.v3.interactiveStep.rateLimitError,
         apiError: lessonsCopy.v3.interactiveStep.apiError,
         awaitingPrompt: lessonsCopy.v3.interactiveStep.awaitingPrompt,
+        sparkTabLabel: lessonsCopy.v3.interactiveStep.sparkTabLabel,
+        siteTabLabel: lessonsCopy.v3.interactiveStep.siteTabLabel,
         reactions: lessonsCopy.v3.interactiveStep.reactions,
         homepageCopy: landingCopy.demo.homepage,
         consoleCopy: landingCopy.demo.console,

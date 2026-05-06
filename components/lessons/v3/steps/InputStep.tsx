@@ -11,6 +11,7 @@
 import { useEffect, useState } from "react";
 import type { InputStep as InputStepType } from "@/types";
 import { StepCard } from "../StepCard";
+import { Spark } from "../Spark";
 
 export interface InputStepStrings {
   submitCta: string;
@@ -109,15 +110,21 @@ export function InputStep({ step, lessonId, state, onChange, strings }: Props) {
                 type="button"
                 onClick={handleSubmit}
                 disabled={submitting || draft.trim().length < 2}
-                className="inline-flex items-center justify-center rounded-full bg-primary px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-hover disabled:opacity-50"
+                className="inline-flex items-center justify-center rounded-full bg-primary px-5 py-2 text-sm font-semibold text-white transition-all hover:bg-primary-hover active:scale-[0.97] disabled:opacity-50 disabled:active:scale-100"
               >
                 {submitting ? strings.submitting : strings.submitCta}
               </button>
             </div>
             {error && (
-              <p className="text-xs text-error" role="status">
-                {error === "network" ? strings.networkError : strings.apiError}
-              </p>
+              <div
+                className="flex items-start gap-2 rounded-xl border border-error/30 bg-error/5 px-3 py-2"
+                role="status"
+              >
+                <Spark state="sad" size={28} />
+                <p className="text-xs leading-relaxed text-text-primary">
+                  {error === "network" ? strings.networkError : strings.apiError}
+                </p>
+              </div>
             )}
           </div>
         ) : (

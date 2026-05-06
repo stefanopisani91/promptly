@@ -140,6 +140,10 @@ export interface AuthCopy {
         greetEvening: string;
         nudgeReferral: string;
         nudgeContinue: string;
+        // Shown the first time a user lands on the dashboard with zero
+        // lessons completed. Warm, dry, first person — no gamification
+        // talk yet (XP/streak come later, after the first lesson).
+        nudgeStart: string;
       };
       ctaContinue: string;
       ctaInvite: string;
@@ -181,7 +185,7 @@ const it: AuthCopy = {
     errors: {
       invalid: "Questa email non sembra valida.",
       rateLimit: "Troppi tentativi, riprova tra un minuto.",
-      generic: "Qualcosa è andato storto. Riprova tra un attimo.",
+      generic: "Qualcosa non ha funzionato. Non è colpa tua. Riprova tra un momento.",
     },
   },
   checkEmail: {
@@ -203,7 +207,7 @@ const it: AuthCopy = {
     errors: {
       invalid: "Questa email non sembra valida.",
       rateLimit: "Troppi tentativi, riprova tra un minuto.",
-      generic: "Qualcosa è andato storto. Riprova tra un attimo.",
+      generic: "Qualcosa non ha funzionato. Non è colpa tua. Riprova tra un momento.",
     },
   },
   onboarding: {
@@ -211,7 +215,7 @@ const it: AuthCopy = {
     continueCta: "Continua →",
     finalCta: "Inizia a imparare →",
     submitting: "Sto preparando tutto...",
-    genericError: "Qualcosa è andato storto. Riprova tra un attimo.",
+    genericError: "Qualcosa non ha funzionato. Non è colpa tua. Riprova tra un momento.",
     step1: {
       eyebrow: "STEP 1 DI 3",
       title: "Come ti chiamiamo?",
@@ -266,7 +270,7 @@ const it: AuthCopy = {
     },
     logoutCta: "Esci",
     welcomeCard: {
-      title: (name: string) => `🎉 Benvenuto in Promptly, ${name}!`,
+      title: (name: string) => `Benvenuto in Promptly, ${name}.`,
       sub: "Inizia il tuo percorso. Cinque minuti veri.",
       cta: "Inizia →",
       submitting: "Un attimo...",
@@ -282,7 +286,7 @@ const it: AuthCopy = {
       minutesToGo: (mins: number) =>
         mins === 1 ? "1 minuto al traguardo" : `${mins} minuti al traguardo`,
       minutesDoneOf: (done: number, total: number) => `${done} di ${total} min`,
-      goalReached: "Obiettivo raggiunto! 🎉",
+      goalReached: "Obiettivo raggiunto.",
     },
     pathsGrid: {
       title: "I tuoi percorsi",
@@ -299,6 +303,7 @@ const it: AuthCopy = {
         nudgeReferral:
           "Se porti con te qualcuno, ti sblocco un percorso bonus.",
         nudgeContinue: "La prossima lezione ti aspetta. Cinque minuti.",
+        nudgeStart: "Sei arrivato. Ti aspettavo. Cominciamo dalla prima lezione.",
       },
       ctaContinue: "Riprendi",
       ctaInvite: "Invita un amico",
@@ -340,7 +345,7 @@ const en: AuthCopy = {
     errors: {
       invalid: "That doesn't look like a valid email.",
       rateLimit: "Too many attempts, try again in a minute.",
-      generic: "Something went wrong. Try again in a moment.",
+      generic: "Something didn't work. Not your fault. Try again in a moment.",
     },
   },
   checkEmail: {
@@ -362,7 +367,7 @@ const en: AuthCopy = {
     errors: {
       invalid: "That doesn't look like a valid email.",
       rateLimit: "Too many attempts, try again in a minute.",
-      generic: "Something went wrong. Try again in a moment.",
+      generic: "Something didn't work. Not your fault. Try again in a moment.",
     },
   },
   onboarding: {
@@ -370,7 +375,7 @@ const en: AuthCopy = {
     continueCta: "Continue →",
     finalCta: "Start learning →",
     submitting: "Setting things up...",
-    genericError: "Something went wrong. Try again in a moment.",
+    genericError: "Something didn't work. Not your fault. Try again in a moment.",
     step1: {
       eyebrow: "STEP 1 OF 3",
       title: "What should we call you?",
@@ -425,7 +430,7 @@ const en: AuthCopy = {
     },
     logoutCta: "Log out",
     welcomeCard: {
-      title: (name: string) => `🎉 Welcome to Promptly, ${name}!`,
+      title: (name: string) => `Welcome to Promptly, ${name}.`,
       sub: "Start your path. Five real minutes.",
       cta: "Start →",
       submitting: "One moment...",
@@ -441,7 +446,7 @@ const en: AuthCopy = {
       minutesToGo: (mins: number) =>
         mins === 1 ? "1 minute to go" : `${mins} minutes to go`,
       minutesDoneOf: (done: number, total: number) => `${done} of ${total} min`,
-      goalReached: "Goal reached! 🎉",
+      goalReached: "Goal reached.",
     },
     pathsGrid: {
       title: "Your paths",
@@ -458,6 +463,7 @@ const en: AuthCopy = {
         nudgeReferral:
           "Bring a friend along — I'll unlock a bonus path for you.",
         nudgeContinue: "Your next lesson is waiting. Five minutes.",
+        nudgeStart: "You made it. I was waiting. Let's start with lesson one.",
       },
       ctaContinue: "Resume",
       ctaInvite: "Invite a friend",

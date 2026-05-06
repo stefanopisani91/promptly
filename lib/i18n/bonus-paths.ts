@@ -40,7 +40,7 @@ const it: BonusPathsCopy = {
     free: "Gratis",
     pro: "Pro",
     comingSoon: "In arrivo",
-    unlocked: "Sbloccata 🎉",
+    unlocked: "Sbloccata",
   },
   unlock: {
     locked: "Bloccata",
@@ -74,7 +74,7 @@ const en: BonusPathsCopy = {
     free: "Free",
     pro: "Pro",
     comingSoon: "Coming soon",
-    unlocked: "Unlocked 🎉",
+    unlocked: "Unlocked",
   },
   unlock: {
     locked: "Locked",

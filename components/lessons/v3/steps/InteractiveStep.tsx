@@ -50,6 +50,9 @@ export interface InteractiveStepStrings {
   };
   homepageCopy: import("@/lib/landing-demo/types").LuciaDemoCopy["homepage"];
   consoleCopy: import("@/lib/landing-demo/types").LuciaDemoCopy["console"];
+  // Mobile-only tab labels — desktop renders both panels side by side.
+  sparkTabLabel: string;
+  siteTabLabel: string;
 }
 
 const MAX_LESSON_ATTEMPTS = 3;
@@ -99,6 +102,12 @@ export function InteractiveStep({
   const [showFireworks, setShowFireworks] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const finishedRef = useRef(Boolean(persisted));
+  // Mobile-only layout: the dark tool view (Lucia homepage + console) and
+  // the Spark dialogue are too tall to stack on a phone — the textarea
+  // ends up off-screen. We collapse them under a 2-tab control. Spark is
+  // the default tab because it's where the user has to act. Desktop
+  // ignores this state (the grid keeps both panels side by side).
+  const [mobileTab, setMobileTab] = useState<"spark" | "site">("spark");
 
   const exhausted = attemptCount >= MAX_LESSON_ATTEMPTS;
   const won = fixedBugs.foto && fixedBugs.overflow && fixedBugs.bottone;
@@ -223,12 +232,50 @@ export function InteractiveStep({
           </p>
         )}
 
+        {/* Mobile-only tab control — Spark is the default tab (where the
+            user has to act). The site stays one tap away. Desktop hides
+            this control and renders both panels side by side. */}
+        <div
+          role="tablist"
+          aria-label={strings.placeholder}
+          className="grid grid-cols-2 gap-1 rounded-full border border-border bg-surface-muted p-1 text-sm font-medium lg:hidden"
+        >
+          <button
+            role="tab"
+            type="button"
+            aria-selected={mobileTab === "spark"}
+            onClick={() => setMobileTab("spark")}
+            className={`rounded-full px-3 py-2 transition-colors ${
+              mobileTab === "spark"
+                ? "bg-surface text-text-primary shadow-sm"
+                : "text-text-secondary"
+            }`}
+          >
+            {strings.sparkTabLabel}
+          </button>
+          <button
+            role="tab"
+            type="button"
+            aria-selected={mobileTab === "site"}
+            onClick={() => setMobileTab("site")}
+            className={`rounded-full px-3 py-2 transition-colors ${
+              mobileTab === "site"
+                ? "bg-surface text-text-primary shadow-sm"
+                : "text-text-secondary"
+            }`}
+          >
+            {strings.siteTabLabel}
+          </button>
+        </div>
+
         <div
           className="grid grid-cols-1 gap-5 lg:grid-cols-2"
           style={{ position: "relative" }}
         >
-          {/* LEFT — homepage + console (reused from the landing demo) */}
+          {/* LEFT — homepage + console (reused from the landing demo).
+              Hidden on mobile when the Spark tab is active. */}
           <div
+            className={mobileTab === "spark" ? "hidden lg:flex" : "flex"}
             style={{
               background: "#0A0A0A",
               borderRadius: 16,
@@ -236,7 +283,6 @@ export function InteractiveStep({
               boxShadow: "0 4px 24px rgba(0,0,0,0.10)",
               borderLeft: `4px solid ${won ? "#00C853" : "#9FFF00"}`,
               transition: "border-color 0.6s",
-              display: "flex",
               flexDirection: "column",
             }}
           >
@@ -282,8 +328,13 @@ export function InteractiveStep({
             <LuciaConsole copy={strings.consoleCopy} />
           </div>
 
-          {/* RIGHT — Spark dialogue panel */}
-          <div className="flex flex-col gap-3 rounded-2xl border border-border bg-surface p-4 sm:p-5">
+          {/* RIGHT — Spark dialogue panel. Hidden on mobile when the Site
+              tab is active. */}
+          <div
+            className={`flex flex-col gap-3 rounded-2xl border border-border bg-surface p-4 sm:p-5 ${
+              mobileTab === "site" ? "hidden lg:flex" : ""
+            }`}
+          >
             <div className="flex items-start gap-3">
               <Spark
                 state={
@@ -325,7 +376,7 @@ export function InteractiveStep({
                     type="button"
                     onClick={submit}
                     disabled={evaluating || draft.trim().length < 4}
-                    className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-hover disabled:opacity-50"
+                    className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-primary-hover active:scale-[0.97] disabled:opacity-50 disabled:active:scale-100"
                   >
                     {evaluating ? strings.submitting : strings.submitCta}
                     {!evaluating && <Send size={14} />}
@@ -335,9 +386,15 @@ export function InteractiveStep({
                   {strings.hint}
                 </p>
                 {error && (
-                  <p className="text-xs text-error" role="status">
-                    {error}
-                  </p>
+                  <div
+                    className="flex items-start gap-2 rounded-xl border border-error/30 bg-error/5 px-3 py-2"
+                    role="status"
+                  >
+                    <Spark state="sad" size={28} />
+                    <p className="text-xs leading-relaxed text-text-primary">
+                      {error}
+                    </p>
+                  </div>
                 )}
               </>
             )}
@@ -346,7 +403,7 @@ export function InteractiveStep({
               <button
                 type="button"
                 onClick={handleFinalize}
-                className={`mt-3 inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition-colors ${
+                className={`mt-3 inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition-all active:scale-[0.97] ${
                   isPartialStop
                     ? "border border-border bg-surface text-text-primary hover:bg-surface-muted"
                     : "bg-primary text-white hover:bg-primary-hover"

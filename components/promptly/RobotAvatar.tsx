@@ -3,7 +3,7 @@ import Image from "next/image";
 import { getRobotPath } from "@/lib/avatar";
 import { getLevelInfo } from "@/lib/levels";
 
-export type RobotAvatarSize = "sm" | "md" | "lg";
+export type RobotAvatarSize = "xs" | "sm" | "md" | "lg";
 
 interface Props {
   level: number;
@@ -13,12 +13,14 @@ interface Props {
 }
 
 const SIZE_CLASS: Record<RobotAvatarSize, string> = {
+  xs: "h-9 w-9",
   sm: "h-10 w-10",
   md: "h-20 w-20",
   lg: "h-[120px] w-[120px]",
 };
 
 const PIXELS: Record<RobotAvatarSize, number> = {
+  xs: 36,
   sm: 40,
   md: 80,
   lg: 120,

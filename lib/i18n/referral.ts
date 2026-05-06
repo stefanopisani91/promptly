@@ -18,7 +18,7 @@ export interface ReferralCopy {
   progress: {
     label: string; // "Friends invited:"
     pathYHint: string; // "1 signup away from unlocking PathY"
-    pathYUnlocked: string; // "PathY unlocked! 🎉"
+    pathYUnlocked: string; // "PathY unlocked."
   };
   share: {
     nativeTitle: string; // browser share-sheet title
@@ -36,7 +36,7 @@ export interface ReferralCopy {
 
 const it: ReferralCopy = {
   card: {
-    title: "🤝 Invita un amico",
+    title: "Invita un amico",
     subtitle: "Quando si iscrive, voi due guadagnate XP extra.",
     linkLabel: "Il tuo link:",
     copyBtn: "Copia link",
@@ -49,14 +49,14 @@ const it: ReferralCopy = {
   progress: {
     label: "Amici invitati:",
     pathYHint: "Manca 1 iscrizione per sbloccare PathY",
-    pathYUnlocked: "PathY sbloccata! 🎉",
+    pathYUnlocked: "PathY sbloccata.",
   },
   share: {
     nativeTitle: "Promptly — Impara con le parole, non col codice",
     nativeText: (referrerName) =>
       referrerName
-        ? `${referrerName} ti invita su Promptly. Iscriviti col mio link e guadagniamo entrambi XP bonus 🚀`
-        : "Iscriviti a Promptly col mio link e guadagniamo entrambi XP bonus 🚀",
+        ? `${referrerName} ti invita su Promptly. Iscriviti col mio link e guadagniamo entrambi XP bonus.`
+        : "Iscriviti a Promptly col mio link e guadagniamo entrambi XP bonus.",
   },
   trigger: {
     label: "Invita",
@@ -64,13 +64,13 @@ const it: ReferralCopy = {
     closeLabel: "Chiudi",
   },
   errors: {
-    generic: "Qualcosa è andato storto. Riprova tra un attimo.",
+    generic: "Qualcosa non ha funzionato. Non è colpa tua. Riprova tra un momento.",
   },
 };
 
 const en: ReferralCopy = {
   card: {
-    title: "🤝 Invite a friend",
+    title: "Invite a friend",
     subtitle: "When they sign up, you both earn bonus XP.",
     linkLabel: "Your link:",
     copyBtn: "Copy link",
@@ -83,14 +83,14 @@ const en: ReferralCopy = {
   progress: {
     label: "Friends invited:",
     pathYHint: "1 signup away from unlocking PathY",
-    pathYUnlocked: "PathY unlocked! 🎉",
+    pathYUnlocked: "PathY unlocked.",
   },
   share: {
     nativeTitle: "Promptly — Learn to build with words, not code",
     nativeText: (referrerName) =>
       referrerName
-        ? `${referrerName} invites you to Promptly. Sign up with my link and we both earn bonus XP 🚀`
-        : "Sign up to Promptly with my link and we both earn bonus XP 🚀",
+        ? `${referrerName} invites you to Promptly. Sign up with my link and we both earn bonus XP.`
+        : "Sign up to Promptly with my link and we both earn bonus XP.",
   },
   trigger: {
     label: "Invite",
@@ -98,7 +98,7 @@ const en: ReferralCopy = {
     closeLabel: "Close",
   },
   errors: {
-    generic: "Something went wrong. Try again in a moment.",
+    generic: "Something didn't work. Not your fault. Try again in a moment.",
   },
 };
 

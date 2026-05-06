@@ -125,6 +125,10 @@ export interface LessonsCopy {
       rateLimitError: string;
       apiError: string;
       awaitingPrompt: string;
+      // Mobile-only tab labels in the interactive step. Desktop shows
+      // both panels side by side and ignores these.
+      sparkTabLabel: string;
+      siteTabLabel: string;
       reactions: {
         vague: string;
         photoOnly: string;
@@ -216,15 +220,15 @@ const it: LessonsCopy = {
     backToPathCta: "← Torna al percorso",
   },
   outro: {
-    title: "Lezione completata! 🎉",
-    xpEarned: (xp) => `+${xp} XP ⚡`,
+    title: "Lezione completata.",
+    xpEarned: (xp) => `+${xp} XP`,
     nextLessonCta: "Prossima lezione →",
     backToPathCta: "Torna al percorso",
-    pathCompletedTitle: "🏁 Percorso completato!",
+    pathCompletedTitle: "Percorso completato.",
     pathCompletedSub: "Hai sbloccato il percorso successivo.",
   },
   toast: {
-    xpLabel: (xp) => `+${xp} XP ⚡`,
+    xpLabel: (xp) => `+${xp} XP`,
     dismissLabel: "Chiudi",
   },
   navigationLabel: "Navigazione lezione",
@@ -306,8 +310,8 @@ const it: LessonsCopy = {
       submitCta: "Invia",
       submitting: "Sto leggendo…",
       charCounterTemplate: "{current} / {max}",
-      networkError: "Connessione assente. Riprova quando hai rete.",
-      apiError: "Spark non risponde adesso. Andiamo avanti.",
+      networkError: "Sono offline. Non è colpa tua. Riprova quando hai rete.",
+      apiError: "Non riesco a risponderti adesso. Andiamo avanti — il commento è opzionale.",
       retryCta: "Riprova",
       youLabel: "tu",
       sparkLabel: "spark",
@@ -324,10 +328,12 @@ const it: LessonsCopy = {
       submitting: "Sto valutando…",
       retryCta: "Riprova",
       finalCta: "Continua →",
-      networkError: "Connessione assente. Riprova.",
-      rateLimitError: "Troppi tentativi ravvicinati. Aspetta un momento.",
-      apiError: "Qualcosa è andato storto. Riprova tra poco.",
+      networkError: "Sono offline. Non è colpa tua. Riprova quando hai rete.",
+      rateLimitError: "Troppi tentativi ravvicinati. Dammi un momento.",
+      apiError: "Qualcosa non ha funzionato. Non è colpa tua. Riprova tra poco.",
       awaitingPrompt: "Aspetto il tuo prompt. Guarda il sito e dimmi cosa non torna.",
+      sparkTabLabel: "Spark",
+      siteTabLabel: "Sito",
       reactions: {
         vague: "Aspetta. Hai scritto qualcosa, ma posso solo tirare a indovinare. È come se mi chiedessi «cucinami qualcosa» senza dirmi cosa hai nel frigo. Guarda di nuovo il sito di Lucia: cosa vedi che non funziona?",
         photoOnly: "Ok, qualcosa hai visto. Hai notato la foto rotta. L'ho sistemata — la vedi adesso? Ma c'è altro che non va. Continua a guardare con attenzione.",
@@ -396,15 +402,15 @@ const en: LessonsCopy = {
     backToPathCta: "← Back to path",
   },
   outro: {
-    title: "Lesson complete! 🎉",
-    xpEarned: (xp) => `+${xp} XP ⚡`,
+    title: "Lesson complete.",
+    xpEarned: (xp) => `+${xp} XP`,
     nextLessonCta: "Next lesson →",
     backToPathCta: "Back to path",
-    pathCompletedTitle: "🏁 Path completed!",
+    pathCompletedTitle: "Path completed.",
     pathCompletedSub: "You unlocked the next path.",
   },
   toast: {
-    xpLabel: (xp) => `+${xp} XP ⚡`,
+    xpLabel: (xp) => `+${xp} XP`,
     dismissLabel: "Dismiss",
   },
   navigationLabel: "Lesson navigation",
@@ -486,8 +492,8 @@ const en: LessonsCopy = {
       submitCta: "Send",
       submitting: "Reading…",
       charCounterTemplate: "{current} / {max}",
-      networkError: "No connection. Retry when you're back online.",
-      apiError: "Spark isn't replying right now. Let's keep moving.",
+      networkError: "I'm offline. Not your fault. Try again when you're back.",
+      apiError: "I can't reply right now. Let's keep moving — the comment is optional.",
       retryCta: "Retry",
       youLabel: "you",
       sparkLabel: "spark",
@@ -504,10 +510,12 @@ const en: LessonsCopy = {
       submitting: "Evaluating…",
       retryCta: "Retry",
       finalCta: "Continue →",
-      networkError: "No connection. Retry.",
-      rateLimitError: "Too many tries too fast. Hold on a moment.",
-      apiError: "Something went wrong. Try again in a bit.",
+      networkError: "I'm offline. Not your fault. Try again when you're back.",
+      rateLimitError: "Too many tries too fast. Give me a moment.",
+      apiError: "Something didn't work. Not your fault. Try again in a bit.",
       awaitingPrompt: "Waiting on your prompt. Look at the site and tell me what's off.",
+      sparkTabLabel: "Spark",
+      siteTabLabel: "Site",
       reactions: {
         vague: "Wait. You wrote something, but I can only guess. It's like asking me to «cook something» without telling me what's in the fridge. Look at Lucia's site again — what's not working?",
         photoOnly: "Okay, you spotted something. You noticed the broken photo. I fixed it — see it now? But there's more. Keep looking carefully.",

@@ -140,7 +140,7 @@ function ProgressBar({ current, total }: { current: number; total: number }) {
       aria-valuenow={current}
       aria-valuemin={0}
       aria-valuemax={total}
-      className="h-1 w-full bg-surface-muted"
+      className="h-1.5 w-full bg-surface-muted"
     >
       <div
         className="h-full bg-primary transition-[width] duration-500 ease-out"

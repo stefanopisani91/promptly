@@ -309,21 +309,27 @@ h6 {
   position: absolute;
   top: 50%;
   left: 50%;
-  margin-left: -80px;
+  /* margin-left = -(max-width / 2) so the chip recentres on Spark. */
+  margin-left: -90px;
   margin-top: -13px;
   background: #ffffff;
   border: 1px solid var(--border);
   border-radius: 999px;
-  padding: 5px 12px;
+  padding: 5px 14px;
   font-size: 11px;
   font-style: italic;
   color: var(--text-secondary);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   cursor: pointer;
   white-space: nowrap;
-  max-width: 160px;
+  max-width: 180px;
+  /* Soft fade-out via mask instead of a hard ellipsis — premium readout
+     that still hints "there's more, tap me". The fallback for browsers
+     without mask support keeps the ellipsis. */
   overflow: hidden;
   text-overflow: ellipsis;
+  -webkit-mask-image: linear-gradient(to right, black calc(100% - 18px), transparent);
+  mask-image: linear-gradient(to right, black calc(100% - 18px), transparent);
   text-align: center;
 }
 
@@ -333,11 +339,13 @@ h6 {
     --orbit-ry: 8px;
   }
   .vignette-orbit-chip {
-    margin-left: -55px;
+    margin-left: -70px;
     margin-top: -11px;
-    max-width: 110px;
+    max-width: 140px;
     font-size: 10px;
-    padding: 4px 10px;
+    padding: 4px 12px;
+    -webkit-mask-image: linear-gradient(to right, black calc(100% - 14px), transparent);
+    mask-image: linear-gradient(to right, black calc(100% - 14px), transparent);
   }
 }
 
@@ -403,5 +411,63 @@ h6 {
 @media (prefers-reduced-motion: reduce) {
   .ask-spark-bubble {
     animation: none;
+  }
+}
+
+/* Lesson completion choreography (CompletionCard in LessonV3View).
+   Spark leads, then the UI follows — see PROMPTLY.md "narrative
+   animations". Total duration ~700ms, all transform/opacity only so the
+   GPU can run the sequence on iPhone 15-class hardware without jank.
+   Keyframes use cubic-bezier curves that overshoot slightly on Spark
+   for a confident "pop" instead of a flat scale. */
+@keyframes completion-spark-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.12);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes completion-fade-up {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.completion-spark-pop {
+  animation: completion-spark-pop 360ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  transform-origin: center;
+  will-change: transform, opacity;
+}
+
+.completion-xp-fade {
+  animation: completion-fade-up 280ms ease-out 200ms both;
+  will-change: transform, opacity;
+}
+
+.completion-cliffhanger-fade {
+  animation: completion-fade-up 320ms ease-out 400ms both;
+  will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .completion-spark-pop,
+  .completion-xp-fade,
+  .completion-cliffhanger-fade {
+    animation: none;
+    opacity: 1;
+    transform: none;
   }
 }
