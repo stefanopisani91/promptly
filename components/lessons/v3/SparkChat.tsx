@@ -280,7 +280,7 @@ export function SparkChat({
             }
             disabled={remaining <= 0 || sending}
             rows={2}
-            className="w-full resize-none rounded-xl border border-border bg-surface-muted/30 p-3 text-sm leading-relaxed text-text-primary placeholder:text-text-muted focus-visible:border-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary disabled:opacity-60"
+            className="w-full resize-none rounded-xl border border-border bg-surface-muted/30 p-3 text-base leading-relaxed text-text-primary placeholder:text-text-muted focus-visible:border-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary disabled:opacity-60 sm:text-sm"
           />
           <button
             type="button"
