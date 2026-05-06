@@ -15,7 +15,6 @@ import confetti from "canvas-confetti";
 interface Props {
   pct: number;
   minutesToday: number;
-  goalMinutes: number;
   reached: boolean;
   eyebrow: string;
   statusLabel: string;
@@ -54,7 +53,6 @@ function useCountUp(target: number, duration = 900, delay = 80) {
 export function DailyGoalInteractive({
   pct,
   minutesToday,
-  goalMinutes,
   reached,
   eyebrow,
   statusLabel,

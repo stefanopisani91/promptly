@@ -33,7 +33,6 @@ export function DailyGoalCard({ copy, minutesToday, goalMinutes }: Props) {
     <DailyGoalInteractive
       pct={pct}
       minutesToday={minutesToday}
-      goalMinutes={goalMinutes}
       reached={reached}
       eyebrow={copy.eyebrow}
       statusLabel={reached ? copy.goalReached : copy.minutesToGo(minutesLeft)}
