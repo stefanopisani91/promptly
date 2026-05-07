@@ -29,7 +29,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex min-h-svh flex-col bg-background">
-      <header className="flex h-16 items-center justify-between border-b border-border px-4 sm:px-6">
+      <header className="flex h-12 items-center justify-between border-b border-border px-4 md:h-16 sm:px-6">
         <Link
           href="/dashboard"
           aria-label="Promptly"
@@ -41,10 +41,10 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
             width={140}
             height={32}
             priority
-            className="h-7 w-auto sm:h-8"
+            className="h-6 w-auto md:h-8"
           />
         </Link>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 md:gap-3">
           <LangSwitcher fallback={lang} ariaLabel={copy.shell.langToggleLabel} />
           <ProfileMenu
             fullName={profile.full_name}

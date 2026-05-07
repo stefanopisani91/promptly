@@ -62,7 +62,7 @@ export function RewardStep({
 
   return (
     <StepCard variant="reward">
-      <div className="flex flex-col items-center gap-5 py-2 text-center sm:py-6">
+      <div className="flex flex-col items-center gap-4 py-1 text-center sm:gap-5 sm:py-6">
         <div
           aria-hidden
           className="reward-icon-pop flex h-14 w-14 items-center justify-center rounded-full bg-success/15 text-success sm:h-16 sm:w-16"

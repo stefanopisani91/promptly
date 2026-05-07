@@ -111,7 +111,7 @@ export function LangSwitcher({ fallback, ariaLabel = "Language", className }: Pr
             aria-current={active ? "true" : undefined}
             onClick={(event) => onSelect(lang, event)}
             className={cn(
-              "rounded-full px-3 py-1 uppercase tracking-wide transition-colors",
+              "rounded-full px-2 py-1 uppercase tracking-wide transition-colors md:px-3",
               active
                 ? "bg-primary text-white"
                 : "text-text-secondary hover:text-text-primary",

@@ -11,6 +11,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, ChevronLeft } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { LessonDirectionContext, type NavDirection } from "./LessonDirectionContext";
 import { Spark } from "./Spark";
 import {
@@ -242,7 +243,19 @@ export function LessonV3View({
         }}
       />
 
-      <main className="flex flex-1 flex-col items-center justify-start gap-6 px-4 py-8 sm:px-6 sm:py-10">
+      <main
+        className={cn(
+          // Bottom padding on mobile leaves clearance for the fixed CTA
+          // overlay (~96px footer including gradient + safe-area). On
+          // ≥768px the footer is in normal flow so no extra padding.
+          "flex flex-1 flex-col items-center gap-4 px-4 pt-4 pb-28 sm:px-6 sm:pt-10 sm:pb-10 md:gap-6",
+          // "Single-card" steps (PRINCIPLE / REWARD / archetype reveal) are
+          // short and benefit from being vertically centred in the leftover
+          // viewport so the card sits at thumb-height. Tall steps keep the
+          // safe `justify-start` so they don't appear oddly cropped.
+          isShortCardStep(step) ? "justify-center md:justify-start" : "justify-start",
+        )}
+      >
         {/* key={stepIndex} forces React to remount the step subtree on
             every navigation so the directional slide animation always
             plays fresh — even when two adjacent steps share a type.   */}
@@ -448,16 +461,31 @@ function Footer({
     prevCanAdvanceRef.current = canAdvance;
   }, [canAdvance]);
 
+  // Wrapper styles:
+  //   Mobile: fixed-position overlay anchored to viewport bottom with a
+  //           gradient fade so the card content can extend visually behind
+  //           it — pulls back ~80px of vertical real-estate per step.
+  //   Desktop (≥768px): solid sticky bar in the normal flow, matching the
+  //           previous design exactly. Card content reserves no extra
+  //           space at the bottom because the sticky bar takes its own.
+  const wrapperClass = cn(
+    "lesson-cta-bar z-20 mt-auto px-4 sm:px-6",
+    // mobile (< md)
+    "fixed bottom-0 left-0 right-0 pt-8 pb-3",
+    "bg-gradient-to-t from-background via-background/95 to-transparent",
+    // desktop (≥ md) — restore the solid sticky bar
+    "md:sticky md:left-auto md:right-auto md:border-t md:border-border/60",
+    "md:bg-background/95 md:backdrop-blur md:from-transparent md:via-transparent md:to-transparent",
+    "md:py-3 md:pt-3",
+  );
+  const wrapperStyle = { paddingBottom: "calc(env(safe-area-inset-bottom) + 0.75rem)" } as const;
+
   // After completion the lesson navigation is over — the only action that
-  // makes sense is "back to path". Keep the sticky footer mounted (so the
-  // CTA stays in thumb zone instead of floating above the fold) but
-  // collapse it down to a single primary button.
+  // makes sense is "back to path". Keep the footer mounted (so the CTA
+  // stays in thumb zone) but collapse it down to a single primary button.
   if (completed && isLast) {
     return (
-      <div
-        className="sticky bottom-0 z-20 mt-auto border-t border-border/60 bg-background/95 px-4 py-3 backdrop-blur sm:px-6"
-        style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 0.75rem)" }}
-      >
+      <div className={wrapperClass} style={wrapperStyle}>
         <div className="mx-auto flex w-full max-w-3xl items-center justify-end gap-4">
           <Link
             href={completionHref}
@@ -472,10 +500,7 @@ function Footer({
   }
 
   return (
-    <div
-      className="sticky bottom-0 z-20 mt-auto border-t border-border/60 bg-background/95 px-4 py-3 backdrop-blur sm:px-6"
-      style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 0.75rem)" }}
-    >
+    <div className={wrapperClass} style={wrapperStyle}>
       <div className="mx-auto flex w-full max-w-3xl items-center justify-between gap-4">
         <button
           type="button"
@@ -561,6 +586,13 @@ function CompletionCard({
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
+
+// "Single-card" steps that show one centred concept and tend to fit in a
+// mobile viewport without scroll. Vertically centring these on mobile keeps
+// the card at thumb-height instead of pinned to the top under the header.
+function isShortCardStep(step: LessonV3Step): boolean {
+  return step.type === "principle" || step.type === "reward";
+}
 
 function canAdvanceFromStep(
   step: LessonV3Step,

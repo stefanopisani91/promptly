@@ -77,7 +77,7 @@ export function ProfileMenu({ fullName, email, copy }: Props) {
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
         className={cn(
-          "flex h-10 w-10 items-center justify-center rounded-full bg-primary-light text-sm font-semibold text-primary transition-shadow hover:shadow-[0_0_0_3px_rgba(232,112,63,0.18)]",
+          "flex h-8 w-8 items-center justify-center rounded-full bg-primary-light text-xs font-semibold text-primary transition-shadow hover:shadow-[0_0_0_3px_rgba(232,112,63,0.18)] md:h-10 md:w-10 md:text-sm",
           open && "shadow-[0_0_0_3px_rgba(232,112,63,0.25)]",
         )}
       >

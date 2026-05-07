@@ -16,7 +16,7 @@ interface Props {
 export function PrincipleStep({ step }: Props) {
   return (
     <StepCard variant="principle">
-      <div className="flex flex-col items-center gap-6 py-4 text-center sm:py-8">
+      <div className="flex flex-col items-center gap-4 py-2 text-center sm:gap-6 sm:py-8">
         <p className="principle-headline font-heading text-3xl font-bold leading-tight tracking-tight text-text-primary sm:text-5xl">
           {step.headline}
         </p>
@@ -24,7 +24,7 @@ export function PrincipleStep({ step }: Props) {
           {step.emphasis}
         </p>
         {step.caption && (
-          <p className="principle-caption mt-4 max-w-md text-sm italic text-text-secondary sm:text-base">
+          <p className="principle-caption mt-2 max-w-md text-sm italic text-text-secondary sm:mt-4 sm:text-base">
             {step.caption}
           </p>
         )}
