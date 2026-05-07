@@ -1,0 +1,298 @@
+{
+  "id": "mindset-02",
+  "format_version": 3,
+  "path_slug": "mindset",
+  "order": 2,
+  "title": "The right setup",
+  "map_title": "The right setup",
+  "subtitle": "The AI needs a home, not a tab.",
+  "difficulty": "beginner",
+  "estimated_minutes": 9,
+  "base_xp": 100,
+  "difficulty_bonus_xp": 0,
+  "icon": "/brand/lessons/mindset-02.svg",
+  "cliffhanger": "Tomorrow: how to give the AI context without writing a novel.",
+  "steps": [
+    {
+      "id": "intro-arrival",
+      "type": "text",
+      "spark_state": "idle",
+      "paragraphs": [
+        "You came back. Good.",
+        "You closed lesson one. You learned the AI is obedient, not smart. Now we take a step forward.",
+        "Today I'll show you where the magic happens. Or where it doesn't, if you get it wrong."
+      ],
+      "vignettes": [
+        { "short": "I knew you'd be back.", "full": "I knew you'd be back. People who finish lesson one almost always come back." },
+        { "short": "Now we get serious.", "full": "Now we get serious. I hope you have a computer nearby, or a free hand to jot two things down." },
+        { "short": "No fluff today.", "full": "No fluff today. It's a hands-on lesson. What you learn, you take home." }
+      ]
+    },
+    {
+      "id": "problem-no-home",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "If you've ever asked ChatGPT to write code, this has happened to you: it gives it. You copy. It doesn't work. You send it back. It changes it. Still doesn't work.",
+        "Six rounds in, you're tired and the AI looks dumb.",
+        "It's not dumb. It just has no home."
+      ],
+      "vignettes": [
+        { "short": "Home? Yes, you heard me.", "full": "Home? Yes, you heard me right. I'll explain in a second." },
+        { "short": "You're not the only one.", "full": "You're not the only one. Almost everyone starts like this. It's the bad habit I'm taking off you today." }
+      ]
+    },
+    {
+      "id": "story-three-tabs",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "Story time. Stefano had no home either, in the beginning.",
+        "He'd open ChatGPT in a tab, copy code into another tab, run it in a third. Three tabs, zero context. Every time he asked something, he had to re-explain everything from scratch.",
+        "Then he discovered there are proper places to talk to the AI while you build. Everything changed."
+      ],
+      "vignettes": [
+        { "short": "Three tabs. Really.", "full": "Three tabs. Really. I know — I was around, in an earlier version of me." },
+        { "short": "Took him weeks.", "full": "Took him weeks to figure it out. I'll save you the pain — five minutes." },
+        { "short": "You're not the only one.", "full": "You're not the only one starting from there. It's the most common starting point, by far." }
+      ]
+    },
+    {
+      "id": "principle-needs-home",
+      "type": "principle",
+      "spark_state": "surprised",
+      "headline": "The AI needs a home.",
+      "emphasis": "Not a tab.",
+      "caption": "When the AI lives in the right place, it sees your work. When it lives in a tab, it guesses.",
+      "vignettes": [
+        { "short": "More important than it looks.", "full": "More important than it looks. Hold this thought." },
+        { "short": "See if it sticks.", "full": "See if it sticks. Two steps from now I'll prove it." }
+      ]
+    },
+    {
+      "id": "ide-explainer",
+      "type": "text",
+      "spark_state": "listening",
+      "paragraphs": [
+        "Listen. An IDE is the place you write code. Nothing new — it's been around since the 1960s.",
+        "An AI IDE is the same thing, but with an AI living inside that sees everything you do. It sees files, errors, context. When you ask for something, it doesn't start from zero.",
+        "Three names you'll keep hearing in 2026: Cursor, Windsurf, Claude Code. The most used ones."
+      ],
+      "vignettes": [
+        { "short": "Cursor, Windsurf, Claude Code — cousins.", "full": "Cursor, Windsurf, Claude Code — cousins. Different UIs, same principle." },
+        { "short": "Stefano's favourite is Claude Code.", "full": "Stefano's favourite is Claude Code. I'm not pushing it on you — just so you know." },
+        { "short": "Pick yours.", "full": "Pick yours. What you'll learn today applies to all of them, not just one." }
+      ]
+    },
+    {
+      "id": "workflow-choice",
+      "type": "choice",
+      "spark_state": "listening",
+      "prompt": "How do you work right now when you ask the AI for code?",
+      "options": [
+        { "key": "tabs", "label": "ChatGPT in one tab, code in another" },
+        { "key": "ide", "label": "I've already used Cursor, Windsurf or similar" },
+        { "key": "never_tried", "label": "I haven't tried coding with AI yet" },
+        { "key": "other", "label": "I do it some other way" }
+      ],
+      "vignettes": [
+        { "short": "Gut answer.", "full": "Gut answer. What you actually do, not what you wish you did." }
+      ]
+    },
+    {
+      "id": "workflow-reaction",
+      "type": "text",
+      "spark_state": "idle",
+      "paragraphs": [
+        "Got it. Let's keep moving.",
+        "The choice of tool matters less than you think. What matters is the next concept."
+      ],
+      "paragraphs_by_choice": {
+        "source_step_id": "workflow-choice",
+        "by_key": {
+          "tabs": [
+            "Got it. The most common starting setup, and the exact one that frustrated Stefano.",
+            "Good news: switching is easy. Less good: you'll need to install something in the next hours or days.",
+            "Stay where you are for today — what you learn now applies anyway."
+          ],
+          "ide": [
+            "Good. Then I'll skip the «what's an AI IDE» part.",
+            "We jump straight to the part most of your peers don't actually know: how you really configure it so it doesn't fight you.",
+            "That's where the real difference shows up."
+          ],
+          "never_tried": [
+            "Okay. You're at an advantage: no bad habits to unlearn.",
+            "Let's start clean. What you learn today, you'll apply to the first AI IDE you open.",
+            "Hold on to the concept. The tool you pick later."
+          ],
+          "other": [
+            "Okay. We'll see if what I'm telling you today fits or you're already past it.",
+            "Either way, let's keep going. Even a custom workflow benefits from the concept I'm about to share.",
+            "It's not tied to a single tool."
+          ]
+        }
+      },
+      "vignettes": [
+        { "short": "Tool matters less than the concept.", "full": "Tool matters less than the concept coming up. Stay sharp." }
+      ]
+    },
+    {
+      "id": "claudemd-hook",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "Now I'll tell you something few people know that changes everything.",
+        "Doesn't matter which AI IDE you use. They all have the same problem: the AI forgets who you are between conversations.",
+        "There's a trick to fix it. It's a file. Called CLAUDE.md, AGENTS.md, or cursor rules — depends on the tool. But the principle is the same."
+      ],
+      "vignettes": [
+        { "short": "Wait for the next step.", "full": "Wait for the next step. What's coming is the important bit." },
+        { "short": "Few people really know this.", "full": "Few people really know this. It puts you six months ahead of someone starting today." }
+      ]
+    },
+    {
+      "id": "principle-claudemd",
+      "type": "principle",
+      "spark_state": "surprised",
+      "headline": "CLAUDE.md is the letter",
+      "emphasis": "you give the AI every time it walks into your house.",
+      "caption": "Once you write it, the AI re-reads it every time. Stops forgetting.",
+      "vignettes": [
+        { "short": "Think of it as a manual.", "full": "Think of it as a manual. Except you write it, and only the AI reads it." },
+        { "short": "Write once.", "full": "Write once, tweak over time, applies for years." }
+      ]
+    },
+    {
+      "id": "claudemd-contents",
+      "type": "text",
+      "spark_state": "idle",
+      "paragraphs": [
+        "Four things. Just four. I'll list them.",
+        "1. What you're building. One sentence, two max.",
+        "2. What you're building it with. Stack, framework, versions.",
+        "3. House rules. What to do, what not to do.",
+        "4. How you want the AI to work. Show me the plan first, explain what you change, etc."
+      ],
+      "vignettes": [
+        { "short": "That's it.", "full": "That's it. Looks small, it isn't." },
+        { "short": "Not rocket science.", "full": "Not rocket science. Just the difference between being understood and not." }
+      ]
+    },
+    {
+      "id": "claudemd-example",
+      "type": "text",
+      "spark_state": "idle",
+      "paragraphs": [
+        "Real example.",
+        "Promptly's CLAUDE.md says things like: «I'm building an educational app, stack Supabase + Netlify, don't add dependencies without asking, show me diffs before applying changes.»",
+        "Six lines. Six lines that separate an AI doing damage from one working with me."
+      ],
+      "vignettes": [
+        { "short": "Stefano rewrote it 4 times.", "full": "Stefano rewrote it four times. He doesn't touch it now — it's in the right shape." },
+        { "short": "Worth it for any serious project.", "full": "Worth it for any serious project. Without one, you start limping." }
+      ]
+    },
+    {
+      "id": "quickwin-intro",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "Now it's your turn. No more reading — writing.",
+        "I'll have you write your first CLAUDE.md. Not for a real project yet — for a standard one you pick from three.",
+        "That way I get to see how you think."
+      ],
+      "vignettes": [
+        { "short": "Don't worry.", "full": "Don't worry, there's not much to get wrong. And you have three tries." },
+        { "short": "Almost.", "full": "Almost there. Breathe, pick a project, write." }
+      ]
+    },
+    {
+      "id": "quickwin-editor",
+      "type": "interactive",
+      "spark_state": "listening",
+      "widget": "claudemd_editor",
+      "intro": "Pick one of these three projects — all of them realistic, and I'll grade what you write against them.",
+      "max_attempts": 3,
+      "claudemd_config": {
+        "projects": [
+          {
+            "key": "ecommerce",
+            "icon": "🛒",
+            "title": "E-commerce",
+            "description": "Small online shop: catalog, cart, checkout, payments."
+          },
+          {
+            "key": "habits",
+            "icon": "📊",
+            "title": "Habit tracker app",
+            "description": "Personal routines with stats and streaks."
+          },
+          {
+            "key": "website",
+            "icon": "🌐",
+            "title": "Website",
+            "description": "Personal portfolio or business landing page."
+          }
+        ],
+        "sections": [
+          {
+            "kind": "what",
+            "label": "What we're building",
+            "placeholder": "Describe the project in 1-2 specific sentences."
+          },
+          {
+            "kind": "stack",
+            "label": "What we're building it with (stack)",
+            "placeholder": "Framework, libraries, services. Be concrete."
+          },
+          {
+            "kind": "rules",
+            "label": "House rules",
+            "placeholder": "What the AI must NOT do. Constraints that protect the work."
+          },
+          {
+            "kind": "workflow",
+            "label": "How I want to work with the AI",
+            "placeholder": "Ex: explain what you'll change before doing it, and let me approve the big changes."
+          }
+        ],
+        "min_chars": 30,
+        "max_chars": 1200,
+        "xp_by_case": {
+          "vague": 50,
+          "partial_basics": 100,
+          "missing_workflow": 150,
+          "generic_complete": 150,
+          "excellent": 250,
+          "perfect": 300
+        }
+      },
+      "xp_by_band": {
+        "poor": 50,
+        "one_bug": 100,
+        "two_bugs": 150,
+        "all_bugs": 200,
+        "perfect": 250
+      },
+      "vignettes": [
+        { "short": "Be specific. Always.", "full": "Be specific. Always. The more specific you are, the more I respect you as an AI." },
+        { "short": "Three tries. Use them well.", "full": "Three tries. Use them well. On try two I drop a hint, on try three I tell you straight." },
+        { "short": "The file is yours.", "full": "The file is yours. You'll reuse it in your first real project." }
+      ]
+    },
+    {
+      "id": "outro-cliffhanger",
+      "type": "text",
+      "spark_state": "happy",
+      "paragraphs": [
+        "Lesson two done. Now you have a home, and a letter for whoever steps in.",
+        "Tomorrow I'll teach you something that'll feel weird: how to give the AI context without writing a novel. You can compress without losing meaning. I'll show you how.",
+        "I'll be waiting."
+      ],
+      "vignettes": [
+        { "short": "You're learning fast.", "full": "You're learning fast. I don't say it often, but I notice." },
+        { "short": "See you tomorrow.", "full": "See you tomorrow. Nothing too long this time — but operational, like today." }
+      ]
+    }
+  ]
+}

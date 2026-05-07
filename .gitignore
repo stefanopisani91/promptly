@@ -42,3 +42,10 @@ NOTE-*.md
 # spark coherence test outputs (raw model responses + scratch files)
 scripts/_spark-test-output.json
 scripts/_*.json
+
+# MCP config workspace-level (può contenere credenziali/config locali)
+.vscode/mcp.json
+.mcp.json
+
+# Playwright MCP debug output (snapshot + console logs)
+.playwright-mcp/

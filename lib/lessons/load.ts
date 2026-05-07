@@ -223,8 +223,26 @@ function isLessonV3Step(value: unknown): value is LessonV3Step {
     if (!isVignettesArray(b.vignettes)) return false;
   }
   switch (b.type) {
-    case "text":
-      return isStringArray(b.paragraphs);
+    case "text": {
+      if (!isStringArray(b.paragraphs)) return false;
+      // Optional reactive paragraphs — added in Lesson 2.
+      if ("paragraphs_by_choice" in b && b.paragraphs_by_choice !== undefined) {
+        const pbc = b.paragraphs_by_choice as Record<string, unknown>;
+        if (
+          typeof pbc !== "object" ||
+          pbc === null ||
+          typeof pbc.source_step_id !== "string" ||
+          typeof pbc.by_key !== "object" ||
+          pbc.by_key === null
+        ) {
+          return false;
+        }
+        for (const v of Object.values(pbc.by_key as Record<string, unknown>)) {
+          if (!isStringArray(v)) return false;
+        }
+      }
+      return true;
+    }
     case "principle":
       return typeof b.headline === "string" && typeof b.emphasis === "string";
     case "input": {
@@ -247,14 +265,38 @@ function isLessonV3Step(value: unknown): value is LessonV3Step {
       );
     }
     case "interactive": {
-      if (b.widget !== "lucia_prompt_loop") return false;
-      if (typeof b.max_attempts !== "number" || b.max_attempts < 1) return false;
-      if (
-        typeof b.xp_by_band !== "object" ||
-        b.xp_by_band === null ||
-        typeof (b.xp_by_band as Record<string, unknown>).poor !== "number"
-      ) {
+      if (b.widget !== "lucia_prompt_loop" && b.widget !== "claudemd_editor")
         return false;
+      if (typeof b.max_attempts !== "number" || b.max_attempts < 1) return false;
+      if (b.widget === "lucia_prompt_loop") {
+        if (
+          typeof b.xp_by_band !== "object" ||
+          b.xp_by_band === null ||
+          typeof (b.xp_by_band as Record<string, unknown>).poor !== "number"
+        ) {
+          return false;
+        }
+      }
+      if (b.widget === "claudemd_editor") {
+        const cfg = b.claudemd_config as
+          | Record<string, unknown>
+          | undefined;
+        if (!cfg || typeof cfg !== "object") return false;
+        if (!Array.isArray(cfg.projects) || cfg.projects.length < 2) return false;
+        if (!Array.isArray(cfg.sections) || cfg.sections.length < 1) return false;
+        if (
+          typeof cfg.min_chars !== "number" ||
+          typeof cfg.max_chars !== "number"
+        ) {
+          return false;
+        }
+        if (
+          typeof cfg.xp_by_case !== "object" ||
+          cfg.xp_by_case === null ||
+          typeof (cfg.xp_by_case as Record<string, unknown>).vague !== "number"
+        ) {
+          return false;
+        }
       }
       return true;
     }

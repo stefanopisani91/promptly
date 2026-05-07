@@ -747,6 +747,53 @@ export async function incrementDailyPromiseRegenCount(
   return { count: newCount };
 }
 
+// ─── Lesson 2 — CLAUDE.md daily attempts counter ───────────────────────
+//
+// Same shape as the promise_regen counter above: a third column on
+// spark_usage_daily, read-then-write upsert. Sits on the same natural key
+// (user_id, usage_date) so all "daily AI usage" counters live on one row.
+
+export async function getDailyClaudemdAttemptCount(
+  supabase: AppSupabaseClient,
+  userId: string,
+  date: string,
+): Promise<number> {
+  const { data, error } = await supabase
+    .from("spark_usage_daily")
+    .select("claudemd_attempts_count")
+    .eq("user_id", userId)
+    .eq("usage_date", date)
+    .maybeSingle();
+  if (error) throw error;
+  return data?.claudemd_attempts_count ?? 0;
+}
+
+export async function incrementDailyClaudemdAttemptCount(
+  supabase: AppSupabaseClient,
+  params: { userId: string; date: string },
+): Promise<{ count: number }> {
+  const { data: existing, error: readErr } = await supabase
+    .from("spark_usage_daily")
+    .select("claudemd_attempts_count")
+    .eq("user_id", params.userId)
+    .eq("usage_date", params.date)
+    .maybeSingle();
+  if (readErr) throw readErr;
+
+  const newCount = (existing?.claudemd_attempts_count ?? 0) + 1;
+  const { error: writeErr } = await supabase.from("spark_usage_daily").upsert(
+    {
+      user_id: params.userId,
+      usage_date: params.date,
+      claudemd_attempts_count: newCount,
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: "user_id,usage_date" },
+  );
+  if (writeErr) throw writeErr;
+  return { count: newCount };
+}
+
 const SAFETY_EXCERPT_MAX_CHARS = 200;
 
 /**

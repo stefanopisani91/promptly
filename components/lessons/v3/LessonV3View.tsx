@@ -43,6 +43,10 @@ import {
   type InteractiveStepResult,
   type InteractiveStepStrings,
 } from "./steps/InteractiveStep";
+import {
+  ClaudemdEditor,
+  type ClaudemdEditorStrings,
+} from "./steps/ClaudemdEditor";
 
 export interface LessonV3ViewStrings {
   header: {
@@ -61,6 +65,7 @@ export interface LessonV3ViewStrings {
   inputStep: InputStepStrings;
   rewardStep: RewardStepStrings;
   interactiveStep: InteractiveStepStrings;
+  claudemdEditor: ClaudemdEditorStrings;
   chat: import("./SparkChat").SparkChatStrings;
 }
 
@@ -323,7 +328,7 @@ interface RenderContext {
 function renderStep(step: LessonV3Step, ctx: RenderContext) {
   switch (step.type) {
     case "text":
-      return <TextStep step={step} />;
+      return <TextStep step={step} stepState={ctx.stepState} />;
     case "principle":
       return <PrincipleStep step={step} />;
     case "input":
@@ -354,6 +359,31 @@ function renderStep(step: LessonV3Step, ctx: RenderContext) {
         />
       );
     case "interactive":
+      if (step.widget === "claudemd_editor") {
+        return (
+          <ClaudemdEditor
+            step={step}
+            state={
+              ctx.stepState[step.id] as
+                | {
+                    result?: InteractiveStepResult;
+                    editorText?: string;
+                    selectedProject?: string;
+                  }
+                | undefined
+            }
+            onComplete={(result, extras) =>
+              ctx.updateStepState(step.id, {
+                result,
+                editorText: extras.editorText,
+                selectedProject: extras.selectedProject,
+              })
+            }
+            onAdvance={ctx.goNext}
+            strings={ctx.strings.claudemdEditor}
+          />
+        );
+      }
       return (
         <InteractiveStep
           step={step}

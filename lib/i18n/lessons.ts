@@ -1,4 +1,5 @@
 import type { Lang, PathSlug } from "@/types";
+import { getMindset02DynamicPlaceholders } from "@/lib/lessons/mindset-02-data";
 
 export interface PathDisplay {
   title: string;
@@ -142,6 +143,53 @@ export interface LessonsCopy {
         thirdAttemptDirect: string;
       };
     };
+    // Lesson 2 — CLAUDE.md editor widget.
+    claudemdEditor: {
+      intro: string;
+      selectProjectLabel: string;
+      selectedLabel: string;
+      sectionPlaceholderHint: string;
+      // Per-section: "{current} / {max}"
+      charCounterTemplate: string;
+      // Unified bottom-of-editor counter: "{current} / {max} caratteri
+      // totali" (or "chars total" in EN). Different from the per-section
+      // template because Lesson 2 uses the unified one and future lessons
+      // may want either or both.
+      totalCharCounterTemplate: string;
+      // "Tentativo {current} / {max}"
+      attemptCounterTemplate: string;
+      // Visible text + aria-label for the "compiled" badge that
+      // appears next to a section title once it crosses the
+      // minCharsForBadge threshold.
+      sectionFilledBadgeText: string;
+      sectionFilledBadgeAriaLabel: string;
+      // Per-project placeholder copy for the "stack" and "rules" sections,
+      // resolved for the user's locale. Pre-resolved here so the component
+      // doesn't need to carry a lang prop. Sections whose `kind` doesn't
+      // match these (e.g. "what" / "workflow") fall through to the static
+      // placeholder shipped in the lesson JSON.
+      sectionPlaceholdersByProject: {
+        stack: Record<string, string>;
+        rules: Record<string, string>;
+      };
+      submitCta: string;
+      submitting: string;
+      retryCta: string;
+      finalCta: string;
+      awaitingPrompt: string;
+      outOfAttempts: string;
+      networkError: string;
+      apiError: string;
+      rateLimitError: string;
+      // Surfaced when the server rejects the editor text via the
+      // injection pre-filter (signal logged to spark_safety_log).
+      invalidInputError: string;
+      // Per-user daily cap on the CLAUDE.md grader. Distinct from the
+      // per-lesson 3 attempts cap (which is exposed as "outOfAttempts").
+      dailyQuotaExhausted: string;
+      editorTabLabel: string;
+      sparkTabLabel: string;
+    };
     chat: {
       launcherLabel: string;
       modalTitle: string;
@@ -174,6 +222,25 @@ export interface LessonsCopy {
         recall: (project: string) => string;
         // Used when the user picked "exploring" in onboarding (no idea yet).
         exploring: string;
+      };
+    };
+    // Lesson 2 — server-rendered personalisation strings injected by
+    // lib/lessons/v3/personalize.ts based on preferred_tool / experience_level.
+    mindset02: {
+      step5: {
+        // Cos'è un IDE AI — lunghezza variabile per livello.
+        beginner: string[];
+        triedFailed: string[];
+        workingOnIt: string[];
+        advanced: string[];
+      };
+      step8: {
+        // Anticipazione concetto chiave — varia con preferred_tool.
+        // Default usato quando preferred_tool è null o non riconosciuto.
+        default: string[];
+        // Build the personalised paragraphs at runtime — the tool name and
+        // its config-file label come from the catalog (lib/onboarding/tools.ts).
+        withTool: (toolName: string, configFile: string) => string[];
       };
     };
   };
@@ -361,6 +428,31 @@ const it: LessonsCopy = {
         thirdAttemptDirect: "Ultimo tentativo. Te lo dico chiaro: ci sono tre problemi sul sito di Lucia. Foto. Titolo. Bottone. Adesso che li sai tutti, scrivimi un prompt completo per sistemarli.",
       },
     },
+    claudemdEditor: {
+      intro: "Scegli uno dei tre progetti, poi scrivi il tuo CLAUDE.md. Lo leggo io e ti dico cosa funziona e cosa manca.",
+      selectProjectLabel: "Scegli il progetto",
+      selectedLabel: "Selezionato",
+      sectionPlaceholderHint: "Scrivi qui le tue 4 sezioni. Tieni separati i blocchi con un'a capo.",
+      charCounterTemplate: "{current} / {max} caratteri",
+      totalCharCounterTemplate: "{current} / {max} caratteri totali",
+      attemptCounterTemplate: "Tentativo {current} / {max}",
+      sectionFilledBadgeText: "compilata",
+      sectionFilledBadgeAriaLabel: "Sezione compilata",
+      sectionPlaceholdersByProject: getMindset02DynamicPlaceholders("it"),
+      submitCta: "Invia a Spark",
+      submitting: "Sto leggendo…",
+      retryCta: "Riprova",
+      finalCta: "Continua →",
+      awaitingPrompt: "Scegli un progetto e scrivi le 4 sezioni. Poi te lo commento.",
+      outOfAttempts: "Va bene così. Hai dato il massimo per oggi. Quello che hai imparato resta.",
+      networkError: "Sono offline. Non è colpa tua. Riprova quando hai rete.",
+      apiError: "Qualcosa non ha funzionato. Riprova tra poco.",
+      rateLimitError: "Troppi tentativi ravvicinati. Dammi un momento.",
+      invalidInputError: "Quel testo non posso valutarlo. Riformula nelle 4 sezioni: cosa, stack, regole, workflow.",
+      dailyQuotaExhausted: "Per oggi hai esaurito le valutazioni che posso farti. Torna domani — il tuo testo lo tieni tu.",
+      editorTabLabel: "Editor",
+      sparkTabLabel: "Spark",
+    },
     chat: {
       launcherLabel: "Chiedi a Spark",
       modalTitle: "Spark",
@@ -388,6 +480,40 @@ const it: LessonsCopy = {
           `Mi dicesti che vuoi costruire "${project}". Lavoreremo su quello come esempio.`,
         exploring:
           "Tu stai esplorando, va bene. Useremo l'esempio di Lucia, che vuole costruire FrigoMagico — la vedrai tra poco.",
+      },
+    },
+    mindset02: {
+      step5: {
+        beginner: [
+          "Senti. L'IDE è il posto dove scrivi codice. Non è una novità — esiste dagli anni '60.",
+          "L'IDE AI è la stessa cosa, ma con un'AI dentro che vede tutto quello che fai. Vede i file, vede gli errori, vede il contesto. Quando le chiedi qualcosa, non parte da zero.",
+          "Tre nomi che sentirai sempre nel 2026: Cursor, Windsurf, Claude Code. Sono i più usati.",
+        ],
+        triedFailed: [
+          "L'IDE AI è il posto dove scrivi e l'AI vede tutto: file, errori, contesto. Niente più copia-incolla tra tab diverse.",
+          "Tu hai già provato qualcosa, quindi sai com'è quando l'AI dimentica il file precedente. Ecco — un IDE AI risolve quel pezzo lì.",
+          "Tre nomi del 2026: Cursor, Windsurf, Claude Code. Cugini di sangue.",
+        ],
+        workingOnIt: [
+          "Tu lo sai già cos'è un IDE. Quello che cambia con l'AI è che non parla a vuoto — vede tutto il contesto del progetto.",
+          "Niente più copia-incolla. È l'unica vera differenza, ed è enorme.",
+        ],
+        advanced: [
+          "Ti risparmio le definizioni — sai già cos'è un IDE AI e perché vede il contesto.",
+          "Andiamo dritti al pezzo che molti dei tuoi colleghi non sanno davvero: come si configura.",
+        ],
+      },
+      step8: {
+        default: [
+          "Adesso ti dico una cosa che pochi sanno e che cambia tutto.",
+          "Non importa quale IDE AI usi. Tutti hanno lo stesso problema: l'AI dimentica chi sei tra una conversazione e l'altra.",
+          "C'è un trucco per risolverlo. È un file. Si chiama CLAUDE.md, AGENTS.md, o cursor rules — dipende dal tool. Ma il principio è sempre lo stesso.",
+        ],
+        withTool: (toolName, configFile) => [
+          "Adesso ti dico una cosa che pochi sanno e che cambia tutto.",
+          `${toolName} ha lo stesso problema di tutti gli altri IDE AI: dimentica chi sei tra una conversazione e l'altra.`,
+          `C'è un trucco per risolverlo. In ${toolName} si chiama \`${configFile}\`. In altri tool ha nomi diversi — CLAUDE.md, AGENTS.md, windsurfrules. Ma il principio è lo stesso.`,
+        ],
       },
     },
   },
@@ -552,6 +678,31 @@ const en: LessonsCopy = {
         thirdAttemptDirect: "Last try. I'll be straight: there are three problems on Lucia's site. Photo. Title. Button. Now that you know all three, write me a complete prompt to fix them.",
       },
     },
+    claudemdEditor: {
+      intro: "Pick one of the three projects, then write your CLAUDE.md. I'll read it and tell you what works and what's missing.",
+      selectProjectLabel: "Pick a project",
+      selectedLabel: "Selected",
+      sectionPlaceholderHint: "Write your 4 sections here. Keep blocks apart with a blank line.",
+      charCounterTemplate: "{current} / {max} chars",
+      totalCharCounterTemplate: "{current} / {max} chars total",
+      attemptCounterTemplate: "Try {current} / {max}",
+      sectionFilledBadgeText: "filled",
+      sectionFilledBadgeAriaLabel: "Section filled",
+      sectionPlaceholdersByProject: getMindset02DynamicPlaceholders("en"),
+      submitCta: "Send to Spark",
+      submitting: "Reading…",
+      retryCta: "Retry",
+      finalCta: "Continue →",
+      awaitingPrompt: "Pick a project and fill the 4 sections. Then I'll comment.",
+      outOfAttempts: "It's fine. You gave today your best. What you learned sticks.",
+      networkError: "I'm offline. Not your fault. Try again when you're back.",
+      apiError: "Something went wrong. Try again in a bit.",
+      rateLimitError: "Too many tries too fast. Give me a moment.",
+      invalidInputError: "I can't grade that text. Rewrite it inside the 4 sections: what, stack, rules, workflow.",
+      dailyQuotaExhausted: "You've used all the evaluations I can give you today. Come back tomorrow — your text stays with you.",
+      editorTabLabel: "Editor",
+      sparkTabLabel: "Spark",
+    },
     chat: {
       launcherLabel: "Ask Spark",
       modalTitle: "Spark",
@@ -579,6 +730,40 @@ const en: LessonsCopy = {
           `You told me you want to build "${project}". We'll use that as our example.`,
         exploring:
           "You're exploring, that's fine. We'll use Lucia's FrigoMagico as our example — you'll see it shortly.",
+      },
+    },
+    mindset02: {
+      step5: {
+        beginner: [
+          "Listen. An IDE is the place you write code. Nothing new — it's been around since the 1960s.",
+          "An AI IDE is the same thing, but with an AI living inside that sees everything you do. It sees files, errors, context. When you ask for something, it doesn't start from zero.",
+          "Three names you'll keep hearing in 2026: Cursor, Windsurf, Claude Code. The most used ones.",
+        ],
+        triedFailed: [
+          "An AI IDE is the place where you write, and the AI sees everything: files, errors, context. No more copy-paste between tabs.",
+          "You've already tried something, so you know what it's like when the AI forgets the previous file. That's exactly what an AI IDE fixes.",
+          "Three 2026 names: Cursor, Windsurf, Claude Code. Blood cousins.",
+        ],
+        workingOnIt: [
+          "You know what an IDE is already. What changes with AI inside is that it doesn't talk in the dark — it sees the whole project context.",
+          "No more copy-paste. It's the only real difference, and it's huge.",
+        ],
+        advanced: [
+          "I'll skip the definitions — you know what an AI IDE is and why it sees the context.",
+          "Let's go straight to the part most of your peers don't actually know: how you configure it.",
+        ],
+      },
+      step8: {
+        default: [
+          "Now I'll tell you something few people know that changes everything.",
+          "Doesn't matter which AI IDE you use. They all have the same problem: the AI forgets who you are between conversations.",
+          "There's a trick to fix it. It's a file. Called CLAUDE.md, AGENTS.md, or cursor rules — depends on the tool. But the principle is the same.",
+        ],
+        withTool: (toolName, configFile) => [
+          "Now I'll tell you something few people know that changes everything.",
+          `${toolName} has the same problem as every other AI IDE: it forgets who you are between conversations.`,
+          `There's a trick to fix it. In ${toolName} it's called \`${configFile}\`. In other tools it has different names — CLAUDE.md, AGENTS.md, windsurfrules. But the principle is the same.`,
+        ],
       },
     },
   },

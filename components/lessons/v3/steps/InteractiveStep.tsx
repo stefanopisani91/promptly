@@ -191,7 +191,10 @@ export function InteractiveStep({
       ];
       const fixedCount = fixedFlags.filter(Boolean).length;
       const band = bandFor(bestScore, fixedCount);
-      const xpEarned = step.xp_by_band[band];
+      // xp_by_band is required for the lucia_prompt_loop widget — the loader
+      // rejects a JSON without it. The optional type is a courtesy to the
+      // claudemd_editor widget, which uses xp_by_case instead.
+      const xpEarned = step.xp_by_band?.[band] ?? 0;
       onComplete(
         {
           attempts: attemptCount,

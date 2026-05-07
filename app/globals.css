@@ -636,6 +636,112 @@ h6 {
   will-change: transform, opacity;
 }
 
+/* ─────────────────────────────────────────────────────────────
+   LESSON 2 — OptionCardSelector (project picker, reusable)
+   Idle pulse synchronises across siblings because they share the
+   same animation-name + duration; cards mounted together stay in
+   phase. Bounce-in is a one-shot keyed by React state.
+───────────────────────────────────────────────────────────── */
+@keyframes option-card-idle-pulse {
+  /* 4s cycle, peak ~30% in (~1.2s) — gentle, not distracting. */
+  0%, 70%, 100% { transform: scale(1); }
+  30%           { transform: scale(1.015); }
+}
+.option-card-idle-pulse {
+  animation: option-card-idle-pulse 4s ease-in-out infinite;
+  will-change: transform;
+}
+/* Hover scaling has priority over the idle pulse — Tailwind's
+   hover:scale-[1.02] already wins because hover state stops the
+   animation visually via the more-specific class. No special
+   handling needed. */
+
+@keyframes option-card-bounce-in {
+  /* Spring-ish landing into the selected resting scale of 1.02. */
+  0%   { transform: scale(1); }
+  45%  { transform: scale(1.05); }
+  75%  { transform: scale(1.005); }
+  100% { transform: scale(1.02); }
+}
+.option-card-bounce-in {
+  animation: option-card-bounce-in 350ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  /* Force this to win over the idle pulse and the resting scale: */
+  animation-fill-mode: both;
+  will-change: transform;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   LESSON 2 — SectionAccordion (reusable single-open accordion)
+   The expand/collapse uses grid-template-rows: 0fr → 1fr (animated
+   on the wrapper) so we get a true auto-height transition without
+   measuring with JS. Inner div must be overflow-hidden so children
+   are clipped during collapse — handled inline on the panel.
+───────────────────────────────────────────────────────────── */
+@keyframes accordion-section-idle-pulse {
+  /* Even gentler than OptionCardSelector's pulse — sections are
+     larger surfaces, the same scale would feel wobbly. 4s cycle,
+     peak at 30%, max scale 1.008 (≈0.8%). */
+  0%, 70%, 100% { transform: scale(1); }
+  30%           { transform: scale(1.008); }
+}
+.accordion-section-idle-pulse {
+  animation: accordion-section-idle-pulse 4s ease-in-out infinite;
+  transform-origin: left center;
+  will-change: transform;
+}
+
+/* Hover affordance on collapsed triggers — barely visible scale +
+   a subtle warm wash. Lives on the trigger, not the section, so
+   hovering inside an open panel doesn't trigger it. */
+.accordion-section-trigger:hover {
+  transform: scale(1.005);
+}
+.accordion-section-trigger:hover .accordion-arrow {
+  /* 5° anticipation on hover — overridden by .rotate-90 when the
+     section is actually open (open state wins via specificity). */
+  transform: rotate(5deg);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   LESSON 2 — CLAUDE.md editor effects (V3 interactive widget)
+   Border-only animations — never move the editor itself, so
+   typing position stays put.
+───────────────────────────────────────────────────────────── */
+@keyframes claudemd-shake {
+  0%, 100% { transform: translateX(0); }
+  20%      { transform: translateX(-4px); }
+  40%      { transform: translateX(4px); }
+  60%      { transform: translateX(-3px); }
+  80%      { transform: translateX(3px); }
+}
+.claudemd-editor-shake {
+  animation: claudemd-shake 400ms ease-in-out both;
+}
+
+@keyframes claudemd-flash-amber {
+  0%, 100% { border-color: var(--border); }
+  50%      { border-color: #F97316; box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15); }
+}
+.claudemd-editor-flash-amber {
+  animation: claudemd-flash-amber 600ms ease-out both;
+}
+
+@keyframes claudemd-flash-yellow {
+  0%, 100% { border-color: var(--border); }
+  50%      { border-color: #FBBF24; box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.15); }
+}
+.claudemd-editor-flash-yellow {
+  animation: claudemd-flash-yellow 800ms ease-out both;
+}
+
+@keyframes claudemd-glow-green {
+  from { border-color: var(--border); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+  to   { border-color: #10B981; box-shadow: 0 0 24px rgba(16, 185, 129, 0.35); }
+}
+.claudemd-editor-glow-green {
+  animation: claudemd-glow-green 1000ms ease-out both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .step-slide-fwd,
   .step-slide-back,
@@ -644,10 +750,30 @@ h6 {
   .principle-caption,
   .reward-icon-pop,
   .animate-next-pulse,
-  .spark-reply-in {
+  .spark-reply-in,
+  .claudemd-editor-shake,
+  .claudemd-editor-flash-amber,
+  .claudemd-editor-flash-yellow,
+  .claudemd-editor-glow-green,
+  .option-card-idle-pulse,
+  .option-card-bounce-in,
+  .accordion-section-idle-pulse {
     animation: none !important;
     opacity: 1;
     transform: none;
+  }
+  /* Disable the icon nudge on hover — colour change still
+     conveys interactivity for reduced-motion users. */
+  .option-card .option-card-icon,
+  .accordion-section-trigger:hover,
+  .accordion-section-trigger:hover .accordion-arrow {
+    transform: none !important;
+  }
+  /* Make the accordion panel snap open/closed instead of animating
+     the grid rows. The .rotate-90 utility on the open arrow is kept
+     because it's a state cue, not a motion effect. */
+  .accordion-panel {
+    transition: none !important;
   }
 }
 

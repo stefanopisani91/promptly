@@ -207,6 +207,10 @@ export type Database = {
           // Round 8b — separate counter for promise generation calls so
           // chat usage and promise spend don't share the same quota.
           promise_regen_count: number;
+          // Lesson 2 — counter for /api/lesson-claudemd-evaluate calls so
+          // the CLAUDE.md grader has its own daily budget independent of
+          // chat and promise spend.
+          claudemd_attempts_count: number;
           updated_at: string;
         };
         Insert: {
@@ -214,6 +218,7 @@ export type Database = {
           usage_date: string;
           message_count?: number;
           promise_regen_count?: number;
+          claudemd_attempts_count?: number;
           updated_at?: string;
         };
         Update: {
@@ -221,6 +226,7 @@ export type Database = {
           usage_date?: string;
           message_count?: number;
           promise_regen_count?: number;
+          claudemd_attempts_count?: number;
           updated_at?: string;
         };
         Relationships: [];

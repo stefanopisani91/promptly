@@ -473,6 +473,15 @@ export interface TextStep extends StepBase {
   // Each paragraph is a bubble. First paragraph is rendered larger if the
   // step has only one. Spark "speaks" these.
   paragraphs: string[];
+  // Optional reactive override (Lesson 2 introduces this). When set, the
+  // renderer reads the saved choice from `source_step_id` and picks the
+  // matching `by_key[<selectedKey>]` paragraphs. Falls back to the static
+  // `paragraphs` field above when no choice has been made yet or no entry
+  // matches — so the lesson still renders for legacy/incomplete state.
+  paragraphs_by_choice?: {
+    source_step_id: string;
+    by_key: Record<string, string[]>;
+  };
 }
 
 export interface PrincipleStep extends StepBase {
@@ -518,23 +527,66 @@ export interface ChoiceStep extends StepBase {
   scores_archetype?: boolean;
 }
 
-export type InteractiveWidgetType = "lucia_prompt_loop";
+export type InteractiveWidgetType = "lucia_prompt_loop" | "claudemd_editor";
+
+export interface ClaudemdProjectOption {
+  // Stable key used by the evaluator + saved in stepState.
+  key: string;
+  // Glyph rendered above the title (single character, can be an emoji).
+  icon: string;
+  title: string;
+  description: string;
+}
+
+export type ClaudemdSectionKind = "what" | "stack" | "rules" | "workflow";
+
+export interface ClaudemdSection {
+  // Heading written into the editor as a fixed `## ...` line.
+  label: string;
+  // Hint shown faded under the heading (not part of the user's text).
+  placeholder: string;
+  // Optional semantic tag — used by ClaudemdEditor to swap in
+  // project-specific placeholders for "stack" and "rules". Absent on
+  // legacy lessons; the editor falls back to the static `placeholder`
+  // above when missing.
+  kind?: ClaudemdSectionKind;
+}
+
+export interface ClaudemdEditorConfig {
+  projects: ClaudemdProjectOption[];
+  sections: ClaudemdSection[];
+  min_chars: number;
+  max_chars: number;
+  // XP awarded by feedback case. The renderer maps the API's feedback_case
+  // back to the matching key — `perfect` mirrors the score >= 95 bucket.
+  xp_by_case: {
+    vague: number;
+    partial_basics: number;
+    missing_workflow: number;
+    generic_complete: number;
+    excellent: number;
+    perfect: number;
+  };
+}
 
 export interface InteractiveStep extends StepBase {
   type: "interactive";
   widget: InteractiveWidgetType;
-  // Lucia widget config — number of attempts and intro text from Spark.
+  // Optional Spark intro line.
   intro?: string;
   max_attempts: number;
-  // XP awarded by score band. Keys mirror the bands in the spec
-  // (50/100/150/200/250). Computed at completion time.
-  xp_by_band: {
+  // XP awarded by score band — used by the lucia_prompt_loop widget.
+  // Optional so the claudemd_editor widget (which uses xp_by_case) doesn't
+  // need to ship a duplicate band map.
+  xp_by_band?: {
     poor: number;
     one_bug: number;
     two_bugs: number;
     all_bugs: number;
     perfect: number;
   };
+  // Lesson 2 — required when widget === "claudemd_editor".
+  claudemd_config?: ClaudemdEditorConfig;
 }
 
 export interface ArchetypeRevealConfig {

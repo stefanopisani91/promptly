@@ -101,9 +101,12 @@ export default async function LessonPage({ params }: PageProps) {
     // currently swaps Lesson 1's input-motivation step for a recap card
     // when project_description / project_clarity are already known.
     const personalisedLesson = personaliseLessonForUser(lesson, profile, {
-      intro: lessonsCopy.v3.mindset01.projectRecall.intro,
-      recall: lessonsCopy.v3.mindset01.projectRecall.recall,
-      exploring: lessonsCopy.v3.mindset01.projectRecall.exploring,
+      projectRecall: {
+        intro: lessonsCopy.v3.mindset01.projectRecall.intro,
+        recall: lessonsCopy.v3.mindset01.projectRecall.recall,
+        exploring: lessonsCopy.v3.mindset01.projectRecall.exploring,
+      },
+      mindset02: lessonsCopy.v3.mindset02,
     });
 
     const persisted = await getLessonProgress(supabase, user.id, lesson.id);
@@ -151,6 +154,7 @@ export default async function LessonPage({ params }: PageProps) {
         homepageCopy: landingCopy.demo.homepage,
         consoleCopy: landingCopy.demo.console,
       },
+      claudemdEditor: lessonsCopy.v3.claudemdEditor,
       chat: lessonsCopy.v3.chat,
     };
 
