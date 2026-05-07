@@ -67,6 +67,10 @@ export function SparkChat({
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Tracks the current visualViewport height so the panel can shrink when
+  // the iOS virtual keyboard appears. `null` = no measurement yet (SSR /
+  // first paint) → fall back to the CSS dvh-based formula.
+  const [vvHeight, setVvHeight] = useState<number | null>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -85,6 +89,24 @@ export function SparkChat({
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => { document.body.style.overflow = prev; };
+  }, []);
+
+  // Mirror window.visualViewport.height into state so the panel can resize
+  // when the iOS virtual keyboard opens. 100dvh in CSS only adapts to the
+  // URL bar — it does NOT shrink when the keyboard appears, which would
+  // otherwise leave the textarea hidden behind the keyboard. Reading
+  // visualViewport on every resize/scroll covers both cases.
+  useEffect(() => {
+    const vv = typeof window !== "undefined" ? window.visualViewport : null;
+    if (!vv) return;
+    const update = () => setVvHeight(vv.height);
+    update();
+    vv.addEventListener("resize", update);
+    vv.addEventListener("scroll", update);
+    return () => {
+      vv.removeEventListener("resize", update);
+      vv.removeEventListener("scroll", update);
+    };
   }, []);
 
   useEffect(() => {
@@ -177,9 +199,20 @@ export function SparkChat({
       />
 
       {/* ── Panel ── */}
+      {/* Height precedence:
+          - vvHeight present (modern browsers): use Math.min(580, vv-88) so
+            the panel shrinks when the iOS virtual keyboard opens.
+          - vvHeight null (SSR / older browsers): CSS-only fallback to
+            100dvh, which still handles Safari's URL bar correctly. */}
       <div
         className="spark-chat-panel relative flex w-full max-w-md flex-col border border-border bg-surface shadow-2xl"
-        style={{ height: "min(580px, calc(100dvh - 88px))", borderRadius: "28px" }}
+        style={{
+          height:
+            vvHeight !== null
+              ? `${Math.min(580, vvHeight - 88)}px`
+              : "min(580px, calc(100dvh - 88px))",
+          borderRadius: "28px",
+        }}
       >
         {/* Speech-bubble tail — moved further right to point toward Spark */}
         <span
@@ -201,7 +234,7 @@ export function SparkChat({
         />
 
         {/* ── Header — no Spark icon here, it lives only in the body ── */}
-        <header className="flex items-center gap-3 border-b border-border bg-surface px-4 py-3 sm:px-5" style={{ borderRadius: "28px 28px 0 0" }}>
+        <header className="flex shrink-0 items-center gap-3 border-b border-border bg-surface px-4 py-3 sm:px-5" style={{ borderRadius: "28px 28px 0 0" }}>
           <div className="flex min-w-0 flex-1 flex-col">
             <p className="truncate font-heading text-sm font-semibold text-text-primary">
               {strings.modalTitle}
@@ -212,16 +245,24 @@ export function SparkChat({
             type="button"
             onClick={onClose}
             aria-label={strings.closeLabel}
-            className="inline-flex h-8 w-8 items-center justify-center rounded-full text-text-muted transition-colors hover:bg-surface-muted"
+            // 44×44 touch target (Apple HIG). The X glyph stays visually
+            // small at 16px — only the hit area expands.
+            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-text-muted transition-colors hover:bg-surface-muted"
           >
             <X size={16} />
           </button>
         </header>
 
         {/* ── Messages area ── */}
+        {/* min-h-0 is load-bearing: a flex child has min-height: auto by
+            default, which equals min-content size — the section refuses to
+            shrink below its content height, so a long Spark reply pushes
+            the header and input out of the panel and breaks all clicks.
+            min-h-0 lets flex-1 actually shrink, letting overflow-y-auto
+            kick in and produce the expected internal scroll. */}
         <div
           ref={scrollRef}
-          className="flex flex-1 flex-col gap-4 overflow-y-auto px-4 py-4 sm:px-5"
+          className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-4 py-4 sm:px-5"
         >
           {isEmpty && isExhausted ? (
             /* Quota esaurita senza storico — nessuna chat da mostrare */
@@ -304,13 +345,13 @@ export function SparkChat({
         {/* ── Input area / read-only notice ── */}
         {isExhausted ? (
           /* Quota esaurita — banner sola lettura senza Spark (già nel body) */
-          <div className="flex items-center justify-center border-t border-border bg-surface-muted/40 px-4 py-3 sm:px-5" style={{ borderRadius: "0 0 28px 28px" }}>
+          <div className="flex shrink-0 items-center justify-center border-t border-border bg-surface-muted/40 px-4 py-3 sm:px-5" style={{ borderRadius: "0 0 28px 28px" }}>
             <p className="text-xs italic text-text-secondary">
               {strings.quotaExhausted}
             </p>
           </div>
         ) : (
-          <div className="flex flex-col gap-2 border-t border-border bg-surface px-4 py-3 sm:px-5" style={{ borderRadius: "0 0 28px 28px" }}>
+          <div className="flex shrink-0 flex-col gap-2 border-t border-border bg-surface px-4 py-3 sm:px-5" style={{ borderRadius: "0 0 28px 28px" }}>
             <textarea
               ref={inputRef}
               value={draft}
