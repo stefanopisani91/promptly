@@ -1,0 +1,8 @@
+<!-- PLACEHOLDER — sostituire con SVG ufficiale Base44 quando disponibile.
+     Nessun asset ufficiale reperibile al 2026-05-07. Mantieni stesso
+     filename (base44.svg) così il catalogo in lib/onboarding/tools.ts
+     non richiede modifiche. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" aria-hidden="true">
+  <rect width="64" height="64" rx="14" fill="#7C3AED"/>
+  <text x="32" y="42" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="700" fill="#FFFFFF">B44</text>
+</svg>

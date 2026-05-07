@@ -114,7 +114,24 @@
       "Bash(/usr/bin/grep -i \"[g]it\")",
       "Bash(/usr/bin/grep -v \"claude\\\\|grep\")",
       "Bash(rm /Users/stefanopisani/DEV/01_Progetti/PROMPTLY/.git/HEAD.lock *)",
-      "Bash(/usr/bin/grep -n \"goalMinutes\" /Users/stefanopisani/DEV/01_Progetti/PROMPTLY/components/dashboard/DailyGoalInteractive.tsx /Users/stefanopisani/DEV/01_Progetti/PROMPTLY/components/dashboard/DailyGoalCard.tsx)"
+      "Bash(/usr/bin/grep -n \"goalMinutes\" /Users/stefanopisani/DEV/01_Progetti/PROMPTLY/components/dashboard/DailyGoalInteractive.tsx /Users/stefanopisani/DEV/01_Progetti/PROMPTLY/components/dashboard/DailyGoalCard.tsx)",
+      "Bash(/usr/bin/grep -A 12 \"prefers-reduced-motion\\\\|MARKETING\\\\|will-change\")",
+      "Bash(/usr/bin/grep -n \"animate-cta-ring\\\\|prefers-reduced-motion\" /Users/stefanopisani/DEV/01_Progetti/PROMPTLY/app/globals.css)",
+      "Bash(/usr/bin/grep \"[g]it\")",
+      "Bash(/usr/bin/grep -v \"claude\")",
+      "Bash(rm /Users/stefanopisani/DEV/01_Progetti/PROMPTLY/.git/index.lock *)",
+      "Bash(find /Users/stefanopisani/DEV/01_Projeto -path \"*/\\(app\\)/settings*\" 2>/dev/null | head -10)",
+      "Read(//Users/stefanopisani/DEV/**)",
+      "Bash(find /Users/stefanopisani/DEV/01_Projekti/PROMPTLY -path \"*/\\(app\\)/settings*\" 2>/dev/null | head -10)",
+      "Read(//Users/stefanopisani/DEV/01_Projekti/**)",
+      "Bash(find /Users/stefanositani/DEV/01_Progetti/PROMPTLY/components -name \"*.tsx\" | xargs grep -l \"^export.*function\\\\|^export.*const\" | head -20)",
+      "Read(//Users/stefanositani/DEV/01_Progetti/PROMPTLY/**)",
+      "mcp__claude_ai_Supabase__list_projects",
+      "mcp__claude_ai_Supabase__list_migrations",
+      "mcp__claude_ai_Supabase__execute_sql",
+      "Bash(awk '/^const en: LessonsCopy/{flag=1} flag' /Users/stefanopisani/DEV/01_Progetti/PROMPTLY/lib/i18n/lessons.ts)",
+      "Bash(ls -la /mnt/user-data/uploads/ 2>&1 | head -20 ; echo \"---PWD-UPLOADS---\" ; ls /Users/stefanopisani/DEV/01_Progetti/PROMPTLY/uploads/ 2>&1 | head -10 ; echo \"---CURRENT-ICONS---\" ; ls /Users/stefanopisani/DEV/01_Progetti/PROMPTLY/public/tools/ ; echo \"---CATALOG-PATH---\" ; grep \"icon:\" /Users/stefanopisani/DEV/01_Progetti/PROMPTLY/lib/onboarding/tools.ts | head -3)",
+      "Read(//mnt/user-data/**)"
     ],
     "additionalDirectories": [
       "/Users/stefanopisani/DEV/01_Progetti/PROMPTLY/.git"

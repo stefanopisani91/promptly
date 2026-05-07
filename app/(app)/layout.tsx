@@ -8,7 +8,7 @@ import { getAuthCopy } from "@/lib/i18n/auth";
 import { createClient } from "@/lib/supabase/server";
 import { getUserProfile } from "@/lib/supabase/queries";
 import { LangSwitcher } from "@/components/i18n/LangSwitcher";
-import { LogoutButton } from "@/components/dashboard/LogoutButton";
+import { ProfileMenu } from "@/components/dashboard/ProfileMenu";
 
 export default async function AppLayout({ children }: { children: ReactNode }) {
   const supabase = createClient();
@@ -46,7 +46,16 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
         </Link>
         <div className="flex items-center gap-3">
           <LangSwitcher fallback={lang} ariaLabel={copy.shell.langToggleLabel} />
-          <LogoutButton label={copy.dashboard.logoutCta} />
+          <ProfileMenu
+            fullName={profile.full_name}
+            email={profile.email}
+            copy={{
+              openLabel: copy.dashboard.profileMenu.openLabel,
+              profile: copy.dashboard.profileMenu.profile,
+              promises: copy.dashboard.profileMenu.promises,
+              logout: copy.dashboard.profileMenu.logout,
+            }}
+          />
         </div>
       </header>
       {children}

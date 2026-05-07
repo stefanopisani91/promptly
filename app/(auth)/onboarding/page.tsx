@@ -2,14 +2,13 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { isLang, type Lang } from "@/types";
 import { resolveLangFromRequest } from "@/lib/i18n/server-lang";
-import { getAuthCopy } from "@/lib/i18n/auth";
+import { getProfilingCopy } from "@/lib/i18n/profiling";
 import { createClient } from "@/lib/supabase/server";
 import { getUserProfile } from "@/lib/supabase/queries";
-import { OnboardingShell } from "@/components/onboarding/OnboardingShell";
+import { ProfilingShell } from "@/components/onboarding/profiling/ProfilingShell";
 
 type SearchParams = {
   source?: string | string[];
-  completed_demo?: string | string[];
   lang?: string | string[];
 };
 
@@ -23,9 +22,9 @@ export function generateMetadata({
   searchParams: SearchParams;
 }): Metadata {
   const lang = resolveLangFromRequest(searchParams.lang);
-  const copy = getAuthCopy(lang);
+  const copy = getProfilingCopy(lang);
   return {
-    title: copy.meta.titleOnboarding,
+    title: copy.meta.title,
     description: copy.meta.description,
     robots: { index: false, follow: false },
   };
@@ -63,16 +62,12 @@ export default async function OnboardingPage({
 
   const initialName = (profile?.full_name ?? metadataName ?? "").trim();
   const source = firstParam(searchParams.source) ?? null;
-  const completedDemo = firstParam(searchParams.completed_demo) === "true";
 
   return (
-    <main className="flex flex-1 items-start justify-center px-4 py-8 sm:items-center sm:py-12">
-      <OnboardingShell
-        initialName={initialName}
-        initialLang={startingLang}
-        signupSource={source}
-        completedDemo={completedDemo}
-      />
-    </main>
+    <ProfilingShell
+      initialName={initialName}
+      initialLang={startingLang}
+      signupSource={source}
+    />
   );
 }

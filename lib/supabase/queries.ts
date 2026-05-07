@@ -3,8 +3,15 @@
 // the schema/typing surface stays in one place.
 
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { PathSlug, UserProfile, UserProgress, UserReferral } from "@/types";
-import type { Database } from "./types";
+import {
+  isProfilePromises,
+  type PathSlug,
+  type ProfilePromises,
+  type UserProfile,
+  type UserProgress,
+  type UserReferral,
+} from "@/types";
+import type { Database, Json } from "./types";
 import { generateReferralCode } from "@/lib/referral";
 
 export type AppSupabaseClient = SupabaseClient<Database>;
@@ -15,7 +22,7 @@ export type ProfileGate =
   | { state: "complete"; profile: UserProfile };
 
 const USER_PROFILE_COLUMNS =
-  "id, email, full_name, language, daily_goal, onboarding_completed_at, signup_source, welcome_seen_at, push_prompted_at, ai_eval_prompted_at, total_xp, current_streak, longest_streak, last_activity_date, last_level_up_notified, referral_code, referral_link_activated_at, archetype_key, created_at, updated_at";
+  "id, email, full_name, language, daily_goal, onboarding_completed_at, signup_source, welcome_seen_at, push_prompted_at, ai_eval_prompted_at, total_xp, current_streak, longest_streak, last_activity_date, last_level_up_notified, referral_code, referral_link_activated_at, archetype_key, experience_level, project_clarity, project_description, tools_used, tools_other, preferred_tool, deep_motivation, promises, last_profile_check, created_at, updated_at";
 
 export async function getUserProfile(
   supabase: AppSupabaseClient,
@@ -28,7 +35,89 @@ export async function getUserProfile(
     .maybeSingle();
 
   if (error) throw error;
-  return data ?? null;
+  if (!data) return null;
+
+  // `tools_used` is `text[]` in pg; supabase returns it as `string[]` but
+  // the JSON serialiser sometimes spits null for an empty array if the row
+  // was inserted before the default kicked in. Normalise here so callers
+  // never have to.
+  const toolsUsed = Array.isArray(data.tools_used) ? data.tools_used : [];
+  const promises = isProfilePromises(data.promises) ? data.promises : null;
+
+  return {
+    ...data,
+    tools_used: toolsUsed,
+    promises,
+  } satisfies UserProfile;
+}
+
+// ─── Onboarding profilazione ────────────────────────────────────────
+//
+// Progressive save during the 12-step onboarding flow (Profilazione.md
+// §"Salvataggio progressivo"). Each step calls saveOnboardingProgress with
+// the fields it just collected. The user row is upserted so a freshly
+// signed-up user gets created on the first call.
+//
+// Note: this does NOT set onboarding_completed_at — that's reserved for
+// completeOnboarding (the final action in app/(auth)/onboarding/actions.ts).
+// If the user closes the tab mid-flow the row stays partial and the next
+// login restarts onboarding from STEP 1, sovrascrivendo i dati parziali —
+// per spec.
+
+export interface OnboardingProgressFields {
+  full_name?: string;
+  language?: "en" | "it";
+  experience_level?: UserProfile["experience_level"];
+  project_clarity?: UserProfile["project_clarity"];
+  project_description?: string | null;
+  tools_used?: string[];
+  tools_other?: string | null;
+  preferred_tool?: string | null;
+  daily_goal?: UserProfile["daily_goal"];
+  deep_motivation?: string | null;
+  promises?: ProfilePromises | null;
+}
+
+export async function saveOnboardingProgress(
+  supabase: AppSupabaseClient,
+  params: { userId: string; email: string; fields: OnboardingProgressFields },
+): Promise<void> {
+  // ProfilePromises is a typed interface; the Database row column is Json
+  // (open shape). Cast at the persistence boundary so we don't have to
+  // weaken the type everywhere it's read.
+  const { promises: promisesField, ...rest } = params.fields;
+  const upsertRow = {
+    id: params.userId,
+    email: params.email,
+    ...rest,
+    ...(promisesField !== undefined
+      ? { promises: promisesField as unknown as Json }
+      : {}),
+    updated_at: new Date().toISOString(),
+  };
+  const { error } = await supabase
+    .from("users")
+    .upsert(upsertRow, { onConflict: "id" });
+  if (error) throw error;
+}
+
+/**
+ * Persist new promises and bump last_profile_check. Used by both the final
+ * onboarding step and the "Aggiorna le promesse" action in settings.
+ */
+export async function setUserPromises(
+  supabase: AppSupabaseClient,
+  userId: string,
+  promises: ProfilePromises,
+): Promise<void> {
+  const { error } = await supabase
+    .from("users")
+    .update({
+      promises: promises as unknown as Json,
+      last_profile_check: new Date().toISOString(),
+    })
+    .eq("id", userId);
+  if (error) throw error;
 }
 
 /**
@@ -602,6 +691,54 @@ export async function incrementDailySparkUsage(
       user_id: params.userId,
       usage_date: params.date,
       message_count: newCount,
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: "user_id,usage_date" },
+  );
+  if (writeErr) throw writeErr;
+  return { count: newCount };
+}
+
+// ─── Promise generation rate limit (Round 8b) ─────────────────────────
+//
+// Mirrors the Spark daily counter pattern but uses a separate column on
+// the same row so chat usage and promise spend don't compete for the
+// same quota. The two counters share user_id + usage_date as the natural
+// key, so a single upsert handles either.
+
+export async function getDailyPromiseRegenCount(
+  supabase: AppSupabaseClient,
+  userId: string,
+  date: string,
+): Promise<number> {
+  const { data, error } = await supabase
+    .from("spark_usage_daily")
+    .select("promise_regen_count")
+    .eq("user_id", userId)
+    .eq("usage_date", date)
+    .maybeSingle();
+  if (error) throw error;
+  return data?.promise_regen_count ?? 0;
+}
+
+export async function incrementDailyPromiseRegenCount(
+  supabase: AppSupabaseClient,
+  params: { userId: string; date: string },
+): Promise<{ count: number }> {
+  const { data: existing, error: readErr } = await supabase
+    .from("spark_usage_daily")
+    .select("promise_regen_count")
+    .eq("user_id", params.userId)
+    .eq("usage_date", params.date)
+    .maybeSingle();
+  if (readErr) throw readErr;
+
+  const newCount = (existing?.promise_regen_count ?? 0) + 1;
+  const { error: writeErr } = await supabase.from("spark_usage_daily").upsert(
+    {
+      user_id: params.userId,
+      usage_date: params.date,
+      promise_regen_count: newCount,
       updated_at: new Date().toISOString(),
     },
     { onConflict: "user_id,usage_date" },

@@ -162,6 +162,20 @@ export interface LessonsCopy {
       unauthorized: string;
       hintExamples: string[];
     };
+    // Lesson-specific copy injected at server-render time. Lives here
+    // because it's translated alongside the rest of the lesson UI; the
+    // values themselves are consumed by lib/lessons/v3/personalize.ts
+    // when the page rewrites a step based on the user's profile.
+    mindset01: {
+      projectRecall: {
+        // Replaces the original input-step intro line.
+        intro: string;
+        // Used when the user filled `project_description` in onboarding.
+        recall: (project: string) => string;
+        // Used when the user picked "exploring" in onboarding (no idea yet).
+        exploring: string;
+      };
+    };
   };
   outro: {
     title: string;
@@ -355,7 +369,7 @@ const it: LessonsCopy = {
       placeholder: "Scrivi a Spark…",
       sendCta: "Invia",
       sending: "Sto pensando…",
-      emptyHint: "Chiedimi qualcosa sulla lezione, sul vibe coding, su quello che ti blocca. Risposte brevi, in personaggio.",
+      emptyHint: "Chiedimi quello che vuoi sulla lezione, sul vibe coding, su quello che ti blocca.",
       quotaExhausted: "Hai usato tutti i messaggi per questa lezione. Riprovi nella prossima.",
       dailyQuotaExhausted: "Per oggi abbiamo parlato abbastanza. Torna domani.",
       networkError: "Connessione assente. Riprova.",
@@ -366,6 +380,15 @@ const it: LessonsCopy = {
         "Perché hai detto che non sei intelligente?",
         "Da dove vengo io? Dimmi qualcosa di te.",
       ],
+    },
+    mindset01: {
+      projectRecall: {
+        intro: "Adesso parliamo di te.",
+        recall: (project) =>
+          `Mi dicesti che vuoi costruire "${project}". Lavoreremo su quello come esempio.`,
+        exploring:
+          "Tu stai esplorando, va bene. Useremo l'esempio di Lucia, che vuole costruire FrigoMagico — la vedrai tra poco.",
+      },
     },
   },
 };
@@ -537,7 +560,7 @@ const en: LessonsCopy = {
       placeholder: "Write to Spark…",
       sendCta: "Send",
       sending: "Thinking…",
-      emptyHint: "Ask me about the lesson, vibe coding, or whatever's blocking you. Short answers, in character.",
+      emptyHint: "Ask me anything about the lesson, vibe coding, or whatever's blocking you.",
       quotaExhausted: "You've used all your messages for this lesson. Try again in the next one.",
       dailyQuotaExhausted: "We've talked enough for today. Come back tomorrow.",
       networkError: "No connection. Retry.",
@@ -548,6 +571,15 @@ const en: LessonsCopy = {
         "Why did you say you're not smart?",
         "Where do you come from? Tell me about yourself.",
       ],
+    },
+    mindset01: {
+      projectRecall: {
+        intro: "Now let's talk about you.",
+        recall: (project) =>
+          `You told me you want to build "${project}". We'll use that as our example.`,
+        exploring:
+          "You're exploring, that's fine. We'll use Lucia's FrigoMagico as our example — you'll see it shortly.",
+      },
     },
   },
 };

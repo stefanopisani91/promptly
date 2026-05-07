@@ -19,6 +19,7 @@ import {
   getLessonNeighbors,
   isPathUnlocked,
 } from "@/lib/lessons/progress";
+import { personaliseLessonForUser } from "@/lib/lessons/v3/personalize";
 import { calculateLessonXp } from "@/lib/xp";
 import { LessonShell } from "@/components/lessons/LessonShell";
 import { TheoryRenderer } from "@/components/lessons/TheoryRenderer";
@@ -96,6 +97,15 @@ export default async function LessonPage({ params }: PageProps) {
   // INTERACTIVE step, and the user's persisted state so the client view
   // boots straight into "resume where you left off".
   if (isLessonV3Content(lesson)) {
+    // Personalise the lesson against the user's onboarding profile —
+    // currently swaps Lesson 1's input-motivation step for a recap card
+    // when project_description / project_clarity are already known.
+    const personalisedLesson = personaliseLessonForUser(lesson, profile, {
+      intro: lessonsCopy.v3.mindset01.projectRecall.intro,
+      recall: lessonsCopy.v3.mindset01.projectRecall.recall,
+      exploring: lessonsCopy.v3.mindset01.projectRecall.exploring,
+    });
+
     const persisted = await getLessonProgress(supabase, user.id, lesson.id);
     const alreadyCompleted = persisted?.completed ?? false;
     // If the lesson was previously completed, treat any re-entry as a fresh
@@ -146,7 +156,7 @@ export default async function LessonPage({ params }: PageProps) {
 
     return (
       <LessonV3View
-        lesson={lesson}
+        lesson={personalisedLesson}
         pathHref={pathHref}
         strings={v3Strings}
         initialStep={initialStep}

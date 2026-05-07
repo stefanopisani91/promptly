@@ -12,14 +12,24 @@ import { useLessonDirection } from "./LessonDirectionContext";
 interface Props {
   children: ReactNode;
   variant?: "default" | "principle" | "reward";
+  // Opt-in width override. The default `max-w-2xl` (672px) is right for
+  // text-heavy steps; the INTERACTIVE step (Lucia prompt loop) needs the
+  // wider container to match the landing demo's `max-w-5xl` so its
+  // homepage + console panels keep their natural proportions in a
+  // side-by-side grid instead of getting compressed.
+  wide?: boolean;
 }
 
-export function StepCard({ children, variant = "default" }: Props) {
+export function StepCard({ children, variant = "default", wide = false }: Props) {
   const direction = useLessonDirection();
 
   const tone =
     variant === "principle"
-      ? "border-primary/30 bg-primary-light/40"
+      // White surface + neutral border + small shadow, matching the
+      // landing's principle-style card (HeroMockup). The PRINCIPLE step's
+      // identity comes from its typography (big heading, primary-deep
+      // emphasis line) and pop-in animation, not from the card chrome.
+      ? "border-border bg-surface shadow-sm"
       : variant === "reward"
       ? "border-success/30 bg-success-light"
       : "border-border bg-surface";
@@ -27,9 +37,11 @@ export function StepCard({ children, variant = "default" }: Props) {
   const slideClass =
     direction === "back" ? "step-slide-back" : "step-slide-fwd";
 
+  const widthClass = wide ? "max-w-5xl" : "max-w-2xl";
+
   return (
     <div
-      className={`${slideClass} mx-auto w-full max-w-2xl rounded-3xl border ${tone} p-6 sm:p-10`}
+      className={`${slideClass} mx-auto w-full ${widthClass} rounded-3xl border ${tone} p-6 sm:p-10`}
     >
       {children}
     </div>

@@ -18,6 +18,14 @@ export interface ArchetypeAnswer {
  * Walk the lesson body and return every archetype-scoring answer recorded
  * in `stepState`. Steps that don't contribute, or that the user hasn't
  * answered yet, are silently skipped.
+ *
+ * ChoiceStep persists answers as `{ selectedKey: string }` objects (see
+ * LessonV3View.handleChoicePick). Earlier versions of this helper only
+ * accepted a bare string and skipped every object, which made the tally
+ * always empty and the tie-break loop in `resolveArchetype` collapse to
+ * the first key in `tie_breaker_priority` (i.e. "Costruttore Ostinato"
+ * for Lesson 1). The flat-string branch is kept as a defensive fallback
+ * in case we ever serialise differently in the future.
  */
 export function collectArchetypeAnswers(
   steps: LessonV3Step[],
@@ -26,9 +34,18 @@ export function collectArchetypeAnswers(
   const out: ArchetypeAnswer[] = [];
   for (const step of steps) {
     if (step.type !== "choice" || !step.scores_archetype) continue;
-    const answer = stepState[step.id];
-    if (typeof answer !== "string") continue;
-    const option = step.options.find((o) => o.key === answer);
+    const raw = stepState[step.id];
+
+    let answerKey: string | null = null;
+    if (typeof raw === "string") {
+      answerKey = raw;
+    } else if (raw && typeof raw === "object" && "selectedKey" in raw) {
+      const sk = (raw as { selectedKey?: unknown }).selectedKey;
+      if (typeof sk === "string") answerKey = sk;
+    }
+    if (!answerKey) continue;
+
+    const option = step.options.find((o) => o.key === answerKey);
     if (!option || !option.archetype_key) continue;
     out.push({ stepId: step.id, archetypeKey: option.archetype_key });
   }

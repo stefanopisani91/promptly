@@ -33,6 +33,20 @@ export type Database = {
           referral_code: string | null;
           referral_link_activated_at: string | null;
           archetype_key: string | null;
+          experience_level:
+            | "beginner"
+            | "tried_failed"
+            | "working_on_it"
+            | "advanced"
+            | null;
+          project_clarity: "precise" | "vague" | "exploring" | null;
+          project_description: string | null;
+          tools_used: string[];
+          tools_other: string | null;
+          preferred_tool: string | null;
+          deep_motivation: string | null;
+          promises: Json | null;
+          last_profile_check: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -55,6 +69,20 @@ export type Database = {
           referral_code?: string | null;
           referral_link_activated_at?: string | null;
           archetype_key?: string | null;
+          experience_level?:
+            | "beginner"
+            | "tried_failed"
+            | "working_on_it"
+            | "advanced"
+            | null;
+          project_clarity?: "precise" | "vague" | "exploring" | null;
+          project_description?: string | null;
+          tools_used?: string[];
+          tools_other?: string | null;
+          preferred_tool?: string | null;
+          deep_motivation?: string | null;
+          promises?: Json | null;
+          last_profile_check?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -77,6 +105,20 @@ export type Database = {
           referral_code?: string | null;
           referral_link_activated_at?: string | null;
           archetype_key?: string | null;
+          experience_level?:
+            | "beginner"
+            | "tried_failed"
+            | "working_on_it"
+            | "advanced"
+            | null;
+          project_clarity?: "precise" | "vague" | "exploring" | null;
+          project_description?: string | null;
+          tools_used?: string[];
+          tools_other?: string | null;
+          preferred_tool?: string | null;
+          deep_motivation?: string | null;
+          promises?: Json | null;
+          last_profile_check?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -162,18 +204,23 @@ export type Database = {
           user_id: string;
           usage_date: string; // YYYY-MM-DD
           message_count: number;
+          // Round 8b — separate counter for promise generation calls so
+          // chat usage and promise spend don't share the same quota.
+          promise_regen_count: number;
           updated_at: string;
         };
         Insert: {
           user_id: string;
           usage_date: string;
           message_count?: number;
+          promise_regen_count?: number;
           updated_at?: string;
         };
         Update: {
           user_id?: string;
           usage_date?: string;
           message_count?: number;
+          promise_regen_count?: number;
           updated_at?: string;
         };
         Relationships: [];

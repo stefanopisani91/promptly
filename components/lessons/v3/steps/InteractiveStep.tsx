@@ -102,12 +102,6 @@ export function InteractiveStep({
   const [showFireworks, setShowFireworks] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const finishedRef = useRef(Boolean(persisted));
-  // Mobile-only layout: the dark tool view (Lucia homepage + console) and
-  // the Spark dialogue are too tall to stack on a phone — the textarea
-  // ends up off-screen. We collapse them under a 2-tab control. Spark is
-  // the default tab because it's where the user has to act. Desktop
-  // ignores this state (the grid keeps both panels side by side).
-  const [mobileTab, setMobileTab] = useState<"spark" | "site">("spark");
 
   const exhausted = attemptCount >= MAX_LESSON_ATTEMPTS;
   const won = fixedBugs.foto && fixedBugs.overflow && fixedBugs.bottone;
@@ -224,7 +218,7 @@ export function InteractiveStep({
   const isPartialStop = !won && !exhausted && attemptCount >= 1;
 
   return (
-    <StepCard>
+    <StepCard wide>
       <div className="flex flex-col gap-5">
         {step.intro && (
           <p className="text-base leading-relaxed text-text-secondary sm:text-lg">
@@ -232,50 +226,17 @@ export function InteractiveStep({
           </p>
         )}
 
-        {/* Mobile-only tab control — Spark is the default tab (where the
-            user has to act). The site stays one tap away. Desktop hides
-            this control and renders both panels side by side. */}
+        {/* Side-by-side on tablet+ (≥ md), stacked on phone. Breakpoint and
+            container width match the landing's LuciaDemoSection so the
+            homepage + console keep their natural proportions instead of
+            getting squashed. */}
         <div
-          role="tablist"
-          aria-label={strings.placeholder}
-          className="grid grid-cols-2 gap-1 rounded-full border border-border bg-surface-muted p-1 text-sm font-medium lg:hidden"
-        >
-          <button
-            role="tab"
-            type="button"
-            aria-selected={mobileTab === "spark"}
-            onClick={() => setMobileTab("spark")}
-            className={`rounded-full px-3 py-2 transition-colors ${
-              mobileTab === "spark"
-                ? "bg-surface text-text-primary shadow-sm"
-                : "text-text-secondary"
-            }`}
-          >
-            {strings.sparkTabLabel}
-          </button>
-          <button
-            role="tab"
-            type="button"
-            aria-selected={mobileTab === "site"}
-            onClick={() => setMobileTab("site")}
-            className={`rounded-full px-3 py-2 transition-colors ${
-              mobileTab === "site"
-                ? "bg-surface text-text-primary shadow-sm"
-                : "text-text-secondary"
-            }`}
-          >
-            {strings.siteTabLabel}
-          </button>
-        </div>
-
-        <div
-          className="grid grid-cols-1 gap-5 lg:grid-cols-2"
+          className="grid grid-cols-1 gap-5 md:grid-cols-2"
           style={{ position: "relative" }}
         >
-          {/* LEFT — homepage + console (reused from the landing demo).
-              Hidden on mobile when the Spark tab is active. */}
+          {/* LEFT — homepage + console (reused from the landing demo). */}
           <div
-            className={mobileTab === "spark" ? "hidden lg:flex" : "flex"}
+            className="flex"
             style={{
               background: "#0A0A0A",
               borderRadius: 16,
@@ -328,13 +289,8 @@ export function InteractiveStep({
             <LuciaConsole copy={strings.consoleCopy} />
           </div>
 
-          {/* RIGHT — Spark dialogue panel. Hidden on mobile when the Site
-              tab is active. */}
-          <div
-            className={`flex flex-col gap-3 rounded-2xl border border-border bg-surface p-4 sm:p-5 ${
-              mobileTab === "site" ? "hidden lg:flex" : ""
-            }`}
-          >
+          {/* RIGHT — Spark dialogue panel. */}
+          <div className="flex flex-col gap-3 rounded-2xl border border-border bg-surface p-4 sm:p-5">
             <div className="flex items-start gap-3">
               <Spark
                 state={

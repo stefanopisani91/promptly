@@ -149,6 +149,51 @@ export interface AuthCopy {
       ctaInvite: string;
       ctaStart: string;
     };
+    profileMenu: {
+      openLabel: string;
+      profile: string;
+      promises: string;
+      logout: string;
+    };
+  };
+  settings: {
+    meta: { title: string; description: string };
+    pageTitle: string;
+    pageSub: string;
+    sections: {
+      identity: string;
+      profile: string;
+      promises: string;
+      account: string;
+    };
+    fields: {
+      name: string;
+      email: string;
+      language: string;
+      dailyGoal: string;
+      experience: string;
+      clarity: string;
+      project: string;
+      tools: string;
+      preferredTool: string;
+      motivation: string;
+      empty: string;
+    };
+    actions: {
+      regenerate: string;
+      regenerating: string;
+      regenerated: string;
+      regenerateError: string;
+      // Cooldown / daily-cap messages stay static so the settings page
+      // (server component) can pass them straight into the client panel
+      // as plain strings — see Round 8b notes in actions.ts.
+      regenerateCooldown: string;
+      regenerateDailyCap: string;
+      restartOnboarding: string;
+      back: string;
+    };
+    promisesLead: string;
+    fallbackBadge: string;
   };
 }
 
@@ -309,6 +354,55 @@ const it: AuthCopy = {
       ctaInvite: "Invita un amico",
       ctaStart: "Inizia la prima lezione",
     },
+    profileMenu: {
+      openLabel: "Apri il menu profilo",
+      profile: "Profilo",
+      promises: "Le mie promesse",
+      logout: "Esci",
+    },
+  },
+  settings: {
+    meta: {
+      title: "Impostazioni — Promptly",
+      description: "Gestisci profilo e promesse di Spark.",
+    },
+    pageTitle: "Il tuo profilo",
+    pageSub: "Spark si ricorda di te grazie a queste informazioni.",
+    sections: {
+      identity: "Identità",
+      profile: "Profilazione",
+      promises: "Le promesse di Spark",
+      account: "Account",
+    },
+    fields: {
+      name: "Nome",
+      email: "Email",
+      language: "Lingua",
+      dailyGoal: "Tempo al giorno",
+      experience: "Livello di esperienza",
+      clarity: "Chiarezza progetto",
+      project: "Il tuo progetto",
+      tools: "Tool che hai usato",
+      preferredTool: "Tool preferito",
+      motivation: "Cosa ti ha portato qui",
+      empty: "—",
+    },
+    actions: {
+      regenerate: "Aggiorna le promesse di Spark",
+      regenerating: "Spark sta cucendo nuove promesse...",
+      regenerated: "Promesse aggiornate.",
+      regenerateError:
+        "Non sono riuscita a generare nuove promesse. Riprova tra un momento.",
+      regenerateCooldown:
+        "Aspetta un attimo prima di chiedermi di nuovo. Ho appena finito.",
+      regenerateDailyCap:
+        "Ho già cucito le tue promesse abbastanza volte oggi. Torna domani.",
+      restartOnboarding: "Rifai la profilazione",
+      back: "← Torna alla dashboard",
+    },
+    promisesLead:
+      "Tre promesse che Spark ti ha fatto a fine onboarding. Servono per ricordarti perché hai cominciato.",
+    fallbackBadge: "Set di emergenza",
   },
 };
 
@@ -469,6 +563,54 @@ const en: AuthCopy = {
       ctaInvite: "Invite a friend",
       ctaStart: "Start the first lesson",
     },
+    profileMenu: {
+      openLabel: "Open profile menu",
+      profile: "Profile",
+      promises: "My promises",
+      logout: "Log out",
+    },
+  },
+  settings: {
+    meta: {
+      title: "Settings — Promptly",
+      description: "Manage your profile and Spark's promises.",
+    },
+    pageTitle: "Your profile",
+    pageSub: "Spark remembers you thanks to this information.",
+    sections: {
+      identity: "Identity",
+      profile: "Profile",
+      promises: "Spark's promises",
+      account: "Account",
+    },
+    fields: {
+      name: "Name",
+      email: "Email",
+      language: "Language",
+      dailyGoal: "Daily time",
+      experience: "Experience level",
+      clarity: "Project clarity",
+      project: "Your project",
+      tools: "Tools you've used",
+      preferredTool: "Preferred tool",
+      motivation: "What brought you here",
+      empty: "—",
+    },
+    actions: {
+      regenerate: "Refresh Spark's promises",
+      regenerating: "Spark is stitching new promises...",
+      regenerated: "Promises refreshed.",
+      regenerateError: "I couldn't generate new promises. Try again in a moment.",
+      regenerateCooldown:
+        "Wait a moment before asking again. I just finished.",
+      regenerateDailyCap:
+        "I've already stitched your promises plenty of times today. Come back tomorrow.",
+      restartOnboarding: "Redo the profiling",
+      back: "← Back to dashboard",
+    },
+    promisesLead:
+      "Three promises Spark made at the end of onboarding. They exist to remind you why you started.",
+    fallbackBadge: "Fallback set",
   },
 };
 
