@@ -211,13 +211,15 @@ function describeClarity(clarity: ProjectClarity, lang: Lang): string {
 
 function describeDailyGoal(goal: DailyGoal, lang: Lang): string {
   const it: Record<DailyGoal, string> = {
-    trivial: "5-10 minuti",
-    easy: "15-20 minuti",
+    mini: "5 minuti",
+    trivial: "10 minuti",
+    easy: "15 minuti",
     pro: "30 minuti",
   };
   const en: Record<DailyGoal, string> = {
-    trivial: "5-10 minutes",
-    easy: "15-20 minutes",
+    mini: "5 minutes",
+    trivial: "10 minutes",
+    easy: "15 minutes",
     pro: "30 minutes",
   };
   return (lang === "en" ? en : it)[goal];

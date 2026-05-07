@@ -199,6 +199,9 @@ export interface LessonsCopy {
       placeholder: string;
       sendCta: string;
       sending: string;
+      // Big bold headline shown inside the empty chat hero (above
+      // emptyHint). Localised so EN sessions don't see IT copy.
+      emptyHero: string;
       emptyHint: string;
       quotaExhausted: string;
       // Shown when the per-day cap (across all lessons) is reached.
@@ -461,6 +464,7 @@ const it: LessonsCopy = {
       placeholder: "Scrivi a Spark…",
       sendCta: "Invia",
       sending: "Sto pensando…",
+      emptyHero: "Chiedimi pure!",
       emptyHint: "Chiedimi quello che vuoi sulla lezione, sul vibe coding, su quello che ti blocca.",
       quotaExhausted: "Hai usato tutti i messaggi per questa lezione. Riprovi nella prossima.",
       dailyQuotaExhausted: "Per oggi abbiamo parlato abbastanza. Torna domani.",
@@ -711,6 +715,7 @@ const en: LessonsCopy = {
       placeholder: "Write to Spark…",
       sendCta: "Send",
       sending: "Thinking…",
+      emptyHero: "Ask away!",
       emptyHint: "Ask me anything about the lesson, vibe coding, or whatever's blocking you.",
       quotaExhausted: "You've used all your messages for this lesson. Try again in the next one.",
       dailyQuotaExhausted: "We've talked enough for today. Come back tomorrow.",

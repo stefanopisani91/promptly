@@ -84,6 +84,10 @@ interface Props {
   // True when the user has at least one Spark chat message left.
   initialChatRemaining: number;
   chatLimit: number;
+  // Authenticated user id, used to scope per-user client-side state
+  // (e.g. ClaudemdEditor's sessionStorage draft so two users on the same
+  // device don't see each other's work).
+  userId: string;
 }
 
 export function LessonV3View({
@@ -95,6 +99,7 @@ export function LessonV3View({
   alreadyCompleted,
   initialChatRemaining,
   chatLimit,
+  userId,
 }: Props) {
   const totalSteps = lesson.steps.length;
   const safeInitialStep = Math.min(
@@ -264,6 +269,7 @@ export function LessonV3View({
             step,
             {
               lessonId: lesson.id,
+              userId,
               stepState,
               updateStepState,
               strings,
@@ -329,6 +335,7 @@ export function LessonV3View({
 
 interface RenderContext {
   lessonId: string;
+  userId: string;
   stepState: Record<string, unknown>;
   updateStepState: (stepId: string, value: unknown) => void;
   steps: LessonV3Step[];
@@ -376,6 +383,7 @@ function renderStep(step: LessonV3Step, ctx: RenderContext) {
         return (
           <ClaudemdEditor
             step={step}
+            userId={ctx.userId}
             state={
               ctx.stepState[step.id] as
                 | {
@@ -470,7 +478,11 @@ function Footer({
   //           space at the bottom because the sticky bar takes its own.
   const wrapperClass = cn(
     "lesson-cta-bar z-20 mt-auto px-4 sm:px-6",
-    // mobile (< md)
+    // mobile (< md): the wrapper is purely decorative (gradient fade) —
+    // pointer events pass through so the user can still interact with the
+    // accordion sections that scroll under it. The inner button row
+    // re-enables pointer events for itself below.
+    "pointer-events-none md:pointer-events-auto",
     "fixed bottom-0 left-0 right-0 pt-8 pb-3",
     "bg-gradient-to-t from-background via-background/95 to-transparent",
     // desktop (≥ md) — restore the solid sticky bar
@@ -486,7 +498,7 @@ function Footer({
   if (completed && isLast) {
     return (
       <div className={wrapperClass} style={wrapperStyle}>
-        <div className="mx-auto flex w-full max-w-3xl items-center justify-end gap-4">
+        <div className="pointer-events-auto mx-auto flex w-full max-w-3xl items-center justify-end gap-4">
           <Link
             href={completionHref}
             className="inline-flex h-12 items-center gap-2 rounded-full bg-primary px-6 text-sm font-semibold text-white transition-all hover:bg-primary-hover active:scale-[0.97]"
@@ -501,7 +513,7 @@ function Footer({
 
   return (
     <div className={wrapperClass} style={wrapperStyle}>
-      <div className="mx-auto flex w-full max-w-3xl items-center justify-between gap-4">
+      <div className="pointer-events-auto mx-auto flex w-full max-w-3xl items-center justify-between gap-4">
         <button
           type="button"
           onClick={onBack}

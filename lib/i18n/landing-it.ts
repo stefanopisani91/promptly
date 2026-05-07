@@ -2,7 +2,7 @@ import type { LandingCopy } from "./landing";
 
 export const landingCopyIt: LandingCopy = {
   meta: {
-    title: "Vibe Coding: corso interattivo gratis · Promptly",
+    title: "Vibe Coding: corso interattivo gratis",
     description:
       "Impara il vibe coding con Promptly: parla con l'AI per costruire app vere senza scrivere codice. 14 lezioni gratis, 5 minuti al giorno. Inizia subito.",
   },

@@ -5,7 +5,7 @@ import {
   JetBrains_Mono,
   Fredoka,
 } from "next/font/google";
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
@@ -62,15 +62,20 @@ export const viewport: Viewport = {
 };
 
 function langFromHeaders(): Lang {
-  // Prefer Accept-Language header for the <html lang> attribute.
-  // The actual route-bound language is set in the [lang] segment;
-  // this is just for the root <html> in the rare case of pages outside [lang]
-  // (root redirect, error pages). Defaults to 'it'.
+  // Resolution priority for the <html lang> attribute:
+  //   1. NEXT_LOCALE cookie — set explicitly by the user (lang toggle in
+  //      auth/app shells, or saved profile preference). This wins so a
+  //      logged-in EN user with an Italian browser still gets <html lang="en">.
+  //   2. Accept-Language header — first-visit fallback for users who
+  //      haven't picked a preference yet.
+  //   3. 'it' as a last resort.
+  const cookieValue = cookies().get("NEXT_LOCALE")?.value;
+  if (isLang(cookieValue)) return cookieValue;
+
   const acceptLanguage = headers().get("accept-language") ?? "";
   const lower = acceptLanguage.toLowerCase();
   if (lower.startsWith("en")) return "en";
   if (lower.startsWith("it")) return "it";
-  // Fallback
   return isLang(lower.split("-")[0]) ? (lower.split("-")[0] as Lang) : "it";
 }
 

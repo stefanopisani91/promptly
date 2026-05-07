@@ -7,13 +7,18 @@ export function isLang(value: unknown): value is Lang {
 }
 
 export type Language = Lang;
-export type DailyGoal = "trivial" | "easy" | "pro";
+export type DailyGoal = "mini" | "trivial" | "easy" | "pro";
 export type SubscriptionTier = "free" | "pro";
 
-export const DAILY_GOALS: readonly DailyGoal[] = ["trivial", "easy", "pro"] as const;
+export const DAILY_GOALS: readonly DailyGoal[] = ["mini", "trivial", "easy", "pro"] as const;
 
 export function isDailyGoal(value: unknown): value is DailyGoal {
-  return value === "trivial" || value === "easy" || value === "pro";
+  return (
+    value === "mini" ||
+    value === "trivial" ||
+    value === "easy" ||
+    value === "pro"
+  );
 }
 
 // ─── Profilazione (Onboarding 12-step) ─────────────────────────────

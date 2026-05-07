@@ -8,6 +8,7 @@ import { PrimaryCta } from "../PrimaryCta";
 import { SparkLine, SparkMicro } from "../SparkLine";
 
 const PROJECT_DESCRIPTION_MAX = 300;
+const PROJECT_DESCRIPTION_MIN = 10;
 
 interface Props {
   copy: ProfilingCopy["step5"];
@@ -86,7 +87,11 @@ export function Step5Project({
       ) : null}
 
       <div>
-        <PrimaryCta type="submit" pending={pending}>
+        <PrimaryCta
+          type="submit"
+          pending={pending}
+          disabled={value.trim().length < PROJECT_DESCRIPTION_MIN}
+        >
           {ctaLabel}
         </PrimaryCta>
       </div>

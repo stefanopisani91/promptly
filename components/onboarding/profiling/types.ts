@@ -20,7 +20,7 @@ export interface ProfileAnswers {
   tools_used: string[];
   tools_other: string;
   preferred_tool: string | null;
-  daily_goal: DailyGoal;
+  daily_goal: DailyGoal | null;
   deep_motivation: string;
   promises: ProfilePromises | null;
 }
@@ -34,7 +34,7 @@ export const INITIAL_ANSWERS: ProfileAnswers = {
   tools_used: [],
   tools_other: "",
   preferred_tool: null,
-  daily_goal: "easy",
+  daily_goal: null,
   deep_motivation: "",
   promises: null,
 };

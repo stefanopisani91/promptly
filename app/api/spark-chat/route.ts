@@ -197,11 +197,14 @@ export async function POST(request: Request) {
     persona,
     sessionContext,
     userMessage: message,
-    // Hard budget on response length — Spark's persona prescribes max 4
-    // sentences (~80–110 tokens). 220 leaves room without inviting the
-    // model to drift into multi-paragraph essays. See coherence-test
-    // length compliance metric in scripts/spark-coherence-test.mjs.
-    maxOutputTokens: 220,
+    // Hard budget on response length. Spark's persona prescribes 2-4
+    // sentences by default, with an exception up to 8 sentences when the
+    // learner explicitly asks for in-depth ("explain in detail",
+    // "thoroughly", "the full picture"). 8 EN sentences run ~350 tokens
+    // worst case; 300 covers ~95% without inviting multi-paragraph
+    // essays. See coherence-test length compliance metric in
+    // scripts/spark-coherence-test.mjs.
+    maxOutputTokens: 300,
     temperature: 0.7,
   });
 

@@ -199,11 +199,11 @@ export interface AuthCopy {
 
 const it: AuthCopy = {
   meta: {
-    titleAuth: "Accedi a Promptly",
+    titleAuth: "Accedi",
     titleCheckEmail: "Controlla la tua email",
     titleExpired: "Link scaduto",
-    titleOnboarding: "Iniziamo — Promptly",
-    titleDashboard: "Dashboard — Promptly",
+    titleOnboarding: "Iniziamo",
+    titleDashboard: "Dashboard",
     description:
       "Accedi a Promptly e inizia a costruire con le parole, non col codice.",
   },
@@ -286,22 +286,28 @@ const it: AuthCopy = {
       sub: "Le streak partono da qui. Tranquillo, puoi cambiarla quando vuoi.",
       cards: [
         {
+          goal: "mini",
+          emoji: "✨",
+          title: "Quando ho un attimo",
+          description: "5 minuti al giorno · giusto un assaggio",
+        },
+        {
           goal: "trivial",
           emoji: "🌱",
-          title: "Solo un assaggio",
-          description: "5 minuti al giorno · ~1 lezione breve",
+          title: "Una pausa veloce",
+          description: "10 minuti al giorno · ~1 lezione breve",
         },
         {
           goal: "easy",
           emoji: "📘",
-          title: "Progresso costante",
-          description: "10 minuti al giorno · ~1-2 lezioni",
+          title: "Appuntamento giornaliero",
+          description: "15 minuti al giorno · ~1-2 lezioni",
         },
         {
           goal: "pro",
           emoji: "🚀",
-          title: "Massima concentrazione",
-          description: "15 minuti al giorno · ~2-3 lezioni",
+          title: "Voglio andare veloce",
+          description: "30 minuti al giorno · ~2-3 lezioni",
         },
       ],
     },
@@ -363,7 +369,7 @@ const it: AuthCopy = {
   },
   settings: {
     meta: {
-      title: "Impostazioni — Promptly",
+      title: "Impostazioni",
       description: "Gestisci profilo e promesse di Spark.",
     },
     pageTitle: "Il tuo profilo",
@@ -408,11 +414,11 @@ const it: AuthCopy = {
 
 const en: AuthCopy = {
   meta: {
-    titleAuth: "Sign in to Promptly",
+    titleAuth: "Sign in",
     titleCheckEmail: "Check your email",
     titleExpired: "Link expired",
-    titleOnboarding: "Let's get started — Promptly",
-    titleDashboard: "Dashboard — Promptly",
+    titleOnboarding: "Let's get started",
+    titleDashboard: "Dashboard",
     description:
       "Sign in to Promptly and start building with words, not code.",
   },
@@ -495,22 +501,28 @@ const en: AuthCopy = {
       sub: "Your streak starts here. Don't worry, you can change it anytime.",
       cards: [
         {
+          goal: "mini",
+          emoji: "✨",
+          title: "When I have a moment",
+          description: "5 min/day · just a taste",
+        },
+        {
           goal: "trivial",
           emoji: "🌱",
-          title: "Just a taste",
-          description: "5 min/day · ~1 short lesson",
+          title: "A quick break",
+          description: "10 min/day · ~1 short lesson",
         },
         {
           goal: "easy",
           emoji: "📘",
-          title: "Steady progress",
-          description: "10 min/day · ~1-2 lessons",
+          title: "Daily appointment",
+          description: "15 min/day · ~1-2 lessons",
         },
         {
           goal: "pro",
           emoji: "🚀",
-          title: "Full focus",
-          description: "15 min/day · ~2-3 lessons",
+          title: "Move fast",
+          description: "30 min/day · ~2-3 lessons",
         },
       ],
     },
@@ -572,7 +584,7 @@ const en: AuthCopy = {
   },
   settings: {
     meta: {
-      title: "Settings — Promptly",
+      title: "Settings",
       description: "Manage your profile and Spark's promises.",
     },
     pageTitle: "Your profile",

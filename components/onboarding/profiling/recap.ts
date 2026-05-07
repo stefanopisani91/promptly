@@ -51,7 +51,10 @@ export function buildRecap(
     toolsFrag = fragments.tools.preferred(toolDisplayName(first, lang));
   }
 
-  const timeFrag = fragments.time[answers.daily_goal];
+  // Step 8 enforces a non-null daily_goal before allowing advance, so by the
+  // time we reach Step 10 it is always set. Fall back to "easy" only as a
+  // type-narrowing safety net.
+  const timeFrag = fragments.time[answers.daily_goal ?? "easy"];
 
   return {
     narrative: fragments.assemble({

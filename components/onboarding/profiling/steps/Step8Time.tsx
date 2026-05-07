@@ -8,7 +8,7 @@ import { SparkLine, SparkMicro } from "../SparkLine";
 
 interface Props {
   copy: ProfilingCopy["step8"];
-  value: DailyGoal;
+  value: DailyGoal | null;
   pending: boolean;
   onChange: (next: DailyGoal) => void;
   onAdvance: () => void;
@@ -46,7 +46,11 @@ export function Step8Time({
       <SparkMicro>{copy.sparkMicro}</SparkMicro>
 
       <div>
-        <PrimaryCta onClick={onAdvance} pending={pending}>
+        <PrimaryCta
+          onClick={onAdvance}
+          pending={pending}
+          disabled={value === null}
+        >
           {ctaLabel}
         </PrimaryCta>
       </div>

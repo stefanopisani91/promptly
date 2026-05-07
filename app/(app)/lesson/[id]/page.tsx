@@ -54,9 +54,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       ? lesson.subtitle
       : undefined;
   return {
-    title: lesson
-      ? `${lesson.title} — Promptly`
-      : `Lesson · ${params.id} — Promptly`,
+    title: lesson ? lesson.title : `Lesson · ${params.id}`,
     description,
     robots: { index: false, follow: false },
   };
@@ -168,6 +166,7 @@ export default async function LessonPage({ params }: PageProps) {
         alreadyCompleted={alreadyCompleted}
         initialChatRemaining={chatRemaining}
         chatLimit={SPARK_CHAT_LIMIT}
+        userId={user.id}
       />
     );
   }

@@ -402,7 +402,10 @@ h6 {
     margin-top: -11px;
     max-width: 140px;
     font-size: 10px;
-    padding: 4px 12px;
+    /* Visual padding stays compact, but the hit area is bumped via
+       additional vertical padding so the touch target meets WCAG 2.5.5
+       (≥44×44). The orbit transforms keep the visible chip centred. */
+    padding: 14px 12px;
     -webkit-mask-image: linear-gradient(to right, black calc(100% - 14px), transparent);
     mask-image: linear-gradient(to right, black calc(100% - 14px), transparent);
   }

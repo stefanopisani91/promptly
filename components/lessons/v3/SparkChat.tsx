@@ -24,6 +24,7 @@ export interface SparkChatStrings {
   placeholder: string;
   sendCta: string;
   sending: string;
+  emptyHero: string;
   emptyHint: string;
   quotaExhausted: string;
   dailyQuotaExhausted: string;
@@ -283,7 +284,7 @@ export function SparkChat({
               </div>
               <div style={{ animation: "completion-fade-up 300ms ease-out 160ms both" }}>
                 <p className="font-heading text-2xl font-bold leading-tight text-text-primary">
-                  Chiedimi pure!
+                  {strings.emptyHero}
                 </p>
                 <p className="mt-2 text-sm italic text-text-secondary">
                   {strings.emptyHint}

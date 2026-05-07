@@ -158,7 +158,7 @@ const DEFAULT_FALLBACK_EN: ProfilePromises = {
 
 const it: ProfilingCopy = {
   meta: {
-    title: "Iniziamo — Promptly",
+    title: "Iniziamo",
     description:
       "Cinque minuti. Spark ti farà qualche domanda per capire chi ha davanti.",
   },
@@ -252,8 +252,9 @@ const it: ProfilingCopy = {
   step8: {
     sparkIntro: "Quanto tempo riesci a darmi al giorno? Non c'è risposta sbagliata.",
     options: [
-      { key: "trivial", emoji: "⏱️", label: "5-10 min — quando posso, tra una pausa e l'altra" },
-      { key: "easy", emoji: "📘", label: "15-20 min — un appuntamento giornaliero" },
+      { key: "mini", emoji: "✨", label: "5 min — quando ho un attimo libero" },
+      { key: "trivial", emoji: "⏱️", label: "10 min — una pausa veloce" },
+      { key: "easy", emoji: "📘", label: "15 min — il mio appuntamento giornaliero" },
       { key: "pro", emoji: "⚡", label: "30 min — voglio andare avanti veloce" },
     ],
     sparkMicro: "Anche io ho i miei tempi. Non sempre rapidi.",
@@ -300,8 +301,9 @@ const it: ProfilingCopy = {
         preferred: (toolName) => `ti senti a casa con ${toolName}`,
       },
       time: {
-        trivial: "qualche minuto",
-        easy: "un appuntamento",
+        mini: "5 minuti",
+        trivial: "10 minuti",
+        easy: "15 minuti",
         pro: "30 minuti",
       },
       assemble: ({ experienceFrag, claritySuffix, toolsFrag, timeFrag }) =>
@@ -330,7 +332,7 @@ const it: ProfilingCopy = {
 
 const en: ProfilingCopy = {
   meta: {
-    title: "Let's begin — Promptly",
+    title: "Let's begin",
     description:
       "Five minutes. Spark will ask a few questions to figure out who's in front of her.",
   },
@@ -424,8 +426,9 @@ const en: ProfilingCopy = {
   step8: {
     sparkIntro: "How much time can you give me each day? No wrong answer.",
     options: [
-      { key: "trivial", emoji: "⏱️", label: "5-10 min — when I can, between things" },
-      { key: "easy", emoji: "📘", label: "15-20 min — a daily appointment" },
+      { key: "mini", emoji: "✨", label: "5 min — when I have a quick moment" },
+      { key: "trivial", emoji: "⏱️", label: "10 min — a quick break" },
+      { key: "easy", emoji: "📘", label: "15 min — my daily appointment" },
       { key: "pro", emoji: "⚡", label: "30 min — I want to move fast" },
     ],
     sparkMicro: "I have my own pace too. Not always quick.",
@@ -472,8 +475,9 @@ const en: ProfilingCopy = {
         preferred: (toolName) => `you feel at home with ${toolName}`,
       },
       time: {
-        trivial: "a few minutes",
-        easy: "a daily appointment",
+        mini: "5 minutes",
+        trivial: "10 minutes",
+        easy: "15 minutes",
         pro: "30 minutes",
       },
       assemble: ({ experienceFrag, claritySuffix, toolsFrag, timeFrag }) =>

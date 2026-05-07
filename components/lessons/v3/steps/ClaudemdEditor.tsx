@@ -108,6 +108,9 @@ export interface ClaudemdEditorStrings {
 
 interface Props {
   step: InteractiveStepType;
+  // Authenticated user id, used to scope the sessionStorage draft so two
+  // users on the same browser/device don't see each other's work.
+  userId: string;
   strings: ClaudemdEditorStrings;
   state:
     | {
@@ -127,6 +130,7 @@ const MIN_DRAFT_CHARS = 30;
 
 export function ClaudemdEditor({
   step,
+  userId,
   strings,
   state,
   onComplete,
@@ -147,7 +151,11 @@ export function ClaudemdEditor({
   //   3. empty
   // The accordion is the source of truth for live edits; we autosave to
   // sessionStorage on every keystroke.
-  const sessionStorageKey = `claudemd:${step.id}`;
+  // Per-user, per-step key. Without the userId prefix, two users on the
+  // same browser/device would see each other's draft. The previous
+  // unscoped format (`claudemd:${step.id}`) is intentionally NOT migrated
+  // — it stays orphaned in sessionStorage and disappears at tab close.
+  const sessionStorageKey = `claudemd:${userId}:${step.id}`;
   const [sectionContent, setSectionContent] = useState<Record<string, string>>(
     () => hydrateSectionContent(config, state?.editorText, sessionStorageKey),
   );

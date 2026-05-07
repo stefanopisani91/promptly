@@ -111,7 +111,10 @@ export function LangSwitcher({ fallback, ariaLabel = "Language", className }: Pr
             aria-current={active ? "true" : undefined}
             onClick={(event) => onSelect(lang, event)}
             className={cn(
-              "rounded-full px-2 py-1 uppercase tracking-wide transition-colors md:px-3",
+              // Visual size: same as before. Hit area: bumped to ≥44×44 on
+              // mobile via min-h/min-w + flex centering, so the click
+              // target meets WCAG 2.5.5 without changing the visible chip.
+              "inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full px-2 py-1 uppercase tracking-wide transition-colors md:min-h-0 md:min-w-0 md:px-3 md:py-1",
               active
                 ? "bg-primary text-white"
                 : "text-text-secondary hover:text-text-primary",

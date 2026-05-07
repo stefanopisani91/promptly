@@ -77,11 +77,17 @@ export function ProfileMenu({ fullName, email, copy }: Props) {
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
         className={cn(
-          "flex h-8 w-8 items-center justify-center rounded-full bg-primary-light text-xs font-semibold text-primary transition-shadow hover:shadow-[0_0_0_3px_rgba(232,112,63,0.18)] md:h-10 md:w-10 md:text-sm",
+          // Visible avatar stays 32px on mobile / 40px desktop for visual
+          // continuity. Hit area expanded to 44px on mobile via padding
+          // so the click target meets WCAG 2.5.5 — the avatar is centered
+          // inside the larger transparent box.
+          "flex h-11 w-11 items-center justify-center rounded-full text-xs font-semibold text-primary transition-shadow md:h-10 md:w-10 md:text-sm md:bg-primary-light md:hover:shadow-[0_0_0_3px_rgba(232,112,63,0.18)]",
+          // Inner avatar swatch on mobile: 32px circle with the bg-primary-light fill.
+          "[&>span]:flex [&>span]:h-8 [&>span]:w-8 [&>span]:items-center [&>span]:justify-center [&>span]:rounded-full [&>span]:bg-primary-light md:[&>span]:h-full md:[&>span]:w-full md:[&>span]:bg-transparent",
           open && "shadow-[0_0_0_3px_rgba(232,112,63,0.25)]",
         )}
       >
-        {initials(fullName, email)}
+        <span aria-hidden="true">{initials(fullName, email)}</span>
       </button>
 
       {open ? (

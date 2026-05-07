@@ -31,8 +31,15 @@ interface PageProps {
 }
 
 export function generateMetadata({ params }: PageProps): Metadata {
+  // Capitalise the slug so the tab title reads "Path · Mindset" instead
+  // of the raw kebab/lowercase form. Multi-word slugs are split on dashes.
+  const titledSlug = params.slug
+    .split("-")
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
   return {
-    title: `Path · ${params.slug} — Promptly`,
+    title: `Path · ${titledSlug}`,
     robots: { index: false, follow: false },
   };
 }

@@ -13,7 +13,10 @@ export function generateMetadata({ params }: { params: Params }): Metadata {
   if (!isLang(params.lang)) return {};
   const isIt = params.lang === "it";
   return {
-    title: isIt ? "Privacy Policy · Promptly" : "Privacy Policy · Promptly",
+    // The marketing [lang] layout sets a string `title`, which short-circuits
+    // the root layout's `template: "%s · Promptly"` for descendant pages.
+    // Use `absolute` here so the suffix lands deterministically.
+    title: { absolute: "Privacy Policy · Promptly" },
     description: isIt
       ? "Informativa privacy provvisoria per la demo della landing di Promptly."
       : "Provisional privacy notice for the Promptly landing-page demo.",

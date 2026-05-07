@@ -19,7 +19,7 @@ export type Database = {
           email: string;
           full_name: string | null;
           language: "en" | "it";
-          daily_goal: "trivial" | "easy" | "pro";
+          daily_goal: "mini" | "trivial" | "easy" | "pro";
           onboarding_completed_at: string | null;
           signup_source: string | null;
           welcome_seen_at: string | null;
@@ -55,7 +55,7 @@ export type Database = {
           email: string;
           full_name?: string | null;
           language?: "en" | "it";
-          daily_goal?: "trivial" | "easy" | "pro";
+          daily_goal?: "mini" | "trivial" | "easy" | "pro";
           onboarding_completed_at?: string | null;
           signup_source?: string | null;
           welcome_seen_at?: string | null;
@@ -91,7 +91,7 @@ export type Database = {
           email?: string;
           full_name?: string | null;
           language?: "en" | "it";
-          daily_goal?: "trivial" | "easy" | "pro";
+          daily_goal?: "mini" | "trivial" | "easy" | "pro";
           onboarding_completed_at?: string | null;
           signup_source?: string | null;
           welcome_seen_at?: string | null;

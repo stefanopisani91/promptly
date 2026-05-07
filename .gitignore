@@ -45,7 +45,11 @@ scripts/_*.json
 
 # MCP config workspace-level (può contenere credenziali/config locali)
 .vscode/mcp.json
+**/.vscode/mcp.json
 .mcp.json
+
+# Local dev-only QA login endpoint — never on git per security review
+app/api/qa-login/
 
 # Playwright MCP debug output (snapshot + console logs)
 .playwright-mcp/

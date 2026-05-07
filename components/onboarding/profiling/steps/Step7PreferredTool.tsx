@@ -11,6 +11,10 @@ interface Props {
   copy: ProfilingCopy["step7"];
   toolsSelected: string[];
   value: string | null;
+  // True only after the user has explicitly clicked an option (including
+  // "none"). The shell owns this flag because `value === null` cannot
+  // distinguish "untouched" from "explicit none". See ProfilingShell.tsx.
+  picked: boolean;
   pending: boolean;
   onChange: (next: string | null) => void;
   onAdvance: () => void;
@@ -21,12 +25,14 @@ export function Step7PreferredTool({
   copy,
   toolsSelected,
   value,
+  picked,
   pending,
   onChange,
   onAdvance,
   ctaLabel,
 }: Props) {
   const candidates = ideToolsFromSlugs(toolsSelected);
+  const noneActive = picked && value === null;
 
   return (
     <div className="flex flex-col gap-6">
@@ -88,7 +94,7 @@ export function Step7PreferredTool({
         <label
           className={cn(
             "flex cursor-pointer items-center justify-between gap-3 rounded-2xl border px-4 py-3 transition-colors",
-            value === null
+            noneActive
               ? "border-primary bg-primary-light/40"
               : "border-border bg-surface hover:border-primary/60",
             pending && "cursor-not-allowed opacity-60",
@@ -97,7 +103,7 @@ export function Step7PreferredTool({
           <input
             type="radio"
             name="preferred-tool"
-            checked={value === null}
+            checked={noneActive}
             onChange={() => onChange(null)}
             className="sr-only"
           />
@@ -110,7 +116,7 @@ export function Step7PreferredTool({
       <SparkMicro>{copy.sparkMicro}</SparkMicro>
 
       <div>
-        <PrimaryCta onClick={onAdvance} pending={pending}>
+        <PrimaryCta onClick={onAdvance} pending={pending} disabled={!picked}>
           {ctaLabel}
         </PrimaryCta>
       </div>

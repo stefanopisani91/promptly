@@ -27,12 +27,9 @@ import { LearningMap } from "@/components/promptly/map/LearningMap";
 import { MapTopBar } from "@/components/promptly/map/MapTopBar";
 import { MapTopBarInviteButton } from "@/components/promptly/map/MapTopBarInviteButton";
 import { getLevelFromXP } from "@/lib/levels";
+import { dailyGoalToMinutes } from "@/lib/daily-goal";
 
 export const dynamic = "force-dynamic";
-
-// Hard-coded daily goal for now — when we ship the settings page we'll
-// move this onto `users.daily_goal_minutes` and let users tweak it.
-const DAILY_GOAL_MINUTES = 10;
 
 export function generateMetadata(): Metadata {
   const lang = resolveLangFromRequest();
@@ -238,7 +235,7 @@ export default async function DashboardPage() {
               <DailyGoalCard
                 copy={authCopy.dailyGoal}
                 minutesToday={minutesToday}
-                goalMinutes={DAILY_GOAL_MINUTES}
+                goalMinutes={dailyGoalToMinutes(profile.daily_goal)}
               />
             </div>
           </div>

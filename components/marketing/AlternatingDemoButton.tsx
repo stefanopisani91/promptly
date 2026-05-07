@@ -41,8 +41,16 @@ interface Props {
 export function AlternatingDemoButton({ label, bugLabel, onClick }: Props) {
   const [variant, setVariant] = useState<"example" | "bug">("example");
   const [transitioning, setTransitioning] = useState(false);
-  const [sparkles, setSparkles] = useState<Sparkle[]>(() => randomSparkles());
+  // Initialise empty so SSR and the first client render agree (no
+  // `Math.random` divergence). The first client effect populates the
+  // sparkles after mount.
+  const [sparkles, setSparkles] = useState<Sparkle[]>([]);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Seed sparkles once on the client.
+  useEffect(() => {
+    setSparkles(randomSparkles());
+  }, []);
 
   // alternate between variants
   useEffect(() => {

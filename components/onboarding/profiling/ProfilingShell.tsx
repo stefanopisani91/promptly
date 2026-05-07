@@ -22,7 +22,6 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import {
-  type DailyGoal,
   type ExperienceLevel,
   type Lang,
   type ProfilePromises,
@@ -69,6 +68,27 @@ const STEP4_THINKING_MS = 1500;
 
 type StepIndex = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 
+// Normalised step counter for the progress label. The denominator is
+// FIXED at the maximum possible (TOTAL_STEPS = 12) so it never changes
+// mid-flow when branching kicks in. The numerator counts only visible
+// steps reached so far, so the user sees a contiguous "1 of 12", "2 of
+// 12" … and finishes at "10/12", "11/12", or "12/12" depending on how
+// many steps their path skipped — an honest "you took a slightly
+// shorter path".
+function getVisibleStepInfo(
+  step: StepIndex,
+  isStep5Visible: boolean,
+  isStep7Visible: boolean,
+): { currentVisible: number; totalVisible: number } {
+  let currentVisible = 0;
+  for (let i = 1; i <= step; i++) {
+    if (i === 5 && !isStep5Visible) continue;
+    if (i === 7 && !isStep7Visible) continue;
+    currentVisible++;
+  }
+  return { currentVisible, totalVisible: TOTAL_STEPS };
+}
+
 interface Props {
   initialName: string;
   initialLang: Lang;
@@ -101,6 +121,11 @@ export function ProfilingShell({
   // Used to prevent double-firing the generation request when the user
   // re-enters Step 11 via the back button.
   const promisesGeneratedRef = useRef(false);
+  // Step 7 — distinguishes "user explicitly picked an option (including
+  // 'none')" from "user just landed on the step". `preferred_tool` is null
+  // in both cases, so we need this side-channel to keep the no-default
+  // rule (G3) and require an explicit click before advancing.
+  const [step7Picked, setStep7Picked] = useState(false);
 
   const copy = useMemo(
     () => getProfilingCopy(answers.language),
@@ -109,6 +134,10 @@ export function ProfilingShell({
 
   // Persist locale cookie when language changes (parallels the previous
   // shell so the rest of the app immediately reflects the choice).
+  // We also `router.refresh()` so the auth layout's server-rendered
+  // header (logo aria-label, lang switcher aria-label) and the root
+  // <html lang> pick up the new locale on the next paint. The shell's
+  // local state is preserved across the refresh.
   const setLanguage = useCallback((next: Lang) => {
     setAnswers((s) => ({ ...s, language: next }));
     if (typeof document !== "undefined") {
@@ -116,7 +145,8 @@ export function ProfilingShell({
         60 * 60 * 24 * 365
       }; samesite=lax`;
     }
-  }, []);
+    router.refresh();
+  }, [router]);
 
   const patchAnswers = useCallback((patch: Partial<ProfileAnswers>) => {
     setAnswers((s) => ({ ...s, ...patch }));
@@ -263,19 +293,27 @@ export function ProfilingShell({
     });
     // If the user no longer qualifies for Step 7 (e.g. they removed all IDE
     // selections), make sure preferred_tool is reset.
-    if (!hasAnyIdeTool(answers.tools_used) && answers.preferred_tool) {
-      patchAnswers({ preferred_tool: null });
-      saveAsync({ preferred_tool: null });
+    if (!hasAnyIdeTool(answers.tools_used)) {
+      if (answers.preferred_tool) {
+        patchAnswers({ preferred_tool: null });
+        saveAsync({ preferred_tool: null });
+      }
+      // Re-arm the "explicit pick" guard so that, if the user later goes
+      // back to step 6 and re-adds an IDE tool, step 7 won't auto-advance
+      // on a stale touched flag.
+      setStep7Picked(false);
     }
     goForward();
   }
 
   function advanceStep7() {
+    if (!step7Picked) return;
     saveAsync({ preferred_tool: answers.preferred_tool });
     goForward();
   }
 
   function advanceStep8() {
+    if (!answers.daily_goal) return;
     saveAsync({ daily_goal: answers.daily_goal });
     goForward();
   }
@@ -314,17 +352,19 @@ export function ProfilingShell({
       !answers.full_name ||
       !answers.experience_level ||
       !answers.project_clarity ||
+      !answers.daily_goal ||
       !answers.deep_motivation
     ) {
       setGlobalError(copy.shell.genericError);
       return;
     }
     setGlobalError(null);
+    const dailyGoal = answers.daily_goal;
     startTransition(async () => {
       const res = await completeOnboarding({
         fullName: answers.full_name,
         language: answers.language,
-        dailyGoal: answers.daily_goal,
+        dailyGoal,
         experienceLevel: answers.experience_level as ExperienceLevel,
         projectClarity: answers.project_clarity as ProjectClarity,
         projectDescription:
@@ -356,11 +396,12 @@ export function ProfilingShell({
     if (
       !answers.experience_level ||
       !answers.project_clarity ||
+      !answers.daily_goal ||
       !answers.deep_motivation
     ) {
       // Defensive — this shouldn't happen if validation worked. Bail and
       // send the user back to fix their answers.
-      setStep(9);
+      setStep(8);
       return;
     }
 
@@ -423,15 +464,25 @@ export function ProfilingShell({
 
   const recap = step === 10 ? buildRecap(answers, copy.step10, answers.language) : null;
 
+  // The visible counter normalises around skipped steps so the user never
+  // sees the index jump (e.g. "6 of 12" → "8 of 12" when step 7 is hidden).
+  // It counts only the steps that will actually render given the current
+  // branching state.
+  const { currentVisible, totalVisible } = getVisibleStepInfo(
+    step,
+    isStep5Visible,
+    isStep7Visible,
+  );
+
   return (
     <ProfilingFrame
-      step={step}
-      totalSteps={TOTAL_STEPS}
+      step={currentVisible}
+      totalSteps={totalVisible}
       sparkState={sparkState}
       direction={direction}
       onBack={step > 1 ? goBack : undefined}
       backLabel={copy.shell.backLabel}
-      progressLabel={copy.shell.progressLabel(step, TOTAL_STEPS)}
+      progressLabel={copy.shell.progressLabel(currentVisible, totalVisible)}
       contentKey={`step-${step}-${direction}`}
     >
       <StepBody
@@ -442,10 +493,15 @@ export function ProfilingShell({
         stepError={stepError}
         showStep4Commentary={showStep4Commentary}
         promisesLoading={promisesLoading}
+        step7Picked={step7Picked}
         recap={recap}
         setLanguage={setLanguage}
         patchAnswers={patchAnswers}
         chooseStep4={chooseStep4}
+        choosePreferredTool={(next) => {
+          setStep7Picked(true);
+          patchAnswers({ preferred_tool: next });
+        }}
         advance={{
           step1: advanceStep1,
           step2: advanceStep2,
@@ -482,10 +538,12 @@ interface StepBodyProps {
   stepError: string | null;
   showStep4Commentary: boolean;
   promisesLoading: boolean;
+  step7Picked: boolean;
   recap: ReturnType<typeof buildRecap>;
   setLanguage: (lang: Lang) => void;
   patchAnswers: (patch: Partial<ProfileAnswers>) => void;
   chooseStep4: (next: ProjectClarity) => void;
+  choosePreferredTool: (next: string | null) => void;
   advance: {
     step1: () => void;
     step2: () => void;
@@ -511,10 +569,12 @@ function StepBody({
   stepError,
   showStep4Commentary,
   promisesLoading,
+  step7Picked,
   recap,
   setLanguage,
   patchAnswers,
   chooseStep4,
+  choosePreferredTool,
   advance,
 }: StepBodyProps) {
   const continueLabel = copy.shell.continueCta;
@@ -627,8 +687,9 @@ function StepBody({
           copy={copy.step7}
           toolsSelected={answers.tools_used}
           value={answers.preferred_tool}
+          picked={step7Picked}
           pending={pending}
-          onChange={(v) => patchAnswers({ preferred_tool: v })}
+          onChange={choosePreferredTool}
           onAdvance={advance.step7}
           ctaLabel={continueLabel}
         />
@@ -637,7 +698,7 @@ function StepBody({
       return (
         <Step8Time
           copy={copy.step8}
-          value={answers.daily_goal as DailyGoal}
+          value={answers.daily_goal}
           pending={pending}
           onChange={(v) => patchAnswers({ daily_goal: v })}
           onAdvance={advance.step8}
