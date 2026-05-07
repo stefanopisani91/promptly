@@ -79,6 +79,14 @@ export function SparkChat({
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
 
+  // Lock the page scroll while the modal is open. Without this, swiping
+  // inside the chat on iOS scrolls the lesson page underneath the modal.
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = prev; };
+  }, []);
+
   useEffect(() => {
     scrollRef.current?.scrollTo({
       top: scrollRef.current.scrollHeight,
@@ -171,7 +179,7 @@ export function SparkChat({
       {/* ── Panel ── */}
       <div
         className="spark-chat-panel relative flex w-full max-w-md flex-col border border-border bg-surface shadow-2xl"
-        style={{ height: "min(580px, calc(100vh - 88px))", borderRadius: "28px" }}
+        style={{ height: "min(580px, calc(100dvh - 88px))", borderRadius: "28px" }}
       >
         {/* Speech-bubble tail — moved further right to point toward Spark */}
         <span

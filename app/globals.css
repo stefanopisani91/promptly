@@ -562,6 +562,21 @@ h6 {
   .spark-chat-panel    { animation: none; opacity: 1; transform: none; }
 }
 
+/* iOS Safari auto-zooms into any focused form control whose font-size is
+   below 16px. This rule forces 16px on every input/textarea/select on
+   mobile so the page never zooms when the keyboard opens — feels native.
+   Desktop (≥640px) is untouched, so the designed visual density (text-sm,
+   text-xs, etc.) stays exactly as authored. !important is intentional:
+   it has to win over Tailwind utility classes like .text-sm on the same
+   element. */
+@media (max-width: 639px) {
+  input,
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}
+
 /* ─── Lesson V3 — step transitions & component animations (May 2026) ── */
 
 /* Directional step slide-in */
