@@ -158,6 +158,7 @@ export default async function LessonPage({ params }: PageProps) {
       claudemdEditor: lessonsCopy.v3.claudemdEditor,
       contextEditor: lessonsCopy.v3.contextEditor,
       chat: lessonsCopy.v3.chat,
+      glossary: lessonsCopy.v3.glossary,
     };
 
     return (
@@ -171,6 +172,8 @@ export default async function LessonPage({ params }: PageProps) {
         initialChatRemaining={chatRemaining}
         chatLimit={SPARK_CHAT_LIMIT}
         userId={user.id}
+        glossarySeen={profile.glossary_seen}
+        lang={lang}
       />
     );
   }

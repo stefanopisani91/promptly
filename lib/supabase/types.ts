@@ -47,6 +47,10 @@ export type Database = {
           deep_motivation: string | null;
           promises: Json | null;
           last_profile_check: string | null;
+          // Glossario Vivo — terms the user has clicked at least once.
+          // Drives the "already seen" attenuated style on subsequent
+          // occurrences. Defaults to '{}'.
+          glossary_seen: string[];
           created_at: string;
           updated_at: string;
         };
@@ -83,6 +87,7 @@ export type Database = {
           deep_motivation?: string | null;
           promises?: Json | null;
           last_profile_check?: string | null;
+          glossary_seen?: string[];
           created_at?: string;
           updated_at?: string;
         };
@@ -119,6 +124,7 @@ export type Database = {
           deep_motivation?: string | null;
           promises?: Json | null;
           last_profile_check?: string | null;
+          glossary_seen?: string[];
           created_at?: string;
           updated_at?: string;
         };

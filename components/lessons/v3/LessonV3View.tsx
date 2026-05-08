@@ -52,6 +52,11 @@ import {
   ContextPromptEditor,
   type ContextPromptEditorStrings,
 } from "./steps/ContextPromptEditor";
+import {
+  GlossaryProvider,
+  type GlossaryStrings,
+} from "@/components/glossary/GlossaryProvider";
+import type { Lang } from "@/types";
 
 export interface LessonV3ViewStrings {
   header: {
@@ -73,6 +78,9 @@ export interface LessonV3ViewStrings {
   claudemdEditor: ClaudemdEditorStrings;
   contextEditor: ContextPromptEditorStrings;
   chat: import("./SparkChat").SparkChatStrings;
+  // Glossario Vivo — popover chrome strings + the prefill template
+  // used when the user clicks "approfondisci" inside a term popover.
+  glossary: GlossaryStrings;
 }
 
 interface Props {
@@ -93,6 +101,10 @@ interface Props {
   // (e.g. ClaudemdEditor's sessionStorage draft so two users on the same
   // device don't see each other's work).
   userId: string;
+  // Glossario Vivo — user's previously seen term ids (drives the
+  // attenuated style on subsequent occurrences) and the lesson lang.
+  glossarySeen: string[];
+  lang: Lang;
 }
 
 export function LessonV3View({
@@ -105,6 +117,8 @@ export function LessonV3View({
   initialChatRemaining,
   chatLimit,
   userId,
+  glossarySeen,
+  lang,
 }: Props) {
   const totalSteps = lesson.steps.length;
   const safeInitialStep = Math.min(
@@ -131,6 +145,17 @@ export function LessonV3View({
   const archetypeRef = useRef<string | null>(null);
   const [chatOpen, setChatOpen] = useState(false);
   const [chatRemaining, setChatRemaining] = useState(initialChatRemaining);
+  // Bumped on every chat opening; SparkChat reads it via key= so a fresh
+  // component mount picks up the latest `chatDraft`. Without this, the
+  // second click on a glossary "approfondisci" CTA would not re-seed
+  // the draft (the textarea is only initialised on mount).
+  const [chatOpenSeq, setChatOpenSeq] = useState(0);
+  const [chatDraft, setChatDraft] = useState<string | undefined>(undefined);
+  const openChatWithDraft = useCallback((draft: string) => {
+    setChatDraft(draft);
+    setChatOpenSeq((n) => n + 1);
+    setChatOpen(true);
+  }, []);
 
   const step = lesson.steps[stepIndex];
   const sparkState: SparkState = step.spark_state ?? "idle";
@@ -235,6 +260,12 @@ export function LessonV3View({
   // ─── Render ─────────────────────────────────────────────────────────
   return (
     <LessonDirectionContext.Provider value={navDirection}>
+    <GlossaryProvider
+      lang={lang}
+      initialSeen={glossarySeen}
+      strings={strings.glossary}
+      onOpenChatWithDraft={openChatWithDraft}
+    >
     <div className="flex min-h-screen flex-col bg-background">
       <SparkHeader
         lessonTitle={lesson.title}
@@ -317,6 +348,9 @@ export function LessonV3View({
 
       {chatOpen && (
         <SparkChat
+          // Remount on every open so a fresh `initialDraft` actually
+          // seeds the textarea — see chatOpenSeq above.
+          key={chatOpenSeq}
           lessonId={lesson.id}
           userId={userId}
           pathSlug={lesson.path_slug}
@@ -326,11 +360,16 @@ export function LessonV3View({
           remaining={chatRemaining}
           totalLimit={chatLimit}
           strings={strings.chat}
-          onClose={() => setChatOpen(false)}
+          initialDraft={chatDraft}
+          onClose={() => {
+            setChatOpen(false);
+            setChatDraft(undefined);
+          }}
           onMessageSent={(newRemaining) => setChatRemaining(newRemaining)}
         />
       )}
     </div>
+    </GlossaryProvider>
     </LessonDirectionContext.Provider>
   );
 }

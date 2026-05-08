@@ -75,7 +75,7 @@
       "spark_state": "listening",
       "paragraphs": [
         "«Contesto» non è una parola tecnica. Adesso te lo traduco semplice.",
-        "Il contesto è tutto quello che l'AI deve sapere PRIMA di provare a risponderti. Non quello che le chiedi — quello che le serve per capire la domanda.",
+        "Il [[term:contesto]]contesto[[/term]] è tutto quello che l'AI deve sapere PRIMA di provare a risponderti. Non quello che le chiedi — quello che le serve per capire la domanda.",
         "È la differenza tra chiedere a un amico «ti ricordi del progetto di cui parlavamo?» e chiederlo a uno sconosciuto. Allo sconosciuto devi spiegare tutto da capo."
       ],
       "vignettes": [
@@ -123,7 +123,7 @@
             "La prima è un comando senza terra sotto i piedi. La terza è un'illusione di precisione: «best practices» non vuol dire niente, l'AI improvvisa lo stesso."
           ],
           "minimal": [
-            "La prima era troppo scarna. L'AI può salvare in mille modi diversi: file JSON, database SQL, NoSQL, file di testo… Senza contesto, sceglie a caso.",
+            "La prima era troppo scarna. L'AI può salvare in mille modi diversi: file JSON, [[term:database]]database[[/term]] SQL, NoSQL, file di testo… Senza contesto, sceglie a caso.",
             "La risposta migliore era la seconda — quella che diceva «Supabase, tabella users, riusa il pattern di /lib/db/users.ts». Quella è terra sotto i piedi.",
             "Non sentirti male se hai sbagliato. È un errore comune."
           ],

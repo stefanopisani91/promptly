@@ -19,7 +19,7 @@
       "spark_state": "idle",
       "paragraphs": [
         "Hi. You made it. I was waiting for you.",
-        "In a moment I'll have you write your first real prompt. But first we need to agree on one thing.",
+        "In a moment I'll have you write your first real [[term:prompt]]prompt[[/term]]. But first we need to agree on one thing.",
         "Are you with me?"
       ],
       "vignettes": [
@@ -33,7 +33,7 @@
       "type": "text",
       "spark_state": "thinking",
       "paragraphs": [
-        "You want to learn how to build things with AI. Fine — I can teach you.",
+        "You want to learn how to build things with [[term:ai]]AI[[/term]]. Fine — I can teach you.",
         "But I can't promise it'll be magic.",
         "I'll say it now: anyone selling you «build an app in five minutes, no effort» is lying. And they know it."
       ],

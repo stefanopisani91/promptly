@@ -3,10 +3,12 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import {
+  markGlossaryTermSeen,
   setUserArchetype,
   upsertLessonCompletion,
   upsertLessonProgressState,
 } from "@/lib/supabase/queries";
+import { GLOSSARY } from "@/lib/glossary/glossary";
 import type { PathSlug } from "@/types";
 
 export type CompleteLessonResult =
@@ -69,6 +71,32 @@ export async function saveLessonProgressAction(input: {
       currentStep: input.currentStep,
       stepState: input.stepState,
     });
+    return { ok: true };
+  } catch {
+    return { ok: false };
+  }
+}
+
+/**
+ * Glossario Vivo — append a term id to users.glossary_seen the first time
+ * the user opens its popover. Idempotent: subsequent calls with the same
+ * id are no-ops (Postgres array_append guarded by the queries layer).
+ *
+ * Validates the id against GLOSSARY so a malicious client can't pollute
+ * the array with arbitrary strings.
+ */
+export async function markGlossaryTermSeenAction(input: {
+  termId: string;
+}): Promise<{ ok: boolean }> {
+  const supabase = createClient();
+  const { data: userData } = await supabase.auth.getUser();
+  const user = userData?.user;
+  if (!user) return { ok: false };
+  if (!Object.prototype.hasOwnProperty.call(GLOSSARY, input.termId)) {
+    return { ok: false };
+  }
+  try {
+    await markGlossaryTermSeen(supabase, user.id, input.termId);
     return { ok: true };
   } catch {
     return { ok: false };

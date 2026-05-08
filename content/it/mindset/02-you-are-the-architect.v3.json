@@ -74,7 +74,7 @@
       "type": "text",
       "spark_state": "listening",
       "paragraphs": [
-        "Senti. L'IDE è il posto dove scrivi codice. Non è una novità — esiste dagli anni '60.",
+        "Senti. L'[[term:ide]]IDE[[/term]] è il posto dove scrivi codice. Non è una novità — esiste dagli anni '60.",
         "L'IDE AI è la stessa cosa, ma con un'AI dentro che vede tutto quello che fai. Vede i file, vede gli errori, vede il contesto. Quando le chiedi qualcosa, non parte da zero.",
         "Tre nomi che sentirai sempre nel 2026: Cursor, Windsurf, Claude Code. Sono i più usati."
       ],
@@ -143,7 +143,7 @@
       "paragraphs": [
         "Adesso ti dico una cosa che pochi sanno e che cambia tutto.",
         "Non importa quale IDE AI usi. Tutti hanno lo stesso problema: l'AI dimentica chi sei tra una conversazione e l'altra.",
-        "C'è un trucco per risolverlo. È un file. Si chiama CLAUDE.md, AGENTS.md, o cursor rules — dipende dal tool. Ma il principio è sempre lo stesso."
+        "C'è un trucco per risolverlo. È un file. Si chiama [[term:claude-md]]CLAUDE.md[[/term]], AGENTS.md, o cursor rules — dipende dal tool. Ma il principio è sempre lo stesso."
       ],
       "vignettes": [
         { "short": "Ti aspetto qui per il prossimo step.", "full": "Ti aspetto qui per il prossimo step. Quello che arriva è la cosa importante." },
@@ -184,7 +184,7 @@
       "spark_state": "idle",
       "paragraphs": [
         "Ti faccio un esempio reale.",
-        "Il CLAUDE.md di Promptly contiene roba tipo: «sto costruendo un'app educational, stack Supabase + Netlify, non aggiungere dipendenze senza chiedermi, mostrami i diff prima di applicare modifiche.»",
+        "Il CLAUDE.md di Promptly contiene roba tipo: «sto costruendo un'app educational, [[term:stack]]stack[[/term]] Supabase + Netlify, non aggiungere [[term:dipendenza]]dipendenze[[/term]] senza chiedermi, mostrami i diff prima di applicare modifiche.»",
         "Sei righe. Sei righe che fanno la differenza tra un'AI che fa danni e una che lavora con me."
       ],
       "vignettes": [

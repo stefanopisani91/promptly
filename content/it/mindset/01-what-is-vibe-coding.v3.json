@@ -19,7 +19,7 @@
       "spark_state": "idle",
       "paragraphs": [
         "Ciao. Sei arrivato. Ti aspettavo.",
-        "Tra poco ti farò scrivere il tuo primo prompt vero. Ma prima dobbiamo metterci d'accordo su una cosa.",
+        "Tra poco ti farò scrivere il tuo primo [[term:prompt]]prompt[[/term]] vero. Ma prima dobbiamo metterci d'accordo su una cosa.",
         "Mi ascolti?"
       ],
       "vignettes": [
@@ -33,7 +33,7 @@
       "type": "text",
       "spark_state": "thinking",
       "paragraphs": [
-        "Tu vuoi imparare a costruire cose con l'AI. Va bene, posso insegnartelo.",
+        "Tu vuoi imparare a costruire cose con l'[[term:ai]]AI[[/term]]. Va bene, posso insegnartelo.",
         "Ma non posso prometterti che sarà magia.",
         "Te lo dico subito: chi ti vende «fai un'app in cinque minuti senza sforzo» ti sta mentendo. E lo sa anche lui."
       ],

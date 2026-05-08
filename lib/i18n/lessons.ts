@@ -257,6 +257,24 @@ export interface LessonsCopy {
       unauthorized: string;
       hintExamples: string[];
     };
+    // Glossario Vivo — strings consumed by the GlossaryProvider /
+    // GlossaryPopover (see Glossario_Vivo_Blueprint.md). The dictionary
+    // entries themselves live in lib/glossary/glossary.ts (IT+EN per term);
+    // these are the chrome around the popover.
+    glossary: {
+      // Header eyebrow ("Spark spiega" / "Spark explains")
+      popoverEyebrow: string;
+      // CTA at the bottom of the popover that opens SparkChat with a
+      // prefilled draft.
+      deeperCta: string;
+      // Aria-label for the X close button.
+      closeLabel: string;
+      // Aria-label for the mobile bottom-sheet drag handle.
+      bottomSheetGrabberLabel: string;
+      // Template that builds the prefilled chat message. {term} is
+      // replaced with the localised label of the clicked term.
+      prefillTemplate: string;
+    };
     // Lesson-specific copy injected at server-render time. Lives here
     // because it's translated alongside the rest of the lesson UI; the
     // values themselves are consumed by lib/lessons/v3/personalize.ts
@@ -572,6 +590,14 @@ const it: LessonsCopy = {
         "Da dove vengo io? Dimmi qualcosa di te.",
       ],
     },
+    glossary: {
+      popoverEyebrow: "Spark spiega",
+      deeperCta: "Vuoi che approfondisca?",
+      closeLabel: "Chiudi spiegazione",
+      bottomSheetGrabberLabel: "Trascina per chiudere",
+      prefillTemplate:
+        "Mi puoi spiegare meglio cos'è {term}? Non mi è chiaro al 100%.",
+    },
     mindset01: {
       projectRecall: {
         intro: "Adesso parliamo di te.",
@@ -584,21 +610,21 @@ const it: LessonsCopy = {
     mindset02: {
       step5: {
         beginner: [
-          "Senti. L'IDE è il posto dove scrivi codice. Non è una novità — esiste dagli anni '60.",
+          "Senti. L'[[term:ide]]IDE[[/term]] è il posto dove scrivi codice. Non è una novità — esiste dagli anni '60.",
           "L'IDE AI è la stessa cosa, ma con un'AI dentro che vede tutto quello che fai. Vede i file, vede gli errori, vede il contesto. Quando le chiedi qualcosa, non parte da zero.",
           "Tre nomi che sentirai sempre nel 2026: Cursor, Windsurf, Claude Code. Sono i più usati.",
         ],
         triedFailed: [
-          "L'IDE AI è il posto dove scrivi e l'AI vede tutto: file, errori, contesto. Niente più copia-incolla tra tab diverse.",
+          "L'[[term:ide]]IDE AI[[/term]] è il posto dove scrivi e l'AI vede tutto: file, errori, contesto. Niente più copia-incolla tra tab diverse.",
           "Tu hai già provato qualcosa, quindi sai com'è quando l'AI dimentica il file precedente. Ecco — un IDE AI risolve quel pezzo lì.",
           "Tre nomi del 2026: Cursor, Windsurf, Claude Code. Cugini di sangue.",
         ],
         workingOnIt: [
-          "Tu lo sai già cos'è un IDE. Quello che cambia con l'AI è che non parla a vuoto — vede tutto il contesto del progetto.",
+          "Tu lo sai già cos'è un [[term:ide]]IDE[[/term]]. Quello che cambia con l'AI è che non parla a vuoto — vede tutto il contesto del progetto.",
           "Niente più copia-incolla. È l'unica vera differenza, ed è enorme.",
         ],
         advanced: [
-          "Ti risparmio le definizioni — sai già cos'è un IDE AI e perché vede il contesto.",
+          "Ti risparmio le definizioni — sai già cos'è un [[term:ide]]IDE AI[[/term]] e perché vede il contesto.",
           "Andiamo dritti al pezzo che molti dei tuoi colleghi non sanno davvero: come si configura.",
         ],
       },
@@ -606,12 +632,12 @@ const it: LessonsCopy = {
         default: [
           "Adesso ti dico una cosa che pochi sanno e che cambia tutto.",
           "Non importa quale IDE AI usi. Tutti hanno lo stesso problema: l'AI dimentica chi sei tra una conversazione e l'altra.",
-          "C'è un trucco per risolverlo. È un file. Si chiama CLAUDE.md, AGENTS.md, o cursor rules — dipende dal tool. Ma il principio è sempre lo stesso.",
+          "C'è un trucco per risolverlo. È un file. Si chiama [[term:claude-md]]CLAUDE.md[[/term]], AGENTS.md, o cursor rules — dipende dal tool. Ma il principio è sempre lo stesso.",
         ],
         withTool: (toolName, configFile) => [
           "Adesso ti dico una cosa che pochi sanno e che cambia tutto.",
           `${toolName} ha lo stesso problema di tutti gli altri IDE AI: dimentica chi sei tra una conversazione e l'altra.`,
-          `C'è un trucco per risolverlo. In ${toolName} si chiama \`${configFile}\`. In altri tool ha nomi diversi — CLAUDE.md, AGENTS.md, windsurfrules. Ma il principio è lo stesso.`,
+          `C'è un trucco per risolverlo. In ${toolName} si chiama \`${configFile}\`. In altri tool ha nomi diversi — [[term:claude-md]]CLAUDE.md[[/term]], AGENTS.md, windsurfrules. Ma il principio è lo stesso.`,
         ],
       },
     },
@@ -619,13 +645,13 @@ const it: LessonsCopy = {
       step11: {
         exploring: [
           "Ti faccio un esempio con un progetto-tipo.",
-          "Immagina di chiedere all'AI «aggiungi una funzione di login».",
+          "Immagina di chiedere all'AI «aggiungi una [[term:funzione]]funzione[[/term]] di login».",
           "Versione SENZA contesto: «aggiungi una funzione di login». L'AI improvvisa di sana pianta — magari ti tira fuori una login con OAuth Google quando tu volevi solo email/password.",
           "Versione CON contesto: «Stiamo costruendo un'app web semplice. Aggiungi login email/password. Riusa lo stile delle altre form in /components/forms. Niente OAuth per ora.» L'AI fa esattamente quello che vuoi tu.",
         ],
         withProject: (project) => [
           "Ti faccio un esempio col TUO progetto.",
-          `Mi dicesti che vuoi costruire "${project}". Bene. Immagina di chiedere all'AI «aggiungi una funzione di login».`,
+          `Mi dicesti che vuoi costruire "${project}". Bene. Immagina di chiedere all'AI «aggiungi una [[term:funzione]]funzione[[/term]] di login».`,
           "Versione SENZA contesto: «aggiungi una funzione di login». L'AI inventa di sana pianta — magari ti tira fuori una login con OAuth Google quando tu volevi solo email/password.",
           `Versione CON contesto: «Stiamo costruendo ${project}. Aggiungi login email/password. Riusa lo stile delle altre form in /components/forms. Niente OAuth per ora.» L'AI fa esattamente quello che vuoi tu.`,
         ],
@@ -883,6 +909,14 @@ const en: LessonsCopy = {
         "Where do you come from? Tell me about yourself.",
       ],
     },
+    glossary: {
+      popoverEyebrow: "Spark explains",
+      deeperCta: "Want me to dig deeper?",
+      closeLabel: "Close explanation",
+      bottomSheetGrabberLabel: "Drag to close",
+      prefillTemplate:
+        "Can you explain {term} a bit more? I'm not 100% sure I get it.",
+    },
     mindset01: {
       projectRecall: {
         intro: "Now let's talk about you.",
@@ -895,21 +929,21 @@ const en: LessonsCopy = {
     mindset02: {
       step5: {
         beginner: [
-          "Listen. An IDE is the place you write code. Nothing new — it's been around since the 1960s.",
+          "Listen. An [[term:ide]]IDE[[/term]] is the place you write code. Nothing new — it's been around since the 1960s.",
           "An AI IDE is the same thing, but with an AI living inside that sees everything you do. It sees files, errors, context. When you ask for something, it doesn't start from zero.",
           "Three names you'll keep hearing in 2026: Cursor, Windsurf, Claude Code. The most used ones.",
         ],
         triedFailed: [
-          "An AI IDE is the place where you write, and the AI sees everything: files, errors, context. No more copy-paste between tabs.",
+          "An [[term:ide]]AI IDE[[/term]] is the place where you write, and the AI sees everything: files, errors, context. No more copy-paste between tabs.",
           "You've already tried something, so you know what it's like when the AI forgets the previous file. That's exactly what an AI IDE fixes.",
           "Three 2026 names: Cursor, Windsurf, Claude Code. Blood cousins.",
         ],
         workingOnIt: [
-          "You know what an IDE is already. What changes with AI inside is that it doesn't talk in the dark — it sees the whole project context.",
+          "You know what an [[term:ide]]IDE[[/term]] is already. What changes with AI inside is that it doesn't talk in the dark — it sees the whole project context.",
           "No more copy-paste. It's the only real difference, and it's huge.",
         ],
         advanced: [
-          "I'll skip the definitions — you know what an AI IDE is and why it sees the context.",
+          "I'll skip the definitions — you know what an [[term:ide]]AI IDE[[/term]] is and why it sees the context.",
           "Let's go straight to the part most of your peers don't actually know: how you configure it.",
         ],
       },
@@ -917,12 +951,12 @@ const en: LessonsCopy = {
         default: [
           "Now I'll tell you something few people know that changes everything.",
           "Doesn't matter which AI IDE you use. They all have the same problem: the AI forgets who you are between conversations.",
-          "There's a trick to fix it. It's a file. Called CLAUDE.md, AGENTS.md, or cursor rules — depends on the tool. But the principle is the same.",
+          "There's a trick to fix it. It's a file. Called [[term:claude-md]]CLAUDE.md[[/term]], AGENTS.md, or cursor rules — depends on the tool. But the principle is the same.",
         ],
         withTool: (toolName, configFile) => [
           "Now I'll tell you something few people know that changes everything.",
           `${toolName} has the same problem as every other AI IDE: it forgets who you are between conversations.`,
-          `There's a trick to fix it. In ${toolName} it's called \`${configFile}\`. In other tools it has different names — CLAUDE.md, AGENTS.md, windsurfrules. But the principle is the same.`,
+          `There's a trick to fix it. In ${toolName} it's called \`${configFile}\`. In other tools it has different names — [[term:claude-md]]CLAUDE.md[[/term]], AGENTS.md, windsurfrules. But the principle is the same.`,
         ],
       },
     },
@@ -930,13 +964,13 @@ const en: LessonsCopy = {
       step11: {
         exploring: [
           "Let me show you with a typical project.",
-          "Imagine asking the AI «add a login function».",
+          "Imagine asking the AI «add a login [[term:funzione]]function[[/term]]».",
           "Version WITHOUT context: «add a login function». The AI improvises wildly — maybe gives you OAuth Google when you wanted plain email/password.",
           "Version WITH context: «We're building a simple web app. Add email/password login. Reuse the style of the other forms in /components/forms. No OAuth for now.» The AI does exactly what you wanted.",
         ],
         withProject: (project) => [
           "Let me show you with YOUR project.",
-          `You told me you want to build "${project}". Good. Imagine asking the AI «add a login function».`,
+          `You told me you want to build "${project}". Good. Imagine asking the AI «add a login [[term:funzione]]function[[/term]]».`,
           "Version WITHOUT context: «add a login function». The AI invents wildly — maybe gives you OAuth Google when you wanted plain email/password.",
           `Version WITH context: «We're building ${project}. Add email/password login. Reuse the style of the other forms in /components/forms. No OAuth for now.» The AI does exactly what you wanted.`,
         ],

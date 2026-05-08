@@ -791,6 +791,90 @@ h6 {
   animation: context-helper-fade-in 250ms ease-out both;
 }
 
+/* ─────────────────────────────────────────────────────────────
+   GLOSSARIO VIVO — clickable inline term + popover/bottom-sheet
+   Spec: Glossario_Vivo_Blueprint.md §"Design visivo".
+───────────────────────────────────────────────────────────── */
+
+/* Inline term — highlighter pen over the bottom 40% of the line.
+   Reset all the <button> defaults so it sits inside running text as
+   if it were a span. */
+.glossary-term {
+  appearance: none;
+  background: linear-gradient(
+    to bottom,
+    transparent 60%,
+    rgba(251, 191, 36, 0.28) 60%
+  );
+  border: 0;
+  padding: 0 2px;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: background 200ms ease-out;
+  /* Keep the highlight tight to the text — no extra line height. */
+  line-height: inherit;
+  /* Keep the focus affordance accessible without adding chrome. */
+  outline-offset: 2px;
+}
+.glossary-term:hover {
+  background: linear-gradient(
+    to bottom,
+    transparent 50%,
+    rgba(251, 191, 36, 0.5) 50%
+  );
+}
+.glossary-term:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+/* Already-explored: faded highlight so the user reads it as "you've
+   been here". Hover still bumps the saturation to confirm interactivity. */
+.glossary-term-seen {
+  background: linear-gradient(
+    to bottom,
+    transparent 65%,
+    rgba(251, 191, 36, 0.12) 65%
+  );
+}
+.glossary-term-seen:hover {
+  background: linear-gradient(
+    to bottom,
+    transparent 55%,
+    rgba(251, 191, 36, 0.3) 55%
+  );
+}
+
+/* Desktop popover — quick fade-up. Anchored placement is computed in
+   JS, so this is purely the entrance animation. */
+@keyframes glossary-popover-in {
+  from { opacity: 0; transform: scale(0.96) translateY(-4px); }
+  to   { opacity: 1; transform: scale(1)    translateY(0); }
+}
+.glossary-popover-desktop {
+  animation: glossary-popover-in 200ms ease-out both;
+  transform-origin: top center;
+}
+
+/* Mobile bottom sheet — slide up + backdrop fade. */
+@keyframes glossary-bottom-sheet-in {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+@keyframes glossary-backdrop-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.glossary-bottom-sheet {
+  animation: glossary-bottom-sheet-in 280ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.glossary-backdrop {
+  animation: glossary-backdrop-in 200ms ease-out both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .step-slide-fwd,
   .step-slide-back,
@@ -807,6 +891,9 @@ h6 {
   .context-editor-pulse-border,
   .context-arrow-bounce,
   .context-helper-fade-in,
+  .glossary-popover-desktop,
+  .glossary-bottom-sheet,
+  .glossary-backdrop,
   .option-card-idle-pulse,
   .option-card-bounce-in,
   .accordion-section-idle-pulse {

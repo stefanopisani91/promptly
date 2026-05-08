@@ -51,6 +51,10 @@ interface Props {
   remaining: number;
   totalLimit: number;
   strings: SparkChatStrings;
+  // Optional prefill for the textarea. Used by the Glossario Vivo
+  // "approfondisci" CTA so the chat opens with a ready-to-send question
+  // about the clicked term. The user can still edit before sending.
+  initialDraft?: string;
   onClose: () => void;
   onMessageSent: (newRemaining: number) => void;
 }
@@ -65,6 +69,7 @@ export function SparkChat({
   remaining,
   totalLimit,
   strings,
+  initialDraft,
   onClose,
   onMessageSent,
 }: Props) {
@@ -91,7 +96,10 @@ export function SparkChat({
       return [];
     }
   });
-  const [draft, setDraft] = useState("");
+  // Seed the textarea with `initialDraft` when present (e.g. Glossario
+  // Vivo's "approfondisci" CTA). The seed runs once at mount; subsequent
+  // changes to the prop don't replace what the user has typed.
+  const [draft, setDraft] = useState(initialDraft ?? "");
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   // Tracks the current visualViewport height so the panel can shrink when

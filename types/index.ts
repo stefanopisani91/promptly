@@ -137,6 +137,10 @@ export interface UserProfile {
   deep_motivation: string | null;
   promises: ProfilePromises | null;
   last_profile_check: string | null;
+  // Glossario Vivo — set of glossary term ids the user has explored at
+  // least once. Drives the "already seen" attenuated style on subsequent
+  // occurrences. Migration 20260508160000_glossary_seen.sql.
+  glossary_seen: string[];
   created_at: string;
   updated_at: string;
 }

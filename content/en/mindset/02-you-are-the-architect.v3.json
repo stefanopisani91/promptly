@@ -74,7 +74,7 @@
       "type": "text",
       "spark_state": "listening",
       "paragraphs": [
-        "Listen. An IDE is the place you write code. Nothing new — it's been around since the 1960s.",
+        "Listen. An [[term:ide]]IDE[[/term]] is the place you write code. Nothing new — it's been around since the 1960s.",
         "An AI IDE is the same thing, but with an AI living inside that sees everything you do. It sees files, errors, context. When you ask for something, it doesn't start from zero.",
         "Three names you'll keep hearing in 2026: Cursor, Windsurf, Claude Code. The most used ones."
       ],
@@ -143,7 +143,7 @@
       "paragraphs": [
         "Now I'll tell you something few people know that changes everything.",
         "Doesn't matter which AI IDE you use. They all have the same problem: the AI forgets who you are between conversations.",
-        "There's a trick to fix it. It's a file. Called CLAUDE.md, AGENTS.md, or cursor rules — depends on the tool. But the principle is the same."
+        "There's a trick to fix it. It's a file. Called [[term:claude-md]]CLAUDE.md[[/term]], AGENTS.md, or cursor rules — depends on the tool. But the principle is the same."
       ],
       "vignettes": [
         { "short": "Wait for the next step.", "full": "Wait for the next step. What's coming is the important bit." },
@@ -184,7 +184,7 @@
       "spark_state": "idle",
       "paragraphs": [
         "Real example.",
-        "Promptly's CLAUDE.md says things like: «I'm building an educational app, stack Supabase + Netlify, don't add dependencies without asking, show me diffs before applying changes.»",
+        "Promptly's CLAUDE.md says things like: «I'm building an educational app, [[term:stack]]stack[[/term]] Supabase + Netlify, don't add [[term:dipendenza]]dependencies[[/term]] without asking, show me diffs before applying changes.»",
         "Six lines. Six lines that separate an AI doing damage from one working with me."
       ],
       "vignettes": [

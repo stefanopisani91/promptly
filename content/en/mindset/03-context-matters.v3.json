@@ -75,7 +75,7 @@
       "spark_state": "listening",
       "paragraphs": [
         "«Context» isn't a technical word. Let me translate it plainly.",
-        "Context is everything the AI needs to know BEFORE trying to answer you. Not what you ask — what it needs to understand the question.",
+        "[[term:contesto]]Context[[/term]] is everything the AI needs to know BEFORE trying to answer you. Not what you ask — what it needs to understand the question.",
         "It's the difference between asking a friend «remember the project we were talking about?» and asking a stranger. The stranger needs everything explained from scratch."
       ],
       "vignettes": [
@@ -123,7 +123,7 @@
             "The first one is a command with no ground under it. The third is fake precision: «best practices» means nothing — the AI improvises anyway."
           ],
           "minimal": [
-            "The first was too thin. The AI can save in a thousand ways: JSON file, SQL database, NoSQL, plain text… With no context, it picks at random.",
+            "The first was too thin. The AI can save in a thousand ways: JSON file, SQL [[term:database]]database[[/term]], NoSQL, plain text… With no context, it picks at random.",
             "The right answer was the second — the one that said «Supabase, users table, reuse the pattern in /lib/db/users.ts». That's ground under your feet.",
             "Don't beat yourself up. It's a common mistake."
           ],

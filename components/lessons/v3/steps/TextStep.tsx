@@ -2,6 +2,7 @@
 
 import type { TextStep as TextStepType } from "@/types";
 import { StepCard } from "../StepCard";
+import { RichText } from "@/components/glossary/RichText";
 
 interface Props {
   step: TextStepType;
@@ -24,7 +25,7 @@ export function TextStep({ step, stepState }: Props) {
                 : "text-base leading-relaxed text-text-secondary sm:text-lg"
             }
           >
-            {p}
+            <RichText text={p} />
           </p>
         ))}
       </div>

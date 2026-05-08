@@ -22,7 +22,7 @@ export type ProfileGate =
   | { state: "complete"; profile: UserProfile };
 
 const USER_PROFILE_COLUMNS =
-  "id, email, full_name, language, daily_goal, onboarding_completed_at, signup_source, welcome_seen_at, push_prompted_at, ai_eval_prompted_at, total_xp, current_streak, longest_streak, last_activity_date, last_level_up_notified, referral_code, referral_link_activated_at, archetype_key, experience_level, project_clarity, project_description, tools_used, tools_other, preferred_tool, deep_motivation, promises, last_profile_check, created_at, updated_at";
+  "id, email, full_name, language, daily_goal, onboarding_completed_at, signup_source, welcome_seen_at, push_prompted_at, ai_eval_prompted_at, total_xp, current_streak, longest_streak, last_activity_date, last_level_up_notified, referral_code, referral_link_activated_at, archetype_key, experience_level, project_clarity, project_description, tools_used, tools_other, preferred_tool, deep_motivation, promises, last_profile_check, glossary_seen, created_at, updated_at";
 
 export async function getUserProfile(
   supabase: AppSupabaseClient,
@@ -43,11 +43,18 @@ export async function getUserProfile(
   // never have to.
   const toolsUsed = Array.isArray(data.tools_used) ? data.tools_used : [];
   const promises = isProfilePromises(data.promises) ? data.promises : null;
+  // Same null-vs-empty-array safety as tools_used: the column was added
+  // by migration 20260508160000 with a default '{}' but rows inserted
+  // before the default landed could read back as null.
+  const glossarySeen = Array.isArray(data.glossary_seen)
+    ? data.glossary_seen
+    : [];
 
   return {
     ...data,
     tools_used: toolsUsed,
     promises,
+    glossary_seen: glossarySeen,
   } satisfies UserProfile;
 }
 
@@ -869,4 +876,35 @@ export async function logSafetyEvent(
     excerpt,
   });
   if (error) throw error;
+}
+
+// ─── Glossario Vivo (Glossario_Vivo_Blueprint.md) ───────────────────────
+//
+// Idempotent: appends `termId` to users.glossary_seen iff not already
+// present. Read-then-write covers Postgres' lack of array_append unique
+// without a trip to a SQL function — the array is bounded (~12 ids),
+// caller-side dedup in the client cuts most repeat calls anyway, and
+// double-clicks within the same paint settle into a no-op upsert.
+
+export async function markGlossaryTermSeen(
+  supabase: AppSupabaseClient,
+  userId: string,
+  termId: string,
+): Promise<void> {
+  const { data: existing, error: readErr } = await supabase
+    .from("users")
+    .select("glossary_seen")
+    .eq("id", userId)
+    .maybeSingle();
+  if (readErr) throw readErr;
+
+  const current = existing?.glossary_seen ?? [];
+  if (current.includes(termId)) return;
+
+  const next = [...current, termId];
+  const { error: writeErr } = await supabase
+    .from("users")
+    .update({ glossary_seen: next })
+    .eq("id", userId);
+  if (writeErr) throw writeErr;
 }
