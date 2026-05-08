@@ -41,8 +41,8 @@ export function AskSparkBubble({
         bottom: "-10px",
         right: "-14px",
         background: isExhausted
-          ? "linear-gradient(135deg, #c8a830 0%, #a88520 100%)"
-          : "linear-gradient(135deg, #F5C544 0%, #E0A82E 100%)",
+          ? "linear-gradient(135deg, #d4b83a 0%, #b07010 100%)"
+          : "linear-gradient(135deg, #FFE442 0%, #FF9A0A 100%)",
         border: "2px solid rgba(255,255,255,0.9)",
         opacity: isExhausted ? 0.72 : 1,
         zIndex: 40,

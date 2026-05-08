@@ -322,7 +322,7 @@ export function LuciaDemo({ copy, lang }: Props) {
         <div className="mb-6 flex flex-col items-center gap-2.5">
           <Spark
             state={sparkNarration.state}
-            size={56}
+            size={154}
             ariaLabel={copy.spark.label}
           />
           <p

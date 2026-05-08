@@ -48,7 +48,7 @@ export function HeroMockup({ copy }: Props) {
               {copy.lessonTitle}
             </h3>
           </div>
-          <Spark state="idle" size={44} ariaLabel={copy.sparkLabel} />
+          <Spark state="idle" size={72} ariaLabel={copy.sparkLabel} />
         </div>
 
         {/* Card body — PRINCIPLE step style */}

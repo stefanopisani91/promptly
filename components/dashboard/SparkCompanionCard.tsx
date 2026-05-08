@@ -42,7 +42,7 @@ function pickGreet(
       : h >= 18
         ? greet.greetEvening
         : greet.greetGeneric;
-  return template.replace("{name}", name);
+  return template.replace("{name}", name.split(" ")[0]);
 }
 
 /** Types out `text` character by character. Returns [displayed, isDone]. */
@@ -159,7 +159,7 @@ export function SparkCompanionCard({
           <span className="animate-spark-bob">
             <Spark
               state="idle"
-              size={isHero ? 56 : 32}
+              size={isHero ? 80 : 52}
               ariaLabel={copy.sparkLabel}
             />
           </span>
