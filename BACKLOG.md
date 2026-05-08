@@ -414,4 +414,43 @@ Documentazione: https://supabase.com/docs/guides/auth/password-security#password
 
 ---
 
+## 📖 Glossario Vivo — termini cliccabili che attivano Spark
+
+**Stato:** ⏳ proposed
+**Priorità:** 🟡 media (alto impatto su engagement con Spark + onboarding al lessico)
+**Aperta:** 8 May 2026
+**Spec completa:** [`Glossario_Vivo_Blueprint.md`](Glossario_Vivo_Blueprint.md) (root)
+
+### Contesto
+
+Feature trasversale alle lezioni Path 1 (poi propagata a Path 2-5). Termini tecnici nei testi delle lezioni (es. `prompt`, `IDE`, `CLAUDE.md`, `stack`, `dipendenza`, `database`, `contesto`, `funzione`, `componente`, `framework`, `vibe coding`, `AI`) diventano cliccabili — un click apre una popover con la definizione di Spark + un bottone "Vuoi che approfondisca?" che pre-compila la chat libera Spark.
+
+Risolve due problemi:
+1. **Onboarding alla chat Spark** — l'utente non sa come iniziare a parlarle; il bottone "approfondisci" è il primo passo guidato.
+2. **Lessico tecnico progressivo** — l'utente impara i termini in linea, senza dover Google-are e abbandonare.
+
+### Cosa serve in pratica
+
+1. Migration: colonna `glossary_seen TEXT[]` su `user_profiles` per tracking termini visti.
+2. Dizionario: `lib/glossary/glossary.ts` con i 12 termini IT+EN del blueprint (pre-scritti, non auto-generati).
+3. Componente: `<GlossaryTerm termId="..." />` con popover desktop + bottom sheet mobile, animazione 200ms (CSS keyframes — il progetto non usa framer-motion).
+4. Hook: `useGlossaryTracker()` per `markAsSeen` / `hasSeen`.
+5. Integrazione chat Spark: il bottone "approfondisci" apre la chat con messaggio pre-compilato.
+6. **Decisione tecnica aperta**: come embeddare i termini nei `paragraphs: string[]` delle lezioni V3? Opzioni nel blueprint §"Istruzioni per Claude Code" — probabilmente un markup inline `[[term:ide]]…[[/term]]` parsato in `TextStep`.
+
+### Integrazione progressiva
+
+- Lezione 1 → 4 termini (`prompt`, `AI`, `vibe coding`, `IDE`)
+- Lezione 2 → 4 termini (`IDE`, `CLAUDE.md`, `stack`, `dipendenza`)
+- Lezione 3 → 4 termini (`contesto`, `database`, `funzione`, `framework`)
+- Path 2-5 → da scrivere quando le lezioni saranno pronte
+
+Regola: ogni termine cliccabile **una sola volta** in tutta l'app (prima occorrenza cross-lesson).
+
+### Tempo stimato
+
+4-6 ore di vibe coding per la prima passata (Path 1 completo + componente + tracking). Vedi blueprint per dettagli design, dizionario completo, errori da evitare e checklist di test.
+
+---
+
 *Aggiornare questo file ogni volta che emerge una nuova richiesta secondaria. È il "diario di bordo" delle iterazioni post-MVP.*
