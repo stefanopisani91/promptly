@@ -211,6 +211,10 @@ export type Database = {
           // the CLAUDE.md grader has its own daily budget independent of
           // chat and promise spend.
           claudemd_attempts_count: number;
+          // Lesson 3 — counter for /api/lesson-context-evaluate calls so
+          // the context-prompt grader has its own daily budget too. Same
+          // pattern as claudemd_attempts_count.
+          context_attempts_count: number;
           updated_at: string;
         };
         Insert: {
@@ -219,6 +223,7 @@ export type Database = {
           message_count?: number;
           promise_regen_count?: number;
           claudemd_attempts_count?: number;
+          context_attempts_count?: number;
           updated_at?: string;
         };
         Update: {
@@ -227,6 +232,7 @@ export type Database = {
           message_count?: number;
           promise_regen_count?: number;
           claudemd_attempts_count?: number;
+          context_attempts_count?: number;
           updated_at?: string;
         };
         Relationships: [];

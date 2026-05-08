@@ -1,7 +1,7 @@
 // Server-side personalisation of V3 lesson content based on the user's
 // onboarding profile.
 //
-// Today two lessons opt-in:
+// Today three lessons opt-in:
 //   - mindset-01 — `input-motivation` step is replaced with a recap text
 //     card so we don't re-ask the user something they already answered
 //     during the 12-step profilazione (Profilazione.md spec, BUG #2 fix).
@@ -9,6 +9,10 @@
 //     concetto chiave") swap their paragraphs based on `experience_level`
 //     and `preferred_tool` (Lezione2_Blueprint.md §"Integrazione dati
 //     onboarding").
+//   - mindset-03 — Step 11 ("applied-example") swaps in the user's actual
+//     project_description, and step 12 ("quickwin-intro") appends a tool-
+//     specific PS based on preferred_tool (Lezione3_Blueprint.md §"Inte-
+//     grazione dati onboarding").
 //
 // Pure function, no I/O. The caller (app/(app)/lesson/[id]/page.tsx)
 // already owns the lesson + profile + i18n bundle, so we keep the rule
@@ -42,6 +46,17 @@ export interface Mindset02Copy {
   };
 }
 
+export interface Mindset03Copy {
+  step11: {
+    exploring: string[];
+    withProject: (project: string) => string[];
+  };
+  step12: {
+    default: string[];
+    withTool: (toolName: string) => string[];
+  };
+}
+
 export interface PersonaliseProfileSlice {
   project_description: string | null;
   project_clarity: ProjectClarity | null;
@@ -52,6 +67,7 @@ export interface PersonaliseProfileSlice {
 export interface PersonaliseCopy {
   projectRecall: ProjectRecallCopy;
   mindset02: Mindset02Copy;
+  mindset03: Mindset03Copy;
 }
 
 /**
@@ -68,6 +84,9 @@ export function personaliseLessonForUser(
   }
   if (lesson.id === "mindset-02") {
     return personaliseMindset02(lesson, profile, copy.mindset02);
+  }
+  if (lesson.id === "mindset-03") {
+    return personaliseMindset03(lesson, profile, copy.mindset03);
   }
   return lesson;
 }
@@ -202,4 +221,60 @@ function configFileForTool(slug: string): string {
     default:
       return "CLAUDE.md";
   }
+}
+
+// ─── Lesson 3 — Step 11 (applied-example) + Step 12 (quickwin-intro) ──
+
+function personaliseMindset03(
+  lesson: LessonV3Content,
+  profile: PersonaliseProfileSlice,
+  copy: Mindset03Copy,
+): LessonV3Content {
+  let touched = false;
+  const steps = lesson.steps.map((step) => {
+    if (step.id === "applied-example" && step.type === "text") {
+      const variant = pickStep11Variant(profile, copy.step11);
+      if (variant) {
+        touched = true;
+        return { ...step, paragraphs: variant } satisfies TextStep;
+      }
+    }
+    if (step.id === "quickwin-intro" && step.type === "text") {
+      const variant = pickStep12Variant(profile.preferred_tool, copy.step12);
+      if (variant) {
+        touched = true;
+        return { ...step, paragraphs: variant } satisfies TextStep;
+      }
+    }
+    return step;
+  });
+  if (!touched) return lesson;
+  return { ...lesson, steps };
+}
+
+function pickStep11Variant(
+  profile: PersonaliseProfileSlice,
+  copy: Mindset03Copy["step11"],
+): string[] | null {
+  // Exploring users (no project picked) get the generic example. Users with
+  // a real project_description get it woven into the example. When neither
+  // is available, leave the JSON default — never strip context blindly.
+  if (profile.project_clarity === "exploring") {
+    return copy.exploring;
+  }
+  const project = profile.project_description?.trim();
+  if (project && project.length > 0) {
+    return copy.withProject(project);
+  }
+  return null;
+}
+
+function pickStep12Variant(
+  preferredTool: string | null,
+  copy: Mindset03Copy["step12"],
+): string[] | null {
+  if (!preferredTool) return null;
+  const tool = getToolBySlug(preferredTool);
+  if (!tool) return null;
+  return copy.withTool(tool.display_name ?? tool.name);
 }

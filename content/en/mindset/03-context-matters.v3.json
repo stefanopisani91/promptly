@@ -1,0 +1,279 @@
+{
+  "id": "mindset-03",
+  "format_version": 3,
+  "path_slug": "mindset",
+  "order": 3,
+  "title": "Context matters more than the prompt.",
+  "map_title": "Context > prompt",
+  "subtitle": "Without ground under its feet, any prompt is sand.",
+  "difficulty": "beginner",
+  "estimated_minutes": 9,
+  "base_xp": 100,
+  "difficulty_bonus_xp": 0,
+  "icon": "/brand/lessons/mindset-03.svg",
+  "cliffhanger": "Tomorrow: constraints. They'll feel like cages — and they'll save you.",
+  "steps": [
+    {
+      "id": "intro-three-lessons",
+      "type": "text",
+      "spark_state": "idle",
+      "paragraphs": [
+        "Three lessons. You're still here.",
+        "Now we level up. What I'm telling you today separates the people who vibe-code as a hobby from the ones who do it for real.",
+        "Ready? It's not hard, but it's uncomfortable."
+      ],
+      "vignettes": [
+        { "short": "Told you.", "full": "Told you you'd make it this far. Most people don't." },
+        { "short": "The juice is here.", "full": "The juice of week one is right here. Bear with me ten minutes — you walk out with one thing, but a big one." },
+        { "short": "No rush.", "full": "No rush. One idea at a time, all concrete." }
+      ]
+    },
+    {
+      "id": "ai-mistake-frame",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "You know when the AI «invents» a library that doesn't exist? Or writes code that doesn't run? Or hands you solutions that have nothing to do with your project?",
+        "Everyone blames the AI. People call it «hallucination». Sounds medical.",
+        "Here's the uncomfortable truth: in 90% of cases, it's not the AI failing. It's you giving it nothing to start from."
+      ],
+      "vignettes": [
+        { "short": "I know, it stings.", "full": "I know, it stings. But you and me — no discounts, I promised." },
+        { "short": "It's the truth.", "full": "It's the truth. Keep reading — let me tell you something about Stefano." }
+      ]
+    },
+    {
+      "id": "story-three-weeks",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "Let me tell you with a Stefano story. Three wasted weeks.",
+        "He was building Promptly. He'd say «Spark, this function doesn't work. Fix it». The AI fixed it. Something else broke. The AI fixed that. Something else broke. Infinite loop.",
+        "After three weeks, he got it. He wasn't telling the AI where the other files were. Or what to touch and what not to. Or what we'd already tried. The AI was improvising from zero every time.",
+        "When he started giving it real context, everything changed."
+      ],
+      "vignettes": [
+        { "short": "Not fun for me either.", "full": "Not fun for me either. I kept being wrong and didn't know why." },
+        { "short": "We spare you that.", "full": "We spare you that. Ten minutes will do." }
+      ]
+    },
+    {
+      "id": "principle-context",
+      "type": "principle",
+      "spark_state": "surprised",
+      "headline": "Context matters",
+      "emphasis": "more than the prompt.",
+      "caption": "A mediocre prompt with rich context beats a perfect prompt on empty context. Always.",
+      "vignettes": [
+        { "short": "It's counterintuitive.", "full": "It's counterintuitive, I know. Few people accept it. The ones who do build real things." },
+        { "short": "Keep it in mind.", "full": "Keep it in mind. It comes back in every lesson." }
+      ]
+    },
+    {
+      "id": "context-explainer",
+      "type": "text",
+      "spark_state": "listening",
+      "paragraphs": [
+        "«Context» isn't a technical word. Let me translate it plainly.",
+        "Context is everything the AI needs to know BEFORE trying to answer you. Not what you ask — what it needs to understand the question.",
+        "It's the difference between asking a friend «remember the project we were talking about?» and asking a stranger. The stranger needs everything explained from scratch."
+      ],
+      "vignettes": [
+        { "short": "The AI is always the stranger.", "full": "The AI is always the stranger. It remembers nothing, deep down." },
+        { "short": "Every conversation.", "full": "Every conversation. That's why CLAUDE.md helps — but it's not enough." }
+      ]
+    },
+    {
+      "id": "good-context-choice",
+      "type": "choice",
+      "spark_state": "listening",
+      "prompt": "Which one is GOOD context for asking the AI to write a function that saves user data?",
+      "options": [
+        {
+          "key": "minimal",
+          "label": "«Save user data to a file.»"
+        },
+        {
+          "key": "rich",
+          "label": "«Save in PostgreSQL via Supabase. Table users with id, email, created_at, last_login. Add 'preferred_language'. Reuse the pattern in /lib/db/users.ts.»"
+        },
+        {
+          "key": "vague_pro",
+          "label": "«Save user data. Do it well, professionally, following best practices.»"
+        }
+      ],
+      "vignettes": [
+        { "short": "Think before you click.", "full": "Think before you click. Not one of those «go with your gut» calls." }
+      ]
+    },
+    {
+      "id": "good-context-reaction",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "Got it. Let's keep going.",
+        "Remember: good context is the kind that tells the AI where the code lives, how it's structured, and what already exists to reuse."
+      ],
+      "paragraphs_by_choice": {
+        "source_step_id": "good-context-choice",
+        "by_key": {
+          "rich": [
+            "Right. That was the answer.",
+            "That option tells the AI: where to save, in which table, what already exists, what to add, where the pattern to follow is. That's context.",
+            "The first one is a command with no ground under it. The third is fake precision: «best practices» means nothing — the AI improvises anyway."
+          ],
+          "minimal": [
+            "The first was too thin. The AI can save in a thousand ways: JSON file, SQL database, NoSQL, plain text… With no context, it picks at random.",
+            "The right answer was the second — the one that said «Supabase, users table, reuse the pattern in /lib/db/users.ts». That's ground under your feet.",
+            "Don't beat yourself up. It's a common mistake."
+          ],
+          "vague_pro": [
+            "The third sounded more «professional», didn't it? Common trap. «Best practices» means nothing — the AI invents what it should mean.",
+            "The right answer was the second — concrete, specific, packed with ground under its feet. That's real context.",
+            "Don't worry. Almost everyone falls there the first time."
+          ]
+        }
+      },
+      "vignettes": [
+        { "short": "Specific beats elegant.", "full": "Specific beats elegant. Always. Keep it as a rule." },
+        { "short": "Common mistake.", "full": "Common mistake. Stefano made it too, the first few times." }
+      ]
+    },
+    {
+      "id": "claudemd-bridge",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "Wait. Let me connect the dots for you.",
+        "Remember the CLAUDE.md from Lesson 2? The one you wrote, with what you're building, the stack, the rules, the workflow?",
+        "That's the context you give ONCE, that stays. Persistent context.",
+        "What I'm teaching you today is the context you give EVERY conversation, that changes. Living context.",
+        "They're cousins. They work together. CLAUDE.md spares you re-explaining stable things. Living context handles everything else."
+      ],
+      "vignettes": [
+        { "short": "You're connecting the dots.", "full": "You're connecting the dots from week one. Notice that?" },
+        { "short": "See it pays off?", "full": "See yesterday's lesson wasn't wasted? Here it comes back." }
+      ]
+    },
+    {
+      "id": "principle-sand",
+      "type": "principle",
+      "spark_state": "surprised",
+      "headline": "Without context,",
+      "emphasis": "any prompt is sand.",
+      "caption": "You can write the most elegant prompt in the world. If the AI doesn't know what you're talking about, it's like writing a love letter without the address.",
+      "vignettes": [
+        { "short": "Keep it close.", "full": "Keep it close. This is what you take home today." },
+        { "short": "You won't forget it.", "full": "You won't forget it. I promise." }
+      ]
+    },
+    {
+      "id": "four-levels",
+      "type": "text",
+      "spark_state": "idle",
+      "paragraphs": [
+        "Now I'm telling you something that's worth a whole lesson. There are 4 levels of context. I'll list them because you have to remember them.",
+        "1. Project. What we're building. Without this, the AI invents the world.",
+        "2. Code/files. Which files exist, where they live, what they contain. Without this, the AI invents names.",
+        "3. Constraints. What it must NOT do. Without this, the AI runs wild.",
+        "4. Examples. «Do it like this thing already done». Without this, the AI starts from zero every time.",
+        "There are smaller ones, but with these four you have 90% of the value."
+      ],
+      "vignettes": [
+        { "short": "Memorise the four.", "full": "Memorise the four. I'll keep calling them «the four keys» from now on." },
+        { "short": "Stefano calls them that.", "full": "Stefano calls them «the four keys». Not a forced metaphor — they really are those four." }
+      ]
+    },
+    {
+      "id": "applied-example",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "Let me show you with a typical project.",
+        "Imagine asking the AI «add a login function».",
+        "Version WITHOUT context: «add a login function». The AI improvises wildly — maybe gives you OAuth Google when you wanted plain email/password.",
+        "Version WITH context: «We're building a simple web app. Add email/password login. Reuse the style of the other forms in /components/forms. No OAuth for now.» The AI does exactly what you wanted."
+      ],
+      "vignettes": [
+        { "short": "See the difference?", "full": "See the difference? Same request. Different world." },
+        { "short": "Same base prompt.", "full": "Same base prompt. The second one just has ground under its feet." }
+      ]
+    },
+    {
+      "id": "quickwin-intro",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "Now it's your turn.",
+        "I'll give you a thin prompt. You have to transform it by adding the 4 levels of context.",
+        "You don't need to be perfect. You need to be RICH. Let's go."
+      ],
+      "vignettes": [
+        { "short": "No single right way.", "full": "No single right way. I grade richness, not perfection." },
+        { "short": "Three tries. Use them.", "full": "Three tries. On the second I'll tell you what's missing. On the third I'll spell it out." }
+      ]
+    },
+    {
+      "id": "quickwin-editor",
+      "type": "interactive",
+      "spark_state": "listening",
+      "widget": "context_prompt_editor",
+      "intro": "Pick a scenario. I'll give you the empty prompt on the left. You transform it on the right by adding project, code, constraints and examples.",
+      "max_attempts": 3,
+      "context_config": {
+        "scenarios": [
+          {
+            "key": "login",
+            "icon": "🔐",
+            "title": "Add login",
+            "description": "User authentication system.",
+            "empty_prompt": "Add login to the app."
+          },
+          {
+            "key": "notifications",
+            "icon": "📨",
+            "title": "Add email notifications",
+            "description": "Auto-send email on a key event.",
+            "empty_prompt": "When something happens, send an email."
+          },
+          {
+            "key": "stats",
+            "icon": "📊",
+            "title": "Add stats page",
+            "description": "Dashboard with user data charts.",
+            "empty_prompt": "Add a page with user stats."
+          }
+        ],
+        "min_chars": 100,
+        "max_chars": 800,
+        "xp_by_case": {
+          "incomplete": 50,
+          "missing_one": 120,
+          "good": 180,
+          "excellent": 250,
+          "perfect": 320
+        }
+      },
+      "vignettes": [
+        { "short": "Specific, always.", "full": "Specific, always. The more concrete you are, the more I respect you as an AI." },
+        { "short": "Three tries. Use them.", "full": "Three tries. Use them well. Hint on the second, plain answer on the third." },
+        { "short": "Keep the prompt.", "full": "Keep the prompt you write. Reuse it on your next real project." }
+      ]
+    },
+    {
+      "id": "outro-cliffhanger",
+      "type": "text",
+      "spark_state": "happy",
+      "paragraphs": [
+        "Lesson three closed. You know context now. You can give it, recognise it, and you know why it matters.",
+        "Tomorrow I teach you something that'll feel like the opposite of freedom: constraints. And yet they'll save your life.",
+        "See you."
+      ],
+      "vignettes": [
+        { "short": "You're getting good.", "full": "You're getting good. I don't say it often, but I notice." },
+        { "short": "Few make it here.", "full": "Few make it here. Almost nobody, really." },
+        { "short": "Tomorrow.", "full": "Tomorrow. Not too long this time — but it changes everything." }
+      ]
+    }
+  ]
+}

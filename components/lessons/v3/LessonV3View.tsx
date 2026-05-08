@@ -48,6 +48,10 @@ import {
   ClaudemdEditor,
   type ClaudemdEditorStrings,
 } from "./steps/ClaudemdEditor";
+import {
+  ContextPromptEditor,
+  type ContextPromptEditorStrings,
+} from "./steps/ContextPromptEditor";
 
 export interface LessonV3ViewStrings {
   header: {
@@ -67,6 +71,7 @@ export interface LessonV3ViewStrings {
   rewardStep: RewardStepStrings;
   interactiveStep: InteractiveStepStrings;
   claudemdEditor: ClaudemdEditorStrings;
+  contextEditor: ContextPromptEditorStrings;
   chat: import("./SparkChat").SparkChatStrings;
 }
 
@@ -403,6 +408,32 @@ function renderStep(step: LessonV3Step, ctx: RenderContext) {
             }
             onAdvance={ctx.goNext}
             strings={ctx.strings.claudemdEditor}
+          />
+        );
+      }
+      if (step.widget === "context_prompt_editor") {
+        return (
+          <ContextPromptEditor
+            step={step}
+            userId={ctx.userId}
+            state={
+              ctx.stepState[step.id] as
+                | {
+                    result?: InteractiveStepResult;
+                    editorText?: string;
+                    selectedScenario?: string;
+                  }
+                | undefined
+            }
+            onComplete={(result, extras) =>
+              ctx.updateStepState(step.id, {
+                result,
+                editorText: extras.editorText,
+                selectedScenario: extras.selectedScenario,
+              })
+            }
+            onAdvance={ctx.goNext}
+            strings={ctx.strings.contextEditor}
           />
         );
       }

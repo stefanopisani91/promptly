@@ -760,6 +760,37 @@ h6 {
   animation: claudemd-glow-green 1000ms ease-out both;
 }
 
+/* ─────────────────────────────────────────────────────────────
+   LESSON 3 — Context-prompt editor affordances
+   Idle pulse on the editor border to signal "write here", and
+   a bouncing chevron above the editor that disappears on first
+   focus. Both stop the moment the user engages the textarea.
+───────────────────────────────────────────────────────────── */
+@keyframes context-editor-pulse-border {
+  0%, 100% { border-color: #FB923C; box-shadow: 0 0 0 0 rgba(249, 115, 22, 0); }
+  50%      { border-color: #F97316; box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.18); }
+}
+.context-editor-pulse-border {
+  animation: context-editor-pulse-border 2.4s ease-in-out infinite;
+  will-change: border-color, box-shadow;
+}
+
+@keyframes context-arrow-bounce {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(4px); }
+}
+.context-arrow-bounce {
+  animation: context-arrow-bounce 1.2s ease-in-out infinite;
+}
+
+@keyframes context-helper-fade-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.context-helper-fade-in {
+  animation: context-helper-fade-in 250ms ease-out both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .step-slide-fwd,
   .step-slide-back,
@@ -773,6 +804,9 @@ h6 {
   .claudemd-editor-flash-amber,
   .claudemd-editor-flash-yellow,
   .claudemd-editor-glow-green,
+  .context-editor-pulse-border,
+  .context-arrow-bounce,
+  .context-helper-fade-in,
   .option-card-idle-pulse,
   .option-card-bounce-in,
   .accordion-section-idle-pulse {

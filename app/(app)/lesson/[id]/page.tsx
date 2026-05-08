@@ -97,7 +97,9 @@ export default async function LessonPage({ params }: PageProps) {
   if (isLessonV3Content(lesson)) {
     // Personalise the lesson against the user's onboarding profile —
     // currently swaps Lesson 1's input-motivation step for a recap card
-    // when project_description / project_clarity are already known.
+    // when project_description / project_clarity are already known, plus
+    // Lesson 2 / Lesson 3 paragraph swaps based on experience_level /
+    // preferred_tool / project_description.
     const personalisedLesson = personaliseLessonForUser(lesson, profile, {
       projectRecall: {
         intro: lessonsCopy.v3.mindset01.projectRecall.intro,
@@ -105,6 +107,7 @@ export default async function LessonPage({ params }: PageProps) {
         exploring: lessonsCopy.v3.mindset01.projectRecall.exploring,
       },
       mindset02: lessonsCopy.v3.mindset02,
+      mindset03: lessonsCopy.v3.mindset03,
     });
 
     const persisted = await getLessonProgress(supabase, user.id, lesson.id);
@@ -153,6 +156,7 @@ export default async function LessonPage({ params }: PageProps) {
         consoleCopy: landingCopy.demo.console,
       },
       claudemdEditor: lessonsCopy.v3.claudemdEditor,
+      contextEditor: lessonsCopy.v3.contextEditor,
       chat: lessonsCopy.v3.chat,
     };
 

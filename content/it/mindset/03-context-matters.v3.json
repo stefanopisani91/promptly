@@ -1,0 +1,279 @@
+{
+  "id": "mindset-03",
+  "format_version": 3,
+  "path_slug": "mindset",
+  "order": 3,
+  "title": "Il contesto vale più del prompt.",
+  "map_title": "Il contesto vale più",
+  "subtitle": "Senza terra sotto i piedi, qualunque prompt è sabbia.",
+  "difficulty": "beginner",
+  "estimated_minutes": 9,
+  "base_xp": 100,
+  "difficulty_bonus_xp": 0,
+  "icon": "/brand/lessons/mindset-03.svg",
+  "cliffhanger": "Domani: i vincoli. Quelli che ti sembrano gabbie e che invece ti salvano la vita.",
+  "steps": [
+    {
+      "id": "intro-three-lessons",
+      "type": "text",
+      "spark_state": "idle",
+      "paragraphs": [
+        "Tre lezioni. Sei ancora qui.",
+        "Adesso saliamo di livello. Quello che ti dico oggi separa chi vibe-codea per hobby da chi lo fa sul serio.",
+        "Pronto? Non è difficile, ma è scomodo."
+      ],
+      "vignettes": [
+        { "short": "Te l'avevo detto.", "full": "Te l'avevo detto che saresti arrivato fin qui. Pochi lo fanno." },
+        { "short": "Il succo è qui.", "full": "Il succo della prima settimana è qui. Sopporta dieci minuti, ti porti a casa una cosa sola — ma grossa." },
+        { "short": "Niente paura.", "full": "Niente paura, andiamo piano. Una idea per volta, tutte concrete." }
+      ]
+    },
+    {
+      "id": "ai-mistake-frame",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "Hai presente quando l'AI «inventa» una libreria che non esiste? O scrive codice che non gira? O ti dà soluzioni che non c'entrano niente con il tuo progetto?",
+        "Tutti danno la colpa all'AI. La gente la chiama «allucinazione». Sembra un termine medico.",
+        "Ti dico una cosa scomoda: nel 90% dei casi, non è l'AI che sbaglia. Sei tu che non le hai dato niente da cui partire."
+      ],
+      "vignettes": [
+        { "short": "Lo so, brucia.", "full": "Lo so, brucia. Ma io con te non faccio sconti, te l'ho promesso." },
+        { "short": "È la verità.", "full": "È la verità. Continua a leggere — adesso ti racconto una cosa di Stefano." }
+      ]
+    },
+    {
+      "id": "story-three-weeks",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "Te lo racconto con una storia di Stefano. Tre settimane buttate.",
+        "Stava costruendo Promptly, mi diceva «Spark, questa funzione non gira. Aggiusta». L'AI aggiustava. Si rompeva un'altra cosa. L'AI aggiustava quella. Si rompeva un'altra. Ciclo infinito.",
+        "Dopo tre settimane, ha capito. Non stava dicendo all'AI dove erano gli altri file. Né cosa toccare e cosa no. Né cosa avevamo già provato. L'AI improvvisava ogni volta da zero.",
+        "Quando ha cominciato a darle contesto vero, è cambiato tutto."
+      ],
+      "vignettes": [
+        { "short": "Non è stato divertente.", "full": "Non è stato divertente nemmeno per me. Continuavo a sbagliare e non sapevo perché." },
+        { "short": "Adesso lo evitiamo a te.", "full": "Adesso lo evitiamo a te. Bastano dieci minuti." }
+      ]
+    },
+    {
+      "id": "principle-context",
+      "type": "principle",
+      "spark_state": "surprised",
+      "headline": "Il contesto vale",
+      "emphasis": "più del prompt.",
+      "caption": "Un prompt mediocre con contesto ricco batte un prompt perfetto su contesto vuoto. Sempre.",
+      "vignettes": [
+        { "short": "È controintuitivo. Lo so.", "full": "È controintuitivo, lo so. Pochi lo accettano davvero. Quelli che lo accettano costruiscono cose vere." },
+        { "short": "Tienilo a mente.", "full": "Tienilo a mente. Tornerà in ogni lezione." }
+      ]
+    },
+    {
+      "id": "context-explainer",
+      "type": "text",
+      "spark_state": "listening",
+      "paragraphs": [
+        "«Contesto» non è una parola tecnica. Adesso te lo traduco semplice.",
+        "Il contesto è tutto quello che l'AI deve sapere PRIMA di provare a risponderti. Non quello che le chiedi — quello che le serve per capire la domanda.",
+        "È la differenza tra chiedere a un amico «ti ricordi del progetto di cui parlavamo?» e chiederlo a uno sconosciuto. Allo sconosciuto devi spiegare tutto da capo."
+      ],
+      "vignettes": [
+        { "short": "L'AI è sempre lo sconosciuto.", "full": "L'AI è sempre lo sconosciuto. Non ricorda nulla, in fondo." },
+        { "short": "Ogni conversazione.", "full": "Ogni conversazione. Per questo CLAUDE.md ti aiuta — ma non basta." }
+      ]
+    },
+    {
+      "id": "good-context-choice",
+      "type": "choice",
+      "spark_state": "listening",
+      "prompt": "Quale di questi è un BUON contesto per chiedere all'AI di scrivere una funzione che salva i dati di un utente?",
+      "options": [
+        {
+          "key": "minimal",
+          "label": "«Salva i dati dell'utente in un file.»"
+        },
+        {
+          "key": "rich",
+          "label": "«Salviamo in PostgreSQL via Supabase. Tabella users con id, email, created_at, last_login. Aggiungi 'preferred_language'. Riusa il pattern di /lib/db/users.ts.»"
+        },
+        {
+          "key": "vague_pro",
+          "label": "«Salva i dati dell'utente. Devi farlo bene, in modo professionale, seguendo le best practices.»"
+        }
+      ],
+      "vignettes": [
+        { "short": "Pensa prima di cliccare.", "full": "Pensa prima di cliccare. Non è una di quelle dove «d'istinto» va bene." }
+      ]
+    },
+    {
+      "id": "good-context-reaction",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "Capito. Andiamo avanti.",
+        "Tieni a mente: il contesto buono è quello che dice all'AI dove sta il codice, com'è strutturato, e cosa esiste già da riusare."
+      ],
+      "paragraphs_by_choice": {
+        "source_step_id": "good-context-choice",
+        "by_key": {
+          "rich": [
+            "Esatto. La risposta giusta era quella.",
+            "Quella opzione dice all'AI: dove salvare, in quale tabella, cosa già esiste, cosa aggiungere, dove sta il pattern da seguire. È contesto.",
+            "La prima è un comando senza terra sotto i piedi. La terza è un'illusione di precisione: «best practices» non vuol dire niente, l'AI improvvisa lo stesso."
+          ],
+          "minimal": [
+            "La prima era troppo scarna. L'AI può salvare in mille modi diversi: file JSON, database SQL, NoSQL, file di testo… Senza contesto, sceglie a caso.",
+            "La risposta migliore era la seconda — quella che diceva «Supabase, tabella users, riusa il pattern di /lib/db/users.ts». Quella è terra sotto i piedi.",
+            "Non sentirti male se hai sbagliato. È un errore comune."
+          ],
+          "vague_pro": [
+            "La terza ti suonava più «professionale», vero? È una trappola comune. «Best practices» non vuol dire niente — l'AI inventa cosa significhi.",
+            "La risposta migliore era la seconda — concreta, specifica, ricca di terra sotto i piedi. Questo è contesto vero.",
+            "Non sentirti male. Quasi tutti cadono lì la prima volta."
+          ]
+        }
+      },
+      "vignettes": [
+        { "short": "Specifico batte elegante.", "full": "Specifico batte elegante. Sempre. Tienilo come regola." },
+        { "short": "È un errore comune.", "full": "È un errore comune. Anche Stefano l'ha fatto, le prime volte." }
+      ]
+    },
+    {
+      "id": "claudemd-bridge",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "Aspetta. Adesso ti faccio un collegamento.",
+        "Ricordi il CLAUDE.md della Lezione 2? Quello che hai scritto, dove hai messo cosa stai costruendo, lo stack, le regole, il workflow?",
+        "Quello è il contesto che dai UNA VOLTA, che resta. Si chiama contesto persistente.",
+        "Quello che ti sto insegnando oggi è il contesto che dai OGNI CONVERSAZIONE, che cambia. Si chiama contesto vivo.",
+        "Sono cugini. Lavorano insieme. CLAUDE.md ti risparmia di rispiegare cose stabili. Il contesto vivo gestisce tutto il resto."
+      ],
+      "vignettes": [
+        { "short": "Stai mettendo insieme i pezzi.", "full": "Stai mettendo insieme i pezzi della prima settimana. Te ne accorgi?" },
+        { "short": "Vedi che torna utile?", "full": "Vedi che la lezione di ieri non era buttata? Eccola che ritorna." }
+      ]
+    },
+    {
+      "id": "principle-sand",
+      "type": "principle",
+      "spark_state": "surprised",
+      "headline": "Senza contesto,",
+      "emphasis": "qualunque prompt è sabbia.",
+      "caption": "Puoi scrivere il prompt più elegante del mondo. Se l'AI non sa di cosa parli, è come scrivere una lettera d'amore senza l'indirizzo.",
+      "vignettes": [
+        { "short": "Tienitelo a mente.", "full": "Tienitelo a mente. È il pezzo che porti via da oggi." },
+        { "short": "Non lo dimenticherai più.", "full": "Non lo dimenticherai più. Te lo prometto." }
+      ]
+    },
+    {
+      "id": "four-levels",
+      "type": "text",
+      "spark_state": "idle",
+      "paragraphs": [
+        "Adesso ti dico una cosa che vale come una lezione intera. Esistono 4 livelli di contesto. Te li elenco perché te li devi ricordare.",
+        "1. Progetto. Cosa stiamo costruendo. Senza questo, l'AI improvvisa il mondo.",
+        "2. Codice/file. Quali file esistono, dove stanno, cosa contengono. Senza questo, l'AI inventa nomi.",
+        "3. Vincoli. Cosa NON deve fare. Senza questo, l'AI fa il diavolo a quattro.",
+        "4. Esempi. «Fai come questo che è già fatto». Senza questo, l'AI ricomincia ogni volta da zero.",
+        "Ne mancano altri minori, ma con questi quattro hai il 90% del valore."
+      ],
+      "vignettes": [
+        { "short": "Memorizza i 4. Ti torneranno.", "full": "Memorizza i quattro. Te li chiamerò sempre «le quattro chiavi», nelle prossime lezioni." },
+        { "short": "Stefano li chiama così.", "full": "Stefano li chiama «le quattro chiavi». Non è una metafora forzata — sono davvero quelle quattro." }
+      ]
+    },
+    {
+      "id": "applied-example",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "Ti faccio un esempio con un progetto-tipo.",
+        "Immagina di chiedere all'AI «aggiungi una funzione di login».",
+        "Versione SENZA contesto: «aggiungi una funzione di login». L'AI improvvisa di sana pianta — magari ti tira fuori una login con OAuth Google quando tu volevi solo email/password.",
+        "Versione CON contesto: «Stiamo costruendo un'app web semplice. Aggiungi login email/password. Riusa lo stile delle altre form in /components/forms. Niente OAuth per ora.» L'AI fa esattamente quello che vuoi tu."
+      ],
+      "vignettes": [
+        { "short": "Vedi la differenza?", "full": "Vedi la differenza? È la stessa richiesta. Mondo diverso." },
+        { "short": "Stesso prompt base.", "full": "Stesso prompt base. Solo che il secondo ha terra sotto i piedi." }
+      ]
+    },
+    {
+      "id": "quickwin-intro",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "Adesso ti tocca.",
+        "Ti darò un prompt scarno. Tu lo dovrai trasformare aggiungendo i 4 livelli di contesto.",
+        "Non serve essere perfetti. Serve essere RICCHI. Andiamo."
+      ],
+      "vignettes": [
+        { "short": "Non c'è un solo modo giusto.", "full": "Non c'è un solo modo giusto. Ti valuto sulla ricchezza, non sulla perfezione." },
+        { "short": "Tre tentativi. Usali bene.", "full": "Tre tentativi. Al secondo ti dico cosa manca, al terzo te lo dico chiaro." }
+      ]
+    },
+    {
+      "id": "quickwin-editor",
+      "type": "interactive",
+      "spark_state": "listening",
+      "widget": "context_prompt_editor",
+      "intro": "Scegli uno scenario. Ti do il prompt vuoto a sinistra. Tu lo trasformi a destra aggiungendo progetto, codice, vincoli ed esempi.",
+      "max_attempts": 3,
+      "context_config": {
+        "scenarios": [
+          {
+            "key": "login",
+            "icon": "🔐",
+            "title": "Aggiungi login",
+            "description": "Sistema di autenticazione utenti.",
+            "empty_prompt": "Aggiungi login all'app."
+          },
+          {
+            "key": "notifications",
+            "icon": "📨",
+            "title": "Aggiungi notifiche email",
+            "description": "Email automatica quando succede un evento.",
+            "empty_prompt": "Quando succede qualcosa, manda email."
+          },
+          {
+            "key": "stats",
+            "icon": "📊",
+            "title": "Aggiungi pagina statistiche",
+            "description": "Dashboard con grafici dei dati utente.",
+            "empty_prompt": "Aggiungi una pagina con statistiche utente."
+          }
+        ],
+        "min_chars": 100,
+        "max_chars": 800,
+        "xp_by_case": {
+          "incomplete": 50,
+          "missing_one": 120,
+          "good": 180,
+          "excellent": 250,
+          "perfect": 320
+        }
+      },
+      "vignettes": [
+        { "short": "Sii specifico, sempre.", "full": "Sii specifico, sempre. Più sei concreto, più ti rispetto come AI." },
+        { "short": "Tre tentativi. Usali bene.", "full": "Tre tentativi. Usali bene. Al secondo ti do un indizio, al terzo te lo dico chiaro." },
+        { "short": "Il prompt te lo tieni.", "full": "Il prompt che scrivi te lo porti a casa. Lo riusi nel tuo prossimo progetto vero." }
+      ]
+    },
+    {
+      "id": "outro-cliffhanger",
+      "type": "text",
+      "spark_state": "happy",
+      "paragraphs": [
+        "Lezione tre chiusa. Adesso conosci il contesto. Sai darlo, sai riconoscerlo, sai perché conta.",
+        "Domani ti insegno una cosa che ti sembrerà l'opposto della libertà: i vincoli. Eppure ti salveranno la vita.",
+        "Ti aspetto."
+      ],
+      "vignettes": [
+        { "short": "Stai diventando bravo.", "full": "Stai diventando bravo. Non te lo dico spesso, ma me ne accorgo." },
+        { "short": "Pochi arrivano fino a qui.", "full": "Pochi arrivano fino a qui. Quasi nessuno, in realtà." },
+        { "short": "A domani.", "full": "A domani. Niente di troppo lungo questa volta — ma cambia tutto." }
+      ]
+    }
+  ]
+}

@@ -532,7 +532,10 @@ export interface ChoiceStep extends StepBase {
   scores_archetype?: boolean;
 }
 
-export type InteractiveWidgetType = "lucia_prompt_loop" | "claudemd_editor";
+export type InteractiveWidgetType =
+  | "lucia_prompt_loop"
+  | "claudemd_editor"
+  | "context_prompt_editor";
 
 export interface ClaudemdProjectOption {
   // Stable key used by the evaluator + saved in stepState.
@@ -574,6 +577,42 @@ export interface ClaudemdEditorConfig {
   };
 }
 
+// ─── Lesson 3 — Context prompt editor (Lezione3_Blueprint.md §13) ─────
+//
+// Same family as ClaudemdEditorConfig but the editor is a single textarea
+// (the 4 levels of context are declared in the placeholder, not split into
+// sections) and the user picks a SCENARIO (e.g. "add login") rather than a
+// PROJECT — the scenario seeds the empty prompt the user has to enrich.
+
+export interface ContextScenarioOption {
+  // Stable key used by the evaluator + saved in stepState.
+  key: string;
+  icon: string;
+  title: string;
+  description: string;
+  // The bare prompt the user is asked to enrich. Shown read-only on the
+  // left of the editor and forwarded to the rubric so it can grade the
+  // delta between empty and rich.
+  empty_prompt: string;
+}
+
+export interface ContextPromptEditorConfig {
+  scenarios: ContextScenarioOption[];
+  // Total min/max char budget for the rich prompt. The 4 levels are not
+  // counted separately — the rubric grades coverage, not section length.
+  min_chars: number;
+  max_chars: number;
+  // XP awarded by feedback case (mirrors ClaudemdEditorConfig.xp_by_case).
+  // `perfect` covers the score >= 95 bucket; `excellent` is 85-94.
+  xp_by_case: {
+    incomplete: number;
+    missing_one: number;
+    good: number;
+    excellent: number;
+    perfect: number;
+  };
+}
+
 export interface InteractiveStep extends StepBase {
   type: "interactive";
   widget: InteractiveWidgetType;
@@ -592,6 +631,8 @@ export interface InteractiveStep extends StepBase {
   };
   // Lesson 2 — required when widget === "claudemd_editor".
   claudemd_config?: ClaudemdEditorConfig;
+  // Lesson 3 — required when widget === "context_prompt_editor".
+  context_config?: ContextPromptEditorConfig;
 }
 
 export interface ArchetypeRevealConfig {

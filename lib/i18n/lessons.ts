@@ -190,6 +190,50 @@ export interface LessonsCopy {
       editorTabLabel: string;
       sparkTabLabel: string;
     };
+    // Lesson 3 — Context-prompt editor widget (parallel to claudemdEditor
+    // but graded on the 4 levels of context — project / code / constraints /
+    // examples). Same animation effects, different rubric copy.
+    contextEditor: {
+      intro: string;
+      selectScenarioLabel: string;
+      emptyPromptLabel: string;
+      // Sub-label clarifying the empty box is a read-only example.
+      emptyPromptSubtitle: string;
+      // Mobile-only collapsed CTA on the empty box ("tap to expand").
+      emptyPromptExpandLabel: string;
+      richPromptLabel: string;
+      // Eyebrow + arrow helper shown above the editable box until the
+      // user focuses it for the first time.
+      writeHereLabel: string;
+      // Multi-line placeholder shown in the rich-prompt textarea before the
+      // user types. Encodes the 4 levels as a soft scaffold; whitespace is
+      // significant — the textarea uses `whitespace-pre-line` to preserve
+      // the line breaks so the user sees the structure.
+      richPromptPlaceholder: string;
+      totalCharCounterTemplate: string;
+      attemptCounterTemplate: string;
+      submitCta: string;
+      submitting: string;
+      retryCta: string;
+      finalCta: string;
+      awaitingPrompt: string;
+      outOfAttempts: string;
+      networkError: string;
+      apiError: string;
+      rateLimitError: string;
+      invalidInputError: string;
+      dailyQuotaExhausted: string;
+      editorTabLabel: string;
+      sparkTabLabel: string;
+      // Localised labels for the 4 dimension bars shown in Spark's panel
+      // after evaluation. Keys map 1:1 to ContextLayer.
+      layerLabels: {
+        project: string;
+        code: string;
+        constraints: string;
+        examples: string;
+      };
+    };
     chat: {
       launcherLabel: string;
       modalTitle: string;
@@ -244,6 +288,26 @@ export interface LessonsCopy {
         // Build the personalised paragraphs at runtime — the tool name and
         // its config-file label come from the catalog (lib/onboarding/tools.ts).
         withTool: (toolName: string, configFile: string) => string[];
+      };
+    };
+    // Lesson 3 — server-rendered personalisation strings injected by
+    // lib/lessons/v3/personalize.ts based on project_description (step 11
+    // "applied-example") and preferred_tool (step 12 "quickwin-intro" tip).
+    mindset03: {
+      step11: {
+        // Generic example shown when the user is exploring (no project yet).
+        // Returns the full paragraph block for the step.
+        exploring: string[];
+        // Project-recall variant: weaves the user's actual project_description
+        // into the same example. Caller passes the raw description string.
+        withProject: (project: string) => string[];
+      };
+      // Tool-specific PS appended to the quickwin-intro step when the user
+      // has a preferred_tool. When `withTool` returns null, we fall back to
+      // the static `default` paragraphs from the JSON.
+      step12: {
+        default: string[];
+        withTool: (toolName: string) => string[];
       };
     };
   };
@@ -456,6 +520,37 @@ const it: LessonsCopy = {
       editorTabLabel: "Editor",
       sparkTabLabel: "Spark",
     },
+    contextEditor: {
+      intro: "Scegli uno scenario. A destra hai il prompt vuoto come riferimento. A sinistra trasformalo aggiungendo i 4 livelli di contesto.",
+      selectScenarioLabel: "Scegli lo scenario",
+      emptyPromptLabel: "PROMPT VUOTO",
+      emptyPromptSubtitle: "(esempio, non modificabile)",
+      emptyPromptExpandLabel: "Tocca per espandere",
+      richPromptLabel: "IL TUO PROMPT",
+      writeHereLabel: "Scrivi qui sotto i 4 livelli",
+      richPromptPlaceholder: "Aggiungi i 4 livelli di contesto. Esempio:\n\n[1. PROGETTO]\nStiamo costruendo… (descrivi cosa)\n\n[2. CODICE/FILE]\nI file esistenti sono… / La struttura è…\n\n[3. VINCOLI]\nNON fare X. NON modificare Y.\n\n[4. ESEMPI]\nRiusa il pattern di [file simile esistente].",
+      totalCharCounterTemplate: "{current} / {max} caratteri",
+      attemptCounterTemplate: "Tentativo {current} / {max}",
+      submitCta: "Invia a Spark",
+      submitting: "Sto leggendo…",
+      retryCta: "Riprova",
+      finalCta: "Continua →",
+      awaitingPrompt: "Scegli uno scenario e scrivi il prompt ricco. Poi te lo commento.",
+      outOfAttempts: "Va bene così. Hai dato il massimo per oggi. Quello che hai imparato resta.",
+      networkError: "Sono offline. Non è colpa tua. Riprova quando hai rete.",
+      apiError: "Qualcosa non ha funzionato. Riprova tra poco.",
+      rateLimitError: "Troppi tentativi ravvicinati. Dammi un momento.",
+      invalidInputError: "Quel testo non posso valutarlo. Riformulalo come prompt vero, con i 4 livelli di contesto.",
+      dailyQuotaExhausted: "Per oggi hai esaurito le valutazioni che posso farti. Torna domani — il tuo prompt lo tieni tu.",
+      editorTabLabel: "Editor",
+      sparkTabLabel: "Spark",
+      layerLabels: {
+        project: "progetto",
+        code: "codice",
+        constraints: "vincoli",
+        examples: "esempi",
+      },
+    },
     chat: {
       launcherLabel: "Chiedi a Spark",
       modalTitle: "Spark",
@@ -517,6 +612,35 @@ const it: LessonsCopy = {
           "Adesso ti dico una cosa che pochi sanno e che cambia tutto.",
           `${toolName} ha lo stesso problema di tutti gli altri IDE AI: dimentica chi sei tra una conversazione e l'altra.`,
           `C'è un trucco per risolverlo. In ${toolName} si chiama \`${configFile}\`. In altri tool ha nomi diversi — CLAUDE.md, AGENTS.md, windsurfrules. Ma il principio è lo stesso.`,
+        ],
+      },
+    },
+    mindset03: {
+      step11: {
+        exploring: [
+          "Ti faccio un esempio con un progetto-tipo.",
+          "Immagina di chiedere all'AI «aggiungi una funzione di login».",
+          "Versione SENZA contesto: «aggiungi una funzione di login». L'AI improvvisa di sana pianta — magari ti tira fuori una login con OAuth Google quando tu volevi solo email/password.",
+          "Versione CON contesto: «Stiamo costruendo un'app web semplice. Aggiungi login email/password. Riusa lo stile delle altre form in /components/forms. Niente OAuth per ora.» L'AI fa esattamente quello che vuoi tu.",
+        ],
+        withProject: (project) => [
+          "Ti faccio un esempio col TUO progetto.",
+          `Mi dicesti che vuoi costruire "${project}". Bene. Immagina di chiedere all'AI «aggiungi una funzione di login».`,
+          "Versione SENZA contesto: «aggiungi una funzione di login». L'AI inventa di sana pianta — magari ti tira fuori una login con OAuth Google quando tu volevi solo email/password.",
+          `Versione CON contesto: «Stiamo costruendo ${project}. Aggiungi login email/password. Riusa lo stile delle altre form in /components/forms. Niente OAuth per ora.» L'AI fa esattamente quello che vuoi tu.`,
+        ],
+      },
+      step12: {
+        default: [
+          "Adesso ti tocca.",
+          "Ti darò un prompt scarno. Tu lo dovrai trasformare aggiungendo i 4 livelli di contesto.",
+          "Non serve essere perfetti. Serve essere RICCHI. Andiamo.",
+        ],
+        withTool: (toolName) => [
+          "Adesso ti tocca.",
+          "Ti darò un prompt scarno. Tu lo dovrai trasformare aggiungendo i 4 livelli di contesto.",
+          "Non serve essere perfetti. Serve essere RICCHI. Andiamo.",
+          `PS: in ${toolName} parte del contesto puoi passarlo coi tag dei file (@filename, drag-and-drop, o quello che il tool offre). È un trucco del mestiere — te lo ricordo come bonus.`,
         ],
       },
     },
@@ -707,6 +831,37 @@ const en: LessonsCopy = {
       editorTabLabel: "Editor",
       sparkTabLabel: "Spark",
     },
+    contextEditor: {
+      intro: "Pick a scenario. The empty prompt is on the right as a reference. Transform it on the left by adding the 4 levels of context.",
+      selectScenarioLabel: "Pick a scenario",
+      emptyPromptLabel: "EMPTY PROMPT",
+      emptyPromptSubtitle: "(example, read-only)",
+      emptyPromptExpandLabel: "Tap to expand",
+      richPromptLabel: "YOUR PROMPT",
+      writeHereLabel: "Write the 4 levels below",
+      richPromptPlaceholder: "Add the 4 levels of context. Example:\n\n[1. PROJECT]\nWe're building… (describe what)\n\n[2. CODE/FILES]\nThe existing files are… / The structure is…\n\n[3. CONSTRAINTS]\nDon't do X. Don't modify Y.\n\n[4. EXAMPLES]\nReuse the pattern in [similar existing file].",
+      totalCharCounterTemplate: "{current} / {max} chars",
+      attemptCounterTemplate: "Try {current} / {max}",
+      submitCta: "Send to Spark",
+      submitting: "Reading…",
+      retryCta: "Retry",
+      finalCta: "Continue →",
+      awaitingPrompt: "Pick a scenario and write the rich prompt. Then I'll comment.",
+      outOfAttempts: "It's fine. You gave today your best. What you learned sticks.",
+      networkError: "I'm offline. Not your fault. Try again when you're back.",
+      apiError: "Something went wrong. Try again in a bit.",
+      rateLimitError: "Too many tries too fast. Give me a moment.",
+      invalidInputError: "I can't grade that text. Rewrite it as a real prompt, with the 4 levels of context.",
+      dailyQuotaExhausted: "You've used all the evaluations I can give you today. Come back tomorrow — your prompt stays with you.",
+      editorTabLabel: "Editor",
+      sparkTabLabel: "Spark",
+      layerLabels: {
+        project: "project",
+        code: "code",
+        constraints: "constraints",
+        examples: "examples",
+      },
+    },
     chat: {
       launcherLabel: "Ask Spark",
       modalTitle: "Spark",
@@ -768,6 +923,35 @@ const en: LessonsCopy = {
           "Now I'll tell you something few people know that changes everything.",
           `${toolName} has the same problem as every other AI IDE: it forgets who you are between conversations.`,
           `There's a trick to fix it. In ${toolName} it's called \`${configFile}\`. In other tools it has different names — CLAUDE.md, AGENTS.md, windsurfrules. But the principle is the same.`,
+        ],
+      },
+    },
+    mindset03: {
+      step11: {
+        exploring: [
+          "Let me show you with a typical project.",
+          "Imagine asking the AI «add a login function».",
+          "Version WITHOUT context: «add a login function». The AI improvises wildly — maybe gives you OAuth Google when you wanted plain email/password.",
+          "Version WITH context: «We're building a simple web app. Add email/password login. Reuse the style of the other forms in /components/forms. No OAuth for now.» The AI does exactly what you wanted.",
+        ],
+        withProject: (project) => [
+          "Let me show you with YOUR project.",
+          `You told me you want to build "${project}". Good. Imagine asking the AI «add a login function».`,
+          "Version WITHOUT context: «add a login function». The AI invents wildly — maybe gives you OAuth Google when you wanted plain email/password.",
+          `Version WITH context: «We're building ${project}. Add email/password login. Reuse the style of the other forms in /components/forms. No OAuth for now.» The AI does exactly what you wanted.`,
+        ],
+      },
+      step12: {
+        default: [
+          "Now it's your turn.",
+          "I'll give you a thin prompt. You have to transform it by adding the 4 levels of context.",
+          "You don't need to be perfect. You need to be RICH. Let's go.",
+        ],
+        withTool: (toolName) => [
+          "Now it's your turn.",
+          "I'll give you a thin prompt. You have to transform it by adding the 4 levels of context.",
+          "You don't need to be perfect. You need to be RICH. Let's go.",
+          `PS: in ${toolName} you can pass part of the context with file tags (@filename, drag-and-drop, whatever the tool supports). Trick of the trade — bonus tip.`,
         ],
       },
     },

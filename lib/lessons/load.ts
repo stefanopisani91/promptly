@@ -265,8 +265,13 @@ function isLessonV3Step(value: unknown): value is LessonV3Step {
       );
     }
     case "interactive": {
-      if (b.widget !== "lucia_prompt_loop" && b.widget !== "claudemd_editor")
+      if (
+        b.widget !== "lucia_prompt_loop" &&
+        b.widget !== "claudemd_editor" &&
+        b.widget !== "context_prompt_editor"
+      ) {
         return false;
+      }
       if (typeof b.max_attempts !== "number" || b.max_attempts < 1) return false;
       if (b.widget === "lucia_prompt_loop") {
         if (
@@ -296,6 +301,41 @@ function isLessonV3Step(value: unknown): value is LessonV3Step {
           typeof (cfg.xp_by_case as Record<string, unknown>).vague !== "number"
         ) {
           return false;
+        }
+      }
+      if (b.widget === "context_prompt_editor") {
+        const cfg = b.context_config as
+          | Record<string, unknown>
+          | undefined;
+        if (!cfg || typeof cfg !== "object") return false;
+        if (!Array.isArray(cfg.scenarios) || cfg.scenarios.length < 2)
+          return false;
+        if (
+          typeof cfg.min_chars !== "number" ||
+          typeof cfg.max_chars !== "number"
+        ) {
+          return false;
+        }
+        if (
+          typeof cfg.xp_by_case !== "object" ||
+          cfg.xp_by_case === null ||
+          typeof (cfg.xp_by_case as Record<string, unknown>).incomplete !==
+            "number"
+        ) {
+          return false;
+        }
+        // Each scenario must carry the empty prompt (used as the read-only
+        // baseline shown to the user and forwarded to the rubric).
+        for (const s of cfg.scenarios) {
+          if (typeof s !== "object" || s === null) return false;
+          const ss = s as Record<string, unknown>;
+          if (
+            typeof ss.key !== "string" ||
+            typeof ss.title !== "string" ||
+            typeof ss.empty_prompt !== "string"
+          ) {
+            return false;
+          }
         }
       }
       return true;
