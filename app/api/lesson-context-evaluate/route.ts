@@ -11,6 +11,7 @@ import {
   todayUtcDate,
 } from "@/lib/supabase/queries";
 import { evaluateContext } from "@/lib/lessons/v3/context-evaluate";
+import { getProjectDescriptionShort } from "@/lib/onboarding/project";
 
 // Lesson 3 — context-prompt interactive evaluator.
 //
@@ -193,7 +194,11 @@ export async function POST(request: Request) {
         : persistedAttempts + 1,
     preferredTool: profile.preferred_tool,
     experienceLevel: profile.experience_level,
-    projectDescription: profile.project_description,
+    // Mitigation 2 (2026-05-09) — feed the ≤80-char compressed view so
+    // the rubric prompt stays short and the no-bias clause has less
+    // surface to chew on. Falls back to a truncate of the raw when the
+    // compressed column is null (lazy backfill in flight).
+    projectDescription: getProjectDescriptionShort(profile) || null,
   });
 
   if (!result.ok) {

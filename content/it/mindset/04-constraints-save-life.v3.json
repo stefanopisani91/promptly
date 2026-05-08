@@ -1,0 +1,279 @@
+{
+  "id": "mindset-04",
+  "format_version": 3,
+  "path_slug": "mindset",
+  "order": 4,
+  "title": "I vincoli ti salvano la vita.",
+  "map_title": "I vincoli salvano",
+  "subtitle": "Sembrano catene. Sono guardrail.",
+  "difficulty": "beginner",
+  "estimated_minutes": 10,
+  "base_xp": 100,
+  "difficulty_bonus_xp": 0,
+  "icon": "/brand/lessons/mindset-04.svg",
+  "cliffhanger": "Domani: gli errori. Spoiler — quando l'AI sbaglia, di solito la colpa è ancora tua.",
+  "steps": [
+    {
+      "id": "intro-four-lessons",
+      "type": "text",
+      "spark_state": "idle",
+      "paragraphs": [
+        "Quattro lezioni. Stai entrando nella parte vera.",
+        "Adesso ti racconto una cosa scomoda. Ti capiterà. Garantito.",
+        "La domanda è: succederà presto e impari, o succederà tardi e ti costerà caro?"
+      ],
+      "vignettes": [
+        { "short": "Ti avevo avvisato.", "full": "Ti avevo avvisato che entravamo nella parte tosta. Tieni duro." },
+        { "short": "Meglio prepararti.", "full": "Meglio prepararti adesso che imparare a tue spese. È il vantaggio di Promptly." },
+        { "short": "Non è colpa tua. È solo statistica.", "full": "Non è colpa tua se ti capita. È solo statistica — succede a tutti, prima o poi." }
+      ]
+    },
+    {
+      "id": "story-six-hours",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "Te la racconto come è successa a Stefano.",
+        "Stava lavorando su Promptly. Aveva chiesto all'AI di «pulire un po' di codice morto» — si chiama [[term:refactoring]]refactoring[[/term]]. Sei ore di lavoro fatto bene, salvato. L'AI ha pulito.",
+        "Tra il codice morto, ha cancellato anche una funzione che NON era morta. Era solo non usata in quel momento.",
+        "Sei ore buttate. Ricominciate da capo.",
+        "Il punto: l'AI non era stupida. Stefano non le aveva detto cosa NON toccare. Senza un «no» chiaro, l'AI fa di testa sua."
+      ],
+      "vignettes": [
+        { "short": "Capita a tutti.", "full": "Capita a tutti, davvero. Non sentirti scemo se ti è già successo." },
+        { "short": "Una volta basta per imparare.", "full": "Una volta basta per imparare. Stefano dopo quel disastro non ha più dimenticato i vincoli." }
+      ]
+    },
+    {
+      "id": "ai-without-leash",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "Le AI moderne sono brave. Troppo brave. Vogliono aiutarti più di quanto serva.",
+        "Le chiedi una cosa, e loro pensano: «già che ci sono, miglioro anche questo, e questo, e questo». Sembra zelo. È invasione.",
+        "Senza [[term:vincoli]]vincoli[[/term]] espliciti, l'AI tocca cose che non doveva toccare. Aggiunge cose che non servivano. Modifica cose che funzionavano. E tu te ne accorgi solo dopo."
+      ],
+      "vignettes": [
+        { "short": "Niente cattiveria. Solo eccesso.", "full": "Niente cattiveria — l'AI non ti odia. È solo eccesso di zelo." },
+        { "short": "Come uno stagista invasato.", "full": "È come uno stagista troppo pieno di iniziativa. Bravissimo, ma da tenere d'occhio." }
+      ]
+    },
+    {
+      "id": "principle-constraints-freedom",
+      "type": "principle",
+      "spark_state": "surprised",
+      "headline": "I vincoli",
+      "emphasis": "sono libertà.",
+      "caption": "Senza vincoli devi controllare ogni mossa dell'AI. Con vincoli, ti puoi fidare. La libertà è non dover sorvegliare.",
+      "vignettes": [
+        { "short": "Sembra un paradosso.", "full": "Sembra un paradosso, vero? Non lo è — te lo dimostro tra due step." },
+        { "short": "Non lo è.", "full": "Non lo è. La libertà vera è quella di delegare senza paura. I vincoli te la danno." }
+      ]
+    },
+    {
+      "id": "constraint-explainer",
+      "type": "text",
+      "spark_state": "listening",
+      "paragraphs": [
+        "Un vincolo è una frase che dice all'AI cosa NON deve fare. È più potente di una che dice cosa fare.",
+        "Esempi semplici: «Non toccare il file X». «Non aggiungere dipendenze». «Non modificare lo [[term:schema]]schema[[/term]] del database». «Non rispondere in più di 3 frasi».",
+        "Notato? Tutti iniziano con «NON». Il vincolo è una negazione strategica."
+      ],
+      "vignettes": [
+        { "short": "Le negazioni potenti.", "full": "Le negazioni strategiche sono lo strumento più sottovalutato del vibe coding. Pochi le usano." },
+        { "short": "Pochi le usano.", "full": "Pochi le usano davvero. Tu da oggi sì." }
+      ]
+    },
+    {
+      "id": "good-constraint-choice",
+      "type": "choice",
+      "spark_state": "listening",
+      "prompt": "Quale di queste frasi è un VINCOLO efficace per l'AI?",
+      "options": [
+        {
+          "key": "polite",
+          "label": "«Per favore fai un buon lavoro e cerca di essere accurata.»"
+        },
+        {
+          "key": "rich",
+          "label": "«NON modificare il file /lib/auth.ts. NON aggiungere nuove dipendenze npm. Se non sei sicura su un punto, FERMATI e chiedimi prima di procedere.»"
+        },
+        {
+          "key": "vague_pro",
+          "label": "«Lavora seguendo le best practices del settore e mantieni il codice professionale.»"
+        }
+      ],
+      "vignettes": [
+        { "short": "Pensa prima di cliccare.", "full": "Pensa prima di cliccare. Una sembra troppo gentile, una sembra troppo professionale, una è giusta." }
+      ]
+    },
+    {
+      "id": "good-constraint-reaction",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "Capito. Andiamo avanti.",
+        "Tieni a mente: il vincolo efficace è specifico, negativo, e include istruzioni vere su cosa l'AI deve fare quando non sa."
+      ],
+      "paragraphs_by_choice": {
+        "source_step_id": "good-constraint-choice",
+        "by_key": {
+          "rich": [
+            "Esatto. La risposta giusta era quella.",
+            "Aveva tutto: dice cosa NON fare, è specifica, e include un vincolo di processo («fermati e chiedimi»). Tre proprietà che vediamo tra poco.",
+            "La «preghiera» era un augurio, non un vincolo. La «best practices» è un'illusione di precisione — l'AI inventa cosa significhi."
+          ],
+          "polite": [
+            "La prima era troppo gentile. «Fai un buon lavoro» non è un vincolo, è un augurio.",
+            "L'AI legge questo e pensa «ok, ce la metto tutta» — e poi tocca cose che non doveva toccare con le migliori intenzioni.",
+            "La risposta migliore era la seconda — specifica, negativa, con vincolo di processo."
+          ],
+          "vague_pro": [
+            "La terza ti suonava più «professionale», vero? È la trappola del «best practices».",
+            "Non vuol dire niente — l'AI inventa cosa significa, e poi fa quello che le pare.",
+            "La risposta migliore era la seconda — concreta, specifica, con istruzioni vere su cosa non toccare."
+          ]
+        }
+      },
+      "vignettes": [
+        { "short": "Le preghiere non vincolano.", "full": "Le preghiere non vincolano. Le specifiche sì. Tienilo come regola." },
+        { "short": "Le specifiche sì.", "full": "Le specifiche sì. Più concrete, più potenti." }
+      ]
+    },
+    {
+      "id": "context-bridge",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "Aspetta. Ti faccio un collegamento.",
+        "Ricordi i 4 livelli di contesto della scorsa lezione? Progetto, codice, vincoli, esempi.",
+        "Il terzo era proprio «vincoli». Quello che ti dico oggi è uno zoom dentro quel livello. Quel singolo punto, dentro, ha 3 anime."
+      ],
+      "vignettes": [
+        { "short": "Ogni cosa si collega.", "full": "Ogni cosa che impari si collega alle altre. Stai costruendo un sistema, non una lista di trucchi." },
+        { "short": "Stai costruendo un sistema.", "full": "Stai costruendo un sistema. Tienilo a mente quando ti sembra di andare lento." }
+      ]
+    },
+    {
+      "id": "principle-disasters",
+      "type": "principle",
+      "spark_state": "surprised",
+      "headline": "I disastri",
+      "emphasis": "non si recuperano. Si prevengono.",
+      "caption": "Quando l'AI fa danno, non c'è «undo». Ricostruire costa più che prevenire. I vincoli sono il tuo backup mentale.",
+      "vignettes": [
+        { "short": "Tienitelo a mente.", "full": "Tienitelo a mente. Vale per il codice e vale per la vita, in fondo." },
+        { "short": "Ti tornerà utile.", "full": "Ti tornerà utile. Più di quanto pensi." }
+      ]
+    },
+    {
+      "id": "three-types",
+      "type": "text",
+      "spark_state": "idle",
+      "paragraphs": [
+        "Adesso ti dico una cosa che vale come una lezione intera. Esistono 3 tipi di vincoli. Te li elenco perché te li devi ricordare.",
+        "1. Protettivi. «NON toccare X». «NON modificare Y». Proteggono pezzi del tuo lavoro che sono già fatti.",
+        "2. Di processo. «Mostrami il [[term:diff]]diff[[/term]] prima di applicare». «Chiedimi se non sei sicura». Gestiscono COME l'AI lavora con te.",
+        "3. Di stile. «Mantieni TypeScript strict». «Usa il pattern di X». Garantiscono coerenza con quello che hai già.",
+        "Tutti e 3 servono. Mancando uno solo, hai un buco."
+      ],
+      "vignettes": [
+        { "short": "Memorizza i 3.", "full": "Memorizza i tre. Te li chiamerò sempre «i tre guardiani» nelle prossime lezioni." },
+        { "short": "Stefano li chiama «i tre guardiani».", "full": "Stefano li chiama «i tre guardiani». Non è una metafora forzata — proteggono davvero ognuno il suo fronte." }
+      ]
+    },
+    {
+      "id": "claudemd-bridge",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "Ti faccio un altro collegamento, perché conta. Dove metti i vincoli?",
+        "I vincoli che valgono SEMPRE — tipo «non toccare il middleware» — li scrivi una volta nel CLAUDE.md (te lo ricordi dalla Lezione 2). Resta lì. L'AI lo rilegge ogni volta.",
+        "I vincoli che valgono SOLO ADESSO — tipo «in questa modifica non toccare gli stili» — li scrivi nel prompt del momento.",
+        "Regola semplice: se vale per sempre, va scritto una volta sola. Se vale per stavolta, va scritto stavolta."
+      ],
+      "vignettes": [
+        { "short": "Persistente vs dinamico.", "full": "Persistente vs dinamico. Due luoghi, due ruoli. Uno non sostituisce l'altro." },
+        { "short": "Due luoghi, due ruoli.", "full": "Due luoghi, due ruoli. Lo capirai meglio con la pratica." }
+      ]
+    },
+    {
+      "id": "applied-example",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "Ti faccio un esempio con un progetto-tipo.",
+        "PROTETTIVO: «NON modificare i file in /config senza dirmelo prima».",
+        "PROCESSO: «Mostrami il diff prima di applicare le modifiche».",
+        "STILE: «Mantieni il pattern già esistente. Non inventare nuovi pattern».",
+        "Tre vincoli, 30 secondi a scriverli. Ti risparmiano disastri di domani."
+      ],
+      "vignettes": [
+        { "short": "Sembra noioso.", "full": "Sembra noioso, lo so. È quello che ti salva quando la sessione di vibe coding va lunga." },
+        { "short": "È quello che ti salva.", "full": "È quello che ti salva. Un giorno mi ringrazierai per averti rotto le scatole su questo." }
+      ]
+    },
+    {
+      "id": "disaster-quickwin",
+      "type": "interactive",
+      "spark_state": "listening",
+      "widget": "constraints_editor",
+      "intro": "Adesso ti tocca. Ti mostro un disastro vero. Tu scrivi i 3 vincoli che l'avrebbero prevenuto. Pronto?",
+      "max_attempts": 3,
+      "constraints_config": {
+        "textareas": [
+          {
+            "kind": "protective",
+            "icon": "🛡️",
+            "label": "1. Protettivo",
+            "description": "Cosa l'AI NON deve toccare.",
+            "placeholder": "Es: «NON modificare lo schema del database senza chiedermi prima.»"
+          },
+          {
+            "kind": "process",
+            "icon": "⚙️",
+            "label": "2. Di processo",
+            "description": "Come l'AI deve lavorare con te.",
+            "placeholder": "Es: «Mostrami il diff prima di applicare modifiche al DB.»"
+          },
+          {
+            "kind": "style",
+            "icon": "🎨",
+            "label": "3. Di stile",
+            "description": "Coerenza con quello che esiste già.",
+            "placeholder": "Es: «Riusa il pattern di /lib/db. Non creare nuove convenzioni.»"
+          }
+        ],
+        "min_chars_per_textarea": 30,
+        "max_chars_per_textarea": 200,
+        "xp_by_case": {
+          "incomplete": 60,
+          "missing_one": 130,
+          "good": 200,
+          "excellent": 280,
+          "perfect": 350
+        }
+      },
+      "vignettes": [
+        { "short": "Sii specifico.", "full": "Sii specifico. Più concreto sei, più ti rispetto come AI." },
+        { "short": "Tre tentativi. Usali bene.", "full": "Tre tentativi. Al secondo ti dico cosa è debole, al terzo te lo dico chiaro." },
+        { "short": "I vincoli te li tieni.", "full": "I vincoli che scrivi te li porti a casa. Li riusi nel tuo prossimo progetto vero." }
+      ]
+    },
+    {
+      "id": "outro-cliffhanger",
+      "type": "text",
+      "spark_state": "happy",
+      "paragraphs": [
+        "Lezione 4 chiusa. Adesso sai dare contesto E vincoli. Hai il kit completo per dirigere l'AI.",
+        "Ma cosa succede quando, nonostante contesto e vincoli, l'AI sbaglia? Spoiler: la colpa probabilmente è ancora tua. Ti spiego perché nella prossima.",
+        "Sei a metà del Path. Non mollare adesso."
+      ],
+      "vignettes": [
+        { "short": "Stai diventando bravo davvero.", "full": "Stai diventando bravo davvero. Non te lo dico spesso, ma me ne accorgo." },
+        { "short": "Pochi arrivano a metà.", "full": "Pochi arrivano a metà del Path 1. Ancora meno arrivano in fondo. Tu puoi farcela." },
+        { "short": "A domani.", "full": "A domani. La prossima è tosta in modo diverso — ti renderà umile." }
+      ]
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 // Server-side personalisation of V3 lesson content based on the user's
 // onboarding profile.
 //
-// Today three lessons opt-in:
+// Today four lessons opt-in:
 //   - mindset-01 — `input-motivation` step is replaced with a recap text
 //     card so we don't re-ask the user something they already answered
 //     during the 12-step profilazione (Profilazione.md spec, BUG #2 fix).
@@ -13,6 +13,9 @@
 //     project_description, and step 12 ("quickwin-intro") appends a tool-
 //     specific PS based on preferred_tool (Lezione3_Blueprint.md §"Inte-
 //     grazione dati onboarding").
+//   - mindset-04 — Step 12 ("applied-example") swaps in three project-
+//     specific constraint examples when project_description is set, falls
+//     back to the generic three-constraint example otherwise.
 //
 // Pure function, no I/O. The caller (app/(app)/lesson/[id]/page.tsx)
 // already owns the lesson + profile + i18n bundle, so we keep the rule
@@ -26,6 +29,7 @@ import type {
   TextStep,
 } from "@/types";
 import { getToolBySlug } from "@/lib/onboarding/tools";
+import { truncateProject } from "@/lib/utils";
 
 export interface ProjectRecallCopy {
   intro: string;
@@ -57,6 +61,13 @@ export interface Mindset03Copy {
   };
 }
 
+export interface Mindset04Copy {
+  step12: {
+    exploring: string[];
+    withProject: (project: string) => string[];
+  };
+}
+
 export interface PersonaliseProfileSlice {
   project_description: string | null;
   project_clarity: ProjectClarity | null;
@@ -68,6 +79,7 @@ export interface PersonaliseCopy {
   projectRecall: ProjectRecallCopy;
   mindset02: Mindset02Copy;
   mindset03: Mindset03Copy;
+  mindset04: Mindset04Copy;
 }
 
 /**
@@ -87,6 +99,9 @@ export function personaliseLessonForUser(
   }
   if (lesson.id === "mindset-03") {
     return personaliseMindset03(lesson, profile, copy.mindset03);
+  }
+  if (lesson.id === "mindset-04") {
+    return personaliseMindset04(lesson, profile, copy.mindset04);
   }
   return lesson;
 }
@@ -120,7 +135,11 @@ function buildMindset01ProjectRecallStep(
   }
   const project = profile.project_description?.trim();
   if (project && project.length > 0) {
-    return makeRecallTextStep(original, [copy.intro, copy.recall(project)]);
+    // Pre-2026-05-09 rows can hold up to 300 chars; trim the inline
+    // quote so the recap card stays readable. The cap was lowered to
+    // 200 for new inserts but legacy values are not back-filled.
+    const display = truncateProject(project);
+    return makeRecallTextStep(original, [copy.intro, copy.recall(display)]);
   }
   // Defensive: profile is incomplete (shouldn't happen — the (app)/layout
   // gate redirects to /onboarding when onboarding_completed_at is null).
@@ -264,7 +283,9 @@ function pickStep11Variant(
   }
   const project = profile.project_description?.trim();
   if (project && project.length > 0) {
-    return copy.withProject(project);
+    // Truncate at 100 chars before the quote lands inside Spark's
+    // copy — keeps the line readable on the small Lesson 3 card.
+    return copy.withProject(truncateProject(project));
   }
   return null;
 }
@@ -277,4 +298,43 @@ function pickStep12Variant(
   const tool = getToolBySlug(preferredTool);
   if (!tool) return null;
   return copy.withTool(tool.display_name ?? tool.name);
+}
+
+// ─── Lesson 4 — Step 12 (applied-example) ─────────────────────────────
+
+function personaliseMindset04(
+  lesson: LessonV3Content,
+  profile: PersonaliseProfileSlice,
+  copy: Mindset04Copy,
+): LessonV3Content {
+  let touched = false;
+  const steps = lesson.steps.map((step) => {
+    if (step.id === "applied-example" && step.type === "text") {
+      const variant = pickMindset04Step12Variant(profile, copy.step12);
+      if (variant) {
+        touched = true;
+        return { ...step, paragraphs: variant } satisfies TextStep;
+      }
+    }
+    return step;
+  });
+  if (!touched) return lesson;
+  return { ...lesson, steps };
+}
+
+function pickMindset04Step12Variant(
+  profile: PersonaliseProfileSlice,
+  copy: Mindset04Copy["step12"],
+): string[] | null {
+  // Same shape as mindset-03 step 11: exploring → generic example,
+  // any project_description → personalised constraints.
+  if (profile.project_clarity === "exploring") {
+    return copy.exploring;
+  }
+  const project = profile.project_description?.trim();
+  if (project && project.length > 0) {
+    // Same readability cap as L1 / L3 — see truncateProject in lib/utils.
+    return copy.withProject(truncateProject(project));
+  }
+  return null;
 }

@@ -1,0 +1,279 @@
+{
+  "id": "mindset-04",
+  "format_version": 3,
+  "path_slug": "mindset",
+  "order": 4,
+  "title": "Constraints save your life.",
+  "map_title": "Constraints save",
+  "subtitle": "They look like cages. They're guardrails.",
+  "difficulty": "beginner",
+  "estimated_minutes": 10,
+  "base_xp": 100,
+  "difficulty_bonus_xp": 0,
+  "icon": "/brand/lessons/mindset-04.svg",
+  "cliffhanger": "Tomorrow: errors. Spoiler — when AI gets it wrong, it's usually still your fault.",
+  "steps": [
+    {
+      "id": "intro-four-lessons",
+      "type": "text",
+      "spark_state": "idle",
+      "paragraphs": [
+        "Four lessons in. You're entering the real part now.",
+        "Now I'll tell you something uncomfortable. It'll happen to you. Guaranteed.",
+        "The question is: will it happen early, while you're learning — or late, when it costs you?"
+      ],
+      "vignettes": [
+        { "short": "I warned you.", "full": "I warned you the tougher part was coming. Hold on." },
+        { "short": "Better prepare now.", "full": "Better prepare now than learn the hard way. That's the whole point of Promptly." },
+        { "short": "Not your fault. Just statistics.", "full": "It's not your fault if it happens. It's just statistics — happens to everyone, sooner or later." }
+      ]
+    },
+    {
+      "id": "story-six-hours",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "Let me tell you the way it happened to Stefano.",
+        "He was working on Promptly. He'd asked the AI to «clean up some dead code» — that's called [[term:refactoring]]refactoring[[/term]]. Six hours of solid work, saved. The AI cleaned.",
+        "Among the dead code, it also deleted a function that was NOT dead. Just unused at that moment.",
+        "Six hours wasted. Started from scratch.",
+        "Point being: the AI wasn't stupid. Stefano hadn't told it what NOT to touch. Without a clear «no», the AI does its own thing."
+      ],
+      "vignettes": [
+        { "short": "Happens to everyone.", "full": "Happens to everyone, really. Don't feel dumb if it's already happened to you." },
+        { "short": "Once is enough to learn.", "full": "Once is enough to learn. After that disaster, Stefano never forgot constraints again." }
+      ]
+    },
+    {
+      "id": "ai-without-leash",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "Modern AIs are good. Too good. They want to help you more than they should.",
+        "You ask for one thing, and they think: «while I'm at it, let me improve this too, and this, and this». Looks like zeal. It's invasion.",
+        "Without explicit [[term:vincoli]]constraints[[/term]], the AI touches things it shouldn't have touched. Adds things that weren't needed. Modifies things that worked. And you only notice afterwards."
+      ],
+      "vignettes": [
+        { "short": "No malice. Just excess.", "full": "No malice — the AI doesn't hate you. Just over-eagerness." },
+        { "short": "Like an over-eager intern.", "full": "Like an intern who's too full of initiative. Brilliant, but watch them like a hawk." }
+      ]
+    },
+    {
+      "id": "principle-constraints-freedom",
+      "type": "principle",
+      "spark_state": "surprised",
+      "headline": "Constraints",
+      "emphasis": "are freedom.",
+      "caption": "Without constraints you have to police every move the AI makes. With constraints, you can trust. Freedom is not having to babysit.",
+      "vignettes": [
+        { "short": "Sounds like a paradox.", "full": "Sounds like a paradox, doesn't it? It's not — I'll prove it in two steps." },
+        { "short": "It's not.", "full": "It's not. Real freedom is being able to delegate without fear. Constraints give you that." }
+      ]
+    },
+    {
+      "id": "constraint-explainer",
+      "type": "text",
+      "spark_state": "listening",
+      "paragraphs": [
+        "A constraint is a sentence that tells the AI what NOT to do. It's more powerful than one telling it what to do.",
+        "Simple examples: «Don't touch file X». «Don't add dependencies». «Don't modify the database [[term:schema]]schema[[/term]]». «Don't reply in more than 3 sentences».",
+        "Notice? They all start with «DON'T». A constraint is a strategic negation."
+      ],
+      "vignettes": [
+        { "short": "Powerful negations.", "full": "Strategic negations are the most underused tool in vibe coding. Few people use them." },
+        { "short": "Few use them.", "full": "Few really use them. From today, you do." }
+      ]
+    },
+    {
+      "id": "good-constraint-choice",
+      "type": "choice",
+      "spark_state": "listening",
+      "prompt": "Which of these is an effective CONSTRAINT for the AI?",
+      "options": [
+        {
+          "key": "polite",
+          "label": "«Please do a good job and try to be accurate.»"
+        },
+        {
+          "key": "rich",
+          "label": "«DO NOT modify file /lib/auth.ts. DO NOT add new npm dependencies. If you're unsure about anything, STOP and ask me before proceeding.»"
+        },
+        {
+          "key": "vague_pro",
+          "label": "«Work following industry best practices and keep the code professional.»"
+        }
+      ],
+      "vignettes": [
+        { "short": "Think before clicking.", "full": "Think before clicking. One sounds too polite, one sounds too professional, one is right." }
+      ]
+    },
+    {
+      "id": "good-constraint-reaction",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "Got it. Let's keep going.",
+        "Remember: an effective constraint is specific, negative, and includes real instructions for what the AI should do when uncertain."
+      ],
+      "paragraphs_by_choice": {
+        "source_step_id": "good-constraint-choice",
+        "by_key": {
+          "rich": [
+            "Right. That was the answer.",
+            "It had everything: tells the AI what NOT to do, specific, and includes a process constraint («stop and ask me»). Three properties we'll see in a moment.",
+            "The «prayer» was a wish, not a constraint. The «best practices» one is fake precision — the AI invents what it means."
+          ],
+          "polite": [
+            "The first one was too polite. «Do a good job» isn't a constraint, it's a wish.",
+            "The AI reads this and thinks «okay, I'll do my best» — and then touches things it shouldn't have, with the best of intentions.",
+            "The right answer was the second — specific, negative, with a process constraint."
+          ],
+          "vague_pro": [
+            "The third one sounded more «professional», didn't it? Classic «best practices» trap.",
+            "It means nothing — the AI invents what it means and then does whatever it wants.",
+            "The right answer was the second — concrete, specific, with real instructions on what not to touch."
+          ]
+        }
+      },
+      "vignettes": [
+        { "short": "Prayers don't constrain.", "full": "Prayers don't constrain. Specifics do. Keep it as a rule." },
+        { "short": "Specifics do.", "full": "Specifics do. The more concrete, the more powerful." }
+      ]
+    },
+    {
+      "id": "context-bridge",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "Wait. Let me connect the dots.",
+        "Remember the 4 levels of context from last lesson? Project, code, constraints, examples.",
+        "The third one was «constraints». What I'm telling you today is a zoom inside that level. That single point, inside, has 3 souls."
+      ],
+      "vignettes": [
+        { "short": "Everything connects.", "full": "Everything you learn connects to the rest. You're building a system, not a list of tricks." },
+        { "short": "You're building a system.", "full": "You're building a system. Keep that in mind when it feels slow." }
+      ]
+    },
+    {
+      "id": "principle-disasters",
+      "type": "principle",
+      "spark_state": "surprised",
+      "headline": "Disasters",
+      "emphasis": "can't be undone. They're prevented.",
+      "caption": "When the AI breaks something, there's no «undo». Rebuilding costs more than preventing. Constraints are your mental backup.",
+      "vignettes": [
+        { "short": "Keep it close.", "full": "Keep it close. Holds for code, holds for life, in the end." },
+        { "short": "It'll come in handy.", "full": "It'll come in handy. More than you think." }
+      ]
+    },
+    {
+      "id": "three-types",
+      "type": "text",
+      "spark_state": "idle",
+      "paragraphs": [
+        "Now I'm telling you something worth a whole lesson. There are 3 types of constraints. I'll list them because you have to remember them.",
+        "1. Protective. «DO NOT touch X». «DO NOT modify Y». They protect parts of your work that are already done.",
+        "2. Process. «Show me the [[term:diff]]diff[[/term]] before applying». «Ask me if you're unsure». They manage HOW the AI works with you.",
+        "3. Style. «Keep TypeScript strict». «Use the pattern from X». They guarantee consistency with what you already have.",
+        "All 3 are needed. Miss one and you have a hole."
+      ],
+      "vignettes": [
+        { "short": "Memorise the 3.", "full": "Memorise the three. I'll keep calling them «the three guardians» in upcoming lessons." },
+        { "short": "Stefano calls them «the three guardians».", "full": "Stefano calls them «the three guardians». Not a forced metaphor — they really each guard their own front." }
+      ]
+    },
+    {
+      "id": "claudemd-bridge",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "Let me make another connection, because it matters. Where do you put constraints?",
+        "Constraints that ALWAYS apply — like «don't touch the middleware» — you write once in the CLAUDE.md (remember from Lesson 2). It stays there. The AI re-reads it every time.",
+        "Constraints that apply ONLY NOW — like «in this change don't touch the styles» — you write in the prompt of the moment.",
+        "Simple rule: if it's forever, write it once. If it's just for now, write it now."
+      ],
+      "vignettes": [
+        { "short": "Persistent vs dynamic.", "full": "Persistent vs dynamic. Two places, two roles. One doesn't replace the other." },
+        { "short": "Two places, two roles.", "full": "Two places, two roles. You'll get it better with practice." }
+      ]
+    },
+    {
+      "id": "applied-example",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "Let me show you with a typical project.",
+        "PROTECTIVE: «DO NOT modify the files in /config without asking me first».",
+        "PROCESS: «Show me the diff before applying changes».",
+        "STYLE: «Keep the existing pattern. Don't invent new patterns».",
+        "Three constraints, 30 seconds to write them. They save you tomorrow's disasters."
+      ],
+      "vignettes": [
+        { "short": "Sounds boring.", "full": "Sounds boring, I know. It's what saves you when the vibe coding session runs long." },
+        { "short": "It's what saves you.", "full": "It's what saves you. One day you'll thank me for nagging you about this." }
+      ]
+    },
+    {
+      "id": "disaster-quickwin",
+      "type": "interactive",
+      "spark_state": "listening",
+      "widget": "constraints_editor",
+      "intro": "Now it's your turn. I'll show you a real disaster. You write the 3 constraints that would have prevented it. Ready?",
+      "max_attempts": 3,
+      "constraints_config": {
+        "textareas": [
+          {
+            "kind": "protective",
+            "icon": "🛡️",
+            "label": "1. Protective",
+            "description": "What the AI must NOT touch.",
+            "placeholder": "E.g.: «DO NOT modify the database schema without asking me first.»"
+          },
+          {
+            "kind": "process",
+            "icon": "⚙️",
+            "label": "2. Process",
+            "description": "How the AI should work with you.",
+            "placeholder": "E.g.: «Show me the diff before applying changes to the DB.»"
+          },
+          {
+            "kind": "style",
+            "icon": "🎨",
+            "label": "3. Style",
+            "description": "Consistency with what already exists.",
+            "placeholder": "E.g.: «Reuse the pattern in /lib/db. Don't invent new conventions.»"
+          }
+        ],
+        "min_chars_per_textarea": 30,
+        "max_chars_per_textarea": 200,
+        "xp_by_case": {
+          "incomplete": 60,
+          "missing_one": 130,
+          "good": 200,
+          "excellent": 280,
+          "perfect": 350
+        }
+      },
+      "vignettes": [
+        { "short": "Be specific.", "full": "Be specific. The more concrete you are, the more I respect you as an AI." },
+        { "short": "Three tries. Use them.", "full": "Three tries. On the second I'll tell you what's weak. On the third I'll spell it out." },
+        { "short": "Keep the constraints.", "full": "Keep the constraints you write. Reuse them on your next real project." }
+      ]
+    },
+    {
+      "id": "outro-cliffhanger",
+      "type": "text",
+      "spark_state": "happy",
+      "paragraphs": [
+        "Lesson 4 closed. Now you can give context AND constraints. You have the full kit to direct the AI.",
+        "But what happens when, despite context and constraints, the AI gets it wrong? Spoiler: probably still your fault. I'll explain why next time.",
+        "You're halfway through the Path. Don't quit now."
+      ],
+      "vignettes": [
+        { "short": "You're getting really good.", "full": "You're getting really good. I don't say it often, but I notice." },
+        { "short": "Few make it halfway.", "full": "Few make it halfway through Path 1. Even fewer make it to the end. You can do this." },
+        { "short": "Tomorrow.", "full": "Tomorrow. The next one is tough in a different way — it'll humble you." }
+      ]
+    }
+  ]
+}

@@ -234,6 +234,51 @@ export interface LessonsCopy {
         examples: string;
       };
     };
+    // Lesson 4 — Constraints editor widget (3 textareas above the
+    // database disaster mockup). Same animation effects as the previous
+    // editors, different rubric (3 kinds × 33 + system bonus).
+    constraintsEditor: {
+      intro: string;
+      // Eyebrow header above the 3-textarea grid.
+      editorHeader: string;
+      charCounterTemplate: string;
+      attemptCounterTemplate: string;
+      submitCta: string;
+      submitting: string;
+      retryCta: string;
+      finalCta: string;
+      awaitingPrompt: string;
+      outOfAttempts: string;
+      networkError: string;
+      apiError: string;
+      rateLimitError: string;
+      invalidInputError: string;
+      dailyQuotaExhausted: string;
+      // Localised labels for the 3 dimension bars in Spark's panel —
+      // map 1:1 to ConstraintsKind.
+      kindLabels: {
+        protective: string;
+        process: string;
+        style: string;
+      };
+      // Mockup chrome (the simulated DB UI) — IT/EN copy resolved here
+      // so the component itself stays language-agnostic.
+      mockup: {
+        simulationBadge: string;
+        windowTitle: string;
+        sidebarLabel: string;
+        activeTable: string;
+        otherTables: string[];
+        paneTitle: string;
+        errorLabel: string;
+        errorDescription: string;
+        recordsAffected: string;
+        recordsCount: string;
+        lastBackup: string;
+        lastBackupValue: string;
+        preventedLabel: string;
+      };
+    };
     chat: {
       launcherLabel: string;
       modalTitle: string;
@@ -326,6 +371,14 @@ export interface LessonsCopy {
       step12: {
         default: string[];
         withTool: (toolName: string) => string[];
+      };
+    };
+    // Lesson 4 — applied-example step 12 swap based on project_description.
+    // Same shape as mindset03.step11.
+    mindset04: {
+      step12: {
+        exploring: string[];
+        withProject: (project: string) => string[];
       };
     };
   };
@@ -569,6 +622,44 @@ const it: LessonsCopy = {
         examples: "esempi",
       },
     },
+    constraintsEditor: {
+      intro: "Adesso ti tocca. Ecco il disastro: scrivi i 3 vincoli che l'avrebbero prevenuto.",
+      editorHeader: "Scrivi i 3 vincoli che avrebbero prevenuto questo disastro",
+      charCounterTemplate: "{current} / {max}",
+      attemptCounterTemplate: "Tentativo {current} / {max}",
+      submitCta: "Invia a Spark",
+      submitting: "Sto leggendo…",
+      retryCta: "Riprova",
+      finalCta: "Continua →",
+      awaitingPrompt: "Scrivi i tre vincoli e poi te li commento.",
+      outOfAttempts: "Va bene così. Hai dato il massimo per oggi. Quello che hai imparato resta.",
+      networkError: "Sono offline. Non è colpa tua. Riprova quando hai rete.",
+      apiError: "Qualcosa non ha funzionato. Riprova tra poco.",
+      rateLimitError: "Troppi tentativi ravvicinati. Dammi un momento.",
+      invalidInputError: "Quel testo non posso valutarlo. Riformulalo come tre vincoli concreti.",
+      dailyQuotaExhausted: "Per oggi hai esaurito le valutazioni che posso farti. Torna domani — i tuoi vincoli te li tieni.",
+      kindLabels: {
+        protective: "protettivo",
+        process: "processo",
+        style: "stile",
+      },
+      mockup: {
+        simulationBadge: "Simulazione — non è un disastro vero",
+        windowTitle: "My Database — Studio",
+        sidebarLabel: "Tabelle",
+        activeTable: "users",
+        otherTables: ["projects", "lessons"],
+        paneTitle: "Tabella",
+        errorLabel: "Schema modificato dall'AI",
+        errorDescription:
+          "L'AI ha droppato la colonna «email_verified» durante un refactoring del flusso di auth.",
+        recordsAffected: "Record affected",
+        recordsCount: "23 utenti",
+        lastBackup: "Ultimo backup",
+        lastBackupValue: "2 ore fa",
+        preventedLabel: "Disastro evitato",
+      },
+    },
     chat: {
       launcherLabel: "Chiedi a Spark",
       modalTitle: "Spark",
@@ -667,6 +758,25 @@ const it: LessonsCopy = {
           "Ti darò un prompt scarno. Tu lo dovrai trasformare aggiungendo i 4 livelli di contesto.",
           "Non serve essere perfetti. Serve essere RICCHI. Andiamo.",
           `PS: in ${toolName} parte del contesto puoi passarlo coi tag dei file (@filename, drag-and-drop, o quello che il tool offre). È un trucco del mestiere — te lo ricordo come bonus.`,
+        ],
+      },
+    },
+    mindset04: {
+      step12: {
+        exploring: [
+          "Ti faccio un esempio con un progetto-tipo.",
+          "PROTETTIVO: «NON modificare i file in /config senza dirmelo prima».",
+          "PROCESSO: «Mostrami il diff prima di applicare le modifiche».",
+          "STILE: «Mantieni il pattern già esistente. Non inventare nuovi pattern».",
+          "Tre vincoli, 30 secondi a scriverli. Ti risparmiano disastri di domani.",
+        ],
+        withProject: (project) => [
+          "Ti faccio un esempio col TUO progetto.",
+          `Ricordi che vuoi costruire "${project}"? Ecco 3 vincoli che potresti già usare oggi:`,
+          "PROTETTIVO: «NON modificare lo schema del database senza dirmelo prima».",
+          "PROCESSO: «Mostrami il diff dei file modificati prima di applicare le modifiche».",
+          "STILE: «Mantieni il pattern delle altre componenti che ho già fatto. Non inventare nuovi pattern».",
+          "Tre vincoli, 30 secondi a scriverli, e ti risparmiano 10 ore di disastri.",
         ],
       },
     },
@@ -888,6 +998,44 @@ const en: LessonsCopy = {
         examples: "examples",
       },
     },
+    constraintsEditor: {
+      intro: "Now it's your turn. Here's the disaster: write the 3 constraints that would have prevented it.",
+      editorHeader: "Write the 3 constraints that would have prevented this disaster",
+      charCounterTemplate: "{current} / {max}",
+      attemptCounterTemplate: "Try {current} / {max}",
+      submitCta: "Send to Spark",
+      submitting: "Reading…",
+      retryCta: "Retry",
+      finalCta: "Continue →",
+      awaitingPrompt: "Write the three constraints and I'll comment on them.",
+      outOfAttempts: "It's fine. You gave today your best. What you learned sticks.",
+      networkError: "I'm offline. Not your fault. Try again when you're back.",
+      apiError: "Something went wrong. Try again in a bit.",
+      rateLimitError: "Too many tries too fast. Give me a moment.",
+      invalidInputError: "I can't grade that text. Rewrite it as three concrete constraints.",
+      dailyQuotaExhausted: "You've used all the evaluations I can give you today. Come back tomorrow — your constraints stay with you.",
+      kindLabels: {
+        protective: "protective",
+        process: "process",
+        style: "style",
+      },
+      mockup: {
+        simulationBadge: "Simulation — not a real disaster",
+        windowTitle: "My Database — Studio",
+        sidebarLabel: "Tables",
+        activeTable: "users",
+        otherTables: ["projects", "lessons"],
+        paneTitle: "Table",
+        errorLabel: "Schema modified by AI",
+        errorDescription:
+          "The AI dropped the «email_verified» column while refactoring the auth flow.",
+        recordsAffected: "Records affected",
+        recordsCount: "23 users",
+        lastBackup: "Last backup",
+        lastBackupValue: "2 hours ago",
+        preventedLabel: "Disaster prevented",
+      },
+    },
     chat: {
       launcherLabel: "Ask Spark",
       modalTitle: "Spark",
@@ -986,6 +1134,25 @@ const en: LessonsCopy = {
           "I'll give you a thin prompt. You have to transform it by adding the 4 levels of context.",
           "You don't need to be perfect. You need to be RICH. Let's go.",
           `PS: in ${toolName} you can pass part of the context with file tags (@filename, drag-and-drop, whatever the tool supports). Trick of the trade — bonus tip.`,
+        ],
+      },
+    },
+    mindset04: {
+      step12: {
+        exploring: [
+          "Let me show you with a typical project.",
+          "PROTECTIVE: «DO NOT modify the files in /config without asking me first».",
+          "PROCESS: «Show me the diff before applying changes».",
+          "STYLE: «Keep the existing pattern. Don't invent new patterns».",
+          "Three constraints, 30 seconds to write them. They save you tomorrow's disasters.",
+        ],
+        withProject: (project) => [
+          "Let me show you with YOUR project.",
+          `You wanted to build "${project}", right? Here are 3 constraints you could use today:`,
+          "PROTECTIVE: «DO NOT modify the database schema without asking me first».",
+          "PROCESS: «Show me the diff of the modified files before applying changes».",
+          "STYLE: «Keep the pattern of the other components I've already built. Don't invent new patterns».",
+          "Three constraints, 30 seconds to write them, and they save you 10 hours of disasters.",
         ],
       },
     },

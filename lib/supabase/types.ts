@@ -51,6 +51,11 @@ export type Database = {
           // Drives the "already seen" attenuated style on subsequent
           // occurrences. Defaults to '{}'.
           glossary_seen: string[];
+          // Mitigation 2 (2026-05-09) — ≤80-char Haiku-compressed view
+          // of project_description, used in frequent AI prompts (Spark
+          // chat, evaluators). Null until generated; lazy-backfilled by
+          // getUserProfile when raw > 100 chars and this column is null.
+          project_description_compressed: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -88,6 +93,7 @@ export type Database = {
           promises?: Json | null;
           last_profile_check?: string | null;
           glossary_seen?: string[];
+          project_description_compressed?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -125,6 +131,7 @@ export type Database = {
           promises?: Json | null;
           last_profile_check?: string | null;
           glossary_seen?: string[];
+          project_description_compressed?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -221,6 +228,10 @@ export type Database = {
           // the context-prompt grader has its own daily budget too. Same
           // pattern as claudemd_attempts_count.
           context_attempts_count: number;
+          // Lesson 4 — counter for /api/lesson-constraints-evaluate calls.
+          // Independent budget so the user can finish lesson 2/3 and
+          // still try lesson 4 in the same day.
+          constraints_attempts_count: number;
           updated_at: string;
         };
         Insert: {
@@ -230,6 +241,7 @@ export type Database = {
           promise_regen_count?: number;
           claudemd_attempts_count?: number;
           context_attempts_count?: number;
+          constraints_attempts_count?: number;
           updated_at?: string;
         };
         Update: {
@@ -239,6 +251,7 @@ export type Database = {
           promise_regen_count?: number;
           claudemd_attempts_count?: number;
           context_attempts_count?: number;
+          constraints_attempts_count?: number;
           updated_at?: string;
         };
         Relationships: [];

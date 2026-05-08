@@ -268,7 +268,8 @@ function isLessonV3Step(value: unknown): value is LessonV3Step {
       if (
         b.widget !== "lucia_prompt_loop" &&
         b.widget !== "claudemd_editor" &&
-        b.widget !== "context_prompt_editor"
+        b.widget !== "context_prompt_editor" &&
+        b.widget !== "constraints_editor"
       ) {
         return false;
       }
@@ -337,6 +338,51 @@ function isLessonV3Step(value: unknown): value is LessonV3Step {
             return false;
           }
         }
+      }
+      if (b.widget === "constraints_editor") {
+        const cfg = b.constraints_config as
+          | Record<string, unknown>
+          | undefined;
+        if (!cfg || typeof cfg !== "object") return false;
+        if (!Array.isArray(cfg.textareas) || cfg.textareas.length !== 3)
+          return false;
+        if (
+          typeof cfg.min_chars_per_textarea !== "number" ||
+          typeof cfg.max_chars_per_textarea !== "number"
+        ) {
+          return false;
+        }
+        if (
+          typeof cfg.xp_by_case !== "object" ||
+          cfg.xp_by_case === null ||
+          typeof (cfg.xp_by_case as Record<string, unknown>).incomplete !==
+            "number"
+        ) {
+          return false;
+        }
+        // The three textareas must each declare their kind, label and
+        // placeholder. kind is one of the discriminator values the
+        // evaluator scores against.
+        const kinds = new Set<string>();
+        for (const t of cfg.textareas) {
+          if (typeof t !== "object" || t === null) return false;
+          const tt = t as Record<string, unknown>;
+          if (
+            tt.kind !== "protective" &&
+            tt.kind !== "process" &&
+            tt.kind !== "style"
+          ) {
+            return false;
+          }
+          if (
+            typeof tt.label !== "string" ||
+            typeof tt.placeholder !== "string"
+          ) {
+            return false;
+          }
+          kinds.add(tt.kind as string);
+        }
+        if (kinds.size !== 3) return false;
       }
       return true;
     }

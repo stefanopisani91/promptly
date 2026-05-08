@@ -61,7 +61,9 @@ const NAME_REGEX = /^[\p{L}\p{N}\s\-']+$/u;
 const NAME_MIN = 2;
 const NAME_MAX = 30;
 const PROJECT_DESCRIPTION_MIN = 10;
-const PROJECT_DESCRIPTION_MAX = 300;
+// Lowered from 300 → 200 (2026-05-09) to keep AI prompts cheap and
+// downstream quotes readable. Existing DB rows are NOT migrated.
+const PROJECT_DESCRIPTION_MAX = 200;
 const DEEP_MOTIVATION_MIN = 15;
 const DEEP_MOTIVATION_MAX = 500;
 const STEP4_THINKING_MS = 1500;

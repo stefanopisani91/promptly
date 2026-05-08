@@ -43,6 +43,14 @@ export interface SparkSessionContext {
   totalSteps: number;
   /** Short topic line so Spark can ground her answer. Falls back to lessonTitle. */
   contextSummary?: string;
+  /**
+   * ≤80-char compressed view of the user's project (mitigation 2,
+   * 2026-05-09). Rendered as an extra line in the session context so
+   * Spark can ground her answer in the user's actual domain without
+   * burning tokens on the full description. Optional — older callers
+   * just don't set it and the session context omits the line.
+   */
+  projectContext?: string | null;
 }
 
 // -----------------------------------------------------------------------------
@@ -711,14 +719,22 @@ They'll remember you not for what you know, but for how you make them feel you'r
 
 export function sparkSessionContextIT(ctx: SparkSessionContext): string {
   const summary = ctx.contextSummary ?? ctx.lessonTitle;
+  const project =
+    ctx.projectContext && ctx.projectContext.trim().length > 0
+      ? `\nProgetto utente: ${ctx.projectContext.trim()}`
+      : "";
   return `CONTESTO DELLA SESSIONE
 Lezione: "${ctx.lessonTitle}" (step ${ctx.stepIndex + 1} di ${ctx.totalSteps})
-Argomento: ${summary}`;
+Argomento: ${summary}${project}`;
 }
 
 export function sparkSessionContextEN(ctx: SparkSessionContext): string {
   const summary = ctx.contextSummary ?? ctx.lessonTitle;
+  const project =
+    ctx.projectContext && ctx.projectContext.trim().length > 0
+      ? `\nLearner project: ${ctx.projectContext.trim()}`
+      : "";
   return `SESSION CONTEXT
 Lesson: "${ctx.lessonTitle}" (step ${ctx.stepIndex + 1} of ${ctx.totalSteps})
-Topic: ${summary}`;
+Topic: ${summary}${project}`;
 }

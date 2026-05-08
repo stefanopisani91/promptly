@@ -21,8 +21,20 @@ export type ProfileGate =
   | { state: "incomplete"; profile: UserProfile }
   | { state: "complete"; profile: UserProfile };
 
+/**
+ * Minimal slice of the profile that the lazy compress backfill needs.
+ * Lives here (not in lib/onboarding/project.ts) so the helper module
+ * stays free of Supabase imports beyond AppSupabaseClient.
+ */
+export interface ProfileBackfillSnapshot {
+  id: string;
+  language: string;
+  project_description: string | null;
+  project_description_compressed: string | null;
+}
+
 const USER_PROFILE_COLUMNS =
-  "id, email, full_name, language, daily_goal, onboarding_completed_at, signup_source, welcome_seen_at, push_prompted_at, ai_eval_prompted_at, total_xp, current_streak, longest_streak, last_activity_date, last_level_up_notified, referral_code, referral_link_activated_at, archetype_key, experience_level, project_clarity, project_description, tools_used, tools_other, preferred_tool, deep_motivation, promises, last_profile_check, glossary_seen, created_at, updated_at";
+  "id, email, full_name, language, daily_goal, onboarding_completed_at, signup_source, welcome_seen_at, push_prompted_at, ai_eval_prompted_at, total_xp, current_streak, longest_streak, last_activity_date, last_level_up_notified, referral_code, referral_link_activated_at, archetype_key, experience_level, project_clarity, project_description, project_description_compressed, tools_used, tools_other, preferred_tool, deep_motivation, promises, last_profile_check, glossary_seen, created_at, updated_at";
 
 export async function getUserProfile(
   supabase: AppSupabaseClient,
@@ -49,6 +61,31 @@ export async function getUserProfile(
   const glossarySeen = Array.isArray(data.glossary_seen)
     ? data.glossary_seen
     : [];
+
+  // Mitigation 2 (2026-05-09) — lazy backfill of the Haiku-compressed
+  // view. Existing users with verbose project descriptions (> 100 chars)
+  // and no compressed value yet trigger a fire-and-forget Haiku call so
+  // their next page load reads the cheap version. Inlined as a dynamic
+  // import to avoid a circular dependency between queries.ts and the
+  // onboarding helper module that imports AppSupabaseClient.
+  if (
+    !data.project_description_compressed &&
+    typeof data.project_description === "string" &&
+    data.project_description.trim().length > 100
+  ) {
+    void import("@/lib/onboarding/project")
+      .then((mod) =>
+        mod.maybeBackfillCompressedProject(supabase, {
+          id: data.id,
+          language: data.language,
+          project_description: data.project_description,
+          project_description_compressed: data.project_description_compressed,
+        }),
+      )
+      .catch(() => {
+        /* silent — next page load retries */
+      });
+  }
 
   return {
     ...data,
@@ -840,6 +877,52 @@ export async function incrementDailyContextAttemptCount(
       user_id: params.userId,
       usage_date: params.date,
       context_attempts_count: newCount,
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: "user_id,usage_date" },
+  );
+  if (writeErr) throw writeErr;
+  return { count: newCount };
+}
+
+// ─── Lesson 4 — Constraints daily attempts counter ─────────────────────
+//
+// Same pattern as the claudemd / context counters above. Migration:
+// supabase/migrations/20260508180000_lesson_constraints_rate_limit.sql.
+
+export async function getDailyConstraintsAttemptCount(
+  supabase: AppSupabaseClient,
+  userId: string,
+  date: string,
+): Promise<number> {
+  const { data, error } = await supabase
+    .from("spark_usage_daily")
+    .select("constraints_attempts_count")
+    .eq("user_id", userId)
+    .eq("usage_date", date)
+    .maybeSingle();
+  if (error) throw error;
+  return data?.constraints_attempts_count ?? 0;
+}
+
+export async function incrementDailyConstraintsAttemptCount(
+  supabase: AppSupabaseClient,
+  params: { userId: string; date: string },
+): Promise<{ count: number }> {
+  const { data: existing, error: readErr } = await supabase
+    .from("spark_usage_daily")
+    .select("constraints_attempts_count")
+    .eq("user_id", params.userId)
+    .eq("usage_date", params.date)
+    .maybeSingle();
+  if (readErr) throw readErr;
+
+  const newCount = (existing?.constraints_attempts_count ?? 0) + 1;
+  const { error: writeErr } = await supabase.from("spark_usage_daily").upsert(
+    {
+      user_id: params.userId,
+      usage_date: params.date,
+      constraints_attempts_count: newCount,
       updated_at: new Date().toISOString(),
     },
     { onConflict: "user_id,usage_date" },

@@ -30,6 +30,7 @@ import {
 } from "@/lib/supabase/queries";
 import { sanitiseToolSlugs, isToolSlug } from "@/lib/onboarding/tools";
 import { generateProfilePromises } from "@/lib/ai/promises";
+import { generateAndStoreCompressedProject } from "@/lib/onboarding/project";
 
 // ─── Anti-abuse for promise generation (Round 8b) ─────────────────────
 //
@@ -102,7 +103,10 @@ async function tryConvertPendingReferral(params: {
 const NAME_REGEX = /^[\p{L}\p{N}\s\-']+$/u;
 const NAME_MAX = 30;
 const NAME_MIN = 2;
-const PROJECT_DESCRIPTION_MAX = 300;
+// Lowered from 300 → 200 (2026-05-09). Mirrors the client-side cap;
+// pre-existing DB rows above the new ceiling are intentionally not
+// migrated — only new inserts/updates go through this validator.
+const PROJECT_DESCRIPTION_MAX = 200;
 const PROJECT_DESCRIPTION_MIN = 10;
 const TOOLS_OTHER_MAX = 100;
 const DEEP_MOTIVATION_MAX = 500;
@@ -580,6 +584,26 @@ export async function completeOnboarding(
     }
   } catch (error) {
     console.error("[welcome-email] threw", error);
+  }
+
+  // Mitigation 2 — eager compress of project_description so the very
+  // first AI call after onboarding (Spark chat / lesson 1 evaluator)
+  // already reads the cheap version. Best-effort: if Haiku is down or
+  // the call fails, the lazy backfill in getUserProfile picks it up
+  // on the next page load. Awaited so the user lands on /dashboard
+  // with the column already populated; ~1-2s of extra latency at the
+  // last redirect, acceptable for the cost saved on every later call.
+  if (projectDescription && projectDescription.length > 0) {
+    try {
+      await generateAndStoreCompressedProject(
+        supabase,
+        user.id,
+        projectDescription,
+        input.language,
+      );
+    } catch (error) {
+      console.error("[onboarding] compress project failed", error);
+    }
   }
 
   return { ok: true };

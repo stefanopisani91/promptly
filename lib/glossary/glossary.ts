@@ -157,6 +157,48 @@ export const GLOSSARY: Record<string, GlossaryTerm> = {
       "A framework is a set of rules and tools that gives you a ready-made structure to build your app. Like Next.js: it tells you «put pages here, APIs here, styles here», saving you a thousand initial decisions. It gives you the skeleton, you add the story.",
     first_lesson: "mindset-03",
   },
+
+  // ─── Lezione 4 ────────────────────────────────────────────────
+  vincoli: {
+    id: "vincoli",
+    label_it: "vincoli",
+    label_en: "constraints",
+    definition_it:
+      "Un vincolo è una frase che dice all'AI cosa NON deve fare. Tipo «non toccare il file X», «non aggiungere dipendenze». È più potente di un comando positivo: una negazione strategica protegge il tuo lavoro mentre l'AI esegue.",
+    definition_en:
+      "A constraint is a sentence that tells AI what NOT to do. Like «don't touch file X», «don't add dependencies». It's more powerful than a positive command: a strategic negation protects your work while the AI executes.",
+    first_lesson: "mindset-04",
+  },
+  schema: {
+    id: "schema",
+    label_it: "schema",
+    label_en: "schema",
+    definition_it:
+      "Lo schema del database è la mappa di come i dati sono organizzati: quali tabelle ci sono, quali colonne, che tipo di valori accettano. Modificarlo è un'azione delicata — sbagli lì e perdi i dati. Per questo è uno dei posti dove i vincoli protettivi servono di più.",
+    definition_en:
+      "A database schema is the map of how data is organised: which tables exist, which columns, what types of values they accept. Modifying it is delicate — get it wrong and you lose data. That's why protective constraints matter most here.",
+    first_lesson: "mindset-04",
+  },
+  refactoring: {
+    id: "refactoring",
+    label_it: "refactoring",
+    label_en: "refactoring",
+    definition_it:
+      "Il refactoring è quando riscrivi codice che già funziona per migliorarne la struttura senza cambiarne il comportamento. Tipo riordinare l'armadio: i vestiti sono gli stessi, ma adesso li trovi. Bel concetto, però è anche il momento dove l'AI fa più danni se non la vincoli.",
+    definition_en:
+      "Refactoring is rewriting code that already works to improve its structure without changing its behaviour. Like tidying a wardrobe: same clothes, but now you can find them. Good concept, but also where AI does the most damage if you don't constrain it.",
+    first_lesson: "mindset-04",
+  },
+  diff: {
+    id: "diff",
+    label_it: "diff",
+    label_en: "diff",
+    definition_it:
+      "Il diff è la differenza tra «com'era prima» e «com'è dopo» quando modifichi del codice. Tipo le modifiche tracciate di Word: vedi cosa è stato aggiunto, tolto, cambiato. Chiedere all'AI di mostrartelo prima di applicare è uno dei vincoli di processo più utili che esistano.",
+    definition_en:
+      "A diff is the difference between «before» and «after» when you modify code. Like Word's tracked changes: you see what was added, removed, changed. Asking AI to show you the diff before applying is one of the most useful process constraints out there.",
+    first_lesson: "mindset-04",
+  },
 };
 
 export function getGlossaryTerm(termId: string): GlossaryTerm | null {

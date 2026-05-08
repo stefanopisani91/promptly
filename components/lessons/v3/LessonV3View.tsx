@@ -53,6 +53,10 @@ import {
   type ContextPromptEditorStrings,
 } from "./steps/ContextPromptEditor";
 import {
+  ConstraintsEditor,
+  type ConstraintsEditorStrings,
+} from "./steps/ConstraintsEditor";
+import {
   GlossaryProvider,
   type GlossaryStrings,
 } from "@/components/glossary/GlossaryProvider";
@@ -77,6 +81,7 @@ export interface LessonV3ViewStrings {
   interactiveStep: InteractiveStepStrings;
   claudemdEditor: ClaudemdEditorStrings;
   contextEditor: ContextPromptEditorStrings;
+  constraintsEditor: ConstraintsEditorStrings;
   chat: import("./SparkChat").SparkChatStrings;
   // Glossario Vivo — popover chrome strings + the prefill template
   // used when the user clicks "approfondisci" inside a term popover.
@@ -473,6 +478,30 @@ function renderStep(step: LessonV3Step, ctx: RenderContext) {
             }
             onAdvance={ctx.goNext}
             strings={ctx.strings.contextEditor}
+          />
+        );
+      }
+      if (step.widget === "constraints_editor") {
+        return (
+          <ConstraintsEditor
+            step={step}
+            userId={ctx.userId}
+            state={
+              ctx.stepState[step.id] as
+                | {
+                    result?: InteractiveStepResult;
+                    editorTexts?: Record<string, string>;
+                  }
+                | undefined
+            }
+            onComplete={(result, extras) =>
+              ctx.updateStepState(step.id, {
+                result,
+                editorTexts: extras.editorTexts,
+              })
+            }
+            onAdvance={ctx.goNext}
+            strings={ctx.strings.constraintsEditor}
           />
         );
       }

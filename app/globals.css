@@ -875,6 +875,63 @@ h6 {
   animation: glossary-backdrop-in 200ms ease-out both;
 }
 
+/* ─────────────────────────────────────────────────────────────
+   LESSON 4 — Database disaster mockup
+   "Broken" entrance: window appears → 🔥 emoji explodes onto the
+   active row → error banner slides in → small shake to drive home
+   the "ouch". When the user lands an excellent verdict, the parent
+   re-renders with state="repaired" — dedicated transitions inside
+   the component handle the dissolve back to green.
+───────────────────────────────────────────────────────────── */
+@keyframes db-disaster-shake {
+  0%, 100% { transform: translateX(0); }
+  20%      { transform: translateX(-3px); }
+  40%      { transform: translateX(3px); }
+  60%      { transform: translateX(-2px); }
+  80%      { transform: translateX(2px); }
+}
+.db-disaster-shake {
+  animation: db-disaster-shake 600ms ease-in-out 600ms 2 both;
+  transform-origin: center;
+}
+
+/* The 🔥 next to the active row pulses to keep drawing the eye. */
+@keyframes db-disaster-fire-pulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.2); }
+}
+.db-disaster-fire {
+  display: inline-block;
+  animation: db-disaster-fire-pulse 1.4s ease-in-out infinite;
+}
+
+/* The error icon at the top of the right pane has a slow heartbeat. */
+@keyframes db-disaster-alert-pulse {
+  0%, 100% { opacity: 0.85; }
+  50%      { opacity: 1; }
+}
+.db-disaster-alert {
+  animation: db-disaster-alert-pulse 1.6s ease-in-out infinite;
+}
+
+/* Banner slides in from above + fades. Plays once per mount. */
+@keyframes db-disaster-banner-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.db-disaster-banner {
+  animation: db-disaster-banner-in 360ms ease-out 200ms both;
+}
+
+/* Metadata row fades after the banner — staggered to feel sequential. */
+@keyframes db-disaster-meta-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.db-disaster-meta {
+  animation: db-disaster-meta-in 360ms ease-out 500ms both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .step-slide-fwd,
   .step-slide-back,
@@ -894,6 +951,11 @@ h6 {
   .glossary-popover-desktop,
   .glossary-bottom-sheet,
   .glossary-backdrop,
+  .db-disaster-shake,
+  .db-disaster-fire,
+  .db-disaster-alert,
+  .db-disaster-banner,
+  .db-disaster-meta,
   .option-card-idle-pulse,
   .option-card-bounce-in,
   .accordion-section-idle-pulse {

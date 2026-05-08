@@ -7,7 +7,10 @@ import { cn } from "@/lib/utils";
 import { PrimaryCta } from "../PrimaryCta";
 import { SparkLine, SparkMicro } from "../SparkLine";
 
-const PROJECT_DESCRIPTION_MAX = 300;
+// Lowered from 300 → 200 (2026-05-09) to keep AI prompts cheap and
+// quotes readable downstream. Pre-existing rows in the DB with values
+// > 200 are intentionally NOT migrated — only new inserts are bounded.
+const PROJECT_DESCRIPTION_MAX = 200;
 const PROJECT_DESCRIPTION_MIN = 10;
 
 interface Props {

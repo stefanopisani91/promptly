@@ -141,6 +141,11 @@ export interface UserProfile {
   // least once. Drives the "already seen" attenuated style on subsequent
   // occurrences. Migration 20260508160000_glossary_seen.sql.
   glossary_seen: string[];
+  // Mitigation 2 (2026-05-09) — ≤80-char compressed view of
+  // project_description, generated once via Haiku and reused in every
+  // frequent AI call (Spark chat, evaluator system prompts). Null until
+  // generated. Migration 20260509120000_project_description_compressed.sql.
+  project_description_compressed: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -539,7 +544,8 @@ export interface ChoiceStep extends StepBase {
 export type InteractiveWidgetType =
   | "lucia_prompt_loop"
   | "claudemd_editor"
-  | "context_prompt_editor";
+  | "context_prompt_editor"
+  | "constraints_editor";
 
 export interface ClaudemdProjectOption {
   // Stable key used by the evaluator + saved in stepState.
@@ -617,6 +623,45 @@ export interface ContextPromptEditorConfig {
   };
 }
 
+// ─── Lesson 4 — Constraints editor (Lezione4_Blueprint.md §13) ────────
+//
+// Three labelled textareas (Protective / Process / Style) above a
+// "DatabaseDisasterMockup" that reacts to the user's verdict. Same XP
+// shape as the context editor (5 buckets) but the rubric scores three
+// dimensions × 33 + 1 bonus = 100. Each textarea has its own char budget;
+// the editor enforces a minimum per-textarea before submission unlocks.
+
+export type ConstraintsKind = "protective" | "process" | "style";
+
+export interface ConstraintsTextareaSpec {
+  kind: ConstraintsKind;
+  // Glyph rendered before the label (single character, can be an emoji).
+  icon: string;
+  label: string;
+  // Hint shown faded under the label (not part of the user's text).
+  description: string;
+  // Placeholder for the textarea itself (the example constraint).
+  placeholder: string;
+}
+
+export interface ConstraintsEditorConfig {
+  textareas: ConstraintsTextareaSpec[];
+  // Minimum char count required PER textarea before submit unlocks.
+  min_chars_per_textarea: number;
+  // Cap for each textarea independently. The composed payload sent to
+  // the rubric is bounded by 3 × max_chars_per_textarea.
+  max_chars_per_textarea: number;
+  // XP awarded by feedback case. Mirrors the context editor 5-bucket
+  // shape; `perfect` covers the score = 100 bonus path.
+  xp_by_case: {
+    incomplete: number;
+    missing_one: number;
+    good: number;
+    excellent: number;
+    perfect: number;
+  };
+}
+
 export interface InteractiveStep extends StepBase {
   type: "interactive";
   widget: InteractiveWidgetType;
@@ -637,6 +682,8 @@ export interface InteractiveStep extends StepBase {
   claudemd_config?: ClaudemdEditorConfig;
   // Lesson 3 — required when widget === "context_prompt_editor".
   context_config?: ContextPromptEditorConfig;
+  // Lesson 4 — required when widget === "constraints_editor".
+  constraints_config?: ConstraintsEditorConfig;
 }
 
 export interface ArchetypeRevealConfig {

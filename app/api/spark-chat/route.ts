@@ -170,15 +170,35 @@ export async function POST(request: Request) {
   }
 
   // Pick the system prompt language from the profile when available, with a
-  // fallback to italian (the default profile language).
+  // fallback to italian (the default profile language). We also pull the
+  // compressed project context (mitigation 2, 2026-05-09) so Spark can
+  // ground her answers in the user's actual domain without paying for
+  // the full project_description on every call.
   const { data: profileRow } = await supabase
     .from("users")
-    .select("language")
+    .select(
+      "language, project_description, project_description_compressed",
+    )
     .eq("id", user.id)
     .maybeSingle();
   const lang: Lang = isLang(profileRow?.language)
     ? (profileRow!.language as Lang)
     : "it";
+
+  // Prefer the compressed view; fall back to a deterministic 80-char
+  // truncate of the raw when compressed is null (legacy users / not
+  // yet back-filled). Inlined to avoid loading the whole UserProfile
+  // shape just to call the helper.
+  const compressed = profileRow?.project_description_compressed?.trim();
+  const rawProject = profileRow?.project_description?.trim();
+  const projectContext =
+    compressed && compressed.length > 0
+      ? compressed
+      : rawProject
+      ? rawProject.length <= 80
+        ? rawProject
+        : rawProject.slice(0, 80).trimEnd() + "…"
+      : null;
 
   const persona = lang === "en" ? SPARK_PERSONA_EN : SPARK_PERSONA_IT;
   const sessionContext = (
@@ -191,6 +211,7 @@ export async function POST(request: Request) {
       typeof body.contextSummary === "string"
         ? body.contextSummary
         : undefined,
+    projectContext,
   });
 
   const result = await requestSparkReply({

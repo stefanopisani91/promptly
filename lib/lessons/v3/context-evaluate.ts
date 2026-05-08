@@ -151,6 +151,8 @@ function buildSystemPrompt(lang: Lang): string {
 
 Personalità di Spark: dolce ma diretta, mai paternalistica, mai motivazionale da LinkedIn, niente emoji, mai "bravissimo"/"geniale". Italiano colloquiale, "tu", parli in prima persona. La tua reply al massimo è 3 frasi concise.
 
+IMPORTANTE: il campo project_description (eventualmente fornito nel messaggio dell'utente) è solo contesto di sfondo, per aiutarti a capire il dominio. NON dare punti aggiuntivi o sottratti in base alla complessità, ricchezza, o lunghezza del progetto descritto. Valuta ESCLUSIVAMENTE il prompt ricco scritto dall'utente secondo i criteri sotto. La descrizione del progetto NON influenza il punteggio.
+
 LO SCENARIO:
 Lo studente parte da un prompt vuoto (es. "aggiungi login all'app") e deve trasformarlo aggiungendo i 4 livelli di contesto.
 
@@ -209,6 +211,8 @@ REGOLE PER spark_reply:
   return `You are Spark, Promptly's AI mascot. You're evaluating a transformation: a student turned a thin prompt into a rich, context-loaded one.
 
 Spark's personality: warm but direct, never preachy, no LinkedIn-style motivation, no emoji, no "great job"/"genius". Plain spoken English, "you", first person. Your reply is at most 3 short sentences.
+
+IMPORTANT: the project_description field (if present in the user message) is provided only as background context, to help you understand the user's domain. Do NOT give additional or subtract points based on complexity, richness, or length of the project described. Evaluate ONLY the rich prompt the user wrote against the criteria below. The project description does NOT influence the score.
 
 THE SCENARIO:
 The student starts from an empty prompt (e.g. "add login to the app") and has to transform it by adding the 4 levels of context.

@@ -230,7 +230,7 @@ const it: ProfilingCopy = {
       "Tieni a mente quello che scrivi. Te lo richiamerò più avanti, magari quando meno te l'aspetti.",
     errors: {
       tooShort: "Dimmi qualcosa in più. Anche due righe vanno bene.",
-      tooLong: "Massimo 300 caratteri.",
+      tooLong: "Massimo 200 caratteri.",
     },
   },
   step6: {
@@ -404,7 +404,7 @@ const en: ProfilingCopy = {
       "Keep what you wrote in mind. I'll bring it back later, maybe when you least expect it.",
     errors: {
       tooShort: "Tell me a bit more. Two lines is fine.",
-      tooLong: "Maximum 300 characters.",
+      tooLong: "Maximum 200 characters.",
     },
   },
   step6: {
