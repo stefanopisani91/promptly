@@ -313,6 +313,7 @@ export function LessonV3View({
       {chatOpen && (
         <SparkChat
           lessonId={lesson.id}
+          userId={userId}
           pathSlug={lesson.path_slug}
           lessonTitle={lesson.title}
           stepIndex={stepIndex}

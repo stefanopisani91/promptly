@@ -41,6 +41,9 @@ interface ChatMessage {
 
 interface Props {
   lessonId: string;
+  // Authenticated user id, scoping the local chat-history cache so two
+  // users on the same browser don't see each other's transcripts.
+  userId: string;
   lessonTitle: string;
   stepIndex: number;
   totalSteps?: number;
@@ -54,6 +57,7 @@ interface Props {
 
 export function SparkChat({
   lessonId,
+  userId,
   lessonTitle,
   stepIndex,
   totalSteps = 14,
@@ -64,7 +68,29 @@ export function SparkChat({
   onClose,
   onMessageSent,
 }: Props) {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  // Per-user, per-lesson key. The remaining counter is server-authoritative
+  // (incrementSparkChatCount) so transcript replay can't cheat the quota —
+  // this cache is purely UX so the user sees their history when reopening
+  // the chat in the same browser session.
+  const historyStorageKey = `spark-chat:${userId}:${lessonId}`;
+  const [messages, setMessages] = useState<ChatMessage[]>(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      const cached = window.sessionStorage.getItem(historyStorageKey);
+      if (!cached) return [];
+      const parsed = JSON.parse(cached);
+      if (!Array.isArray(parsed)) return [];
+      return parsed.filter(
+        (m): m is ChatMessage =>
+          typeof m === "object" &&
+          m !== null &&
+          (m.role === "user" || m.role === "spark") &&
+          typeof m.content === "string",
+      );
+    } catch {
+      return [];
+    }
+  });
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -116,6 +142,20 @@ export function SparkChat({
       behavior: "smooth",
     });
   }, [messages.length, sending]);
+
+  // Persist the in-memory transcript so closing and reopening the chat
+  // (same browser session) shows the previous turns. sessionStorage —
+  // not localStorage — so it clears with the tab. The historyStorageKey
+  // is user+lesson-scoped to avoid the cross-user leak we fixed earlier
+  // for the CLAUDE.md draft.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      window.sessionStorage.setItem(historyStorageKey, JSON.stringify(messages));
+    } catch {
+      /* sessionStorage may be disabled (private mode) — silent skip */
+    }
+  }, [messages, historyStorageKey]);
 
   async function send() {
     if (sending || draft.trim().length < 2 || remaining <= 0) return;
@@ -187,8 +227,12 @@ export function SparkChat({
       role="dialog"
       aria-modal="true"
       aria-label={strings.modalTitle}
-      className="fixed inset-0 z-70 flex items-start justify-center px-4"
-      style={{ paddingTop: "72px", zIndex: 70 }}
+      // Top offset is tight on mobile so the panel can use the full
+      // visualViewport height — when the iOS keyboard opens we drop to
+      // ~280-350px of usable space and a 72px top padding crushed the
+      // body to zero. Desktop keeps the comfortable 72px breathing room.
+      className="fixed inset-0 z-70 flex items-start justify-center px-4 pt-4 sm:pt-[72px]"
+      style={{ zIndex: 70 }}
     >
       {/* ── Backdrop ── */}
       <button
@@ -201,17 +245,21 @@ export function SparkChat({
 
       {/* ── Panel ── */}
       {/* Height precedence:
-          - vvHeight present (modern browsers): use Math.min(580, vv-88) so
-            the panel shrinks when the iOS virtual keyboard opens.
+          - vvHeight present (modern browsers): use the full visualViewport
+            height minus a tiny safety margin (32px) so the iOS keyboard
+            can open without crushing the messages area to 0. Previously
+            we subtracted 88px which, combined with a 72px top padding,
+            left only ~190px of usable panel on a keyboard-open viewport
+            and the chat history disappeared entirely.
           - vvHeight null (SSR / older browsers): CSS-only fallback to
-            100dvh, which still handles Safari's URL bar correctly. */}
+            100dvh, which handles Safari's URL bar correctly. */}
       <div
         className="spark-chat-panel relative flex w-full max-w-md flex-col border border-border bg-surface shadow-2xl"
         style={{
           height:
             vvHeight !== null
-              ? `${Math.min(580, vvHeight - 88)}px`
-              : "min(580px, calc(100dvh - 88px))",
+              ? `${Math.min(580, vvHeight - 32)}px`
+              : "min(580px, calc(100dvh - 32px))",
           borderRadius: "28px",
         }}
       >
@@ -260,10 +308,14 @@ export function SparkChat({
             shrink below its content height, so a long Spark reply pushes
             the header and input out of the panel and breaks all clicks.
             min-h-0 lets flex-1 actually shrink, letting overflow-y-auto
-            kick in and produce the expected internal scroll. */}
+            kick in and produce the expected internal scroll.
+            We also enforce a minimum visible height on small viewports
+            (mobile, keyboard open) so the chat history is always at
+            least a few lines tall — never the zero-px collapse that
+            users reported on production. */}
         <div
           ref={scrollRef}
-          className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-4 py-4 sm:px-5"
+          className="flex min-h-[120px] flex-1 flex-col gap-4 overflow-y-auto px-4 py-4 sm:min-h-0 sm:px-5"
         >
           {isEmpty && isExhausted ? (
             /* Quota esaurita senza storico — nessuna chat da mostrare */
