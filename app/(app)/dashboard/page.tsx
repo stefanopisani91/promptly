@@ -20,7 +20,6 @@ import { ContinueCard } from "@/components/dashboard/ContinueCard";
 import { DailyGoalCard } from "@/components/dashboard/DailyGoalCard";
 import type { RecentLessonItem } from "@/components/dashboard/RecentLessonsList";
 import { SparkCompanionCard } from "@/components/dashboard/SparkCompanionCard";
-import { WelcomeCard } from "@/components/dashboard/WelcomeCard";
 import { LevelUpModal } from "@/components/promptly/LevelUpModal";
 import { ReferralModalProvider } from "@/components/promptly/ReferralModalProvider";
 import { LearningMap } from "@/components/promptly/map/LearningMap";
@@ -93,7 +92,6 @@ export default async function DashboardPage() {
   ]);
   const referralUrl = getReferralUrl(referralCode, lang);
 
-  const showWelcome = profile.welcome_seen_at === null;
   const displayName =
     (profile.full_name ?? "").trim() || user.email!.split("@")[0];
 
@@ -190,16 +188,6 @@ export default async function DashboardPage() {
       }}
     >
       <main className="flex flex-1 flex-col gap-6 py-8 sm:py-12">
-        {showWelcome && (
-          <div className="mx-auto w-full max-w-3xl px-4 sm:px-6">
-            <WelcomeCard
-              title={authCopy.welcomeCard.title(displayName)}
-              sub={authCopy.welcomeCard.sub}
-              cta={authCopy.welcomeCard.cta}
-              submitting={authCopy.welcomeCard.submitting}
-            />
-          </div>
-        )}
         {showLevelUp && (
           <LevelUpModal
             fromLevel={profile.last_level_up_notified}
