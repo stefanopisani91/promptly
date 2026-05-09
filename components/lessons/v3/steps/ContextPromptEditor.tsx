@@ -134,6 +134,10 @@ export function ContextPromptEditor({
   const config = step.context_config!;
   const persisted = state?.result;
   const finishedRef = useRef(Boolean(persisted));
+  // Synchronous lock against double-submit. Same pattern as the Lucia
+  // widget fix on 2026-05-09 — `evaluating` state propagates async, so
+  // 3 fast clicks could all pass the guard and burn 3 attempts at once.
+  const submitInFlightRef = useRef(false);
 
   const [selectedScenario, setSelectedScenario] = useState<string | null>(
     state?.selectedScenario ?? null,
@@ -229,7 +233,9 @@ export function ContextPromptEditor({
   }, [editorText, sessionStorageKey]);
 
   const handleSubmit = useCallback(async () => {
+    if (submitInFlightRef.current) return;
     if (submitDisabled || !selectedScenarioData) return;
+    submitInFlightRef.current = true;
     setEvaluating(true);
     setError(null);
     try {
@@ -297,6 +303,7 @@ export function ContextPromptEditor({
       setError(strings.networkError);
     } finally {
       setEvaluating(false);
+      submitInFlightRef.current = false;
     }
   }, [
     submitDisabled,

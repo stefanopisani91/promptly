@@ -142,6 +142,14 @@ export interface LessonsCopy {
         secondAttemptHintImproved: string;
         thirdAttemptDirect: string;
       };
+      // Localised labels for the 4 dimension bars shown under Spark's
+      // line in Lesson 1's Lucia widget. Same keys as LuciaEvaluation.
+      dimensionLabels: {
+        chiarezza: string;
+        contesto: string;
+        obiettivo: string;
+        protezione: string;
+      };
     };
     // Lesson 2 — CLAUDE.md editor widget.
     claudemdEditor: {
@@ -565,6 +573,12 @@ const it: LessonsCopy = {
         secondAttemptHintImproved: "Buon lavoro. Stai aggiungendo specificità. Ora il prompt è più completo. Manca ancora qualcosa.",
         thirdAttemptDirect: "Ultimo tentativo. Te lo dico chiaro: ci sono tre problemi sul sito di Lucia. Foto. Titolo. Bottone. Adesso che li sai tutti, scrivimi un prompt completo per sistemarli.",
       },
+      dimensionLabels: {
+        chiarezza: "chiarezza",
+        contesto: "contesto",
+        obiettivo: "obiettivo",
+        protezione: "protezione",
+      },
     },
     claudemdEditor: {
       intro: "Scegli uno dei tre progetti, poi scrivi il tuo CLAUDE.md. Lo leggo io e ti dico cosa funziona e cosa manca.",
@@ -940,6 +954,12 @@ const en: LessonsCopy = {
         secondAttemptHintPhoto: "Better. This time you gave me something concrete. Fixed. Keep going — look at the other elements on the page.",
         secondAttemptHintImproved: "Good. You're adding specificity. The prompt is more complete now. Still missing one thing.",
         thirdAttemptDirect: "Last try. I'll be straight: there are three problems on Lucia's site. Photo. Title. Button. Now that you know all three, write me a complete prompt to fix them.",
+      },
+      dimensionLabels: {
+        chiarezza: "clarity",
+        contesto: "context",
+        obiettivo: "goal",
+        protezione: "guardrails",
       },
     },
     claudemdEditor: {

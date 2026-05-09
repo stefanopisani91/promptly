@@ -12,6 +12,133 @@
 
 ---
 
+## 🔥 V3 — Regole NON NEGOZIABILI sui quick win (9 May 2026)
+
+Queste regole valgono per **tutti** i widget interattivi V3 (i quattro
+"quick win" delle lezioni 1, 2, 3, 4 — Lucia / Claudemd / Context /
+Constraints — e ogni futuro widget che chieda all'utente di scrivere
+testo per essere valutato dall'AI).
+
+### 1. ⚠️ PERSISTENZA DEL TESTO TRA TENTATIVI — REGOLA MASTER
+
+> **Il testo che l'utente ha inserito al primo tentativo NON DEVE
+> ESSERE CANCELLATO dopo il submit.** L'utente deve poterlo correggere
+> e re-inviarlo, non riscriverlo da capo.
+
+**Perché conta:**
+- Il quick win dura 3 tentativi. Se cancelliamo il testo dopo ogni
+  submit, l'utente che ha scritto un prompt mediocre deve riscriverlo
+  da zero per migliorarlo. È demotivante e cancella la lezione
+  pedagogica del "ho già fatto la metà del lavoro, mi manca solo
+  questo pezzo".
+- Tra il primo submit e il secondo, Spark dà un feedback specifico
+  ("ti manca il livello CODICE", "il vincolo di processo è debole",
+  ecc.). Quel feedback ha senso SOLO se l'utente vede ancora il suo
+  testo originale e può aggiungere/modificare. Cancellare il testo
+  rende il feedback orfano.
+
+**Regola tecnica (per chi scrive widget nuovi):**
+- Il `useState` della textarea/editor **non viene resettato** nel
+  blocco `finally` del submit handler. Mai `setDraft("")` o equivalente.
+- La persistenza si estende anche oltre la sessione: usa
+  `sessionStorage` con chiave `<widget>:<userId>:<stepId>` per
+  proteggere il testo da refresh/navigazione, e idrata da
+  `state?.editorText` (passato dal parent attraverso lo `stepState`)
+  al mount per i ritorni cross-session. Tre layer in cascata:
+  sessionStorage → persistedState → empty.
+- Se il widget ha più textarea (es. Constraints con i 3 vincoli o
+  Claudemd con le 4 sezioni), ognuna persiste indipendentemente.
+  L'autosave a sessionStorage scrive l'oggetto intero ad ogni
+  keystroke (debounced via `useEffect`).
+
+**Stato attuale (9 May 2026):**
+- ✅ Lucia (lez 1): fix applicato — `setDraft("")` rimosso dal finally
+- ✅ Claudemd (lez 2): già conforme, sessionStorage + state hydration
+- ✅ Context (lez 3): già conforme, idem
+- ✅ Constraints (lez 4): già conforme, idem
+
+### 2. Lock anti-doppio-submit (sincrono)
+
+Lo state React `evaluating` aggiorna in modo asincrono. Tre click
+rapidi sul bottone "Invia" possono passare il guard
+`if (evaluating || ...) return` tutti e tre prima che
+`setEvaluating(true)` propaghi → tre tentativi bruciati in un colpo
+solo (bug osservato sul widget Lucia il 9 May 2026).
+
+**Regola tecnica:**
+- Aggiungi un `submitInFlightRef = useRef(false)` come **lock
+  sincrono** parallelo allo state.
+- Il guard del submit deve controllare il ref PRIMA dello state:
+  ```ts
+  if (submitInFlightRef.current) return;
+  if (evaluating || ...) return;
+  submitInFlightRef.current = true;
+  setEvaluating(true);
+  ```
+- Rilascia il ref nel `finally`:
+  ```ts
+  } finally {
+    setEvaluating(false);
+    submitInFlightRef.current = false;
+  }
+  ```
+
+### 3. Persistenza della reazione AI tra rientri nello step
+
+Quando l'utente esce dallo step (clicca "Avanti") e torna indietro,
+deve rivedere **la reazione esatta** che Spark gli aveva dato, non
+una reazione ricostruita band-based che potrebbe essere diversa
+(rischio: la mappatura band → reaction è lossy).
+
+**Regola tecnica:**
+- Lo `stepState` deve persistere oltre al `result` anche
+  `lastReaction: string` e — se il widget mostra dimension bars —
+  `lastEvaluation: <ShapeAI>` con i punteggi grezzi.
+- Al mount, idrata `reaction` e `evaluation` da `state?.lastReaction`
+  e `state?.lastEvaluation`.
+- `handleFinalize` salva sempre l'ultimo snapshot (non gated da
+  `finishedRef`) così retry su rientro aggiornano correttamente lo
+  stepState.
+
+### 4. Sblocco textarea su rientro (consente retry)
+
+Se l'utente clicca "Continua" dopo il primo tentativo, sul rientro
+NON deve trovare la textarea bloccata. Finché ha tentativi residui
+(`!won && !exhausted`), può continuare a provare.
+
+**Regola tecnica:**
+- Il gate del rendering della textarea deve essere `!won && !exhausted`,
+  **non** `!won && !exhausted && !persisted`. La presenza di un risultato
+  persistito non blocca i tentativi residui.
+- ⚠️ `won` deve riflettere la **vera vittoria**, non un segnale
+  parziale di progresso. Se il widget ha un concetto di "obiettivo
+  raggiunto" (Lucia: 3 bug menzionati) E un concetto di "qualità del
+  prompt" (score AI), entrambe le condizioni devono essere vere
+  perché `won = true`. Esempio Lucia: `won = bugs=3 && bestScore ≥ 85`,
+  non solo `bugs=3` — altrimenti un utente che ha solo elencato i bug
+  in un prompt vago si ritrova la textarea bloccata mentre Spark gli
+  sta dicendo "riformula meglio" (bug osservato 2026-05-09).
+  La soglia di score per `won` deve coincidere con quella di
+  `victory` in `handleFinalize` e con la reazione `allBugsHighScore`
+  in `pickReaction` — un'unica fonte di verità.
+
+### 5. Bias clause su `project_description` nei system prompt valutatori
+
+Tutti i valutatori AI dei quick win ricevono `project_description` (o
+la sua versione compressa) come contesto. Per evitare che il rubric
+gonfi il punteggio in base alla "ricchezza" del progetto, ogni system
+prompt valutatore DEVE includere la clausola:
+
+> "IMPORTANTE: il campo project_description è solo contesto di sfondo.
+> NON dare punti aggiuntivi o sottratti in base alla complessità,
+> ricchezza, o lunghezza del progetto descritto. Valuta ESCLUSIVAMENTE
+> [il prompt/CLAUDE.md/i 3 vincoli/...] secondo i criteri sotto."
+
+Posizione: subito dopo l'identità di Spark, prima dei criteri
+numerici. IT + EN.
+
+---
+
 ## ⚠️ V2 — Cambio di rotta (2 May 2026)
 
 A partire da maggio 2026 il formato delle lezioni Path 1-2 cambia in modo

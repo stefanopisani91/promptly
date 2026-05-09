@@ -48,6 +48,15 @@ export interface InteractiveStepStrings {
     secondAttemptHintImproved: string;
     thirdAttemptDirect: string;
   };
+  // Localised labels for the 4 dimension bars (chiarezza / contesto /
+  // obiettivo / protezione). Same IT/EN word in most cases — caller
+  // resolves them from the locale.
+  dimensionLabels: {
+    chiarezza: string;
+    contesto: string;
+    obiettivo: string;
+    protezione: string;
+  };
   homepageCopy: import("@/lib/landing-demo/types").LuciaDemoCopy["homepage"];
   consoleCopy: import("@/lib/landing-demo/types").LuciaDemoCopy["console"];
   // Mobile-only tab labels — desktop renders both panels side by side.
@@ -72,9 +81,22 @@ interface Props {
     | {
         result?: InteractiveStepResult;
         finalFixed?: FixedBugs;
+        // Persisted from the most recent submit so the Spark line + the
+        // 4 dimension bars survive navigation/reload (fix May 2026 —
+        // before this, deriveReactionFromResult lossily mapped band →
+        // reaction and could silently flip the line on return).
+        lastReaction?: string;
+        lastEvaluation?: LuciaEvaluation;
       }
     | undefined;
-  onComplete: (result: InteractiveStepResult, finalFixed: FixedBugs) => void;
+  onComplete: (
+    result: InteractiveStepResult,
+    extras: {
+      finalFixed: FixedBugs;
+      lastReaction: string | null;
+      lastEvaluation: LuciaEvaluation | null;
+    },
+  ) => void;
   // Called after the user clicks the final "Continua" button. The container
   // moves to the next step. Separated from onComplete so that re-entering
   // an already-finalised step still advances on click instead of stalling
@@ -91,29 +113,58 @@ export function InteractiveStep({
 }: Props) {
   const persisted = state?.result;
   const persistedFixed = state?.finalFixed ?? NO_BUGS_FIXED;
+  const persistedReaction = state?.lastReaction ?? null;
+  const persistedEvaluation = state?.lastEvaluation ?? null;
 
   const [draft, setDraft] = useState("");
   const [attemptCount, setAttemptCount] = useState(persisted?.attempts ?? 0);
   const [evaluating, setEvaluating] = useState(false);
   const [bestScore, setBestScore] = useState(persisted?.bestScore ?? 0);
   const [fixedBugs, setFixedBugs] = useState<FixedBugs>(persistedFixed);
-  const [evaluation, setEvaluation] = useState<LuciaEvaluation | null>(null);
-  const [reaction, setReaction] = useState<string | null>(null);
+  const [evaluation, setEvaluation] = useState<LuciaEvaluation | null>(
+    persistedEvaluation,
+  );
+  const [reaction, setReaction] = useState<string | null>(persistedReaction);
   const [showFireworks, setShowFireworks] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const finishedRef = useRef(Boolean(persisted));
+  // Synchronous lock against double-submit. `evaluating` (state) updates
+  // asynchronously, so 3 rapid clicks could all pass the early-return
+  // guard, fire 3 API calls, and increment attempts 3× in a single
+  // intent (real bug observed on 2026-05-09 — user burned 3 attempts in
+  // one shot). The ref flips true synchronously inside the click handler
+  // so subsequent clicks short-circuit before reaching the API call.
+  const submitInFlightRef = useRef(false);
 
   const exhausted = attemptCount >= MAX_LESSON_ATTEMPTS;
-  const won = fixedBugs.foto && fixedBugs.overflow && fixedBugs.bottone;
+  // "Won" means TRUE victory — all 3 bugs fixed AND a strong prompt
+  // (score ≥ 85). Same threshold as `victory` in handleFinalize and as
+  // the `r.allBugsHighScore` reaction in pickReaction. Without the
+  // score gate, a user who simply listed the 3 bugs in a low-quality
+  // prompt would still get the "celebrate + lock textarea" treatment
+  // even though Spark explicitly told them to retry — bug observed
+  // 2026-05-09 (bestScore 69, all 3 bugs mentioned, textarea locked).
+  const won =
+    fixedBugs.foto &&
+    fixedBugs.overflow &&
+    fixedBugs.bottone &&
+    bestScore >= 85;
 
-  // Spark's bubble line. `reaction` is in-memory only — when the user
-  // returns to a finalised step we fall back to a line derived from the
-  // persisted result (band-based) so the panel never reads as empty.
-  const sparkLine = reaction ?? deriveReactionFromResult(persisted, strings) ??
+  // Spark's bubble line. `reaction` is now hydrated from stepState on
+  // mount, so a returning user reads the EXACT line they saw last time
+  // (no lossy band-based reconstruction). The deriveReactionFromResult
+  // path only fires for legacy persisted state written before the May
+  // 2026 fix added lastReaction.
+  const sparkLine =
+    reaction ??
+    deriveReactionFromResult(persisted, strings) ??
     strings.awaitingPrompt;
 
   const submit = useCallback(async () => {
+    // Synchronous lock first — see submitInFlightRef declaration above.
+    if (submitInFlightRef.current) return;
     if (evaluating || exhausted || draft.trim().length < 4) return;
+    submitInFlightRef.current = true;
     setEvaluating(true);
     setError(null);
     try {
@@ -165,7 +216,13 @@ export function InteractiveStep({
       setError(strings.networkError);
     } finally {
       setEvaluating(false);
-      setDraft("");
+      // Intentionally NOT clearing the draft (rule "regola di
+      // persistenza del testo tra tentativi" in LESSON-GUIDELINES.md
+      // §V3): the user's prompt stays in the textarea between attempts
+      // so they can edit and re-submit instead of retyping. Same shape
+      // as Claudemd / Context / Constraints editors, which already
+      // preserve their state via useState + sessionStorage.
+      submitInFlightRef.current = false;
     }
   }, [
     evaluating,
@@ -177,35 +234,32 @@ export function InteractiveStep({
   ]);
 
   // When the user has reached the end (won, exhausted attempts, or both),
-  // surface the final CTA. Click does two things: persist the result the
-  // first time around (idempotent on subsequent visits via finishedRef)
-  // AND always advance to the next step — so a returning user who already
-  // finalised the step doesn't stall on a no-op button.
+  // surface the final CTA. Click always persists the latest snapshot
+  // (covers retries-on-return that wouldn't otherwise update lastReaction
+  // / lastEvaluation in stepState) and advances to the next step.
   function handleFinalize() {
-    if (!finishedRef.current) {
-      finishedRef.current = true;
-      const fixedFlags = [
-        fixedBugs.foto,
-        fixedBugs.overflow,
-        fixedBugs.bottone,
-      ];
-      const fixedCount = fixedFlags.filter(Boolean).length;
-      const band = bandFor(bestScore, fixedCount);
-      // xp_by_band is required for the lucia_prompt_loop widget — the loader
-      // rejects a JSON without it. The optional type is a courtesy to the
-      // claudemd_editor widget, which uses xp_by_case instead.
-      const xpEarned = step.xp_by_band?.[band] ?? 0;
-      onComplete(
-        {
-          attempts: attemptCount,
-          bestScore,
-          victory: fixedCount === 3 && bestScore >= 85,
-          band,
-          xpEarned,
-        },
-        fixedBugs,
-      );
-    }
+    const fixedFlags = [fixedBugs.foto, fixedBugs.overflow, fixedBugs.bottone];
+    const fixedCount = fixedFlags.filter(Boolean).length;
+    const band = bandFor(bestScore, fixedCount);
+    // xp_by_band is required for the lucia_prompt_loop widget — the loader
+    // rejects a JSON without it. The optional type is a courtesy to the
+    // claudemd_editor widget, which uses xp_by_case instead.
+    const xpEarned = step.xp_by_band?.[band] ?? 0;
+    onComplete(
+      {
+        attempts: attemptCount,
+        bestScore,
+        victory: fixedCount === 3 && bestScore >= 85,
+        band,
+        xpEarned,
+      },
+      {
+        finalFixed: fixedBugs,
+        lastReaction: reaction,
+        lastEvaluation: evaluation,
+      },
+    );
+    finishedRef.current = true;
     onAdvance();
   }
 
@@ -312,14 +366,23 @@ export function InteractiveStep({
                 <p className="text-sm italic leading-relaxed text-text-primary">
                   {sparkLine}
                 </p>
+                {evaluation && (
+                  <DimensionBars
+                    evaluation={evaluation}
+                    labels={strings.dimensionLabels}
+                  />
+                )}
               </div>
             </div>
 
-            {/* Textarea + submit are visible until the user runs out of
-                attempts, wins, or has finalised the step in a previous
-                session. Otherwise both the textarea and the "Continua"
-                CTA can sit side by side, so the user is never blocked. */}
-            {!won && !exhausted && !persisted && (
+            {/* Textarea + submit stay visible until the user wins or
+                burns through all 3 attempts. Returning users with a
+                persisted result (but who haven't won + haven't
+                exhausted) keep the textarea so they can spend their
+                remaining tries — fixes the "forced to click avanti"
+                report from May 2026. The "Continua" CTA always sits
+                next to it (showFinalCta), so they can also stop early. */}
+            {!won && !exhausted && (
               <>
                 <textarea
                   value={draft}
@@ -441,4 +504,48 @@ function pickReaction(
   if (isLast) return r.thirdAttemptDirect;
   if (attemptNumber === 2) return r.secondAttemptHintImproved;
   return r.vague;
+}
+
+// ─── Dimension bars ──────────────────────────────────────────────────
+//
+// Visual parity with the constraints / context / claudemd editors —
+// 4 horizontal bars showing chiarezza / contesto / obiettivo / protezione
+// (each 0-100). The total below sums the weighted score the API
+// already returned so the user sees both the breakdown and the headline.
+function DimensionBars({
+  evaluation,
+  labels,
+}: {
+  evaluation: LuciaEvaluation;
+  labels: InteractiveStepStrings["dimensionLabels"];
+}) {
+  const dims: Array<{ key: keyof typeof labels; value: number }> = [
+    { key: "chiarezza", value: evaluation.chiarezza },
+    { key: "contesto", value: evaluation.contesto },
+    { key: "obiettivo", value: evaluation.obiettivo },
+    { key: "protezione", value: evaluation.protezione },
+  ];
+  return (
+    <div className="mt-3 flex flex-col gap-1">
+      {dims.map((d) => (
+        <div key={d.key} className="flex items-center gap-2">
+          <span className="w-24 shrink-0 font-mono text-[10px] uppercase tracking-wider text-text-muted">
+            {labels[d.key]}
+          </span>
+          <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-surface-muted">
+            <div
+              className="h-full bg-primary transition-all"
+              style={{ width: `${Math.min(100, Math.max(0, d.value))}%` }}
+            />
+          </div>
+          <span className="w-7 text-right font-mono text-[10px] text-text-muted">
+            {d.value}
+          </span>
+        </div>
+      ))}
+      <p className="mt-1 text-right font-mono text-[10px] text-text-muted">
+        Σ {evaluation.totale}/100
+      </p>
+    </div>
+  );
 }

@@ -129,6 +129,11 @@ export function ConstraintsEditor({
     "shake" | "flashAmber" | "flashYellow" | "glowGreen" | null
   >(null);
   const [dailyExhausted, setDailyExhausted] = useState(false);
+  // Synchronous lock against double-submit (the React `evaluating` state
+  // updates async, so 3 fast clicks could pass the early-return guard
+  // and burn 3 attempts on a single intent — bug observed on the Lucia
+  // widget on 2026-05-09 and applied here defensively).
+  const submitInFlightRef = useRef(false);
 
   const sparkLine = evaluation?.spark_reply ?? strings.awaitingPrompt;
   const exhausted = attemptCount >= step.max_attempts;
@@ -197,7 +202,9 @@ export function ConstraintsEditor({
   }
 
   const submit = useCallback(async () => {
+    if (submitInFlightRef.current) return;
     if (submitDisabled) return;
+    submitInFlightRef.current = true;
     setEvaluating(true);
     setError(null);
     try {
@@ -271,6 +278,7 @@ export function ConstraintsEditor({
       setError(strings.networkError);
     } finally {
       setEvaluating(false);
+      submitInFlightRef.current = false;
     }
   }, [
     submitDisabled,

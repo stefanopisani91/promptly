@@ -510,11 +510,23 @@ function renderStep(step: LessonV3Step, ctx: RenderContext) {
           step={step}
           state={
             ctx.stepState[step.id] as
-              | { result?: InteractiveStepResult; finalFixed?: FixedBugs }
+              | {
+                  result?: InteractiveStepResult;
+                  finalFixed?: FixedBugs;
+                  lastReaction?: string;
+                  lastEvaluation?: import(
+                    "@/lib/landing-demo/types"
+                  ).LuciaEvaluation;
+                }
               | undefined
           }
-          onComplete={(result, finalFixed) =>
-            ctx.updateStepState(step.id, { result, finalFixed })
+          onComplete={(result, extras) =>
+            ctx.updateStepState(step.id, {
+              result,
+              finalFixed: extras.finalFixed,
+              lastReaction: extras.lastReaction,
+              lastEvaluation: extras.lastEvaluation,
+            })
           }
           onAdvance={ctx.goNext}
           strings={ctx.strings.interactiveStep}

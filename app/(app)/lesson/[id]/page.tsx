@@ -153,6 +153,7 @@ export default async function LessonPage({ params }: PageProps) {
         sparkTabLabel: lessonsCopy.v3.interactiveStep.sparkTabLabel,
         siteTabLabel: lessonsCopy.v3.interactiveStep.siteTabLabel,
         reactions: lessonsCopy.v3.interactiveStep.reactions,
+        dimensionLabels: lessonsCopy.v3.interactiveStep.dimensionLabels,
         homepageCopy: landingCopy.demo.homepage,
         consoleCopy: landingCopy.demo.console,
       },

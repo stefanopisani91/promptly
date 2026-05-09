@@ -172,6 +172,11 @@ export function ClaudemdEditor({
   // submit button so the user can't keep banging on it; they can still
   // press the final CTA to stop where they are.
   const [dailyExhausted, setDailyExhausted] = useState(false);
+  // Synchronous lock against double-submit. Same fix as the Lucia widget
+  // and the constraints / context editors (2026-05-09): React `evaluating`
+  // updates async, so 3 fast clicks could pass the guard and burn 3
+  // attempts at once.
+  const submitInFlightRef = useRef(false);
   const sparkLine = evaluation?.spark_reply ??
     deriveSparkLineFromBand(persisted, strings) ??
     strings.awaitingPrompt;
@@ -304,7 +309,9 @@ export function ClaudemdEditor({
     .replace("{max}", String(step.max_attempts));
 
   const submit = useCallback(async () => {
+    if (submitInFlightRef.current) return;
     if (submitDisabled || !selectedProject) return;
+    submitInFlightRef.current = true;
     setEvaluating(true);
     setError(null);
     try {
@@ -377,6 +384,7 @@ export function ClaudemdEditor({
       setError(strings.networkError);
     } finally {
       setEvaluating(false);
+      submitInFlightRef.current = false;
     }
   }, [
     submitDisabled,
