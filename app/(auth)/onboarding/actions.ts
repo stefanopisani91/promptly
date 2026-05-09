@@ -539,6 +539,21 @@ export async function completeOnboarding(
 
   const resolvedSource = existing?.signup_source ?? signupSource ?? null;
 
+  // Consume any pending tier assignment for this email — set BEFORE
+  // the upsert so we can land the tier in a single write. The pending
+  // row gets deleted right after a successful upsert. RLS allows a
+  // user to read+delete only the row matching their own auth.email().
+  const normalisedEmail = user.email.trim().toLowerCase();
+  let pendingTier: "standard" | "beta" | "qa" | "dev" | "press" | null = null;
+  const { data: pendingRow } = await supabase
+    .from("pending_account_tiers")
+    .select("account_type")
+    .eq("email", normalisedEmail)
+    .maybeSingle();
+  if (pendingRow && pendingRow.account_type) {
+    pendingTier = pendingRow.account_type;
+  }
+
   const { error: upsertErr } = await supabase
     .from("users")
     .upsert(
@@ -558,12 +573,28 @@ export async function completeOnboarding(
         onboarding_completed_at: completedAt,
         last_profile_check: completedAt,
         signup_source: resolvedSource,
+        // Apply the pending tier here. When pendingTier is null the
+        // field is omitted from the payload so an existing tier on
+        // the row (e.g. dev promoted manually mid-onboarding) is
+        // preserved by the upsert.
+        ...(pendingTier ? { account_type: pendingTier } : {}),
       },
       { onConflict: "id" },
     );
 
   if (upsertErr) {
     return { ok: false, error: "db_error" };
+  }
+
+  // Best-effort cleanup of the consumed pending row. A delete failure
+  // here is non-fatal — the row will be picked up next time the user
+  // re-enters onboarding (idempotent), or Stefano can clear it from
+  // /admin/users.
+  if (pendingTier) {
+    await supabase
+      .from("pending_account_tiers")
+      .delete()
+      .eq("email", normalisedEmail);
   }
 
   // Convert pending referral, if any. Best-effort — failures are logged.

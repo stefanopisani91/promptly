@@ -8,9 +8,11 @@ import {
   getUserProfile,
   incrementDailyClaudemdAttemptCount,
   logSafetyEvent,
+  logUsageEvent,
   todayUtcDate,
 } from "@/lib/supabase/queries";
 import { evaluateClaudemd } from "@/lib/lessons/v3/claudemd-evaluate";
+import { isUnlimited, limitsFromTier } from "@/lib/rate-limits/account-limits";
 
 // Lesson 2 — CLAUDE.md interactive evaluator.
 //
@@ -37,7 +39,9 @@ import { evaluateClaudemd } from "@/lib/lessons/v3/claudemd-evaluate";
 const MAX_EDITOR_CHARS = 1500;
 const MIN_EDITOR_CHARS = 30;
 const MAX_LESSON_ATTEMPTS = 3;
-const DAILY_QUOTA = 12;
+// Per-day cap is now resolved per user via account_type — see
+// /lib/rate-limits/account-limits.ts. 'standard' = 10/day for this
+// route; qa/dev are uncapped (skip both check and increment).
 const ALLOWED_PROJECTS = new Set(["ecommerce", "habits", "website"]);
 
 // Pattern set: Spark-chat's classic jailbreak set, plus the more aggressive
@@ -143,6 +147,15 @@ export async function POST(request: Request) {
   const progress = await getLessonProgress(supabase, user.id, lessonId);
   const persistedAttempts = readPersistedAttempts(progress?.step_state, stepId);
   if (persistedAttempts >= MAX_LESSON_ATTEMPTS) {
+    void logUsageEvent(supabase, {
+      userId: user.id,
+      accountType: profile.account_type,
+      eventType: "lesson_attempts",
+      endpoint: "lesson-claudemd-evaluate",
+      lessonId,
+      attemptNumber: persistedAttempts,
+      limitValue: MAX_LESSON_ATTEMPTS,
+    }).catch(() => {});
     return NextResponse.json(
       {
         error: "lesson_attempts_exceeded",
@@ -153,18 +166,38 @@ export async function POST(request: Request) {
     );
   }
 
-  // ── B. Per-user daily quota.
+  // ── B. Per-user daily quota — driven by users.account_type.
+  //   'standard' → 10/day, beta → 100, press → 50, qa/dev → uncapped.
+  // Uncapped tiers skip BOTH the check and the increment so the
+  // counter table stays clean.
+  const limits = limitsFromTier(profile.account_type);
+  const dailyCap = limits.evaluations_per_day_per_route;
   const today = todayUtcDate();
-  const dailyUsed = await getDailyClaudemdAttemptCount(supabase, user.id, today);
-  if (dailyUsed >= DAILY_QUOTA) {
-    return NextResponse.json(
-      {
-        error: "daily_quota_exceeded",
-        limit: DAILY_QUOTA,
-        used: dailyUsed,
-      },
-      { status: 403 },
+  if (!isUnlimited(dailyCap)) {
+    const dailyUsed = await getDailyClaudemdAttemptCount(
+      supabase,
+      user.id,
+      today,
     );
+    if (dailyUsed >= dailyCap) {
+      void logUsageEvent(supabase, {
+        userId: user.id,
+        accountType: profile.account_type,
+        eventType: "daily_quota",
+        endpoint: "lesson-claudemd-evaluate",
+        lessonId,
+        attemptNumber: dailyUsed,
+        limitValue: dailyCap,
+      }).catch(() => {});
+      return NextResponse.json(
+        {
+          error: "daily_quota_exceeded",
+          limit: dailyCap,
+          used: dailyUsed,
+        },
+        { status: 403 },
+      );
+    }
   }
 
   const lang: Lang = isLang(profile.language)
@@ -207,10 +240,14 @@ export async function POST(request: Request) {
 
   // Only burn the daily counter on a successful Anthropic call. Failed
   // calls don't waste the user's budget — same convention as spark-chat.
-  await incrementDailyClaudemdAttemptCount(supabase, {
-    userId: user.id,
-    date: today,
-  });
+  // Skip the increment for uncapped tiers (qa/dev) to keep the counter
+  // table clean.
+  if (!isUnlimited(dailyCap)) {
+    await incrementDailyClaudemdAttemptCount(supabase, {
+      userId: user.id,
+      date: today,
+    });
+  }
 
   return NextResponse.json({ evaluation: result.evaluation });
 }

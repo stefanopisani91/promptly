@@ -41,7 +41,7 @@ export interface ProfileBackfillSnapshot {
 }
 
 const USER_PROFILE_COLUMNS =
-  "id, email, full_name, language, daily_goal, onboarding_completed_at, signup_source, welcome_seen_at, push_prompted_at, ai_eval_prompted_at, total_xp, current_streak, longest_streak, last_activity_date, last_level_up_notified, referral_code, referral_link_activated_at, archetype_key, experience_level, project_clarity, project_description, project_description_compressed, tools_used, tools_other, preferred_tool, deep_motivation, deep_motivation_compressed, promises, last_profile_check, glossary_seen, created_at, updated_at";
+  "id, email, full_name, language, daily_goal, onboarding_completed_at, signup_source, welcome_seen_at, push_prompted_at, ai_eval_prompted_at, total_xp, current_streak, longest_streak, last_activity_date, last_level_up_notified, referral_code, referral_link_activated_at, archetype_key, experience_level, project_clarity, project_description, project_description_compressed, tools_used, tools_other, preferred_tool, deep_motivation, deep_motivation_compressed, promises, last_profile_check, glossary_seen, account_type, created_at, updated_at";
 
 export async function getUserProfile(
   supabase: AppSupabaseClient,
@@ -1017,6 +1017,51 @@ export async function logSafetyEvent(
     lesson_id: params.lessonId ?? null,
     signal: params.signal,
     excerpt,
+  });
+  if (error) throw error;
+}
+
+// ─── usage_logs — rate-limit hit telemetry ──────────────────────────
+//
+// Append-only audit. Called from the 5 rate-limited routes the moment
+// they decide to return 403. Fire-and-forget at the call site: a
+// logging failure must not change the response surface seen by the
+// user. The helper itself surfaces errors to the caller (so a typed
+// union return is possible if we ever want to await), but the call
+// sites do `void logUsageEvent(...).catch(() => {})`.
+//
+// Snapshots account_type at write time so analytics still hold after
+// a user is promoted (a row written when they were 'standard' keeps
+// the value 'standard' even if their tier changes tomorrow).
+
+export interface LogUsageEventParams {
+  userId: string;
+  accountType: "standard" | "beta" | "qa" | "dev" | "press";
+  // Discriminator for the kind of limit hit. Conventions:
+  //   'daily_quota'         per-day evaluation cap (lesson-* routes)
+  //   'daily_chat_quota'    per-day chat cap (spark-chat)
+  //   'per_lesson_quota'    per-lesson chat cap (spark-chat)
+  //   'lesson_attempts'     per-lesson attempt cap (3) on a quick win
+  eventType: string;
+  // Route name (e.g. 'lesson-debug-evaluate').
+  endpoint: string;
+  lessonId?: string | null;
+  attemptNumber?: number | null;
+  limitValue?: number | null;
+}
+
+export async function logUsageEvent(
+  supabase: AppSupabaseClient,
+  params: LogUsageEventParams,
+): Promise<void> {
+  const { error } = await supabase.from("usage_logs").insert({
+    user_id: params.userId,
+    account_type: params.accountType,
+    event_type: params.eventType,
+    endpoint: params.endpoint,
+    lesson_id: params.lessonId ?? null,
+    attempt_number: params.attemptNumber ?? null,
+    limit_value: params.limitValue ?? null,
   });
   if (error) throw error;
 }

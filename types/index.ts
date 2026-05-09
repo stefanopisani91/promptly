@@ -50,6 +50,32 @@ export function isExperienceLevel(value: unknown): value is ExperienceLevel {
   );
 }
 
+// ─── Account type — rate-limit tier ─────────────────────────────────
+//
+// Drives /lib/rate-limits/account-limits.ts. 'standard' is the default
+// for every signup; the others are administrative tiers Stefano
+// promotes manually via /admin/users.
+
+export type AccountType = "standard" | "beta" | "qa" | "dev" | "press";
+
+export const ACCOUNT_TYPES: readonly AccountType[] = [
+  "standard",
+  "beta",
+  "qa",
+  "dev",
+  "press",
+] as const;
+
+export function isAccountType(value: unknown): value is AccountType {
+  return (
+    value === "standard" ||
+    value === "beta" ||
+    value === "qa" ||
+    value === "dev" ||
+    value === "press"
+  );
+}
+
 export type ProjectClarity = "precise" | "vague" | "exploring";
 
 export const PROJECT_CLARITIES: readonly ProjectClarity[] = [
@@ -151,6 +177,11 @@ export interface UserProfile {
   // empathic interventions; the raw deep_motivation stays for the
   // 3-promises generator. Migration 20260509130000_deep_motivation_compressed.sql.
   deep_motivation_compressed: string | null;
+  // Rate-limit tier (Round 9 — 2026-05-09). Drives the daily
+  // evaluation / chat caps via /lib/rate-limits/account-limits.ts.
+  // Defaults to 'standard' on signup; promoted manually by Stefano
+  // via /admin/users. Migration 20260509170000_user_account_types.sql.
+  account_type: AccountType;
   created_at: string;
   updated_at: string;
 }

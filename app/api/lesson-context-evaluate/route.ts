@@ -8,10 +8,12 @@ import {
   getUserProfile,
   incrementDailyContextAttemptCount,
   logSafetyEvent,
+  logUsageEvent,
   todayUtcDate,
 } from "@/lib/supabase/queries";
 import { evaluateContext } from "@/lib/lessons/v3/context-evaluate";
 import { getProjectDescriptionShort } from "@/lib/onboarding/project";
+import { isUnlimited, limitsFromTier } from "@/lib/rate-limits/account-limits";
 
 // Lesson 3 — context-prompt interactive evaluator.
 //
@@ -33,7 +35,9 @@ import { getProjectDescriptionShort } from "@/lib/onboarding/project";
 const MAX_PROMPT_CHARS = 1000; // user can write up to 800 by config; 200 of headroom
 const MIN_PROMPT_CHARS = 100;
 const MAX_LESSON_ATTEMPTS = 3;
-const DAILY_QUOTA = 12;
+// Per-day cap is now resolved per user via account_type — see
+// /lib/rate-limits/account-limits.ts. 'standard' = 10/day for this
+// route; qa/dev are uncapped (skip both check and increment).
 const ALLOWED_SCENARIOS = new Set(["login", "notifications", "stats"]);
 
 const INJECTION_PATTERNS: RegExp[] = [
@@ -155,6 +159,15 @@ export async function POST(request: Request) {
   const progress = await getLessonProgress(supabase, user.id, lessonId);
   const persistedAttempts = readPersistedAttempts(progress?.step_state, stepId);
   if (persistedAttempts >= MAX_LESSON_ATTEMPTS) {
+    void logUsageEvent(supabase, {
+      userId: user.id,
+      accountType: profile.account_type,
+      eventType: "lesson_attempts",
+      endpoint: "lesson-context-evaluate",
+      lessonId,
+      attemptNumber: persistedAttempts,
+      limitValue: MAX_LESSON_ATTEMPTS,
+    }).catch(() => {});
     return NextResponse.json(
       {
         error: "lesson_attempts_exceeded",
@@ -165,18 +178,38 @@ export async function POST(request: Request) {
     );
   }
 
-  // ── B. Per-user daily quota.
+  // ── B. Per-user daily quota — driven by users.account_type.
+  //   'standard' → 10/day, beta → 100, press → 50, qa/dev → uncapped.
+  // Uncapped tiers skip BOTH the check and the increment so the
+  // counter table stays clean.
+  const limits = limitsFromTier(profile.account_type);
+  const dailyCap = limits.evaluations_per_day_per_route;
   const today = todayUtcDate();
-  const dailyUsed = await getDailyContextAttemptCount(supabase, user.id, today);
-  if (dailyUsed >= DAILY_QUOTA) {
-    return NextResponse.json(
-      {
-        error: "daily_quota_exceeded",
-        limit: DAILY_QUOTA,
-        used: dailyUsed,
-      },
-      { status: 403 },
+  if (!isUnlimited(dailyCap)) {
+    const dailyUsed = await getDailyContextAttemptCount(
+      supabase,
+      user.id,
+      today,
     );
+    if (dailyUsed >= dailyCap) {
+      void logUsageEvent(supabase, {
+        userId: user.id,
+        accountType: profile.account_type,
+        eventType: "daily_quota",
+        endpoint: "lesson-context-evaluate",
+        lessonId,
+        attemptNumber: dailyUsed,
+        limitValue: dailyCap,
+      }).catch(() => {});
+      return NextResponse.json(
+        {
+          error: "daily_quota_exceeded",
+          limit: dailyCap,
+          used: dailyUsed,
+        },
+        { status: 403 },
+      );
+    }
   }
 
   const lang: Lang = isLang(profile.language)
@@ -221,10 +254,13 @@ export async function POST(request: Request) {
     );
   }
 
-  await incrementDailyContextAttemptCount(supabase, {
-    userId: user.id,
-    date: today,
-  });
+  // Skip the increment for uncapped tiers — see comment on the check.
+  if (!isUnlimited(dailyCap)) {
+    await incrementDailyContextAttemptCount(supabase, {
+      userId: user.id,
+      date: today,
+    });
+  }
 
   return NextResponse.json({ evaluation: result.evaluation });
 }

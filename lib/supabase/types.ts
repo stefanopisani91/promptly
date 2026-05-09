@@ -61,6 +61,9 @@ export type Database = {
           // (in first person). Used in Spark's session context for
           // empathic interventions; raw stays for the 3-promises generator.
           deep_motivation_compressed: string | null;
+          // Rate-limit tier — 'standard' default, others promoted via
+          // /admin/users. Migration 20260509170000_user_account_types.
+          account_type: "standard" | "beta" | "qa" | "dev" | "press";
           created_at: string;
           updated_at: string;
         };
@@ -100,6 +103,7 @@ export type Database = {
           glossary_seen?: string[];
           project_description_compressed?: string | null;
           deep_motivation_compressed?: string | null;
+          account_type?: "standard" | "beta" | "qa" | "dev" | "press";
           created_at?: string;
           updated_at?: string;
         };
@@ -139,6 +143,7 @@ export type Database = {
           glossary_seen?: string[];
           project_description_compressed?: string | null;
           deep_motivation_compressed?: string | null;
+          account_type?: "standard" | "beta" | "qa" | "dev" | "press";
           created_at?: string;
           updated_at?: string;
         };
@@ -292,6 +297,73 @@ export type Database = {
           lesson_id?: string | null;
           signal?: string;
           excerpt?: string | null;
+          occurred_at?: string;
+        };
+        Relationships: [];
+      };
+      pending_account_tiers: {
+        // Email → tier pre-assignments. Consumed by the onboarding
+        // action when the user signs up — see app/(auth)/onboarding/
+        // actions.ts. Migration 20260509180000_pending_account_tiers.
+        Row: {
+          email: string;
+          account_type: "standard" | "beta" | "qa" | "dev" | "press";
+          note: string | null;
+          created_by: string | null;
+          created_at: string;
+        };
+        Insert: {
+          email: string;
+          account_type: "standard" | "beta" | "qa" | "dev" | "press";
+          note?: string | null;
+          created_by?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          email?: string;
+          account_type?: "standard" | "beta" | "qa" | "dev" | "press";
+          note?: string | null;
+          created_by?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      usage_logs: {
+        // Append-only audit of every rate-limit hit. Inserted by the
+        // 5 API routes from the user's session at 403 time; read only
+        // by dev-tier users on /admin/users. Migration
+        // 20260509190000_usage_logs.
+        Row: {
+          id: number;
+          user_id: string;
+          account_type: "standard" | "beta" | "qa" | "dev" | "press";
+          event_type: string;
+          endpoint: string;
+          lesson_id: string | null;
+          attempt_number: number | null;
+          limit_value: number | null;
+          occurred_at: string;
+        };
+        Insert: {
+          id?: number;
+          user_id: string;
+          account_type: "standard" | "beta" | "qa" | "dev" | "press";
+          event_type: string;
+          endpoint: string;
+          lesson_id?: string | null;
+          attempt_number?: number | null;
+          limit_value?: number | null;
+          occurred_at?: string;
+        };
+        Update: {
+          id?: number;
+          user_id?: string;
+          account_type?: "standard" | "beta" | "qa" | "dev" | "press";
+          event_type?: string;
+          endpoint?: string;
+          lesson_id?: string | null;
+          attempt_number?: number | null;
+          limit_value?: number | null;
           occurred_at?: string;
         };
         Relationships: [];

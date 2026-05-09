@@ -36,6 +36,7 @@ import {
   incrementDailySparkUsage,
   incrementSparkChatCount,
   logSafetyEvent,
+  logUsageEvent,
   todayUtcDate,
 } from "@/lib/supabase/queries";
 import { requestSparkReply } from "@/lib/ai/anthropic";
@@ -46,9 +47,14 @@ import {
   sparkSessionContextIT,
 } from "@/lib/ai/spark-system-prompt";
 import { isLang, isPathSlug, type Lang } from "@/types";
+import { isUnlimited, limitsFromTier } from "@/lib/rate-limits/account-limits";
 
-const PER_LESSON_QUOTA = 5;
-const DAILY_QUOTA = 20;
+// Both quotas (per-lesson + per-day) are now resolved per user via
+// account_type — see /lib/rate-limits/account-limits.ts.
+//   'standard' → 5 / lesson, 30 / day
+//   'beta'     → 50 / lesson, 300 / day
+//   'press'    → 25 / lesson, 150 / day
+//   'qa', 'dev' → uncapped (skip both check and increment).
 const MAX_MESSAGE_CHARS = 600;
 const MIN_MESSAGE_CHARS = 2;
 
@@ -130,27 +136,70 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
+  // Resolve the user's tier first — every quota below depends on it.
+  // Single column read (cheap), and the broader profile read below
+  // happens regardless of the outcome.
+  const { data: tierRow } = await supabase
+    .from("users")
+    .select("account_type")
+    .eq("id", user.id)
+    .maybeSingle();
+  const accountTypeSnapshot: "standard" | "beta" | "qa" | "dev" | "press" =
+    (tierRow?.account_type as
+      | "standard"
+      | "beta"
+      | "qa"
+      | "dev"
+      | "press"
+      | undefined) ?? "standard";
+  const limits = limitsFromTier(tierRow?.account_type ?? null);
+  const dailyCap = limits.chat_messages_per_day;
+  const perLessonCap = limits.chat_messages_per_lesson;
+
   // Daily quota first — if the user has hit the daily cap, no point checking
-  // per-lesson; the answer is always "come back tomorrow".
+  // per-lesson; the answer is always "come back tomorrow". Uncapped tiers
+  // (qa/dev) skip the check AND the increment so spark_usage_daily stays
+  // clean.
   const today = todayUtcDate();
-  const dailyUsed = await getDailySparkUsage(supabase, user.id, today);
-  if (dailyUsed >= DAILY_QUOTA) {
-    return NextResponse.json(
-      {
-        error: "daily_quota_exceeded",
-        limit: DAILY_QUOTA,
-        used: dailyUsed,
-      },
-      { status: 403 },
-    );
+  let dailyUsed = 0;
+  if (!isUnlimited(dailyCap)) {
+    dailyUsed = await getDailySparkUsage(supabase, user.id, today);
+    if (dailyUsed >= dailyCap) {
+      void logUsageEvent(supabase, {
+        userId: user.id,
+        accountType: accountTypeSnapshot,
+        eventType: "daily_chat_quota",
+        endpoint: "spark-chat",
+        lessonId: body.lessonId,
+        attemptNumber: dailyUsed,
+        limitValue: dailyCap,
+      }).catch(() => {});
+      return NextResponse.json(
+        {
+          error: "daily_quota_exceeded",
+          limit: dailyCap,
+          used: dailyUsed,
+        },
+        { status: 403 },
+      );
+    }
   }
 
-  // Per-lesson quota.
+  // Per-lesson quota — same uncapped short-circuit.
   const progress = await getLessonProgress(supabase, user.id, body.lessonId);
   const usedSoFar = progress?.spark_chat_count ?? 0;
-  if (usedSoFar >= PER_LESSON_QUOTA) {
+  if (!isUnlimited(perLessonCap) && usedSoFar >= perLessonCap) {
+    void logUsageEvent(supabase, {
+      userId: user.id,
+      accountType: accountTypeSnapshot,
+      eventType: "per_lesson_quota",
+      endpoint: "spark-chat",
+      lessonId: body.lessonId,
+      attemptNumber: usedSoFar,
+      limitValue: perLessonCap,
+    }).catch(() => {});
     return NextResponse.json(
-      { error: "quota_exceeded", limit: PER_LESSON_QUOTA, used: usedSoFar },
+      { error: "quota_exceeded", limit: perLessonCap, used: usedSoFar },
       { status: 403 },
     );
   }
@@ -260,26 +309,39 @@ export async function POST(request: Request) {
   }
 
   // Only increment counters on a successful response — failed calls
-  // shouldn't burn the user's quota.
-  await incrementSparkChatCount(supabase, {
-    userId: user.id,
-    lessonId: body.lessonId,
-    pathSlug: body.pathSlug,
-  });
-  await incrementDailySparkUsage(supabase, {
-    userId: user.id,
-    date: today,
-  });
+  // shouldn't burn the user's quota. Uncapped tiers (qa/dev) skip
+  // both increments so the counter tables aren't polluted.
+  if (!isUnlimited(perLessonCap)) {
+    await incrementSparkChatCount(supabase, {
+      userId: user.id,
+      lessonId: body.lessonId,
+      pathSlug: body.pathSlug,
+    });
+  }
+  if (!isUnlimited(dailyCap)) {
+    await incrementDailySparkUsage(supabase, {
+      userId: user.id,
+      date: today,
+    });
+  }
 
-  const newRemaining = Math.max(0, PER_LESSON_QUOTA - (usedSoFar + 1));
-  const newDailyRemaining = Math.max(0, DAILY_QUOTA - (dailyUsed + 1));
+  // For uncapped tiers we report a sentinel high "remaining" so the
+  // client UI doesn't render a misleading "0 messages left" pill.
+  // The client treats values ≥ a large threshold as "unlimited".
+  const UNLIMITED_SENTINEL = 9_999;
+  const newRemaining = isUnlimited(perLessonCap)
+    ? UNLIMITED_SENTINEL
+    : Math.max(0, perLessonCap - (usedSoFar + 1));
+  const newDailyRemaining = isUnlimited(dailyCap)
+    ? UNLIMITED_SENTINEL
+    : Math.max(0, dailyCap - (dailyUsed + 1));
 
   return NextResponse.json({
     reply: result.reply,
     remaining: newRemaining,
-    limit: PER_LESSON_QUOTA,
+    limit: isUnlimited(perLessonCap) ? UNLIMITED_SENTINEL : perLessonCap,
     dailyRemaining: newDailyRemaining,
-    dailyLimit: DAILY_QUOTA,
+    dailyLimit: isUnlimited(dailyCap) ? UNLIMITED_SENTINEL : dailyCap,
   });
 }
 

@@ -200,7 +200,11 @@
       "Bash(kill 93088)",
       "Bash(curl -s -o /dev/null -w \"lesson-debug-evaluate route: HTTP %{http_code}\\\\n\" -X POST http://localhost:3000/api/lesson-debug-evaluate -H \"Content-Type: application/json\" --data '{}')",
       "Read(//Users/stefanopisani/**)",
-      "Bash(node -e \"['it/mindset/05-when-ai-fails.v3','en/mindset/05-when-ai-fails.v3','it/mindset/03-context-matters.v3','en/mindset/03-context-matters.v3'].forEach\\(p=>{JSON.parse\\(require\\('fs'\\).readFileSync\\('content/'+p+'.json','utf8'\\)\\);console.log\\(p+' ✓'\\)}\\)\")"
+      "Bash(node -e \"['it/mindset/05-when-ai-fails.v3','en/mindset/05-when-ai-fails.v3','it/mindset/03-context-matters.v3','en/mindset/03-context-matters.v3'].forEach\\(p=>{JSON.parse\\(require\\('fs'\\).readFileSync\\('content/'+p+'.json','utf8'\\)\\);console.log\\(p+' ✓'\\)}\\)\")",
+      "Bash(pkill -f \"next-server\\\\|next dev\")",
+      "Bash(kill 81176 94906)",
+      "Bash(curl -s -o /dev/null -w \"GET /admin/users → HTTP %{http_code}\\\\n\" http://localhost:3000/admin/users)",
+      "Bash(curl -s -o /dev/null -w \"GET / → HTTP %{http_code}\\\\n\" http://localhost:3000/)"
     ],
     "additionalDirectories": [
       "/Users/stefanopisani/DEV/01_Progetti/PROMPTLY/.git",
