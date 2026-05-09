@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <!-- Simplified for ≤48px: only the chevron, no underscore (reads muddy at tiny sizes) -->
+  <rect width="200" height="200" rx="44" fill="#E8703F"/>
+  <path d="M 58 55 L 122 100 L 58 145" stroke="#FFFFFF" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
