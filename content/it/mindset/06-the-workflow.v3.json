@@ -1,0 +1,320 @@
+{
+  "id": "mindset-06",
+  "format_version": 3,
+  "path_slug": "mindset",
+  "order": 6,
+  "title": "Il mio workflow ti farà risparmiare 20 ore al mese.",
+  "map_title": "Il workflow del Path 1",
+  "subtitle": "Le 5 lezioni precedenti compongono una sequenza ripetibile. Te la consegno tutta intera.",
+  "difficulty": "beginner",
+  "estimated_minutes": 12,
+  "base_xp": 100,
+  "difficulty_bonus_xp": 0,
+  "icon": "/brand/lessons/mindset-06.svg",
+  "cliffhanger": "Path 2 si chiama «Build». Ti porto da «so dirigere l'AI» a «so costruire e shippare un prodotto vero». Ma quello è per la prossima volta.",
+  "steps": [
+    {
+      "id": "intro-final-lesson",
+      "type": "text",
+      "spark_state": "idle",
+      "paragraphs": [
+        "Sei alla sesta lezione. L'ultima del Path 1.",
+        "Niente celebrazione. Ancora un'ora di lavoro vero. Quello che impari oggi è quello che separa chi «ha fatto un corso» da chi ha cambiato il modo di lavorare.",
+        "Andiamo."
+      ],
+      "vignettes": [
+        { "short": "Niente fronzoli.", "full": "Niente fronzoli. La festa la facciamo dopo, quando hai chiuso il quick win." },
+        { "short": "Quasi alla fine.", "full": "Quasi alla fine. Tieni duro un'ultima volta." }
+      ]
+    },
+    {
+      "id": "twenty-hours-promise",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "Il titolo dice 20 ore al mese. Non è hyperbole.",
+        "Stefano lo ha misurato su sé stesso. 20 ore al mese di tempo recuperato, su 80 ore di vibe coding mensili. Un quarto della sua vita produttiva.",
+        "Come? Niente magia. Solo metodo. Te lo spiego adesso."
+      ],
+      "vignettes": [
+        { "short": "20 è il numero reale.", "full": "20 è il numero reale, misurato su mesi. Non un claim da landing." },
+        { "short": "Si misura, non si dice.", "full": "Si misura, non si dice. Tienitelo come regola operativa." }
+      ]
+    },
+    {
+      "id": "the-problem",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "Il vibe coder principiante apre il PC, accende l'AI, e si butta. «Vediamo cosa esce».",
+        "Risultato: 4 ore di lavoro per finire di capire cosa stava facendo. 2 ore per fixare gli errori che si è creato da solo. 1 ora per ricostruire i pezzi che ha rotto.",
+        "Il vibe coder serio fa una cosa diversa: pensa 5 minuti prima di scrivere il primo prompt. Quei 5 minuti gli risparmiano le 7 ore."
+      ],
+      "vignettes": [
+        { "short": "5 minuti contro 7 ore.", "full": "5 minuti contro 7 ore. È matematica, non opinione." },
+        { "short": "È matematica.", "full": "È matematica. Riguardala domani prima di aprire Cursor." }
+      ]
+    },
+    {
+      "id": "principle-workflow-multiplier",
+      "type": "principle",
+      "spark_state": "surprised",
+      "headline": "Il workflow",
+      "emphasis": "è il moltiplicatore.",
+      "caption": "Le tecniche da sole non bastano. È il workflow — la sequenza ripetibile delle azioni — che moltiplica tutto. Senza workflow, sai le note ma non suoni la canzone.",
+      "vignettes": [
+        { "short": "Le note senza canzone.", "full": "Le note senza canzone. Bello sentirle ma non ti porta da nessuna parte." },
+        { "short": "Adesso le componiamo.", "full": "Adesso le componiamo nella tua testa. Diventa istinto in due settimane." }
+      ]
+    },
+    {
+      "id": "four-phases-counter-intuition",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "Il workflow del vibe coder serio ha 4 fasi. Te le elenco perché te le devi ricordare.",
+        "1. SETUP. Configurazione una tantum: CLAUDE.md, repository, tool. Lo fai una volta, vale per sempre.",
+        "2. CONTESTO. Inizio di ogni sessione: dai all'AI quello che le serve PRIMA di chiederle qualcosa.",
+        "3. ESECUZIONE. Lavoro vero: prompt + vincoli + iterazione.",
+        "4. VERIFICA. Fine sessione: test, code review, commit. Mai saltare la quarta.",
+        "Quattro fasi. Sempre nello stesso ordine. Diventa istinto in 2 settimane.",
+        "Adesso ti dico una cosa controintuitiva. Sembra banale ma è quella che fa la differenza.",
+        "Quando scrivi il prompt nella fase 3 (Esecuzione), la maggior parte mette i vincoli DOPO il task. «Fai X, ma non fare Y». Sembra logico, no? Prima dici cosa fare, poi cosa non fare.",
+        "È un errore.",
+        "Io leggo in sequenza. Quando ho visto il task, ho già iniziato a immaginare la soluzione. I vincoli che arrivano dopo li leggo quando ho già committed mentalmente. Spesso li ignoro, o ti propongo qualcosa che li viola con una giustificazione.",
+        "Inverti l'ordine. **VINCOLI PRIMA del TASK.** Quando arrivo al task, ho già dentro i limiti. Lavoro nella cornice, non la scopro dopo.",
+        "Il prompt giornaliero perfetto è: CONTESTO → VINCOLI → TASK → VERIFICA. Te lo faccio costruire alla fine della lezione, vedrai."
+      ],
+      "vignettes": [
+        { "short": "Sembra strano.", "full": "Sembra strano la prima volta. Provalo, e poi non torni indietro." },
+        { "short": "Provalo. Funziona.", "full": "Provalo domani. Funziona, te lo prometto." },
+        { "short": "5° rovesciamento.", "full": "Questo è il quinto rovesciamento mentale del Path 1. Tienilo a mente — pochi lo conoscono." }
+      ]
+    },
+    {
+      "id": "phase-most-skipped-choice",
+      "type": "choice",
+      "spark_state": "listening",
+      "prompt": "Secondo te, quale di queste 4 fasi è la PIÙ trascurata dai vibe coder principianti?",
+      "options": [
+        { "key": "setup", "label": "🛰️ Setup — non si configurano un CLAUDE.md." },
+        { "key": "context", "label": "🖱️ Contesto — si buttano senza dare info all'AI." },
+        { "key": "execution", "label": "💾 Esecuzione — scrivono prompt vaghi." },
+        { "key": "verification", "label": "🔍 Verifica — non controllano quello che l'AI ha fatto." }
+      ],
+      "vignettes": [
+        { "short": "Pensa prima di cliccare.", "full": "Pensa prima di cliccare. Una è quella che paga di più, ed è quella che salta più spesso." }
+      ]
+    },
+    {
+      "id": "phase-skipped-reaction",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "Capito. Andiamo avanti.",
+        "Tieni a mente: la verifica è la fase saltata da tutti, ed è quella che costa di più. L'AI dice «fatto», loro chiudono. Domani trovano il bug, e devono ricordare cosa avevano fatto. Risultato: ricominciano da capo."
+      ],
+      "paragraphs_by_choice": {
+        "source_step_id": "phase-most-skipped-choice",
+        "by_key": {
+          "verification": [
+            "Esatto. La verifica è la fase saltata da tutti, ed è quella che costa di più.",
+            "L'AI dice «fatto», loro chiudono. Domani trovano il bug, e devono ricordare cosa avevano fatto. Risultato: ricominciano da capo.",
+            "Adesso ti faccio vedere come le 5 lezioni che hai fatto si distribuiscono sulle 4 fasi. È una mappa che vale oro."
+          ],
+          "setup": [
+            "Buona scelta, ma la più trascurata in assoluto è la 🔍 — Verifica.",
+            "Il setup lo fai per forza, prima o poi: senza CLAUDE.md ti rendi conto subito che parti da zero ogni volta. La verifica invece sembra opzionale, e per questo viene saltata. Non lo è.",
+            "Adesso ti faccio vedere come le 5 lezioni si distribuiscono sulle 4 fasi."
+          ],
+          "context": [
+            "Buona scelta, ma la più trascurata in assoluto è la 🔍 — Verifica.",
+            "Il contesto lo impari subito perché senza l'AI fa danni visibili. La verifica salta perché sembra opzionale. Non lo è.",
+            "Adesso ti faccio vedere come le 5 lezioni si distribuiscono sulle 4 fasi."
+          ],
+          "execution": [
+            "Buona scelta, ma la più trascurata in assoluto è la 🔍 — Verifica.",
+            "L'esecuzione la affini per forza. La verifica salta perché sembra opzionale. Non lo è.",
+            "Adesso ti faccio vedere come le 5 lezioni si distribuiscono sulle 4 fasi."
+          ]
+        }
+      },
+      "vignettes": [
+        { "short": "La cura dei dettagli vince.", "full": "La cura dei dettagli vince. Sempre, su lungo periodo." },
+        { "short": "Mappa in arrivo.", "full": "Mappa in arrivo. Tienila come riferimento." }
+      ]
+    },
+    {
+      "id": "workflow-mapping",
+      "type": "phase_mapping",
+      "spark_state": "idle",
+      "intro": "Adesso ti faccio vedere una cosa bellissima. Tutto quello che hai imparato nelle 5 lezioni precedenti ha un posto preciso nel workflow. Niente di nuovo. Solo composizione.",
+      "banner": "IL WORKFLOW",
+      "phases": [
+        {
+          "key": "setup",
+          "icon": "🎯",
+          "number": "1",
+          "title": "SETUP",
+          "lessons": [
+            { "label": "Lezione 2 — CLAUDE.md, il manifesto del progetto" }
+          ]
+        },
+        {
+          "key": "context",
+          "icon": "🔁",
+          "number": "2",
+          "title": "CONTESTO",
+          "lessons": [
+            { "label": "Lezione 3 — I 4 livelli di contesto" }
+          ]
+        },
+        {
+          "key": "execution",
+          "icon": "⚡",
+          "number": "3",
+          "title": "ESECUZIONE",
+          "lessons": [
+            { "label": "Lezione 1 — L'AI esegue, tu dirigi" },
+            { "label": "Lezione 3 — Prompt ricco di contesto" },
+            { "label": "Lezione 4 — I 3 tipi di vincoli (PRIMA del task!)", "emphasised": true }
+          ]
+        },
+        {
+          "key": "verification",
+          "icon": "🔍",
+          "number": "4",
+          "title": "VERIFICA",
+          "lessons": [
+            { "label": "Lezione 5 — I 4 tipi di errore" },
+            { "label": "Lezione 5 — Recovery dialogico" }
+          ]
+        }
+      ],
+      "closing_caption": "Vedi? Niente di nuovo. Tutto quello che hai imparato ha un posto preciso. Le tecniche sono i mattoni. Il workflow è la casa. E nota: i vincoli stanno nella fase 3, accanto al prompt. Ma nel prompt vengono PRIMA del task. Tienitelo a mente, ti servirà tra poco.",
+      "vignettes": [
+        { "short": "Stai vedendo la mappa intera.", "full": "Stai vedendo la mappa intera. Per la prima volta tutto insieme." },
+        { "short": "Per la prima volta tutto insieme.", "full": "Per la prima volta tutto insieme. Goditelo per un secondo." }
+      ]
+    },
+    {
+      "id": "principle-habit",
+      "type": "principle",
+      "spark_state": "surprised",
+      "headline": "Il vibe coding",
+      "emphasis": "è un'abitudine.",
+      "caption": "Le tecniche le sai. Il workflow lo conosci. Adesso devi farlo diventare istinto. Due settimane di pratica costante. Poi non ci pensi più. Lo fai.",
+      "vignettes": [
+        { "short": "Due settimane.", "full": "Due settimane di pratica costante. Niente di più, niente di meno." },
+        { "short": "Niente di più, niente di meno.", "full": "Niente di più, niente di meno. Promesso." }
+      ]
+    },
+    {
+      "id": "stefano-daily-workflow",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "Te lo racconto come lo fa Stefano. Una giornata di vibe coding su Promptly.",
+        "**8:30** — Apre Cursor. Rilegge il CLAUDE.md (15 secondi). Ricorda lo stato del progetto.",
+        "**8:35** — Scrive il primo prompt della giornata. Contesto in alto, vincoli subito dopo, task per ultimo. La verifica la chiede esplicitamente nel prompt.",
+        "**8:45** — Esecuzione. Itera 3-4 volte sul prompt finché l'AI non capisce. Mai accetta la prima risposta che «sembra ok».",
+        "**10:30** — Pausa. Verifica: legge il diff, runa i test, commit con messaggio chiaro.",
+        "**11:00** — Nuovo ciclo. Stessa sequenza.",
+        "Sembra noioso. Lo è. Ed è esattamente per questo che funziona."
+      ],
+      "vignettes": [
+        { "short": "La noia operativa è un superpotere.", "full": "La noia operativa è un superpotere. Te ne accorgi solo dopo qualche settimana." },
+        { "short": "Il caos è il nemico.", "full": "Il caos è il nemico. Lo eviti col metodo, niente di più." }
+      ]
+    },
+    {
+      "id": "quickwin-intro",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "Adesso ti faccio costruire il TUO prompt giornaliero. Quello che apri ogni mattina prima di iniziare a vibe-codare.",
+        "Ti darò 4 pilastri da disporre nell'ordine giusto — quello controintuitivo che ti ho appena insegnato. Quando sarà fatto, vedrai trasformarsi in un prompt vero, completo, che potrai usare DOMANI mattina nella tua sessione. Lo potrai anche scaricare come file .md.",
+        "Niente teoria. Solo costruzione."
+      ],
+      "vignettes": [
+        { "short": "Niente fill the gap.", "full": "Niente fill the gap. È costruzione vera, con le tue mani." },
+        { "short": "Costruzione vera.", "full": "Costruzione vera. Te lo porti a casa per davvero." }
+      ]
+    },
+    {
+      "id": "tool-anticipation",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "PS: il prompt che costruirai tra poco lo incolli all'inizio di ogni sessione di vibe coding. Il tuo tool lo terrà come anchor di contesto per tutto il lavoro.",
+        "Tieni il file .md a portata di mano. Modifichi solo il TASK del giorno. Il resto resta uguale, sempre."
+      ],
+      "vignettes": [
+        { "short": "Un file, mille sessioni.", "full": "Un file, mille sessioni. È la tua bussola operativa." }
+      ]
+    },
+    {
+      "id": "prompt-architecture-quickwin",
+      "type": "interactive",
+      "spark_state": "listening",
+      "widget": "prompt_architecture",
+      "intro": "Pronto? Trascina i 4 pilastri nello spazio sopra. Ricorda quello che ti ho appena insegnato — l'ordine giusto è quello controintuitivo. Quando ci arrivi, vedrai succedere una cosa.",
+      "max_attempts": 3,
+      "prompt_architecture_config": {
+        "canvas_title": "L'Architettura",
+        "canvas_subtitle": "Componi il tuo prompt giornaliero",
+        "empty_hint": "Componi il tuo prompt",
+        "pillars_tray_label": "I 4 Pilastri",
+        "pillars": [
+          {
+            "key": "context",
+            "icon": "●",
+            "title": "CONTESTO",
+            "description": "Cosa stiamo costruendo"
+          },
+          {
+            "key": "constraints",
+            "icon": "▲",
+            "title": "VINCOLI",
+            "description": "Cosa NON toccare"
+          },
+          {
+            "key": "task",
+            "icon": "■",
+            "title": "TASK",
+            "description": "Cosa fare oggi"
+          },
+          {
+            "key": "verification",
+            "icon": "◆",
+            "title": "VERIFICA",
+            "description": "Come controllo"
+          }
+        ]
+      },
+      "vignettes": [
+        { "short": "Prova d'istinto.", "full": "Prova d'istinto la prima volta. Se sbagli, te lo dico io dolcemente." },
+        { "short": "Tre tentativi. Usali bene.", "full": "Tre tentativi. Al terzo, se non ci arrivi, te lo mostro io e prosegui lo stesso." },
+        { "short": "Il prompt te lo tieni.", "full": "Il prompt che costruisci te lo porti a casa come file .md. È tuo." }
+      ]
+    },
+    {
+      "id": "outro-path-completed",
+      "type": "text",
+      "spark_state": "happy",
+      "paragraphs": [
+        "Path 1 chiuso.",
+        "Hai imparato che l'AI esegue e tu dirigi. Hai configurato il setup. Hai capito il contesto. Hai messo i vincoli — prima del task, mi raccomando. Hai imparato a leggere gli errori. Hai composto il workflow.",
+        "Ricordi quando ti ho chiesto, alla prima lezione, perché eri qui? Mi hai detto: «{deep_motivation}».",
+        "Quello vale ancora. Anzi, vale di più adesso, perché hai gli strumenti per farcela davvero.",
+        "Path 2 si chiama «Build». Ti porto da «so come dirigere l'AI» a «so costruire e shippare un prodotto vero». Ma quello è per la prossima volta.",
+        "Adesso, festa. Ti meriti i 5 minuti di pausa più dolci di sempre."
+      ],
+      "vignettes": [
+        { "short": "Sei diventato uno serio.", "full": "Sei diventato uno serio. Pochi arrivano qui." },
+        { "short": "Pochi arrivano qui.", "full": "Pochi arrivano qui. Tu ce l'hai fatta." },
+        { "short": "A presto, vibe coder.", "full": "A presto, vibe coder. Quando tornerai, sarò sempre pronta." }
+      ]
+    }
+  ]
+}

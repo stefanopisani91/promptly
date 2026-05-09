@@ -20,6 +20,7 @@ import {
   isPathUnlocked,
 } from "@/lib/lessons/progress";
 import { personaliseLessonForUser } from "@/lib/lessons/v3/personalize";
+import { getToolBySlug } from "@/lib/onboarding/tools";
 import { calculateLessonXp } from "@/lib/xp";
 import { LessonShell } from "@/components/lessons/LessonShell";
 import { TheoryRenderer } from "@/components/lessons/TheoryRenderer";
@@ -110,6 +111,7 @@ export default async function LessonPage({ params }: PageProps) {
       mindset03: lessonsCopy.v3.mindset03,
       mindset04: lessonsCopy.v3.mindset04,
       mindset05: lessonsCopy.v3.mindset05,
+      mindset06: lessonsCopy.v3.mindset06,
     });
 
     const persisted = await getLessonProgress(supabase, user.id, lesson.id);
@@ -167,9 +169,31 @@ export default async function LessonPage({ params }: PageProps) {
       contextEditor: lessonsCopy.v3.contextEditor,
       constraintsEditor: lessonsCopy.v3.constraintsEditor,
       brokenSessionDebugger: lessonsCopy.v3.brokenSessionDebugger,
+      promptArchitecture: lessonsCopy.v3.promptArchitecture,
       chat: lessonsCopy.v3.chat,
       glossary: lessonsCopy.v3.glossary,
     };
+
+    // Lesson 6 — bits the prompt-architecture widget needs.
+    // filenameSlug: kebab-case fragment for the .md filename. Prefer
+    // the user's full_name; fall back to the email's local part. Both
+    // get aggressively normalised — no spaces, no special chars.
+    const filenameSlug = slugifyForFilename(
+      profile.full_name?.trim() ||
+        (profile.email ?? "").split("@")[0] ||
+        "user",
+    );
+    // preferredToolDisplay: human-readable name pulled from the tool
+    // catalog. Italian and English both fall back to "il tuo tool" /
+    // "your tool" if the user hasn't picked one.
+    const preferredToolDisplay = (() => {
+      if (!profile.preferred_tool) {
+        return lang === "it" ? "il tuo tool" : "your tool";
+      }
+      const tool = getToolBySlug(profile.preferred_tool);
+      if (tool) return tool.display_name ?? tool.name;
+      return lang === "it" ? "il tuo tool" : "your tool";
+    })();
 
     return (
       <LessonV3View
@@ -184,6 +208,8 @@ export default async function LessonPage({ params }: PageProps) {
         userId={user.id}
         glossarySeen={profile.glossary_seen}
         lang={lang}
+        filenameSlug={filenameSlug}
+        preferredToolDisplay={preferredToolDisplay}
       />
     );
   }
@@ -335,4 +361,20 @@ export default async function LessonPage({ params }: PageProps) {
       />
     </LessonShell>
   );
+}
+
+// Conservative kebab-case slug — used in the .md filename for the
+// Lesson 6 prompt download. Ascii-fold is best-effort; non-Latin
+// users get a safe "user" fallback to avoid producing filenames the
+// browser refuses to download.
+function slugifyForFilename(input: string): string {
+  const trimmed = input.trim().toLowerCase();
+  if (trimmed.length === 0) return "user";
+  const ascii = trimmed
+    .normalize("NFKD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  if (ascii.length === 0) return "user";
+  return ascii.slice(0, 40);
 }

@@ -248,6 +248,9 @@ export type Database = {
           // (broken-session debugger). Same isolation as the other
           // per-lesson counters.
           debug_attempts_count: number;
+          // Lesson 6 — counter for /api/lesson-architecture-prompt
+          // calls (prompt-architecture hero widget). Same pattern.
+          architecture_attempts_count: number;
           updated_at: string;
         };
         Insert: {
@@ -259,6 +262,7 @@ export type Database = {
           context_attempts_count?: number;
           constraints_attempts_count?: number;
           debug_attempts_count?: number;
+          architecture_attempts_count?: number;
           updated_at?: string;
         };
         Update: {
@@ -270,6 +274,7 @@ export type Database = {
           context_attempts_count?: number;
           constraints_attempts_count?: number;
           debug_attempts_count?: number;
+          architecture_attempts_count?: number;
           updated_at?: string;
         };
         Relationships: [];

@@ -61,6 +61,13 @@ import {
   type BrokenSessionDebuggerStrings,
 } from "./steps/BrokenSessionDebugger";
 import { ErrorTaxonomyBlocks } from "./steps/ErrorTaxonomyBlocks";
+import { PhaseMappingBlocks } from "./steps/PhaseMappingBlocks";
+import {
+  PromptArchitecture,
+  type PromptArchitectureStrings,
+  type GeneratedPromptBlocks,
+} from "./steps/PromptArchitecture";
+import type { PromptArchitecturePillarKey } from "@/types";
 import {
   GlossaryProvider,
   type GlossaryStrings,
@@ -88,6 +95,7 @@ export interface LessonV3ViewStrings {
   contextEditor: ContextPromptEditorStrings;
   constraintsEditor: ConstraintsEditorStrings;
   brokenSessionDebugger: BrokenSessionDebuggerStrings;
+  promptArchitecture: PromptArchitectureStrings;
   chat: import("./SparkChat").SparkChatStrings;
   // Glossario Vivo — popover chrome strings + the prefill template
   // used when the user clicks "approfondisci" inside a term popover.
@@ -116,6 +124,13 @@ interface Props {
   // attenuated style on subsequent occurrences) and the lesson lang.
   glossarySeen: string[];
   lang: Lang;
+  // Lesson 6 prompt-architecture widget needs:
+  //   - a slug for the .md filename (full_name slugified, falls back
+  //     to email prefix at the page level)
+  //   - the display name of the user's preferred tool (Cursor / Claude
+  //     Code / …) for Spark's celebration line
+  filenameSlug: string;
+  preferredToolDisplay: string;
 }
 
 export function LessonV3View({
@@ -130,6 +145,8 @@ export function LessonV3View({
   userId,
   glossarySeen,
   lang,
+  filenameSlug,
+  preferredToolDisplay,
 }: Props) {
   const totalSteps = lesson.steps.length;
   const safeInitialStep = Math.min(
@@ -321,6 +338,8 @@ export function LessonV3View({
               updateStepState,
               strings,
               steps: lesson.steps,
+              filenameSlug,
+              preferredToolDisplay,
               onArchetype: (key) => {
                 archetypeRef.current = key;
               },
@@ -396,6 +415,10 @@ interface RenderContext {
   updateStepState: (stepId: string, value: unknown) => void;
   steps: LessonV3Step[];
   strings: LessonV3ViewStrings;
+  // Lesson 6 — passed through to PromptArchitecture for the .md
+  // download filename and Spark's celebration template.
+  filenameSlug: string;
+  preferredToolDisplay: string;
   onArchetype: (key: string) => void;
   onChoicePick: (step: ChoiceStepType, optionKey: string) => void;
   goNext: () => void;
@@ -409,6 +432,8 @@ function renderStep(step: LessonV3Step, ctx: RenderContext) {
       return <PrincipleStep step={step} />;
     case "error_taxonomy":
       return <ErrorTaxonomyBlocks step={step} />;
+    case "phase_mapping":
+      return <PhaseMappingBlocks step={step} />;
     case "input":
       return (
         <InputStep
@@ -544,6 +569,34 @@ function renderStep(step: LessonV3Step, ctx: RenderContext) {
             }
             onAdvance={ctx.goNext}
             strings={ctx.strings.brokenSessionDebugger}
+          />
+        );
+      }
+      if (step.widget === "prompt_architecture") {
+        return (
+          <PromptArchitecture
+            step={step}
+            userId={ctx.userId}
+            filenameSlug={ctx.filenameSlug}
+            preferredToolDisplay={ctx.preferredToolDisplay}
+            state={
+              ctx.stepState[step.id] as
+                | {
+                    result?: InteractiveStepResult;
+                    finalOrder?: PromptArchitecturePillarKey[];
+                    generatedBlocks?: GeneratedPromptBlocks;
+                  }
+                | undefined
+            }
+            onComplete={(result, extras) =>
+              ctx.updateStepState(step.id, {
+                result,
+                finalOrder: extras.finalOrder,
+                generatedBlocks: extras.generatedBlocks,
+              })
+            }
+            onAdvance={ctx.goNext}
+            strings={ctx.strings.promptArchitecture}
           />
         );
       }
@@ -769,6 +822,7 @@ function canAdvanceFromStep(
     case "principle":
     case "reward":
     case "error_taxonomy":
+    case "phase_mapping":
       return true;
     case "input": {
       const s = stepState[step.id] as

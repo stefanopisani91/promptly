@@ -582,7 +582,8 @@ export type InteractiveWidgetType =
   | "claudemd_editor"
   | "context_prompt_editor"
   | "constraints_editor"
-  | "broken_session_debugger";
+  | "broken_session_debugger"
+  | "prompt_architecture";
 
 export interface ClaudemdProjectOption {
   // Stable key used by the evaluator + saved in stepState.
@@ -818,7 +819,53 @@ export interface InteractiveStep extends StepBase {
   constraints_config?: ConstraintsEditorConfig;
   // Lesson 5 — required when widget === "broken_session_debugger".
   broken_session_config?: BrokenSessionDebuggerConfig;
+  // Lesson 6 — required when widget === "prompt_architecture".
+  prompt_architecture_config?: PromptArchitectureConfig;
 }
+
+// ─── Lesson 6 — Prompt architecture (hero asset, Lezione6_Blueprint §13) ─
+//
+// Drag-and-drop of 4 named pillars (CONTEXT / CONSTRAINTS / TASK /
+// VERIFICATION) into a vertical canvas. The correct order is fixed and
+// counter-intuitive: constraints BEFORE task. On a perfect drop the
+// pillars dissolve into a personalised daily prompt the user can copy
+// or download as .md. Hero asset for the landing page.
+
+export type PromptArchitecturePillarKey =
+  | "context"
+  | "constraints"
+  | "task"
+  | "verification";
+
+export interface PromptArchitecturePillar {
+  // Stable id used to validate order + map back to colours / icons in
+  // the component. Not surfaced as copy.
+  key: PromptArchitecturePillarKey;
+  // Glyph shown on the card. Single emoji.
+  icon: string;
+  // Short uppercase label rendered on the card.
+  title: string;
+  // Italic helper line under the title ("cosa stiamo costruendo", etc.).
+  description: string;
+}
+
+export interface PromptArchitectureConfig {
+  // Eyebrow above the canvas ("IL TUO PROMPT GIORNALIERO" / similar).
+  canvas_title: string;
+  // Helper line above the canvas that names the pattern.
+  canvas_subtitle: string;
+  // Empty-canvas hint shown before any pillar is placed.
+  empty_hint: string;
+  // The 4 pillars in their default (idle) order — the order they
+  // appear in the bottom row before the user starts dragging. Not
+  // related to the correct drop order; the validator enforces the
+  // hard-coded CONTEXT → CONSTRAINTS → TASK → VERIFICATION sequence.
+  pillars: PromptArchitecturePillar[];
+  // Header above the bottom-row pillar tray ("I 4 pilastri").
+  pillars_tray_label: string;
+}
+
+
 
 // ─── Lesson 5 — Error taxonomy block (Lezione5_Blueprint.md §step 8) ──
 //
@@ -860,6 +907,48 @@ export interface ErrorTaxonomyStep extends StepBase {
   closing_caption: string;
 }
 
+// ─── Lesson 6 — Phase mapping block (Lezione6_Blueprint §step 8) ──────
+//
+// Hierarchical "phase → lesson(s)" map. Renders 4 phases with a
+// variable list of lesson references inside each. Pure presentation,
+// staggered reveal, no user input.
+
+export interface PhaseMappingLessonRef {
+  // Short label, e.g. "Lezione 2 — CLAUDE.md".
+  label: string;
+  // Optional emphasis flag — when true the line is rendered with
+  // brand-orange highlight to underline the counter-intuitive
+  // "constraints BEFORE task" insight (used on the constraints line
+  // inside the EXECUTION phase).
+  emphasised?: boolean;
+}
+
+export interface PhaseMappingPhase {
+  // Stable key for analytics + colour mapping.
+  key: "setup" | "context" | "execution" | "verification";
+  // Glyph rendered before the phase title.
+  icon: string;
+  // Phase number string ("1", "2", …) — kept as text so the JSON
+  // author can localise if ever needed.
+  number: string;
+  // Short uppercase title (e.g. "SETUP").
+  title: string;
+  // Mapped lessons inside this phase.
+  lessons: PhaseMappingLessonRef[];
+}
+
+export interface PhaseMappingStep extends StepBase {
+  type: "phase_mapping";
+  // Optional Spark intro line above the grid.
+  intro?: string;
+  // Optional eyebrow rendered as a centred banner ("IL WORKFLOW").
+  banner?: string;
+  // Exactly 4 phases — validator enforces this.
+  phases: PhaseMappingPhase[];
+  // Spark's closing line shown after the last phase settles in.
+  closing_caption: string;
+}
+
 export interface ArchetypeRevealConfig {
   bonus_xp: number;
   archetypes: Array<{
@@ -890,7 +979,8 @@ export type LessonV3Step =
   | ChoiceStep
   | InteractiveStep
   | RewardStep
-  | ErrorTaxonomyStep;
+  | ErrorTaxonomyStep
+  | PhaseMappingStep;
 
 export interface LessonV3Content {
   id: string;

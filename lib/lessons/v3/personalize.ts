@@ -90,6 +90,14 @@ export interface PersonaliseProfileSlice {
   project_clarity: ProjectClarity | null;
   experience_level: ExperienceLevel | null;
   preferred_tool: string | null;
+  // Lesson 6 — final step cites the user's compressed motivation
+  // back to them ("Mi hai detto: «…»"). Falls back to a generic
+  // line when null (legacy users / skipped onboarding step).
+  deep_motivation_compressed: string | null;
+}
+
+export interface Mindset06Copy {
+  motivationFallback: string;
 }
 
 export interface PersonaliseCopy {
@@ -98,6 +106,7 @@ export interface PersonaliseCopy {
   mindset03: Mindset03Copy;
   mindset04: Mindset04Copy;
   mindset05: Mindset05Copy;
+  mindset06: Mindset06Copy;
 }
 
 /**
@@ -123,6 +132,9 @@ export function personaliseLessonForUser(
   }
   if (lesson.id === "mindset-05") {
     return personaliseMindset05(lesson, profile, copy.mindset05);
+  }
+  if (lesson.id === "mindset-06") {
+    return personaliseMindset06(lesson, profile, copy.mindset06);
   }
   return lesson;
 }
@@ -401,4 +413,41 @@ function pickMindset05Step3Variant(
     default:
       return null;
   }
+}
+
+// ─── Lesson 6 — outro motivation interpolation ────────────────────────
+//
+// The closing paragraph of mindset-06 ships with a {deep_motivation}
+// placeholder. We replace it with the user's Haiku-compressed
+// motivation (≤100 char) so Spark "remembers" what the user said back
+// at lesson 1 — the narrative crown of the Path. Falls back to a
+// generic line when the column is null (skipped onboarding step).
+
+function personaliseMindset06(
+  lesson: LessonV3Content,
+  profile: PersonaliseProfileSlice,
+  copy: Mindset06Copy,
+): LessonV3Content {
+  const motivation =
+    profile.deep_motivation_compressed?.trim() &&
+    profile.deep_motivation_compressed.trim().length > 0
+      ? profile.deep_motivation_compressed.trim()
+      : copy.motivationFallback;
+
+  let touched = false;
+  const steps = lesson.steps.map((step) => {
+    if (step.id !== "outro-path-completed") return step;
+    if (step.type !== "text") return step;
+    if (!step.paragraphs.some((p) => p.includes("{deep_motivation}")))
+      return step;
+    touched = true;
+    return {
+      ...step,
+      paragraphs: step.paragraphs.map((p) =>
+        p.replace("{deep_motivation}", motivation),
+      ),
+    } satisfies TextStep;
+  });
+  if (!touched) return lesson;
+  return { ...lesson, steps };
 }

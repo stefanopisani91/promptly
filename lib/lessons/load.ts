@@ -270,7 +270,8 @@ function isLessonV3Step(value: unknown): value is LessonV3Step {
         b.widget !== "claudemd_editor" &&
         b.widget !== "context_prompt_editor" &&
         b.widget !== "constraints_editor" &&
-        b.widget !== "broken_session_debugger"
+        b.widget !== "broken_session_debugger" &&
+        b.widget !== "prompt_architecture"
       ) {
         return false;
       }
@@ -502,6 +503,87 @@ function isLessonV3Step(value: unknown): value is LessonV3Step {
             "number"
         ) {
           return false;
+        }
+      }
+      if (b.widget === "prompt_architecture") {
+        // Lesson 6 — drag-and-drop hero. Validates the 4 pillars and
+        // their mandatory presentation strings. Order is enforced
+        // client-side and hard-coded (CONTEXT → CONSTRAINTS → TASK →
+        // VERIFICATION); the JSON only declares the labels and icons,
+        // never the correct order.
+        const cfg = b.prompt_architecture_config as
+          | Record<string, unknown>
+          | undefined;
+        if (!cfg || typeof cfg !== "object") return false;
+        if (
+          typeof cfg.canvas_title !== "string" ||
+          typeof cfg.canvas_subtitle !== "string" ||
+          typeof cfg.empty_hint !== "string" ||
+          typeof cfg.pillars_tray_label !== "string"
+        ) {
+          return false;
+        }
+        if (!Array.isArray(cfg.pillars) || cfg.pillars.length !== 4)
+          return false;
+        const PILLAR_KEYS = new Set([
+          "context",
+          "constraints",
+          "task",
+          "verification",
+        ]);
+        const seenPillars = new Set<string>();
+        for (const p of cfg.pillars) {
+          if (typeof p !== "object" || p === null) return false;
+          const pp = p as Record<string, unknown>;
+          if (typeof pp.key !== "string" || !PILLAR_KEYS.has(pp.key))
+            return false;
+          if (seenPillars.has(pp.key)) return false;
+          seenPillars.add(pp.key);
+          if (
+            typeof pp.icon !== "string" ||
+            typeof pp.title !== "string" ||
+            typeof pp.description !== "string"
+          ) {
+            return false;
+          }
+        }
+        if (seenPillars.size !== 4) return false;
+      }
+      return true;
+    }
+    case "phase_mapping": {
+      // Lesson 6 step 8 — hierarchical phase → lessons map.
+      if (typeof b.closing_caption !== "string") return false;
+      if (!Array.isArray(b.phases) || b.phases.length !== 4) return false;
+      const PHASE_KEYS = new Set([
+        "setup",
+        "context",
+        "execution",
+        "verification",
+      ]);
+      const seenPhases = new Set<string>();
+      for (const ph of b.phases) {
+        if (typeof ph !== "object" || ph === null) return false;
+        const pp = ph as Record<string, unknown>;
+        if (typeof pp.key !== "string" || !PHASE_KEYS.has(pp.key))
+          return false;
+        if (seenPhases.has(pp.key)) return false;
+        seenPhases.add(pp.key);
+        if (
+          typeof pp.icon !== "string" ||
+          typeof pp.number !== "string" ||
+          typeof pp.title !== "string"
+        ) {
+          return false;
+        }
+        if (!Array.isArray(pp.lessons) || pp.lessons.length === 0)
+          return false;
+        for (const ls of pp.lessons) {
+          if (typeof ls !== "object" || ls === null) return false;
+          const ll = ls as Record<string, unknown>;
+          if (typeof ll.label !== "string") return false;
+          if (ll.emphasised !== undefined && typeof ll.emphasised !== "boolean")
+            return false;
         }
       }
       return true;

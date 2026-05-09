@@ -761,6 +761,140 @@ h6 {
 }
 
 /* ─────────────────────────────────────────────────────────────
+   LESSON 6 — Prompt architecture (hero asset)
+   Idle "breathing" pulse on the empty canvas frame + a
+   wrong-answer pulse on misplaced pillars. Both respect
+   prefers-reduced-motion.
+───────────────────────────────────────────────────────────── */
+@keyframes prompt-arch-canvas-breathe {
+  0%, 100% { border-color: rgba(254, 215, 170, 0.5); }
+  50%      { border-color: rgba(251, 146, 60, 0.85); }
+}
+.prompt-arch-canvas-idle {
+  animation: prompt-arch-canvas-breathe 3s ease-in-out infinite;
+  will-change: border-color;
+}
+
+@keyframes prompt-arch-pillar-wrong {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+  50%      { box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.25); }
+}
+.prompt-arch-pillar-pulse-wrong {
+  animation: prompt-arch-pillar-wrong 800ms ease-in-out 2;
+}
+
+/* Museum-quality serif headline used above the canvas
+   ("L'Architettura"). Falls back through a chain of high-quality
+   serif faces; on Mac this resolves to Georgia, on iOS to
+   Times New Roman, on Windows to Georgia. We don't ship a Google
+   Font for this single headline — the system serif chain is good
+   enough at the size we use it (text-2xl, sparingly). */
+.prompt-arch-title-serif {
+  font-family:
+    "Cormorant Garamond", "Playfair Display", Georgia,
+    "Times New Roman", "Hoefler Text", serif;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  font-feature-settings: "kern", "liga";
+}
+
+/* Geometric symbol on each pillar — 60px, colour driven by an inline
+   `color` style fed from the palette per pillar key. The
+   `font-feature-settings: "tnum"` keeps the glyph optically centred
+   across browsers (some render the bullet character with side-
+   bearing). */
+.prompt-arch-symbol {
+  font-size: 60px;
+  line-height: 1;
+  display: block;
+  text-align: center;
+  margin-bottom: 16px;
+  font-feature-settings: "tnum";
+}
+
+/* Linear / Vercel-style multi-layer shadow on each pillar, plus a
+   subtle 2px lift on hover. `box-shadow` is animated; `transform`
+   is animated ONLY when the pillar isn't being dragged (the
+   `.is-dragging` class drops the transform transition so dnd-kit's
+   per-frame translate3d isn't slowed down by CSS). */
+.prompt-arch-pillar {
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 4px 8px rgba(0, 0, 0, 0.04),
+    0 16px 32px rgba(0, 0, 0, 0.06);
+  transition:
+    box-shadow 200ms ease-out,
+    transform 200ms ease-out;
+}
+/* Subliminal "light from above" — a 1px gradient line tracking the
+   pillar's primary colour. The component sets `--highlight-color`
+   inline per pillar; we fall back to a neutral slate so the rule
+   degrades gracefully if the var is missing. */
+.prompt-arch-pillar::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 12px;
+  right: 12px;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    var(--highlight-color, #94a3b8) 50%,
+    transparent 100%
+  );
+  opacity: 0.4;
+  pointer-events: none;
+}
+.prompt-arch-pillar:hover {
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.06),
+    0 8px 16px rgba(0, 0, 0, 0.06),
+    0 24px 48px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+.prompt-arch-pillar.is-dragging {
+  /* During drag dnd-kit owns the transform every frame — disable
+     the CSS transition on transform to avoid the lag we hit before
+     (the pillar visibly trailing the cursor). Shadow keeps animating
+     because it's harmless. */
+  transition: box-shadow 200ms ease-out;
+}
+.prompt-arch-pillar.is-dragging:hover {
+  /* Forfeit the hover lift while dragging — the inline translate3d
+     from dnd-kit already moves the pillar; layering the hover
+     translateY would fight it. */
+  transform: none;
+}
+
+/* Empty-slot invitation pulse (T4). Only runs when the canvas is
+   empty AND no drag is in flight — the component drops the class
+   the moment a drag starts so the slot under the cursor can show
+   its colour-matched glow without competing with the pulse. */
+@keyframes prompt-arch-slot-pulse {
+  0%, 100% {
+    border-color: rgb(214 211 209); /* stone-300 */
+    background-color: transparent;
+  }
+  50% {
+    border-color: rgb(251 146 60); /* orange-400 */
+    background-color: rgba(251, 146, 60, 0.05);
+  }
+}
+.prompt-arch-slot-pulse-1 {
+  animation: prompt-arch-slot-pulse 2.4s ease-in-out infinite;
+}
+.prompt-arch-slot-pulse-2 {
+  animation: prompt-arch-slot-pulse 2.4s ease-in-out 0.6s infinite;
+}
+.prompt-arch-slot-pulse-3 {
+  animation: prompt-arch-slot-pulse 2.4s ease-in-out 1.2s infinite;
+}
+.prompt-arch-slot-pulse-4 {
+  animation: prompt-arch-slot-pulse 2.4s ease-in-out 1.8s infinite;
+}
+
+/* ─────────────────────────────────────────────────────────────
    LESSON 5 — Broken-session debugger
    Suspicious-segment underline (orange / red) + a 2-second
    attention-pulse fired once on first paint of the mockup so
@@ -983,7 +1117,13 @@ h6 {
   .option-card-idle-pulse,
   .option-card-bounce-in,
   .accordion-section-idle-pulse,
-  .broken-session-pulse {
+  .broken-session-pulse,
+  .prompt-arch-canvas-idle,
+  .prompt-arch-pillar-pulse-wrong,
+  .prompt-arch-slot-pulse-1,
+  .prompt-arch-slot-pulse-2,
+  .prompt-arch-slot-pulse-3,
+  .prompt-arch-slot-pulse-4 {
     animation: none !important;
     opacity: 1;
     transform: none;

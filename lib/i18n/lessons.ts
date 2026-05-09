@@ -443,6 +443,69 @@ export interface LessonsCopy {
         future_control: string;
       };
     };
+    // Lesson 6 — final-prompt-injection step (outro-path-completed).
+    // The lesson JSON ships the paragraphs with a {deep_motivation}
+    // placeholder; the personalisation layer replaces it with the
+    // user's compressed motivation. We don't define a separate copy
+    // shape here because the only swap is a one-line interpolation.
+    mindset06: {
+      // Fallback motivation line when the user has no
+      // deep_motivation_compressed (legacy / skipped onboarding step).
+      // Kept short so the surrounding paragraph still reads clean.
+      motivationFallback: string;
+    };
+    // Lesson 6 — prompt architecture hero widget. Dispatched from
+    // LessonV3View when step.widget === "prompt_architecture".
+    promptArchitecture: {
+      // Counter strings.
+      attemptCounterTemplate: string;
+      // Spark's awaiting line before any pillar is dropped.
+      awaitingPrompt: string;
+      // Inline feedback when the user runs out of attempts and we
+      // auto-reveal the correct order.
+      autoReveal: string;
+      // Spark celebration line shown next to the generated prompt.
+      // Includes a {tool} placeholder replaced with the user's
+      // preferred_tool display name (or "il tuo tool" when null).
+      celebrationTemplate: string;
+      // Section labels for the generated prompt blocks.
+      sectionLabels: {
+        context: string;
+        constraints: string;
+        task: string;
+        verification: string;
+      };
+      // Default body text for the TASK section — left intentionally
+      // generic so the user fills it with the day's task.
+      taskPlaceholder: string;
+      // Skeleton fallbacks for the auto-generated CONTEXT / CONSTRAINTS
+      // / VERIFICATION when the AI generation can't run (rate-limited,
+      // network error, no project_description). Kept generic, the
+      // real generation produces project-specific text.
+      fallbackBlocks: {
+        context: string;
+        constraints: string;
+        verification: string;
+      };
+      // CTAs.
+      copyCta: string;
+      copiedToast: string;
+      downloadCta: string;
+      finalCta: string;
+      // Errors (mirrors the other widgets so the user sees consistent
+      // messaging across lessons).
+      networkError: string;
+      apiError: string;
+      rateLimitError: string;
+      dailyQuotaExhausted: string;
+      // Markdown header line at the top of the downloaded file.
+      markdownHeader: string;
+      // Markdown footer line at the bottom of the downloaded file.
+      markdownFooter: string;
+      // Filename prefix — the date and a slug derived from the user's
+      // name/email get appended at runtime.
+      filenamePrefix: string;
+    };
   };
   outro: {
     title: string;
@@ -755,6 +818,38 @@ const it: LessonsCopy = {
         recalibration: "ricalibrazione",
         future_control: "vincolo futuro",
       },
+    },
+    mindset06: {
+      motivationFallback: "voglio imparare a costruire con l'AI",
+    },
+    promptArchitecture: {
+      attemptCounterTemplate: "Tentativo {current} / {max}",
+      awaitingPrompt: "Trascina i 4 pilastri nello spazio sopra. Ricorda l'ordine controintuitivo.",
+      autoReveal: "Va bene, te lo mostro io. L'ordine giusto è CONTESTO → VINCOLI → TASK → VERIFICA. Adesso te lo metto a posto da sola così lo memorizzi.",
+      celebrationTemplate: "Eccolo. Il tuo prompt giornaliero. Domani mattina lo apri, lo incolli in {tool}, modifichi solo il TASK del giorno, e lavori. Hai costruito il tuo manuale operativo. È tuo. Funziona.",
+      sectionLabels: {
+        context: "CONTESTO",
+        constraints: "VINCOLI",
+        task: "TASK",
+        verification: "VERIFICA",
+      },
+      taskPlaceholder: "[Sostituisci con il task del giorno: cosa vuoi che l'AI faccia oggi, in 1-2 frasi specifiche.]",
+      fallbackBlocks: {
+        context: "Sto costruendo [il mio progetto]. Stack: [da definire]. File principali in /src e /lib.",
+        constraints: "NON modificare i file in /config senza chiedermi. NON aggiungere nuove dipendenze npm. Mostrami il diff prima di applicare modifiche al database.",
+        verification: "Quando hai finito: runa i test esistenti, mostrami il diff, e confermami che le altre route continuano a funzionare.",
+      },
+      copyCta: "📋 Copia il prompt",
+      copiedToast: "Copiato negli appunti",
+      downloadCta: "⬇️ Scarica come .md",
+      finalCta: "Continua →",
+      networkError: "Sono offline. Non è colpa tua. Riprova tra poco.",
+      apiError: "Qualcosa non ha funzionato. Riprova tra un attimo.",
+      rateLimitError: "Troppe richieste vicine. Dammi un momento.",
+      dailyQuotaExhausted: "Per oggi hai esaurito le generazioni AI che posso farti. Torna domani.",
+      markdownHeader: "# Il mio prompt giornaliero — Promptly Path 1",
+      markdownFooter: "Generato con Promptly — learnpromptly.app · Workflow: CONTESTO → VINCOLI → TASK → VERIFICA",
+      filenamePrefix: "prompt-giornaliero",
     },
     chat: {
       launcherLabel: "Chiedi a Spark",
@@ -1189,6 +1284,38 @@ const en: LessonsCopy = {
         recalibration: "recalibration",
         future_control: "future control",
       },
+    },
+    mindset06: {
+      motivationFallback: "I want to learn to build with AI",
+    },
+    promptArchitecture: {
+      attemptCounterTemplate: "Try {current} / {max}",
+      awaitingPrompt: "Drag the 4 pillars into the space above. Remember the counter-intuitive order.",
+      autoReveal: "All right, let me show you. The right order is CONTEXT → CONSTRAINTS → TASK → VERIFICATION. I'll arrange it now so it sticks.",
+      celebrationTemplate: "There. Your daily prompt. Tomorrow morning you open it, paste it into {tool}, edit only the TASK of the day, and work. You built your own operating manual. It's yours. It works.",
+      sectionLabels: {
+        context: "CONTEXT",
+        constraints: "CONSTRAINTS",
+        task: "TASK",
+        verification: "VERIFICATION",
+      },
+      taskPlaceholder: "[Replace with today's task: what do you want the AI to do today, in 1-2 specific sentences.]",
+      fallbackBlocks: {
+        context: "I'm building [my project]. Stack: [TBD]. Main files in /src and /lib.",
+        constraints: "DO NOT modify files in /config without asking me. DO NOT add new npm dependencies. Show me the diff before applying database changes.",
+        verification: "When you're done: run the existing tests, show me the diff, and confirm the other routes still work.",
+      },
+      copyCta: "📋 Copy the prompt",
+      copiedToast: "Copied to clipboard",
+      downloadCta: "⬇️ Download as .md",
+      finalCta: "Continue →",
+      networkError: "I'm offline. Not your fault. Try again in a bit.",
+      apiError: "Something went wrong. Try again in a moment.",
+      rateLimitError: "Too many requests. Give me a moment.",
+      dailyQuotaExhausted: "You've used all the AI generations I can give you today. Come back tomorrow.",
+      markdownHeader: "# My daily prompt — Promptly Path 1",
+      markdownFooter: "Generated with Promptly — learnpromptly.app · Workflow: CONTEXT → CONSTRAINTS → TASK → VERIFICATION",
+      filenamePrefix: "daily-prompt",
     },
     chat: {
       launcherLabel: "Ask Spark",
