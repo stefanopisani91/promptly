@@ -109,6 +109,7 @@ export default async function LessonPage({ params }: PageProps) {
       mindset02: lessonsCopy.v3.mindset02,
       mindset03: lessonsCopy.v3.mindset03,
       mindset04: lessonsCopy.v3.mindset04,
+      mindset05: lessonsCopy.v3.mindset05,
     });
 
     const persisted = await getLessonProgress(supabase, user.id, lesson.id);
@@ -160,6 +161,7 @@ export default async function LessonPage({ params }: PageProps) {
       claudemdEditor: lessonsCopy.v3.claudemdEditor,
       contextEditor: lessonsCopy.v3.contextEditor,
       constraintsEditor: lessonsCopy.v3.constraintsEditor,
+      brokenSessionDebugger: lessonsCopy.v3.brokenSessionDebugger,
       chat: lessonsCopy.v3.chat,
       glossary: lessonsCopy.v3.glossary,
     };

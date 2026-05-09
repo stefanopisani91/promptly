@@ -34,7 +34,7 @@
       "spark_state": "thinking",
       "paragraphs": [
         "You know when the AI «invents» a library that doesn't exist? Or writes code that doesn't run? Or hands you solutions that have nothing to do with your project?",
-        "Everyone blames the AI. People call it «hallucination». Sounds medical.",
+        "Everyone blames the AI. People call it «[[term:allucinazione]]hallucination[[/term]]». Sounds medical.",
         "Here's the uncomfortable truth: in 90% of cases, it's not the AI failing. It's you giving it nothing to start from."
       ],
       "vignettes": [

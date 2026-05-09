@@ -34,7 +34,7 @@
       "spark_state": "thinking",
       "paragraphs": [
         "Hai presente quando l'AI «inventa» una libreria che non esiste? O scrive codice che non gira? O ti dà soluzioni che non c'entrano niente con il tuo progetto?",
-        "Tutti danno la colpa all'AI. La gente la chiama «allucinazione». Sembra un termine medico.",
+        "Tutti danno la colpa all'AI. La gente la chiama «[[term:allucinazione]]allucinazione[[/term]]». Sembra un termine medico.",
         "Ti dico una cosa scomoda: nel 90% dei casi, non è l'AI che sbaglia. Sei tu che non le hai dato niente da cui partire."
       ],
       "vignettes": [

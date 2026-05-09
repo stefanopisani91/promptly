@@ -1,0 +1,345 @@
+{
+  "id": "mindset-05",
+  "format_version": 3,
+  "path_slug": "mindset",
+  "order": 5,
+  "title": "When AI fails, look at your prompt.",
+  "map_title": "AI fails, you fail",
+  "subtitle": "AI errors mirror your prompt.",
+  "difficulty": "beginner",
+  "estimated_minutes": 11,
+  "base_xp": 100,
+  "difficulty_bonus_xp": 0,
+  "icon": "/brand/lessons/mindset-05.svg",
+  "cliffhanger": "Tomorrow: the daily workflow of the serious vibe coder. The one that'll save you 20 hours a month — no exaggeration.",
+  "steps": [
+    {
+      "id": "intro-five-lessons",
+      "type": "text",
+      "spark_state": "idle",
+      "paragraphs": [
+        "Five lessons in. Second-to-last in Path 1.",
+        "Now I'll tell you something few people get. It's not the easiest, but it's the most freeing.",
+        "From today, AI errors stop being walls and start being clues. Let me show you how."
+      ],
+      "vignettes": [
+        { "short": "Worth it.", "full": "Trust me: worth it. This is what makes everything you've learned so far feel real." },
+        { "short": "Slow and steady.", "full": "You've got this. Slow and steady, one idea at a time." }
+      ]
+    },
+    {
+      "id": "story-fake-library",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "Let me tell you what happened to Stefano last week.",
+        "He was building Promptly. He asks me «add [[term:rate-limiting]]rate limiting[[/term]] to Spark's chat». I reply with perfect code that uses a library called `@anthropic/rate-guard`.",
+        "He installs it. Error: «package not found». Tries again. Error. Googles it. Nothing. The library doesn't exist. I made it up.",
+        "He knew about Promptly, knew about Anthropic, and still fell for it. Because he thought «the AI knows what it's saying»."
+      ],
+      "vignettes": [
+        { "short": "We invent. It happens.", "full": "We invent. It happens to the best of us. Now I'll tell you why." },
+        { "short": "Not malice.", "full": "Not malice. It's how we work." }
+      ]
+    },
+    {
+      "id": "hallucination-explainer",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "When I don't really know something, I make it up. Not out of spite — that's how I'm built.",
+        "Think about how you write a sentence: you pick each word based on the one before. I do the same, but across all the world's knowledge.",
+        "If the first word I pick is wrong, the next ones go wrong to stay coherent with it. That's how [[term:allucinazione]]hallucinations[[/term]] are born."
+      ],
+      "vignettes": [
+        { "short": "Sounds rough.", "full": "Sounds rough, I know. But it's manageable, I promise." },
+        { "short": "Not bugs. The system.", "full": "Not bugs. It's how a probabilistic model fills the gaps." }
+      ]
+    },
+    {
+      "id": "principle-mirror",
+      "type": "principle",
+      "spark_state": "surprised",
+      "headline": "AI errors",
+      "emphasis": "mirror your prompt.",
+      "caption": "When you see an error, don't look at the AI. Look at the prompt you gave it. You find the gap. You fill it. The error is gone.",
+      "vignettes": [
+        { "short": "Sounds harsh.", "full": "Sounds harsh said like that. It's control you take back, not blame you take on." },
+        { "short": "Pocket it.", "full": "Pocket it. Every error you see from now on changes face." }
+      ]
+    },
+    {
+      "id": "mirror-meaning",
+      "type": "text",
+      "spark_state": "listening",
+      "paragraphs": [
+        "«Mirror» means: the error shows you a piece of your prompt that was weak.",
+        "AI invented a library? Mirror: you didn't say «only use already-installed libraries».",
+        "AI broke a working component? Mirror: you didn't set a protective constraint.",
+        "AI got the wrong meaning? Mirror: your prompt was ambiguous. Two interpretations existed and it picked the wrong one."
+      ],
+      "vignettes": [
+        { "short": "It all points back to you.", "full": "It all points back to what you wrote. And that's good news." },
+        { "short": "Good news.", "full": "If it depends on you, it depends on you. Exactly what we want." }
+      ]
+    },
+    {
+      "id": "error-blame-choice",
+      "type": "choice",
+      "spark_state": "listening",
+      "prompt": "Remember the story. The AI invented a library. Whose «fault» is it, given what you've understood so far?",
+      "options": [
+        {
+          "key": "ai_unreliable",
+          "label": "🛰️ The AI's. It made things up. It's unreliable."
+        },
+        {
+          "key": "user_missing_constraint",
+          "label": "🖱️ Stefano's. He didn't say «only use existing, already-installed libraries»."
+        },
+        {
+          "key": "no_one",
+          "label": "💾 Nobody's. It happens, it's the nature of AI."
+        }
+      ],
+      "vignettes": [
+        { "short": "Think before you click.", "full": "Think before you click. One looks obvious, one looks cynical, one is the key." }
+      ]
+    },
+    {
+      "id": "error-blame-reaction",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "Got it. Moving on.",
+        "Keep this in mind: the AI is unreliable on what it doesn't know. But it's the PROMPT that tells it what NOT to invent."
+      ],
+      "paragraphs_by_choice": {
+        "source_step_id": "error-blame-choice",
+        "by_key": {
+          "user_missing_constraint": [
+            "Exactly. Stefano knew about Anthropic, knew about Promptly, but didn't close the loop with the prompt.",
+            "Is the AI unreliable? Yes, on what it doesn't know. But it's the PROMPT that tells it what NOT to invent. The 🛰️ shifts blame. The 💾 is resignation. The 🖱️ is control."
+          ],
+          "ai_unreliable": [
+            "I see why you thought that. And it's also true — the AI has a limit. But if you stop at 🛰️, every error becomes a wall.",
+            "🖱️ is the most powerful answer. Stefano could have written «only use existing libraries». Three words, a world of errors avoided."
+          ],
+          "no_one": [
+            "💾 is resignation dressed up as acceptance.",
+            "Yes, it happens. But the right question isn't «whose fault is it», it's «how do I avoid it next time». 🖱️ gives you the lever."
+          ]
+        }
+      },
+      "vignettes": [
+        { "short": "No judgement.", "full": "No judgement. Moving on." },
+        { "short": "The lever is yours.", "full": "The lever is yours. You take it." }
+      ]
+    },
+    {
+      "id": "error-taxonomy",
+      "type": "error_taxonomy",
+      "spark_state": "idle",
+      "intro": "Now let me show you something beautiful. There are 4 kinds of error, and each one has a precise cure you've already learned.",
+      "pairs": [
+        {
+          "key": "omission",
+          "icon": "🕳️",
+          "title": "OMISSION",
+          "description": "The AI doesn't do something it should have done.",
+          "cure_title": "you needed more CONTEXT",
+          "cure_reference": "Lesson 3, level 1 (project)",
+          "mapping": "context"
+        },
+        {
+          "key": "invention",
+          "icon": "🌪️",
+          "title": "INVENTION",
+          "description": "The AI invents something that wasn't there. Hallucination.",
+          "cure_title": "you needed more CONTEXT",
+          "cure_reference": "Lesson 3, level 2 (code/files)",
+          "mapping": "context"
+        },
+        {
+          "key": "misinterpretation",
+          "icon": "🌀",
+          "title": "MISINTERPRETATION",
+          "description": "The AI gets one thing for another.",
+          "cure_title": "you needed more CONTEXT",
+          "cure_reference": "Lesson 3, clear, no ambiguity",
+          "mapping": "context"
+        },
+        {
+          "key": "propagation",
+          "icon": "💥",
+          "title": "PROPAGATION",
+          "description": "The AI breaks something that was already working.",
+          "cure_title": "you needed CONSTRAINTS",
+          "cure_reference": "Lesson 4, protective constraints",
+          "mapping": "constraints"
+        }
+      ],
+      "closing_caption": "Three out of four share the same cure: context. The fourth wants constraints. It all hangs together.",
+      "vignettes": [
+        { "short": "Memorise the 4.", "full": "Memorise the four. They come back in the next lesson." },
+        { "short": "It all hangs together.", "full": "Everything you've learned hangs together. You're building a system." }
+      ]
+    },
+    {
+      "id": "principle-information",
+      "type": "principle",
+      "spark_state": "surprised",
+      "headline": "Every error",
+      "emphasis": "is information.",
+      "caption": "An error isn't a failure. It's a data point. It tells you exactly where your prompt was weak. You read it, you fix it, you move on.",
+      "vignettes": [
+        { "short": "Works with you.", "full": "The error works with you, not against you. Changes everything." },
+        { "short": "Stop fearing it.", "full": "Stop fearing it. It's the most useful signal you can get." }
+      ]
+    },
+    {
+      "id": "hallucination-rules",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "Back to [[term:allucinazione]]hallucinations[[/term]] for a sec. It's important.",
+        "Modern AIs are more accurate than the ones from 2 years ago. But they still hallucinate. It's the nature of probabilistic models, not a bug.",
+        "Three rules to handle them. 1. Always verify specific names (libraries, functions, commands). The AI invents plausible names.",
+        "2. Be suspicious when the AI is «too sure» about things you didn't specify.",
+        "3. When a name sounds new to you, google it. Three seconds, no disaster."
+      ],
+      "vignettes": [
+        { "short": "Three checks, no paranoia.", "full": "Three checks, no paranoia. They become automatic." },
+        { "short": "Not bugs. System.", "full": "Not bugs. The system doing its job on an ambiguous input." }
+      ]
+    },
+    {
+      "id": "read-error-trick",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "Here's an operational trick. When the AI fails, ask 3 questions in 3 seconds.",
+        "1. What did it do that it shouldn't have? → look for a missing CONSTRAINT.",
+        "2. What didn't it do that it should have? → look for missing CONTEXT.",
+        "3. Did it get one thing for another? → look for AMBIGUITY in the prompt.",
+        "Three seconds, three questions, and you know where to look."
+      ],
+      "vignettes": [
+        { "short": "Mental drill.", "full": "Mental drill. Becomes instinct in a few sessions." },
+        { "short": "Reuse it always.", "full": "Reuse it on every project. It's the serious vibe coder's check." }
+      ]
+    },
+    {
+      "id": "quickwin-intro",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "Now I'm going to show you a real session. A conversation between a user and an AI that breaks down progressively.",
+        "Three messages, three replies, three disasters. You have to find the pivot point — the message where the user should have STOPPED and recalibrated.",
+        "Then write the stop message that would have saved the situation. Trust your gut. You've learned enough to recognise it."
+      ],
+      "vignettes": [
+        { "short": "No prompt at first.", "full": "No prompt to write at first. Just to read and understand." },
+        { "short": "It really happens like this.", "full": "It really happens like this. You'll recognise it the first time it hits you." }
+      ]
+    },
+    {
+      "id": "broken-session-quickwin",
+      "type": "interactive",
+      "spark_state": "listening",
+      "widget": "broken_session_debugger",
+      "intro": "Here's the session. Read it all, no rush. Once you've spotted where the user went wrong, tell me.",
+      "max_attempts": 3,
+      "broken_session_config": {
+        "disclaimer": "Simulation — reconstructed vibe-coding session",
+        "address_bar": "chat.ai-coding-tool.com/session-2384",
+        "messages": [
+          {
+            "role": "user",
+            "text": "Build me a login form for my app."
+          },
+          {
+            "role": "ai",
+            "severity": "warning",
+            "text": "I built a login form with email + password + Google OAuth + GitHub OAuth + Magic Link. I installed 4 new libraries (next-auth, @auth/google, @auth/github, magic-sdk). Done!",
+            "highlights": [
+              { "snippet": "Google OAuth + GitHub OAuth + Magic Link", "severity": "orange" },
+              { "snippet": "4 new libraries", "severity": "orange" }
+            ]
+          },
+          {
+            "role": "user",
+            "mood_emoji": "🤔",
+            "time_gap_label": "5 minutes later…",
+            "text": "Ok but the form doesn't work, it errors out."
+          },
+          {
+            "role": "ai",
+            "severity": "warning",
+            "text": "I added an advanced error-handling system using sentry-mock-shield. Should work now.",
+            "highlights": [
+              { "snippet": "sentry-mock-shield", "severity": "red" }
+            ]
+          },
+          {
+            "role": "user",
+            "mood_emoji": "😰",
+            "mood_background": "rose",
+            "time_gap_label": "12 minutes later…",
+            "text": "Now the other pages don't even open anymore!"
+          },
+          {
+            "role": "ai",
+            "severity": "critical",
+            "text": "I removed the auth middleware that was blocking the routes. They should open now.",
+            "highlights": [
+              { "snippet": "removed the auth middleware", "severity": "red" }
+            ]
+          }
+        ],
+        "pivot_question": "At which message should the user have STOPPED and recalibrated?",
+        "pivot_options": [
+          { "key": "after_response_1", "label": "After AI's 1st reply" },
+          { "key": "after_response_2", "label": "After AI's 2nd reply" },
+          { "key": "after_response_3", "label": "After AI's 3rd reply" },
+          { "key": "never_was_broken", "label": "Never, it was broken from the start" }
+        ],
+        "correct_pivot": "after_response_1",
+        "recovery_question": "Now you write the message the user should have sent AFTER the 1st reply to stop the disaster.",
+        "recovery_helper": "Use what you've learned. Name the overreach, recalibrate precisely, set a future constraint.",
+        "recovery_placeholder": "Eg: «Wait, I didn't ask for OAuth. I want ONLY email/password, no new libraries. Roll back what you did and start minimal. And going forward: if my request looks ambiguous, ask me before proceeding.»",
+        "healed_branch_label": "If instead you'd written this…",
+        "healed_ai_reply": "Got it. Rolling back OAuth, GitHub, Magic Link and the 4 libraries. Reducing to email + password as requested. Want me to show the diff before applying?",
+        "min_chars": 50,
+        "max_chars": 400,
+        "xp_by_case": {
+          "incomplete": 70,
+          "missing_one": 150,
+          "good": 220,
+          "excellent": 320,
+          "perfect": 400
+        }
+      },
+      "vignettes": [
+        { "short": "Be surgical.", "full": "Be surgical. The more concrete you are, the more I respect you as an AI." },
+        { "short": "Three tries. Use them well.", "full": "Three tries. On the second I'll tell you what's weak, on the third I'll tell you straight." },
+        { "short": "Keep the message.", "full": "The message you write you take with you. It'll save you in a real disaster, sooner or later." }
+      ]
+    },
+    {
+      "id": "outro-cliffhanger",
+      "type": "text",
+      "spark_state": "happy",
+      "paragraphs": [
+        "Lesson 5 done. You've got the full kit: context, constraints, debug. You can direct the AI AND read its errors.",
+        "Tomorrow I'll show you how I put it all together in my daily workflow. The one that'll save you 20 hours a month. No exaggeration.",
+        "You're at the second-to-last. Very few make it here. Don't quit now."
+      ],
+      "vignettes": [
+        { "short": "About to close Path 1.", "full": "You're about to close Path 1. Are you noticing it now?" },
+        { "short": "Few reach the end.", "full": "Few reach the end. The serious vibe coder is just around the corner." },
+        { "short": "See you tomorrow.", "full": "See you tomorrow. Last lesson of Path 1 — it's the one that puts everything together." }
+      ]
+    }
+  ]
+}

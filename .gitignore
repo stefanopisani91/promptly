@@ -53,3 +53,6 @@ app/api/qa-login/
 
 # Playwright MCP debug output (snapshot + console logs)
 .playwright-mcp/
+
+# Supabase CLI scratch/cache files
+supabase/.temp/

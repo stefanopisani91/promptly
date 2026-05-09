@@ -175,7 +175,32 @@
       "Bash(curl -s -X POST http://localhost:3000/api/qa-login -H \"x-qa-secret: 191c96321317d57f706f5846337fa4c40b81cde464e2b93f\" -H \"Content-Type: application/json\" -d '{\"email\":\"qa-test-A@promptly.test\",\"password\":\"GJKX5p7hDUXXfhXfa7UkVOGj\"}' -c /tmp/qa-cookies-A.txt -w \"\\\\nHTTP %{http_code}\\\\n\")",
       "Bash(curl -s -X POST http://localhost:3000/api/qa-login -H \"x-qa-secret: 191c96321317d57f706f5846337fa4c40b81cde464e2b93f\" -H \"Content-Type: application/json\" -d '{\"email\":\"qa-test-A@promptly.test\",\"password\":\"GJKX5p7hDUXXfhXfa7UkVOGj\"}' -i)",
       "Read(//Users/stefanopisani/cogetanopisani/DEV/01_Progetti/PROMPTLY/app/\\(app\\)/settings/profile/**)",
-      "Bash(echo \"exit=$?\")"
+      "Bash(echo \"exit=$?\")",
+      "Read(//Users/stefanopisani/cd/PROMPTLY/**)",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('content/it/mindset/03-context-matters.v3.json','utf8'\\)\\);console.log\\('IT v3 OK'\\)\")",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('content/en/mindset/03-context-matters.v3.json','utf8'\\)\\);console.log\\('EN v3 OK'\\)\")",
+      "Bash(git reset *)",
+      "Bash(rm .git/HEAD.lock *)",
+      "Bash(node -e 'JSON.parse\\(require\\('\\\\''fs'\\\\''\\).readFileSync\\('\\\\''__TRACKED_VAR__'\\\\'','\\\\''utf8'\\\\''\\)\\);console.log\\('\\\\''OK __TRACKED_VAR__'\\\\''\\)')",
+      "Bash(rm -rf /Users/stefanopisani/cd && ls /Users/stefanopisani/DEV/01_Progetti/PROMPTLY/supabase/migrations/ | tail -3)",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('content/it/mindset/04-constraints-save-life.v3.json','utf8'\\)\\);console.log\\('IT v3 OK'\\)\")",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('content/en/mindset/04-constraints-save-life.v3.json','utf8'\\)\\);console.log\\('EN v3 OK'\\)\")",
+      "Bash(pkill -f \"next dev\")",
+      "Bash(grep -nE \"^    constraintsEditor: \\\\{|^    chat: \\\\{|^    mindset04: \\\\{|^const en|^  \\\\},$\" /Users/stefanopisani/DEV/01_Progetti/PROMPTLY/lib/i18n/lessons.ts)",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('/Users/stefanopisani/DEV/01_Progetti/PROMPTLY/content/it/mindset/05-when-ai-fails.v3.json','utf8'\\)\\);console.log\\('IT v3 ✓'\\)\")",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('/Users/stefanopisani/DEV/01_Progetti/PROMPTLY/content/en/mindset/05-when-ai-fails.v3.json','utf8'\\)\\);console.log\\('EN v3 ✓'\\)\")",
+      "Bash(node -e ' *)",
+      "Bash(node --experimental-strip-types --no-warnings -e ' *)",
+      "Bash(npx supabase *)",
+      "Bash(supabase projects *)",
+      "Bash(node -e \"['it','en'].forEach\\(l=>{const j=JSON.parse\\(require\\('fs'\\).readFileSync\\('content/'+l+'/mindset/05-when-ai-fails.v3.json','utf8'\\)\\);const c=j.steps.find\\(s=>s.type==='interactive'\\).broken_session_config;console.log\\(l,'healed_ai_reply:',c.healed_ai_reply.length,'chars; healed_branch_label:',c.healed_branch_label?'yes':'no'\\);}\\)\")",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\\\\n\" -X POST http://localhost:3000/api/lesson-debug-evaluate -H \"Content-Type: application/json\" --data '{\"lessonId\":\"mindset-05\",\"stepId\":\"broken-session-quickwin\",\"recoveryMessage\":\"test test test test test test\"}')",
+      "Bash(ps -o pid,etime,command -p 93088)",
+      "Bash(node --env-file=.env.local -e ' *)",
+      "Bash(kill 93088)",
+      "Bash(curl -s -o /dev/null -w \"lesson-debug-evaluate route: HTTP %{http_code}\\\\n\" -X POST http://localhost:3000/api/lesson-debug-evaluate -H \"Content-Type: application/json\" --data '{}')",
+      "Read(//Users/stefanopisani/**)",
+      "Bash(node -e \"['it/mindset/05-when-ai-fails.v3','en/mindset/05-when-ai-fails.v3','it/mindset/03-context-matters.v3','en/mindset/03-context-matters.v3'].forEach\\(p=>{JSON.parse\\(require\\('fs'\\).readFileSync\\('content/'+p+'.json','utf8'\\)\\);console.log\\(p+' ✓'\\)}\\)\")"
     ],
     "additionalDirectories": [
       "/Users/stefanopisani/DEV/01_Progetti/PROMPTLY/.git",
@@ -183,7 +208,9 @@
       "/Users/stefanopisani/de01_Progetti",
       "/Users/stefanopisani/DEV/01_Progetti/PROMPTLY",
       "/private/tmp",
-      "/Users/stefanopisani/getanopisani/DEV/01_Progetti/PROMPTLY"
+      "/Users/stefanopisani/getanopisani/DEV/01_Progetti/PROMPTLY",
+      "/Users/stefanopisani/cd/PROMPTLY/supabase/migrations",
+      "/Users/stefanopisani/cd"
     ]
   }
 }

@@ -1,7 +1,7 @@
 // Server-side personalisation of V3 lesson content based on the user's
 // onboarding profile.
 //
-// Today four lessons opt-in:
+// Today five lessons opt-in:
 //   - mindset-01 — `input-motivation` step is replaced with a recap text
 //     card so we don't re-ask the user something they already answered
 //     during the 12-step profilazione (Profilazione.md spec, BUG #2 fix).
@@ -16,6 +16,11 @@
 //   - mindset-04 — Step 12 ("applied-example") swaps in three project-
 //     specific constraint examples when project_description is set, falls
 //     back to the generic three-constraint example otherwise.
+//   - mindset-05 — Step `hallucination-explainer` swaps between the
+//     "lettere mal messe" metaphor (beginner / tried_failed) and the
+//     "modello probabilistico" frame (working_on_it / advanced) so the
+//     depth of the explanation matches the user (Lezione5_Blueprint.md
+//     §step 3).
 //
 // Pure function, no I/O. The caller (app/(app)/lesson/[id]/page.tsx)
 // already owns the lesson + profile + i18n bundle, so we keep the rule
@@ -68,6 +73,18 @@ export interface Mindset04Copy {
   };
 }
 
+export interface Mindset05Copy {
+  // "hallucination-explainer" step paragraphs, four buckets keyed by
+  // experience_level. The beginner version uses the "lettere mal messe"
+  // metaphor; the advanced version uses the probabilistic-model framing.
+  step3: {
+    beginner: string[];
+    triedFailed: string[];
+    workingOnIt: string[];
+    advanced: string[];
+  };
+}
+
 export interface PersonaliseProfileSlice {
   project_description: string | null;
   project_clarity: ProjectClarity | null;
@@ -80,6 +97,7 @@ export interface PersonaliseCopy {
   mindset02: Mindset02Copy;
   mindset03: Mindset03Copy;
   mindset04: Mindset04Copy;
+  mindset05: Mindset05Copy;
 }
 
 /**
@@ -102,6 +120,9 @@ export function personaliseLessonForUser(
   }
   if (lesson.id === "mindset-04") {
     return personaliseMindset04(lesson, profile, copy.mindset04);
+  }
+  if (lesson.id === "mindset-05") {
+    return personaliseMindset05(lesson, profile, copy.mindset05);
   }
   return lesson;
 }
@@ -337,4 +358,47 @@ function pickMindset04Step12Variant(
     return copy.withProject(truncateProject(project));
   }
   return null;
+}
+
+// ─── Lesson 5 — Step "hallucination-explainer" depth swap ─────────────
+
+function personaliseMindset05(
+  lesson: LessonV3Content,
+  profile: PersonaliseProfileSlice,
+  copy: Mindset05Copy,
+): LessonV3Content {
+  let touched = false;
+  const steps = lesson.steps.map((step) => {
+    if (step.id !== "hallucination-explainer") return step;
+    if (step.type !== "text") return step;
+    const variant = pickMindset05Step3Variant(profile.experience_level, copy.step3);
+    if (!variant) return step;
+    touched = true;
+    return { ...step, paragraphs: variant } satisfies TextStep;
+  });
+  if (!touched) return lesson;
+  return { ...lesson, steps };
+}
+
+function pickMindset05Step3Variant(
+  level: ExperienceLevel | null,
+  copy: Mindset05Copy["step3"],
+): string[] | null {
+  // The JSON ships with the beginner "lettere mal messe" version. We
+  // only override when the user is past beginner so the more technical
+  // "modello probabilistico" framing replaces it. `tried_failed` users
+  // stay on the warmer metaphor — they tried, got burned, the metaphor
+  // resonates with that experience.
+  switch (level) {
+    case "beginner":
+      return copy.beginner;
+    case "tried_failed":
+      return copy.triedFailed;
+    case "working_on_it":
+      return copy.workingOnIt;
+    case "advanced":
+      return copy.advanced;
+    default:
+      return null;
+  }
 }

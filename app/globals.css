@@ -761,6 +761,30 @@ h6 {
 }
 
 /* ─────────────────────────────────────────────────────────────
+   LESSON 5 — Broken-session debugger
+   Suspicious-segment underline (orange / red) + a 2-second
+   attention-pulse fired once on first paint of the mockup so
+   the user's eye lands on the overreach / hallucination /
+   destructive op without us having to spell it out in copy.
+───────────────────────────────────────────────────────────── */
+.suspicious-orange {
+  border-bottom: 2px dotted #FB923C;
+  padding-bottom: 1px;
+}
+.suspicious-red {
+  border-bottom: 2px dotted #DC2626;
+  padding-bottom: 1px;
+  font-weight: 500;
+}
+@keyframes broken-session-attention-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.55; }
+}
+.broken-session-pulse {
+  animation: broken-session-attention-pulse 800ms ease-in-out 2;
+}
+
+/* ─────────────────────────────────────────────────────────────
    LESSON 3 — Context-prompt editor affordances
    Idle pulse on the editor border to signal "write here", and
    a bouncing chevron above the editor that disappears on first
@@ -958,7 +982,8 @@ h6 {
   .db-disaster-meta,
   .option-card-idle-pulse,
   .option-card-bounce-in,
-  .accordion-section-idle-pulse {
+  .accordion-section-idle-pulse,
+  .broken-session-pulse {
     animation: none !important;
     opacity: 1;
     transform: none;

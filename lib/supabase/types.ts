@@ -239,6 +239,10 @@ export type Database = {
           // Independent budget so the user can finish lesson 2/3 and
           // still try lesson 4 in the same day.
           constraints_attempts_count: number;
+          // Lesson 5 — counter for /api/lesson-debug-evaluate calls
+          // (broken-session debugger). Same isolation as the other
+          // per-lesson counters.
+          debug_attempts_count: number;
           updated_at: string;
         };
         Insert: {
@@ -249,6 +253,7 @@ export type Database = {
           claudemd_attempts_count?: number;
           context_attempts_count?: number;
           constraints_attempts_count?: number;
+          debug_attempts_count?: number;
           updated_at?: string;
         };
         Update: {
@@ -259,6 +264,7 @@ export type Database = {
           claudemd_attempts_count?: number;
           context_attempts_count?: number;
           constraints_attempts_count?: number;
+          debug_attempts_count?: number;
           updated_at?: string;
         };
         Relationships: [];

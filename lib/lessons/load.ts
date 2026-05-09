@@ -269,7 +269,8 @@ function isLessonV3Step(value: unknown): value is LessonV3Step {
         b.widget !== "lucia_prompt_loop" &&
         b.widget !== "claudemd_editor" &&
         b.widget !== "context_prompt_editor" &&
-        b.widget !== "constraints_editor"
+        b.widget !== "constraints_editor" &&
+        b.widget !== "broken_session_debugger"
       ) {
         return false;
       }
@@ -383,6 +384,157 @@ function isLessonV3Step(value: unknown): value is LessonV3Step {
           kinds.add(tt.kind as string);
         }
         if (kinds.size !== 3) return false;
+      }
+      if (b.widget === "broken_session_debugger") {
+        const cfg = b.broken_session_config as
+          | Record<string, unknown>
+          | undefined;
+        if (!cfg || typeof cfg !== "object") return false;
+        if (
+          typeof cfg.disclaimer !== "string" ||
+          typeof cfg.address_bar !== "string" ||
+          typeof cfg.pivot_question !== "string" ||
+          typeof cfg.recovery_question !== "string" ||
+          typeof cfg.recovery_placeholder !== "string" ||
+          typeof cfg.healed_ai_reply !== "string" ||
+          (cfg.healed_ai_reply as string).trim().length === 0
+        ) {
+          return false;
+        }
+        if (
+          cfg.healed_branch_label !== undefined &&
+          typeof cfg.healed_branch_label !== "string"
+        ) {
+          return false;
+        }
+        if (
+          typeof cfg.min_chars !== "number" ||
+          typeof cfg.max_chars !== "number" ||
+          cfg.min_chars < 1 ||
+          cfg.max_chars <= cfg.min_chars
+        ) {
+          return false;
+        }
+        if (
+          !Array.isArray(cfg.messages) ||
+          cfg.messages.length < 4 ||
+          cfg.messages.length > 12
+        ) {
+          return false;
+        }
+        let userBubbles = 0;
+        let aiBubbles = 0;
+        for (const m of cfg.messages) {
+          if (typeof m !== "object" || m === null) return false;
+          const mm = m as Record<string, unknown>;
+          if (typeof mm.text !== "string" || mm.text.trim().length === 0)
+            return false;
+          if (mm.role !== "user" && mm.role !== "ai") return false;
+          if (mm.role === "user") userBubbles += 1;
+          else aiBubbles += 1;
+          // Optional decorations — narrative-tension chrome added in
+          // the Lesson 5 visual refactor. All fields are optional, so
+          // legacy authors keep working.
+          if (mm.severity !== undefined) {
+            if (
+              mm.severity !== "normal" &&
+              mm.severity !== "warning" &&
+              mm.severity !== "critical"
+            ) {
+              return false;
+            }
+          }
+          if (mm.mood_emoji !== undefined && typeof mm.mood_emoji !== "string")
+            return false;
+          if (mm.mood_background !== undefined) {
+            if (mm.mood_background !== "stone" && mm.mood_background !== "rose")
+              return false;
+          }
+          if (mm.time_gap_label !== undefined && typeof mm.time_gap_label !== "string")
+            return false;
+          if (mm.highlights !== undefined) {
+            if (!Array.isArray(mm.highlights)) return false;
+            for (const h of mm.highlights) {
+              if (typeof h !== "object" || h === null) return false;
+              const hh = h as Record<string, unknown>;
+              if (typeof hh.snippet !== "string" || hh.snippet.length === 0)
+                return false;
+              // Only wrap snippets that actually appear in the parent
+              // text — catches typos in the JSON before the user sees
+              // a missing underline at runtime.
+              if (!(mm.text as string).includes(hh.snippet as string))
+                return false;
+              if (hh.severity !== "orange" && hh.severity !== "red")
+                return false;
+            }
+          }
+        }
+        if (userBubbles < 1 || aiBubbles < 1) return false;
+        const PIVOT_KEYS = new Set([
+          "after_response_1",
+          "after_response_2",
+          "after_response_3",
+          "never_was_broken",
+        ]);
+        if (!Array.isArray(cfg.pivot_options) || cfg.pivot_options.length < 2)
+          return false;
+        const seenKeys = new Set<string>();
+        for (const o of cfg.pivot_options) {
+          if (typeof o !== "object" || o === null) return false;
+          const oo = o as Record<string, unknown>;
+          if (typeof oo.key !== "string" || !PIVOT_KEYS.has(oo.key))
+            return false;
+          if (seenKeys.has(oo.key)) return false;
+          seenKeys.add(oo.key);
+          if (typeof oo.label !== "string") return false;
+        }
+        if (
+          typeof cfg.correct_pivot !== "string" ||
+          !PIVOT_KEYS.has(cfg.correct_pivot) ||
+          !seenKeys.has(cfg.correct_pivot)
+        ) {
+          return false;
+        }
+        if (
+          typeof cfg.xp_by_case !== "object" ||
+          cfg.xp_by_case === null ||
+          typeof (cfg.xp_by_case as Record<string, unknown>).incomplete !==
+            "number"
+        ) {
+          return false;
+        }
+      }
+      return true;
+    }
+    case "error_taxonomy": {
+      // 4-pair animated grid (Lesson 5 step 8). Pure presentation.
+      if (typeof b.closing_caption !== "string") return false;
+      if (!Array.isArray(b.pairs) || b.pairs.length !== 4) return false;
+      const TAXONOMY_KEYS = new Set([
+        "omission",
+        "invention",
+        "misinterpretation",
+        "propagation",
+      ]);
+      const seen = new Set<string>();
+      for (const p of b.pairs) {
+        if (typeof p !== "object" || p === null) return false;
+        const pp = p as Record<string, unknown>;
+        if (typeof pp.key !== "string" || !TAXONOMY_KEYS.has(pp.key))
+          return false;
+        if (seen.has(pp.key)) return false;
+        seen.add(pp.key);
+        if (
+          typeof pp.icon !== "string" ||
+          typeof pp.title !== "string" ||
+          typeof pp.description !== "string" ||
+          typeof pp.cure_title !== "string" ||
+          typeof pp.cure_reference !== "string"
+        ) {
+          return false;
+        }
+        if (pp.mapping !== "context" && pp.mapping !== "constraints")
+          return false;
       }
       return true;
     }

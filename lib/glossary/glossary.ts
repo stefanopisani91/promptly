@@ -199,6 +199,38 @@ export const GLOSSARY: Record<string, GlossaryTerm> = {
       "A diff is the difference between «before» and «after» when you modify code. Like Word's tracked changes: you see what was added, removed, changed. Asking AI to show you the diff before applying is one of the most useful process constraints out there.",
     first_lesson: "mindset-04",
   },
+
+  // ─── Lezione 5 ────────────────────────────────────────────────
+  allucinazione: {
+    id: "allucinazione",
+    label_it: "allucinazione",
+    label_en: "hallucination",
+    definition_it:
+      "Un'allucinazione è quando dico una cosa che suona plausibile ma è falsa. Tipo inventarmi il nome di una libreria che non esiste. Non è dispetto: sono un modello probabilistico, e quando non so davvero qualcosa scelgo il pezzo più probabile, che a volte è inventato. La cura non è non averne più, è imparare a riconoscerle e verificarle.",
+    definition_en:
+      "A hallucination is when I say something that sounds plausible but is false. Like inventing the name of a library that doesn't exist. It's not on purpose: I'm a probabilistic model, and when I don't really know something I pick the most likely piece, which is sometimes made up. The cure isn't never having any, it's learning to spot and verify them.",
+    first_lesson: "mindset-05",
+  },
+  "rate-limiting": {
+    id: "rate-limiting",
+    label_it: "rate limiting",
+    label_en: "rate limiting",
+    definition_it:
+      "Il rate limiting è un freno: dice quante volte qualcuno può fare la stessa azione in una finestra di tempo. Tipo «massimo 10 richieste al minuto da questo IP». Senza, basta uno script malintenzionato per sommergerti di richieste e farti saltare il server. È una protezione di base che si aggiunge a quasi tutto.",
+    definition_en:
+      "Rate limiting is a brake: it caps how many times someone can do the same action in a time window. Like «max 10 requests per minute from this IP». Without it, one malicious script is enough to drown you in requests and crash your server. It's basic protection you add to almost everything.",
+    first_lesson: "mindset-05",
+  },
+  token: {
+    id: "token",
+    label_it: "token",
+    label_en: "token",
+    definition_it:
+      "Per l'AI un token è un piccolo pezzo di testo: una parola corta è un token, una lunga ne occupa due o tre. Quando «scrivo», quello che faccio è scegliere il token successivo più probabile, ogni volta. La fattura dell'API si paga a token: per questo i prompt lunghi costano più dei corti, anche a parità di richiesta.",
+    definition_en:
+      "To AI, a token is a small chunk of text: a short word is one token, a long one takes two or three. When I «write», what I do is pick the most likely next token, every time. API bills are charged per token: that's why long prompts cost more than short ones, even for the same request.",
+    first_lesson: "mindset-05",
+  },
 };
 
 export function getGlossaryTerm(termId: string): GlossaryTerm | null {

@@ -550,7 +550,8 @@ export type InteractiveWidgetType =
   | "lucia_prompt_loop"
   | "claudemd_editor"
   | "context_prompt_editor"
-  | "constraints_editor";
+  | "constraints_editor"
+  | "broken_session_debugger";
 
 export interface ClaudemdProjectOption {
   // Stable key used by the evaluator + saved in stepState.
@@ -667,6 +668,101 @@ export interface ConstraintsEditorConfig {
   };
 }
 
+// ─── Lesson 5 — Broken-session debugger (Lezione5_Blueprint.md §13) ────
+//
+// A 2-phase widget over a Chrome-style mockup of a vibe-coding session
+// that visibly degrades message after message. Phase A: the user picks
+// the pivot point (where the session should have been interrupted).
+// Phase B: they write the recovery message Spark would have wanted.
+// Haiku scores the recovery on 3 dimensions × 33 + 1 rollback bonus.
+
+export interface BrokenSessionHighlight {
+  // Substring of the parent message's `text` to underline. The first
+  // occurrence is wrapped in a styled span; subsequent occurrences are
+  // left untouched (the lesson copy never repeats the same snippet).
+  snippet: string;
+  // Drives the underline colour and (red only) a subtle bold weight.
+  severity: "orange" | "red";
+}
+
+export interface BrokenSessionMessage {
+  // "user" or "ai" — drives avatar + bubble alignment.
+  role: "user" | "ai";
+  // Plain text content of the bubble.
+  text: string;
+  // Optional severity for AI bubbles. Drives the bg/border colour
+  // gradient (normal=yellow, warning=orange, critical=red + ⚠️).
+  // Defaults to "normal" when absent. Ignored on user bubbles.
+  severity?: "normal" | "warning" | "critical";
+  // Optional emoji prepended to user-bubble text (e.g. 🤔 / 😰) to
+  // convey the user's escalating frustration. Ignored on AI bubbles.
+  mood_emoji?: string;
+  // Optional bubble background tint for USER bubbles. "rose" applies
+  // a soft pink wash signalling distress; "stone" is the default.
+  mood_background?: "stone" | "rose";
+  // Optional substrings to wrap with a dotted underline. The
+  // component finds and wraps the first occurrence of each snippet in
+  // document order. Empty array == no highlights.
+  highlights?: BrokenSessionHighlight[];
+  // Optional time-elapsed divider rendered ABOVE this bubble
+  // (e.g. "5 minuti dopo…"). Italic, small, centred. Use sparingly —
+  // breaks the conversational rhythm to communicate elapsed time.
+  time_gap_label?: string;
+}
+
+export type BrokenSessionPivotKey =
+  | "after_response_1"
+  | "after_response_2"
+  | "after_response_3"
+  | "never_was_broken";
+
+export interface BrokenSessionPivotOption {
+  key: BrokenSessionPivotKey;
+  label: string;
+}
+
+export interface BrokenSessionDebuggerConfig {
+  // Disclaimer rendered above the mockup ("SIMULATION — reconstructed
+  // session"). Translated.
+  disclaimer: string;
+  // The fake URL shown in the address bar (e.g. "chat.ai-coding-tool.com").
+  address_bar: string;
+  // Sequence of bubbles that build the failing session. Currently 6
+  // (3 user + 3 ai), alternating; the validator enforces ≥ 4 messages
+  // and ≥ 1 user / ≥ 1 ai.
+  messages: BrokenSessionMessage[];
+  // Phase A — pivot picker.
+  pivot_question: string;
+  pivot_options: BrokenSessionPivotOption[];
+  // The single correct pivot key (the rest get a "try again" hint once,
+  // then advance). Always one of the keys above.
+  correct_pivot: BrokenSessionPivotKey;
+  // Phase B — recovery editor.
+  recovery_question: string;
+  recovery_helper?: string;
+  recovery_placeholder: string;
+  min_chars: number;
+  max_chars: number;
+  // Healed-conversation rebuild — text of the AI's "corrected" reply
+  // shown after the user's recovery message when the rubric returns
+  // would_have_saved=true. Short, contained, clearly different in
+  // tone from the original overreach. Translated.
+  healed_ai_reply: string;
+  // Optional eyebrow rendered above the rebuilt branch ("if instead
+  // you had written…"). Translated. Falls back to a plain divider
+  // when absent.
+  healed_branch_label?: string;
+  // XP awarded by feedback case. Same 5-bucket shape as context /
+  // constraints — `perfect` covers the score = 100 path with rollback.
+  xp_by_case: {
+    incomplete: number;
+    missing_one: number;
+    good: number;
+    excellent: number;
+    perfect: number;
+  };
+}
+
 export interface InteractiveStep extends StepBase {
   type: "interactive";
   widget: InteractiveWidgetType;
@@ -689,6 +785,48 @@ export interface InteractiveStep extends StepBase {
   context_config?: ContextPromptEditorConfig;
   // Lesson 4 — required when widget === "constraints_editor".
   constraints_config?: ConstraintsEditorConfig;
+  // Lesson 5 — required when widget === "broken_session_debugger".
+  broken_session_config?: BrokenSessionDebuggerConfig;
+}
+
+// ─── Lesson 5 — Error taxonomy block (Lezione5_Blueprint.md §step 8) ──
+//
+// A presentation-only step that animates 4 cause→cure pairs in sequence.
+// Each pair maps a kind of AI error (omission, invention, misinterpre-
+// tation, propagation) to the lesson skill that fixes it (context for 3,
+// constraints for 1). Pure layout — no user input.
+
+export type ErrorTaxonomyMappingKey = "context" | "constraints";
+
+export interface ErrorTaxonomyPair {
+  // Stable key, used by the validator + analytics. Not surfaced in copy.
+  key: "omission" | "invention" | "misinterpretation" | "propagation";
+  // Glyph rendered above the title (single emoji is fine).
+  icon: string;
+  // Short title of the error type.
+  title: string;
+  // 1-sentence description of what the error looks like.
+  description: string;
+  // Title of the cure ("ti serviva più CONTESTO" / "ti servivano VINCOLI").
+  cure_title: string;
+  // Reference to the lesson where the cure was taught — shown smaller
+  // under the cure title (e.g. "Lezione 3, livello 1").
+  cure_reference: string;
+  // Discriminator for the cure pill colour. "context" → orange family,
+  // "constraints" → red/amber family.
+  mapping: ErrorTaxonomyMappingKey;
+}
+
+export interface ErrorTaxonomyStep extends StepBase {
+  type: "error_taxonomy";
+  // Optional Spark intro line above the grid.
+  intro?: string;
+  // Exactly 4 pairs — the validator enforces this so the layout stays
+  // predictable on phone (vertical) and tablet+ (2×2 / 4×1 grid).
+  pairs: ErrorTaxonomyPair[];
+  // Spark's closing line shown after the last pair has settled into place.
+  // Single-paragraph, kept short.
+  closing_caption: string;
 }
 
 export interface ArchetypeRevealConfig {
@@ -720,7 +858,8 @@ export type LessonV3Step =
   | InputStep
   | ChoiceStep
   | InteractiveStep
-  | RewardStep;
+  | RewardStep
+  | ErrorTaxonomyStep;
 
 export interface LessonV3Content {
   id: string;

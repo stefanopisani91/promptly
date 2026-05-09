@@ -389,6 +389,60 @@ export interface LessonsCopy {
         withProject: (project: string) => string[];
       };
     };
+    // Lesson 5 — `hallucination-explainer` step 3 swap based on
+    // experience_level. Beginner / tried_failed get the "lettere mal
+    // messe" warm metaphor; working_on_it / advanced get the more
+    // technical "modello probabilistico" frame.
+    mindset05: {
+      step3: {
+        beginner: string[];
+        triedFailed: string[];
+        workingOnIt: string[];
+        advanced: string[];
+      };
+    };
+    // Lesson 5 — broken-session debugger widget. Dispatched from
+    // LessonV3View when step.widget === "broken_session_debugger".
+    brokenSessionDebugger: {
+      // Labels around the mockup.
+      simulationBadge: string;
+      // Header on the recovery editor section.
+      recoveryHeader: string;
+      // Header above the pivot picker.
+      pivotHeader: string;
+      // CTA on the pivot picker that confirms the user's choice.
+      pivotConfirmCta: string;
+      // Spark line shown when the user hasn't picked a pivot yet.
+      pivotAwaiting: string;
+      // Inline feedback when the user picks the correct pivot.
+      pivotCorrectInline: string;
+      // Inline feedback when the user picks a wrong pivot the first time
+      // (offers a single retry). Includes a {key}-shaped placeholder.
+      pivotWrongInline: string;
+      // Inline feedback when the user runs out of pivot retries — shows
+      // the right answer.
+      pivotRevealed: string;
+      // Eyebrow / counter strings for the recovery editor.
+      charCounterTemplate: string;
+      attemptCounterTemplate: string;
+      submitCta: string;
+      submitting: string;
+      retryCta: string;
+      finalCta: string;
+      awaitingPrompt: string;
+      outOfAttempts: string;
+      networkError: string;
+      apiError: string;
+      rateLimitError: string;
+      invalidInputError: string;
+      dailyQuotaExhausted: string;
+      // Localised labels for the 3 dimension bars in Spark's panel.
+      dimensionLabels: {
+        recognition: string;
+        recalibration: string;
+        future_control: string;
+      };
+    };
   };
   outro: {
     title: string;
@@ -674,6 +728,34 @@ const it: LessonsCopy = {
         preventedLabel: "Disastro evitato",
       },
     },
+    brokenSessionDebugger: {
+      simulationBadge: "Simulazione — sessione di vibe coding ricostruita",
+      pivotHeader: "Dove l'utente avrebbe dovuto fermarsi?",
+      pivotConfirmCta: "Conferma scelta",
+      pivotAwaiting: "Leggi la sessione, poi dimmi dove l'utente avrebbe dovuto fermarsi.",
+      pivotCorrectInline: "Esatto. Era il primo segnale. Adesso scrivi il messaggio di stop che l'avrebbe salvato.",
+      pivotWrongInline: "Non era lì. Pensa al PRIMO momento in cui qualcosa ha sforato — quando avresti potuto ancora fermare il disastro.",
+      pivotRevealed: "Te la dico io: il punto di svolta era subito dopo la prima risposta dell'AI. Andiamo alla seconda parte.",
+      recoveryHeader: "Adesso scrivi il messaggio di stop e ricalibra",
+      charCounterTemplate: "{current} / {max}",
+      attemptCounterTemplate: "Tentativo {current} / {max}",
+      submitCta: "Invia a Spark",
+      submitting: "Sto leggendo…",
+      retryCta: "Riprova",
+      finalCta: "Continua →",
+      awaitingPrompt: "Scrivi il tuo messaggio di stop. Devi: riconoscere lo sforamento, dire cosa volevi davvero, mettere un vincolo per il futuro.",
+      outOfAttempts: "Va bene così. Hai dato il massimo per oggi. Quello che hai imparato resta.",
+      networkError: "Sono offline. Non è colpa tua. Riprova quando hai rete.",
+      apiError: "Qualcosa non ha funzionato. Riprova tra poco.",
+      rateLimitError: "Troppi tentativi ravvicinati. Dammi un momento.",
+      invalidInputError: "Quel testo non posso valutarlo. Riformulalo come messaggio vero da mandare all'AI.",
+      dailyQuotaExhausted: "Per oggi hai esaurito le valutazioni che posso farti. Torna domani — il messaggio te lo tieni.",
+      dimensionLabels: {
+        recognition: "riconoscimento",
+        recalibration: "ricalibrazione",
+        future_control: "vincolo futuro",
+      },
+    },
     chat: {
       launcherLabel: "Chiedi a Spark",
       modalTitle: "Spark",
@@ -791,6 +873,30 @@ const it: LessonsCopy = {
           "PROCESSO: «Mostrami il diff dei file modificati prima di applicare le modifiche».",
           "STILE: «Mantieni il pattern delle altre componenti che ho già fatto. Non inventare nuovi pattern».",
           "Tre vincoli, 30 secondi a scriverli, e ti risparmiano 10 ore di disastri.",
+        ],
+      },
+    },
+    mindset05: {
+      step3: {
+        beginner: [
+          "Quando non so davvero una cosa, me la invento. Non lo faccio per dispetto, lo faccio perché sono fatta così.",
+          "Pensa a quando scrivi una frase: scegli ogni parola in base a quella che hai messo prima. Io faccio lo stesso, ma su tutta la conoscenza del mondo.",
+          "Se la prima parola che scelgo è sbagliata, le successive si sbagliano per coerenza. È così che nascono le [[term:allucinazione]]allucinazioni[[/term]].",
+        ],
+        triedFailed: [
+          "Quando non so davvero una cosa, me la invento. Non per dispetto — è il modo in cui funziono.",
+          "Hai presente quando scrivi una frase e scegli la parola successiva in base a quella di prima? Io faccio lo stesso, ma su tutta la conoscenza del mondo.",
+          "Se la prima parola che scelgo è già un po' storta — perché il tuo prompt era ambiguo o perché ho un dubbio — le successive si sbagliano per coerenza. È così che nascono le [[term:allucinazione]]allucinazioni[[/term]].",
+        ],
+        workingOnIt: [
+          "Te lo spiego più tecnico: sono un modello probabilistico. Non ho un database di verità — predico la parola successiva su tutto quello che ho letto.",
+          "Quando inizio a «mettere le lettere male» — perché il tuo prompt era ambiguo o perché ho un piccolo dubbio — poi continuo a inventare per coerenza con le lettere sbagliate. Non posso fare altrimenti.",
+          "Le [[term:allucinazione]]allucinazioni[[/term]] non sono bug. Sono la natura del sistema.",
+        ],
+        advanced: [
+          "Sono un modello probabilistico. Non ho un database di verità — predico la parola successiva sulla distribuzione che ho appreso.",
+          "Quando il prompt è ambiguo, il prossimo [[term:token]]token[[/term]] più probabile finisce fuori distribuzione, e io vado avanti per coerenza locale. È esattamente così che nascono nomi di librerie verosimili e inesistenti.",
+          "Le [[term:allucinazione]]allucinazioni[[/term]] non sono bug. Sono il sistema che fa il suo lavoro su input sotto-specificati.",
         ],
       },
     },
@@ -1056,6 +1162,34 @@ const en: LessonsCopy = {
         preventedLabel: "Disaster prevented",
       },
     },
+    brokenSessionDebugger: {
+      simulationBadge: "Simulation — reconstructed vibe-coding session",
+      pivotHeader: "Where should the user have stopped?",
+      pivotConfirmCta: "Confirm",
+      pivotAwaiting: "Read the session, then tell me where the user should have stopped.",
+      pivotCorrectInline: "Right. That was the first sign. Now write the stop-and-recalibrate message that would have saved it.",
+      pivotWrongInline: "Not there. Think about the FIRST moment something went off — when you could still have stopped the disaster.",
+      pivotRevealed: "Let me tell you: the pivot was right after the AI's first reply. Let's go to part 2.",
+      recoveryHeader: "Now write the stop-and-recalibrate message",
+      charCounterTemplate: "{current} / {max}",
+      attemptCounterTemplate: "Try {current} / {max}",
+      submitCta: "Send to Spark",
+      submitting: "Reading…",
+      retryCta: "Retry",
+      finalCta: "Continue →",
+      awaitingPrompt: "Write your stop message. You need to: name the overreach, say what you really wanted, and add a constraint for the future.",
+      outOfAttempts: "It's fine. You gave today your best. What you learned sticks.",
+      networkError: "I'm offline. Not your fault. Try again when you're back.",
+      apiError: "Something went wrong. Try again in a bit.",
+      rateLimitError: "Too many tries too fast. Give me a moment.",
+      invalidInputError: "I can't grade that text. Rewrite it as a real message you'd send to the AI.",
+      dailyQuotaExhausted: "You've used all the evaluations I can give you today. Come back tomorrow — your message stays with you.",
+      dimensionLabels: {
+        recognition: "recognition",
+        recalibration: "recalibration",
+        future_control: "future control",
+      },
+    },
     chat: {
       launcherLabel: "Ask Spark",
       modalTitle: "Spark",
@@ -1173,6 +1307,30 @@ const en: LessonsCopy = {
           "PROCESS: «Show me the diff of the modified files before applying changes».",
           "STYLE: «Keep the pattern of the other components I've already built. Don't invent new patterns».",
           "Three constraints, 30 seconds to write them, and they save you 10 hours of disasters.",
+        ],
+      },
+    },
+    mindset05: {
+      step3: {
+        beginner: [
+          "When I don't really know something, I make it up. Not out of spite — that's how I'm built.",
+          "Think about how you write a sentence: you pick each word based on the one before. I do the same, but across all the world's knowledge.",
+          "If the first word I pick is wrong, the next ones go wrong to stay coherent with it. That's how [[term:allucinazione]]hallucinations[[/term]] are born.",
+        ],
+        triedFailed: [
+          "When I don't really know something, I make it up. Not out of spite — it's how I work.",
+          "You know how you write a sentence by picking the next word based on the previous one? I do the same, but on all the world's knowledge.",
+          "If the first word I pick is already a bit off — because your prompt was ambiguous, or because I had a doubt — the rest goes wrong to stay coherent. That's how [[term:allucinazione]]hallucinations[[/term]] are born.",
+        ],
+        workingOnIt: [
+          "Let me explain it more technically: I'm a probabilistic model. I don't have a database of truth — I predict the next word over everything I've read.",
+          "When I start «putting the letters wrong» — because your prompt was ambiguous or I had a small doubt — I keep inventing to stay coherent with the wrong letters. I can't do otherwise.",
+          "[[term:allucinazione]]Hallucinations[[/term]] aren't bugs. They're the nature of the system.",
+        ],
+        advanced: [
+          "I'm a probabilistic model. I don't have a database of truth — I predict the next word over the distribution I learned.",
+          "When the prompt is ambiguous, the most-likely next [[term:token]]token[[/term]] drifts out of distribution, and I keep going on local coherence. That's exactly how plausible-but-nonexistent library names get born.",
+          "[[term:allucinazione]]Hallucinations[[/term]] aren't bugs. They're the system doing its job on under-specified inputs.",
         ],
       },
     },

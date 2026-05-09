@@ -57,6 +57,11 @@ import {
   type ConstraintsEditorStrings,
 } from "./steps/ConstraintsEditor";
 import {
+  BrokenSessionDebugger,
+  type BrokenSessionDebuggerStrings,
+} from "./steps/BrokenSessionDebugger";
+import { ErrorTaxonomyBlocks } from "./steps/ErrorTaxonomyBlocks";
+import {
   GlossaryProvider,
   type GlossaryStrings,
 } from "@/components/glossary/GlossaryProvider";
@@ -82,6 +87,7 @@ export interface LessonV3ViewStrings {
   claudemdEditor: ClaudemdEditorStrings;
   contextEditor: ContextPromptEditorStrings;
   constraintsEditor: ConstraintsEditorStrings;
+  brokenSessionDebugger: BrokenSessionDebuggerStrings;
   chat: import("./SparkChat").SparkChatStrings;
   // Glossario Vivo — popover chrome strings + the prefill template
   // used when the user clicks "approfondisci" inside a term popover.
@@ -401,6 +407,8 @@ function renderStep(step: LessonV3Step, ctx: RenderContext) {
       return <TextStep step={step} stepState={ctx.stepState} />;
     case "principle":
       return <PrincipleStep step={step} />;
+    case "error_taxonomy":
+      return <ErrorTaxonomyBlocks step={step} />;
     case "input":
       return (
         <InputStep
@@ -502,6 +510,40 @@ function renderStep(step: LessonV3Step, ctx: RenderContext) {
             }
             onAdvance={ctx.goNext}
             strings={ctx.strings.constraintsEditor}
+          />
+        );
+      }
+      if (step.widget === "broken_session_debugger") {
+        return (
+          <BrokenSessionDebugger
+            step={step}
+            userId={ctx.userId}
+            state={
+              ctx.stepState[step.id] as
+                | {
+                    result?: InteractiveStepResult;
+                    pivotChoice?: import(
+                      "@/types"
+                    ).BrokenSessionPivotKey;
+                    pivotConfirmed?: boolean;
+                    recoveryDraft?: string;
+                    lastEvaluation?: import(
+                      "./steps/BrokenSessionDebugger"
+                    ).DebugEvaluation;
+                  }
+                | undefined
+            }
+            onComplete={(result, extras) =>
+              ctx.updateStepState(step.id, {
+                result,
+                pivotChoice: extras.pivotChoice,
+                pivotConfirmed: extras.pivotConfirmed,
+                recoveryDraft: extras.recoveryDraft,
+                lastEvaluation: extras.lastEvaluation,
+              })
+            }
+            onAdvance={ctx.goNext}
+            strings={ctx.strings.brokenSessionDebugger}
           />
         );
       }
@@ -726,6 +768,7 @@ function canAdvanceFromStep(
     case "text":
     case "principle":
     case "reward":
+    case "error_taxonomy":
       return true;
     case "input": {
       const s = stepState[step.id] as
