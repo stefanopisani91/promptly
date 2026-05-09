@@ -10,6 +10,114 @@
 
 ---
 
+# 🚨 COSE TO DO URGENTI
+
+> Voci che bloccano l'esperienza utente o che vanno fixate prima del prossimo ciclo di test. Aggiungere qui le cose **da affrontare per prime**, lasciare le altre nel backlog numerato sotto.
+
+---
+
+## 🚨 URGENTE 1 — Calibrare il Lucia widget perché l'utente arrivi più facilmente alla vittoria
+
+**Stato:** ⏳ proposed
+**Priorità:** 🔴 alta
+**Aperta:** 9 May 2026
+**Scope:** [components/lessons/v3/steps/InteractiveStep.tsx](components/lessons/v3/steps/InteractiveStep.tsx) + [lib/landing-demo/types.ts](lib/landing-demo/types.ts) + [lib/landing-demo/system-prompt.ts](lib/landing-demo/system-prompt.ts)
+
+### Problema osservato (test reale 9 May 2026)
+
+L'utente nel primo tentativo della Lezione 1 ha scritto un prompt decente che menzionava tutti e 3 i bug e ha ottenuto **bestScore = 69**. Breakdown:
+- chiarezza: 95
+- contesto: 65
+- obiettivo: 70
+- protezione: **15** ← qui il problema
+- bonus: +5 (tutti i bug menzionati)
+
+Per "vincere" (cioè `band: "all_bugs"` con score ≥ 85, soglia di `r.allBugsHighScore` e di `victory`) servirebbe scrivere un prompt enterprise-grade con almeno 3-4 vincoli operativi specifici (`non aggiungere dipendenze`, `mostra solo i diff`, `non modificare il framework`, `preserva il design system`...) E chiedere una spiegazione del fix. **Soglia troppo alta per la Lezione 1**, che è introduttiva e non ha ancora insegnato il concetto di vincoli (Lezione 4) né di `diff` (glossary di Lezione 4).
+
+L'utente percepisce il widget come "ho fatto tutto giusto e mi dà 69, è bloccato". Demotivante.
+
+### Direzioni da considerare (non mutuamente esclusive)
+
+1. **Abbassare la soglia di vittoria** da 85 → 70 nel widget. Punti da toccare:
+   - `won` in `InteractiveStep.tsx` (`bestScore >= 85` → `>= 70`)
+   - `victory` in `handleFinalize` (`bestScore >= 85` → `>= 70`)
+   - `pickReaction` in `InteractiveStep.tsx` (`ev.totale >= 85` → `>= 70`)
+   - `bandFor` in `InteractiveStep.tsx` (`bestScore >= 95` → `>= 90` per `perfect`)
+   - Eventualmente la soglia in [lib/landing-demo/types.ts](lib/landing-demo/types.ts) `bandFromScore` (oggi 81 per "great") — rivedere se va allineata.
+   - **Una sola fonte di verità**: estrarre una costante `LUCIA_VICTORY_THRESHOLD` invece di duplicare il numero in 4 punti.
+
+2. **Ammorbidire la scala di "protezione"** nel system prompt. Oggi è dichiarata "STRETTA": un utente di Lezione 1 che non ha mai sentito parlare di "vincoli operativi" non può segnare alto. Per Lezione 1 ha senso accettare anche vincoli più morbidi ("non rompere il resto", "modifiche minime") con score 50-60 invece di 30-55. Modifica in [lib/landing-demo/system-prompt.ts](lib/landing-demo/system-prompt.ts) §4 (IT) e mirror EN.
+
+3. **Ribilanciare i pesi** delle 4 dimensioni in `computeTotale` ([lib/landing-demo/types.ts](lib/landing-demo/types.ts)). Oggi: chiarezza 0.25 + contesto 0.25 + obiettivo 0.30 + **protezione 0.20**. Per la Lezione 1 (introduttiva) la protezione conta troppo. Proposta: chiarezza 0.30 + contesto 0.25 + obiettivo 0.30 + **protezione 0.15**. Sposta 5 punti dal "non lo sai ancora" al "concetti di Lezione 1".
+
+4. **Bonus più generosi al primo tentativo** quando l'utente ha menzionato tutti i bug (incentiva il "wow al primo colpo"): `BONUS_ALL_3_BUGS` da 5 → 10. O aggiungere un nuovo bonus `+5 al primo tentativo se score ≥ 60`.
+
+### Vincoli da rispettare nel fix
+
+- La modifica deve essere **isolata alla Lezione 1**. Le Lezioni 2/3/4 non devono cambiare comportamento (le loro soglie sono già nei rispettivi widget e usano `xp_by_case` indipendenti).
+- Il punteggio della **landing page demo** (Lucia su `/it` e `/en` per visitatori non loggati) può cambiare insieme al widget di lezione: condividono la stessa API e lo stesso system prompt. Confermare se la calibrazione "facile" deve valere anche lì o se va separata.
+
+### Test post-fix (3 profili)
+
+- **Beginner-vago**: prompt che cita 1 bug senza vincoli → ~40 (non vincente, OK)
+- **Intermedio-onesto** (oggi 69): prompt che cita 3 bug, 1-2 vincoli generici, comportamento atteso → DOVREBBE arrivare a 70-80 → **vincita** ✓
+- **Advanced**: prompt enterprise (3 bug + 3+ vincoli operativi + chiede spiegazione) → 95-100 → vincita perfetta con fuochi d'artificio
+
+---
+
+## 🚨 URGENTE 2 — Reazioni di Spark devono correlare con i punteggi reali delle 4 dimensioni
+
+**Stato:** ⏳ proposed
+**Priorità:** 🔴 alta
+**Aperta:** 9 May 2026
+**Scope:** [components/lessons/v3/steps/InteractiveStep.tsx](components/lessons/v3/steps/InteractiveStep.tsx) — `pickReaction` + i18n strings
+
+### Problema osservato
+
+Spark sceglie la reazione da mostrare in base a 2 segnali grossolani:
+- `bugs_menzionati.length` (0 / 1 / 2 / 3)
+- `totale` ≥ 85 sì/no
+
+Il risultato: due utenti con punteggi totali simili ma profili dimensionali completamente diversi vedono la **stessa reazione**. Esempi reali:
+- Utente A: chiarezza 95, contesto 65, obiettivo 70, **protezione 15**, totale 69 → riceve `r.allBugsLowScore` ("il prompt è ancora vago...")
+- Utente B: chiarezza 30, contesto 30, obiettivo 50, protezione 80, totale 60 → potrebbe ricevere lo stesso messaggio "è vago"
+
+Il consiglio di Spark per A è **falso** (il prompt di A NON è vago, è preciso ma manca dei vincoli). E quello per B sarebbe inadeguato perché il problema vero è la mancanza di osservazione/contesto.
+
+In più: il valutatore AI **già produce un campo `consiglio`** ([lib/landing-demo/system-prompt.ts](lib/landing-demo/system-prompt.ts) riga 142) targetizzato sulla dimensione più debole. Esempio reale dal DB: *"Hai fornito l'errore esatto e descritto i problemi visivi. Aggiungi vincoli operativi specifici per migliorare il prompt."* — questo consiglio è **PERFETTO** per il caso utente A. Ma il widget non lo mostra mai: pesca dalla tabella di reazioni pre-scritte locali.
+
+### Cosa fare
+
+**Opzione minima** (1-2 ore): mostrare il `consiglio` AI invece (o oltre) della reazione pre-scritta, almeno per gli stati `vague` / `photoOnly` / `twoBugs` / `allBugsLowScore`. Le reazioni "celebrative" (`allBugsHighScore`) restano scriptate per il tono di voce.
+
+**Opzione media** (mezza giornata): rifare `pickReaction` come funzione che:
+1. Identifica la dimensione più bassa (`weakestDim`).
+2. Sceglie un template per `weakestDim` invece che per il bandone.
+3. Sostituisce un placeholder `{specific_advice}` con il `consiglio` dell'AI.
+
+Esempio di template targeted:
+- `weakestDim === 'protezione'` → `"Hai chiarezza e obiettivo. Ti manca la protezione: {specific_advice}"`
+- `weakestDim === 'contesto'` → `"Hai centrato il problema ma manca contesto: {specific_advice}"`
+
+**Opzione completa** (1 giornata): aggiungere anche le **dimension bars già visibili dopo il submit** (fix del 9 May 2026 che ha mostrato chiarezza/contesto/obiettivo/protezione) — collegarle visualmente al consiglio: la dimensione debole pulsa rossa, le altre verdi.
+
+### File toccati nell'opzione media
+
+- [components/lessons/v3/steps/InteractiveStep.tsx](components/lessons/v3/steps/InteractiveStep.tsx): rifare `pickReaction` con la logica weakest-dim + integrare `ev.consiglio`. Persistere `consiglio` in `lastEvaluation` (già fatto al 9 May 2026).
+- [lib/i18n/lessons.ts](lib/i18n/lessons.ts) `v3.interactiveStep.reactions`: cambiare le 5-6 stringhe pre-scritte in template con placeholder, IT + EN. Aggiungere chiavi per le 4 weakest dimensions.
+
+### Vincoli
+
+- Il tono di Spark resta lo stesso: asciutto, in prima persona, mai paternalista, mai "bravissimo". Il `consiglio` AI è già allineato a questo tono (vedi system prompt riga 142-146 IT).
+- Le reazioni "celebrative" su victory (`allBugsHighScore`) restano scriptate — il tono di vittoria è troppo cinematografico per affidarlo all'AI.
+- Mantenere il fallback `deriveReactionFromResult` per legacy stepState senza `consiglio` salvato.
+
+### Quando affrontarlo
+
+Ideale: insieme alla calibrazione del scoring (URGENTE 1). Le due fix si rinforzano — abbassare la soglia di vittoria + dare un consiglio mirato è la combinazione che trasforma un widget "punitivo" in uno "didattico".
+
+---
+
 ## 1. 🐛 Fix server-side exception su /dashboard post-onboarding
 
 **Stato:** ✅ done (29 April 2026, commit `09d78a2`)
