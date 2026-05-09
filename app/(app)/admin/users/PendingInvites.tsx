@@ -94,12 +94,12 @@ export function PendingInvites({ rows }: Props) {
           inviti in attesa
         </p>
         <h2 className="text-lg font-semibold text-text-primary">
-          Pre-assegna un tier a un'email
+          Pre-assegna un tier a un’email
         </h2>
         <p className="text-sm text-text-secondary">
-          Aggiungi un'email QUI prima che la persona si iscriva. Quando
+          Aggiungi un’email QUI prima che la persona si iscriva. Quando
           farà signup, otterrà subito il tier che hai scelto. La riga si
-          cancella da sola al momento dell'iscrizione.
+          cancella da sola al momento dell’iscrizione.
         </p>
       </header>
 
@@ -156,7 +156,7 @@ export function PendingInvites({ rows }: Props) {
         </div>
         <div className="flex items-center justify-between gap-3">
           <p className="text-xs italic text-text-muted">
-            L'email viene normalizzata (minuscolo, senza spazi).
+            L’email viene normalizzata (minuscolo, senza spazi).
           </p>
           <button
             type="submit"
