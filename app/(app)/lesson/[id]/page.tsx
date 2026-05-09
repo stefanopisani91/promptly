@@ -115,17 +115,22 @@ export default async function LessonPage({ params }: PageProps) {
     const persisted = await getLessonProgress(supabase, user.id, lesson.id);
     const alreadyCompleted = persisted?.completed ?? false;
     // If the lesson was previously completed, treat any re-entry as a fresh
-    // walk-through: start from step 0 and ignore the persisted current_step.
-    // The DB still holds the previous step_state (so the user's old answers
-    // hydrate the cards) but the index resets so they don't get teleported
-    // to the cliffhanger they already saw. Mid-lesson resumes (not yet
-    // completed) keep the saved current_step.
+    // walk-through: start from step 0 AND wipe the persisted step_state.
+    // Without the wipe, interactive widgets read back their old result
+    // (3 attempts already burned, locked editor, "Continua" CTA only) —
+    // making the redo experience feel broken. The DB completion flag is
+    // not touched, so XP isn't double-credited; only the per-step state
+    // (results, choices, drafts) is cleared. Mid-lesson resumes (not yet
+    // completed) preserve everything.
     const initialStep = alreadyCompleted
       ? 0
       : persisted?.current_step ?? 0;
     const rawStepState = persisted?.step_state;
-    const initialStepState =
-      rawStepState && typeof rawStepState === "object" && !Array.isArray(rawStepState)
+    const initialStepState = alreadyCompleted
+      ? ({} as Record<string, unknown>)
+      : rawStepState &&
+          typeof rawStepState === "object" &&
+          !Array.isArray(rawStepState)
         ? (rawStepState as Record<string, unknown>)
         : {};
     const chatUsed = persisted?.spark_chat_count ?? 0;
