@@ -30,7 +30,10 @@ import {
 } from "@/lib/supabase/queries";
 import { sanitiseToolSlugs, isToolSlug } from "@/lib/onboarding/tools";
 import { generateProfilePromises } from "@/lib/ai/promises";
-import { generateAndStoreCompressedProject } from "@/lib/onboarding/project";
+import {
+  generateAndStoreCompressedMotivation,
+  generateAndStoreCompressedProject,
+} from "@/lib/onboarding/project";
 
 // ─── Anti-abuse for promise generation (Round 8b) ─────────────────────
 //
@@ -586,24 +589,40 @@ export async function completeOnboarding(
     console.error("[welcome-email] threw", error);
   }
 
-  // Mitigation 2 — eager compress of project_description so the very
-  // first AI call after onboarding (Spark chat / lesson 1 evaluator)
-  // already reads the cheap version. Best-effort: if Haiku is down or
-  // the call fails, the lazy backfill in getUserProfile picks it up
-  // on the next page load. Awaited so the user lands on /dashboard
-  // with the column already populated; ~1-2s of extra latency at the
-  // last redirect, acceptable for the cost saved on every later call.
+  // Mitigation 2 — eager compress of project_description AND
+  // deep_motivation so the very first AI call after onboarding (Spark
+  // chat / lesson 1 evaluator) already reads the cheap versions. Both
+  // are best-effort: if Haiku is down or the call fails, the lazy
+  // backfill in getUserProfile picks them up on the next page load.
+  // Run in parallel — the two calls are independent and waiting for
+  // both serially would double the redirect latency without benefit.
+  const compressTasks: Promise<unknown>[] = [];
   if (projectDescription && projectDescription.length > 0) {
-    try {
-      await generateAndStoreCompressedProject(
+    compressTasks.push(
+      generateAndStoreCompressedProject(
         supabase,
         user.id,
         projectDescription,
         input.language,
-      );
-    } catch (error) {
-      console.error("[onboarding] compress project failed", error);
-    }
+      ).catch((error) => {
+        console.error("[onboarding] compress project failed", error);
+      }),
+    );
+  }
+  // deep_motivation is required at this point (validated above), so
+  // we always run the compress unless validation already short-circuited.
+  compressTasks.push(
+    generateAndStoreCompressedMotivation(
+      supabase,
+      user.id,
+      deepMotivation,
+      input.language,
+    ).catch((error) => {
+      console.error("[onboarding] compress motivation failed", error);
+    }),
+  );
+  if (compressTasks.length > 0) {
+    await Promise.all(compressTasks);
   }
 
   return { ok: true };

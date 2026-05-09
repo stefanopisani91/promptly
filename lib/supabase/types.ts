@@ -56,6 +56,11 @@ export type Database = {
           // chat, evaluators). Null until generated; lazy-backfilled by
           // getUserProfile when raw > 100 chars and this column is null.
           project_description_compressed: string | null;
+          // Same pattern, applied to deep_motivation (2026-05-09).
+          // ≤100-char compressed view that preserves the emotional core
+          // (in first person). Used in Spark's session context for
+          // empathic interventions; raw stays for the 3-promises generator.
+          deep_motivation_compressed: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -94,6 +99,7 @@ export type Database = {
           last_profile_check?: string | null;
           glossary_seen?: string[];
           project_description_compressed?: string | null;
+          deep_motivation_compressed?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -132,6 +138,7 @@ export type Database = {
           last_profile_check?: string | null;
           glossary_seen?: string[];
           project_description_compressed?: string | null;
+          deep_motivation_compressed?: string | null;
           created_at?: string;
           updated_at?: string;
         };

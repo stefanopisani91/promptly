@@ -171,13 +171,15 @@ export async function POST(request: Request) {
 
   // Pick the system prompt language from the profile when available, with a
   // fallback to italian (the default profile language). We also pull the
-  // compressed project context (mitigation 2, 2026-05-09) so Spark can
-  // ground her answers in the user's actual domain without paying for
-  // the full project_description on every call.
+  // compressed project + motivation views (mitigation 2 of the
+  // project_description audit + mitigation 2/4 of the deep_motivation
+  // audit, 2026-05-09) so Spark can ground her answers in the user's
+  // actual domain AND deploy an emotional anchor in empathic moments
+  // without paying for the full prose on every call.
   const { data: profileRow } = await supabase
     .from("users")
     .select(
-      "language, project_description, project_description_compressed",
+      "language, project_description, project_description_compressed, deep_motivation, deep_motivation_compressed",
     )
     .eq("id", user.id)
     .maybeSingle();
@@ -185,19 +187,30 @@ export async function POST(request: Request) {
     ? (profileRow!.language as Lang)
     : "it";
 
-  // Prefer the compressed view; fall back to a deterministic 80-char
-  // truncate of the raw when compressed is null (legacy users / not
-  // yet back-filled). Inlined to avoid loading the whole UserProfile
-  // shape just to call the helper.
-  const compressed = profileRow?.project_description_compressed?.trim();
+  // Prefer the compressed view; fall back to a deterministic truncate
+  // of the raw when compressed is null (legacy users / not yet back-
+  // filled). Two helpers inlined here so we don't have to load the
+  // whole UserProfile shape just to read two columns.
+  const compressedProject = profileRow?.project_description_compressed?.trim();
   const rawProject = profileRow?.project_description?.trim();
   const projectContext =
-    compressed && compressed.length > 0
-      ? compressed
+    compressedProject && compressedProject.length > 0
+      ? compressedProject
       : rawProject
       ? rawProject.length <= 80
         ? rawProject
         : rawProject.slice(0, 80).trimEnd() + "…"
+      : null;
+
+  const compressedMotivation = profileRow?.deep_motivation_compressed?.trim();
+  const rawMotivation = profileRow?.deep_motivation?.trim();
+  const motivationAnchor =
+    compressedMotivation && compressedMotivation.length > 0
+      ? compressedMotivation
+      : rawMotivation
+      ? rawMotivation.length <= 100
+        ? rawMotivation
+        : rawMotivation.slice(0, 100).trimEnd() + "…"
       : null;
 
   const persona = lang === "en" ? SPARK_PERSONA_EN : SPARK_PERSONA_IT;
@@ -212,6 +225,7 @@ export async function POST(request: Request) {
         ? body.contextSummary
         : undefined,
     projectContext,
+    motivationAnchor,
   });
 
   const result = await requestSparkReply({

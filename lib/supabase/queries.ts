@@ -25,16 +25,23 @@ export type ProfileGate =
  * Minimal slice of the profile that the lazy compress backfill needs.
  * Lives here (not in lib/onboarding/project.ts) so the helper module
  * stays free of Supabase imports beyond AppSupabaseClient.
+ *
+ * Carries both the project_description and deep_motivation pairs —
+ * each lazy backfill helper checks its own pair in isolation, so we
+ * can fan out to multiple compressors from a single getUserProfile
+ * read without re-fetching the row.
  */
 export interface ProfileBackfillSnapshot {
   id: string;
   language: string;
   project_description: string | null;
   project_description_compressed: string | null;
+  deep_motivation: string | null;
+  deep_motivation_compressed: string | null;
 }
 
 const USER_PROFILE_COLUMNS =
-  "id, email, full_name, language, daily_goal, onboarding_completed_at, signup_source, welcome_seen_at, push_prompted_at, ai_eval_prompted_at, total_xp, current_streak, longest_streak, last_activity_date, last_level_up_notified, referral_code, referral_link_activated_at, archetype_key, experience_level, project_clarity, project_description, project_description_compressed, tools_used, tools_other, preferred_tool, deep_motivation, promises, last_profile_check, glossary_seen, created_at, updated_at";
+  "id, email, full_name, language, daily_goal, onboarding_completed_at, signup_source, welcome_seen_at, push_prompted_at, ai_eval_prompted_at, total_xp, current_streak, longest_streak, last_activity_date, last_level_up_notified, referral_code, referral_link_activated_at, archetype_key, experience_level, project_clarity, project_description, project_description_compressed, tools_used, tools_other, preferred_tool, deep_motivation, deep_motivation_compressed, promises, last_profile_check, glossary_seen, created_at, updated_at";
 
 export async function getUserProfile(
   supabase: AppSupabaseClient,
@@ -62,26 +69,38 @@ export async function getUserProfile(
     ? data.glossary_seen
     : [];
 
-  // Mitigation 2 (2026-05-09) — lazy backfill of the Haiku-compressed
-  // view. Existing users with verbose project descriptions (> 100 chars)
-  // and no compressed value yet trigger a fire-and-forget Haiku call so
-  // their next page load reads the cheap version. Inlined as a dynamic
-  // import to avoid a circular dependency between queries.ts and the
-  // onboarding helper module that imports AppSupabaseClient.
-  if (
+  // Mitigation 2 (2026-05-09) — lazy backfill of the two Haiku-
+  // compressed views (project + motivation). When a row is missing
+  // either compressed column AND the corresponding raw is long enough
+  // to be worth compressing, fan out a fire-and-forget call so the
+  // next page load reads the cheap version. Dynamic import keeps the
+  // queries.ts ↔ onboarding helper edge non-circular.
+  const needsProjectBackfill =
     !data.project_description_compressed &&
     typeof data.project_description === "string" &&
-    data.project_description.trim().length > 100
-  ) {
+    data.project_description.trim().length > 100;
+  const needsMotivationBackfill =
+    !data.deep_motivation_compressed &&
+    typeof data.deep_motivation === "string" &&
+    data.deep_motivation.trim().length > 90;
+  if (needsProjectBackfill || needsMotivationBackfill) {
     void import("@/lib/onboarding/project")
-      .then((mod) =>
-        mod.maybeBackfillCompressedProject(supabase, {
+      .then((mod) => {
+        const snapshot = {
           id: data.id,
           language: data.language,
           project_description: data.project_description,
           project_description_compressed: data.project_description_compressed,
-        }),
-      )
+          deep_motivation: data.deep_motivation,
+          deep_motivation_compressed: data.deep_motivation_compressed,
+        } as const;
+        if (needsProjectBackfill) {
+          mod.maybeBackfillCompressedProject(supabase, snapshot);
+        }
+        if (needsMotivationBackfill) {
+          mod.maybeBackfillCompressedMotivation(supabase, snapshot);
+        }
+      })
       .catch(() => {
         /* silent — next page load retries */
       });

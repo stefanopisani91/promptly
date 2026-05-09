@@ -51,6 +51,15 @@ export interface SparkSessionContext {
    * just don't set it and the session context omits the line.
    */
   projectContext?: string | null;
+  /**
+   * ≤100-char first-person compressed view of the user's deep_motivation
+   * (mitigation 2 + 4 of the deep_motivation audit, 2026-05-09).
+   * Rendered as an "emotional anchor" line + a usage clause that tells
+   * Spark to deploy it ONLY in empathic moments (frustration, repeated
+   * errors, sounding-defeated tone) — never in neutral/technical replies,
+   * and always paraphrased, never quoted verbatim. Optional.
+   */
+  motivationAnchor?: string | null;
 }
 
 // -----------------------------------------------------------------------------
@@ -723,9 +732,13 @@ export function sparkSessionContextIT(ctx: SparkSessionContext): string {
     ctx.projectContext && ctx.projectContext.trim().length > 0
       ? `\nProgetto utente: ${ctx.projectContext.trim()}`
       : "";
+  const motivation =
+    ctx.motivationAnchor && ctx.motivationAnchor.trim().length > 0
+      ? `\nÀncora emotiva (motivazione profonda dell'utente): ${ctx.motivationAnchor.trim()}\nUSO DELL'ÀNCORA: questa è una stringa emotiva, non un fatto. Usala SOLO nei momenti di intervento personale — quando l'utente sembra demotivato, frustrato, o sta per mollare. NON citarla mai verbatim: riformulala con parole tue come se la conoscessi intimamente. Mai usarla in contesti tecnici o didattici neutri.`
+      : "";
   return `CONTESTO DELLA SESSIONE
 Lezione: "${ctx.lessonTitle}" (step ${ctx.stepIndex + 1} di ${ctx.totalSteps})
-Argomento: ${summary}${project}`;
+Argomento: ${summary}${project}${motivation}`;
 }
 
 export function sparkSessionContextEN(ctx: SparkSessionContext): string {
@@ -734,7 +747,11 @@ export function sparkSessionContextEN(ctx: SparkSessionContext): string {
     ctx.projectContext && ctx.projectContext.trim().length > 0
       ? `\nLearner project: ${ctx.projectContext.trim()}`
       : "";
+  const motivation =
+    ctx.motivationAnchor && ctx.motivationAnchor.trim().length > 0
+      ? `\nEmotional anchor (the learner's deep motivation): ${ctx.motivationAnchor.trim()}\nUSING THE ANCHOR: this is an emotional string, not a fact. Use it ONLY in personal-intervention moments — when the learner sounds defeated, frustrated, or about to give up. NEVER quote it verbatim: paraphrase it as if you knew it intimately. Never deploy it in neutral technical or didactic replies.`
+      : "";
   return `SESSION CONTEXT
 Lesson: "${ctx.lessonTitle}" (step ${ctx.stepIndex + 1} of ${ctx.totalSteps})
-Topic: ${summary}${project}`;
+Topic: ${summary}${project}${motivation}`;
 }

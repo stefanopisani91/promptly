@@ -146,6 +146,11 @@ export interface UserProfile {
   // frequent AI call (Spark chat, evaluator system prompts). Null until
   // generated. Migration 20260509120000_project_description_compressed.sql.
   project_description_compressed: string | null;
+  // Sibling of the above for deep_motivation: ≤100-char compressed view
+  // that keeps the emotional core (in first person). Used by Spark in
+  // empathic interventions; the raw deep_motivation stays for the
+  // 3-promises generator. Migration 20260509130000_deep_motivation_compressed.sql.
+  deep_motivation_compressed: string | null;
   created_at: string;
   updated_at: string;
 }
