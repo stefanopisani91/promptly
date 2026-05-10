@@ -333,6 +333,12 @@ export interface LuciaDemoCopy {
     partialMidAllBugs: string;
     /** High score (85+) but missed at least one bug: "strong prompt, one bug went unseen". */
     partialHighIncomplete: string;
+    /** Editing phase AFTER at least one attempt — user is back at the
+     * textarea writing a fresh prompt. Spark stays in "listening" body
+     * language but the message resets to ready-for-next-try, NOT a
+     * leftover result line (the previous result was already shown and
+     * acknowledged when the panel collapsed). */
+    editingAfterAttempt: string;
     /** User hit the per-session attempt cap. */
     limit: string;
   };

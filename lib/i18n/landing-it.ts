@@ -304,6 +304,7 @@ export const landingCopyIt: LandingCopy = {
       partialOneLeft: "Ci sei quasi. Hai trovato due bug, ne manca solo uno. Indizio: c'è un elemento che dovrebbe vedersi e non si vede.",
       partialMidAllBugs: "Hai gli occhi giusti, hai visto tutti e 3 i bug. Aggiungi un piccolo dettaglio operativo — tipo «non aggiungere librerie» — e arrivi alla vittoria.",
       partialHighIncomplete: "Prompt forte. Però un bug è scappato — riguarda il sito, c'è ancora qualcosa che non torna.",
+      editingAfterAttempt: "Sto qui. Quando hai un'idea nuova, scrivila.",
       limit: "Per ora basta. Iscriviti se vuoi continuare con me.",
     },
     footer:

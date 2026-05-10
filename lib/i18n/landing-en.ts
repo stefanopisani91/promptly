@@ -301,6 +301,7 @@ export const landingCopyEn: LandingCopy = {
       partialOneLeft: "Almost there. You found two bugs, one to go. Hint: there's an element that should be visible and isn't.",
       partialMidAllBugs: "You've got the eyes — all 3 bugs spotted. Add one small operational detail — like «don't add libraries» — and you cross the line.",
       partialHighIncomplete: "Strong prompt. But one bug slipped past you — take another look at the site, there's still something off.",
+      editingAfterAttempt: "I'm here. When you have a new idea, write it down.",
       limit: "Enough for now. Sign up if you want to keep going with me.",
     },
     footer:

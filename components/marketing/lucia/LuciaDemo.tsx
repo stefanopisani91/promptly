@@ -715,9 +715,13 @@ function resolveSparkNarration(
   }
   // Default editing state — Spark is patient and watching.
   // After at least one attempt without victory she stays in "listening"
-  // mode (leaning forward) to communicate continuity.
+  // mode (leaning forward) to communicate continuity, but the message
+  // resets to ready-for-next-try (was incorrectly the result-panel line
+  // `spark.partial`, which produced "Quasi. Manca qualcosa." even after
+  // the user had moved past the result and was writing fresh — bug
+  // observed 10 May 2026).
   if (attemptCount > 0 && !victoryLocked) {
-    return { state: "listening", message: spark.partial };
+    return { state: "listening", message: spark.editingAfterAttempt };
   }
   return { state: "idle", message: spark.intro };
 }
