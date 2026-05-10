@@ -15,6 +15,7 @@ import {
   getUserProfile,
 } from "@/lib/supabase/queries";
 import { loadAvailableLessonsInPath, loadLessonById } from "@/lib/lessons/load";
+import { isComingSoonPath } from "@/lib/map/data";
 import {
   getLessonNeighbors,
   isPathUnlocked,
@@ -76,6 +77,15 @@ export default async function LessonPage({ params }: PageProps) {
 
   const lesson = await loadLessonById(params.id, lang);
   if (!lesson) notFound();
+
+  // Path 2 lessons exist on disk but are gated until launch (see
+  // `COMING_SOON_PATHS` in lib/map/data.ts). Catch any deep-link or
+  // stale bookmark that would otherwise serve the V1 fill-in-the-blank
+  // surface we're hiding from the public; the dashboard reads
+  // `?locked=path2` and shows a toast.
+  if (isComingSoonPath(lesson.path_slug)) {
+    redirect("/dashboard?locked=path2");
+  }
 
   const unlocked = await isPathUnlocked(supabase, user.id, lesson.path_slug);
   if (!unlocked) redirect(`/path/${lesson.path_slug}`);

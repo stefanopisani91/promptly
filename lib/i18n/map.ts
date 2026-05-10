@@ -28,6 +28,7 @@ export interface MapCopy {
     locked: string;
     pro: string;
     bonus: string;
+    comingSoon: string;
   };
   modal: {
     closeAria: string;
@@ -40,6 +41,13 @@ export interface MapCopy {
     proCta: string;
     proPathTitle: (pathTitle: string) => string;
     proPathDesc: (pathTitle: string) => string;
+    // Coming-soon ("Path 2 — In arrivo a giugno") modal copy. Shown when
+    // the user clicks a locked Path 2 node from the map, with no CTA —
+    // the close button is enough.
+    comingSoonEyebrow: string;
+    comingSoonTitle: (pathTitle: string) => string;
+    comingSoonDesc: string;
+    comingSoonOkCta: string;
     bonusEyebrow: string;
     bonusUnlockedSub: string;
     bonusUnlockedComingSoon: string;
@@ -49,6 +57,11 @@ export interface MapCopy {
   };
   pathProgress: (completed: number, total: number) => string;
   pathPro: string; // "Pro path"
+  // Pill rendered above a coming-soon path's bioma header.
+  pathComingSoonBadge: string;
+  // Toast message shown on /dashboard when a user is redirected from a
+  // locked path's lesson route (?locked=path2).
+  comingSoonToast: string;
   pathLockedHint: (prereqTitle: string) => string;
   scrollHint: string; // "Scorri verso l'alto per scoprire i prossimi mondi"
 }
@@ -76,6 +89,7 @@ const it: MapCopy = {
     locked: "Bloccata",
     pro: "Pro",
     bonus: "Bonus",
+    comingSoon: "In arrivo",
   },
   modal: {
     closeAria: "Chiudi",
@@ -90,6 +104,11 @@ const it: MapCopy = {
     proPathTitle: (pathTitle) => `${pathTitle} — Pro`,
     proPathDesc: (pathTitle) =>
       `${pathTitle} è parte del piano Pro. Sblocca per accedere a tutte le lezioni e al feedback AI.`,
+    comingSoonEyebrow: "IN ARRIVO",
+    comingSoonTitle: (pathTitle) => `${pathTitle} — In arrivo a giugno`,
+    comingSoonDesc:
+      "Sto rifinendo le lezioni di questo percorso. Saranno qui dal 1 giugno — fino ad allora rimangono in vetrina.",
+    comingSoonOkCta: "OK",
     bonusEyebrow: "BONUS PATH",
     bonusUnlockedSub: "Pronto per partire — clicca \"Vai\" per esplorarla.",
     bonusUnlockedComingSoon:
@@ -100,6 +119,9 @@ const it: MapCopy = {
   },
   pathProgress: (completed, total) => `${completed}/${total} lezioni`,
   pathPro: "Pro",
+  pathComingSoonBadge: "In arrivo a giugno",
+  comingSoonToast:
+    "Le lezioni di questo percorso saranno disponibili a giugno.",
   pathLockedHint: (prereqTitle) =>
     `Completa ${prereqTitle} per sbloccare questo percorso.`,
   scrollHint: "Scorri verso l'alto per scoprire i prossimi mondi",
@@ -128,6 +150,7 @@ const en: MapCopy = {
     locked: "Locked",
     pro: "Pro",
     bonus: "Bonus",
+    comingSoon: "Coming soon",
   },
   modal: {
     closeAria: "Close",
@@ -142,6 +165,11 @@ const en: MapCopy = {
     proPathTitle: (pathTitle) => `${pathTitle} — Pro`,
     proPathDesc: (pathTitle) =>
       `${pathTitle} is part of the Pro plan. Unlock to access every lesson and AI feedback.`,
+    comingSoonEyebrow: "COMING SOON",
+    comingSoonTitle: (pathTitle) => `${pathTitle} — Coming in June`,
+    comingSoonDesc:
+      "I'm polishing the lessons in this path. They'll be here on June 1st — until then they stay on display.",
+    comingSoonOkCta: "OK",
     bonusEyebrow: "BONUS PATH",
     bonusUnlockedSub: "Ready when you are — click \"Go\" to start.",
     bonusUnlockedComingSoon:
@@ -152,6 +180,9 @@ const en: MapCopy = {
   },
   pathProgress: (completed, total) => `${completed}/${total} lessons`,
   pathPro: "Pro",
+  pathComingSoonBadge: "Coming in June",
+  comingSoonToast:
+    "Lessons in this path will be available in June.",
   pathLockedHint: (prereqTitle) =>
     `Finish ${prereqTitle} to unlock this path.`,
   scrollHint: "Scroll up to discover the next worlds",

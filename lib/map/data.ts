@@ -26,12 +26,28 @@ import { checkAllBonusPathsFromSnapshot, getUnlockSnapshot } from "@/lib/unlock"
 // per-user decision instead.
 const PRO_PATHS: ReadonlySet<PathSlug> = new Set<PathSlug>(["build", "debug", "ship"]);
 
+// Paths whose content exists but is intentionally hidden until the public
+// launch (1 June 2026 for Path 2 — the V1 fill-in-the-blank lessons are
+// being rewritten in V3 and we don't want users to see the older format
+// in the meantime). Visible on the map with a "coming soon" lock so the
+// dashboard still shows the full product surface.
+const COMING_SOON_PATHS: ReadonlySet<PathSlug> = new Set<PathSlug>(["prompt"]);
+
 export type NodeState =
   | "completed"
   | "current"
   | "available"
   | "locked_sequential"
-  | "locked_pro";
+  | "locked_pro"
+  | "locked_coming_soon";
+
+/**
+ * Re-exported for server-side checks (e.g. /lesson/[id]/page.tsx)
+ * — keeps the lock list in one place.
+ */
+export function isComingSoonPath(slug: PathSlug): boolean {
+  return COMING_SOON_PATHS.has(slug);
+}
 
 export interface MapNodeData {
   index: number; // 0-based position within the path
@@ -53,6 +69,13 @@ export interface MapPathSection {
   title: string;
   description: string;
   isPro: boolean;
+  /**
+   * True when the path's lessons exist but are gated until launch
+   * (Path 2 — see `COMING_SOON_PATHS`). The map renders the section
+   * with locked nodes and a "in arrivo" badge; the progress bar is
+   * hidden because there's no progress to show.
+   */
+  isComingSoon: boolean;
   isUnlocked: boolean; // sequential prerequisite met
   totalLessons: number;
   completedLessons: number;
@@ -183,11 +206,13 @@ export async function buildMapData(
   const bonusUnlockStates = checkAllBonusPathsFromSnapshot(snapshot);
 
   // Locate the user's current node — first incomplete lesson in the
-  // earliest non-completed unlocked path.
+  // earliest non-completed unlocked path. Coming-soon paths are skipped
+  // so the "Continue" indicator never lands on a locked Path 2 node.
   let current: MapCurrentLocation = { pathSlug: null, lessonIndex: null, isAtStart: false };
   for (const slug of PATH_ORDER) {
     if (!unlockedBySlug[slug]) continue;
     if (PRO_PATHS.has(slug)) continue;
+    if (COMING_SOON_PATHS.has(slug)) continue;
     const total = PATH_META[slug].totalLessons;
     const completedCount = completedIdsBySlug[slug].size;
     if (completedCount < total) {
@@ -206,6 +231,7 @@ export async function buildMapData(
     const available = lessonsBySlug[slug];
     const completedSet = completedIdsBySlug[slug];
     const isPro = PRO_PATHS.has(slug);
+    const isComingSoon = COMING_SOON_PATHS.has(slug);
     const isUnlocked = unlockedBySlug[slug];
 
     const nodes: MapNodeData[] = [];
@@ -223,7 +249,13 @@ export async function buildMapData(
       let href: string | null = null;
       let xpEarned: number | undefined;
 
-      if (isPro) {
+      // Order matters: coming-soon wins over Pro/sequential because the
+      // bioma is fully laid out (we want to show all 8 nodes), the
+      // prerequisite is met, the lessons exist — only the launch date
+      // gates them.
+      if (isComingSoon) {
+        state = "locked_coming_soon";
+      } else if (isPro) {
         state = "locked_pro";
       } else if (!isUnlocked) {
         state = "locked_sequential";
@@ -277,9 +309,13 @@ export async function buildMapData(
       title: pathTitles[slug],
       description: pathDescriptions[slug],
       isPro,
+      isComingSoon,
       isUnlocked,
       totalLessons: meta.totalLessons,
-      completedLessons: completedSet.size,
+      // For coming-soon paths we report 0 completed regardless of any
+      // historical V1 progress — the section reads as "untouched, in
+      // arrivo" instead of partially-done with a frozen progress bar.
+      completedLessons: isComingSoon ? 0 : completedSet.size,
       isCompletedAll: completedAllByPath[slug],
       nodes,
       bonusAttachments,

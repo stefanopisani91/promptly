@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, type ReactNode } from "react";
-import { Crown, Lock } from "lucide-react";
+import { Clock, Crown, Lock } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import type { Lang, PathSlug } from "@/types";
@@ -96,6 +96,18 @@ export function MapNode({
     });
   }
 
+  function openComingSoonModal() {
+    // No CTA — the close button is the only action. Mirrors the "bonus
+    // unlocked but content not shipped yet" pattern used by MapBonusBadge.
+    setModal({
+      eyebrow: copy.modal.comingSoonEyebrow,
+      title: copy.modal.comingSoonTitle(pathTitle),
+      body: copy.modal.comingSoonDesc,
+      stat: null,
+      primary: null,
+    });
+  }
+
   const accent = `var(--bioma-${bioma}-accent)`;
 
   const baseClasses = cn(
@@ -148,6 +160,17 @@ export function MapNode({
       stateColor = "var(--pro-accent)";
       break;
     }
+    case "locked_coming_soon": {
+      // Visually similar to locked_sequential (greyed out, lower
+      // affordance) but uses a clock to signal "time-gated, not
+      // prerequisite-gated", and the click opens a modal instead of
+      // being inert.
+      content = <Clock className="h-5 w-5 text-text-muted" aria-hidden />;
+      stateClass = "border-border bg-surface-muted opacity-70";
+      stateLabel = copy.legend.comingSoon;
+      stateColor = "var(--text-muted)";
+      break;
+    }
   }
 
   const sharedClasses = cn(baseClasses, stateClass);
@@ -177,6 +200,18 @@ export function MapNode({
         className={sharedClasses}
         style={stateStyle}
         aria-label={`${accessibleLabel} — ${copy.legend.pro}`}
+      >
+        {content}
+      </button>
+    );
+  } else if (node.state === "locked_coming_soon") {
+    inner = (
+      <button
+        type="button"
+        onClick={openComingSoonModal}
+        className={sharedClasses}
+        style={stateStyle}
+        aria-label={`${accessibleLabel} — ${copy.legend.comingSoon}`}
       >
         {content}
       </button>

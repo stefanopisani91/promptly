@@ -50,9 +50,14 @@ const FINAL_CARD_DELAY_MS = 2700;
 interface Props {
   copy: LuciaDemoCopy;
   lang: Lang;
+  /** When true, the demo skips the "write here" arrow overlay above the
+   * textarea. Logged-in users land on the dashboard normally — they're
+   * here only if they wandered back to the landing, and they don't
+   * need the onboarding cue. */
+  isLoggedIn?: boolean;
 }
 
-export function LuciaDemo({ copy, lang }: Props) {
+export function LuciaDemo({ copy, lang, isLoggedIn = false }: Props) {
   const [phase, setPhase] = useState<PanelPhase>("editing");
   const [evaluation, setEvaluation] = useState<LuciaEvaluation | null>(null);
   const [outcome, setOutcome] = useState<DemoOutcome | null>(null);
@@ -425,6 +430,7 @@ export function LuciaDemo({ copy, lang }: Props) {
               onEvaluate={handleEvaluate}
               onReset={handleReset}
               evaluateDisabledReason={evaluateDisabledReason}
+              showWriteHereOverlay={!isLoggedIn}
             />
           </div>
         )}

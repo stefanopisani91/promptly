@@ -20,6 +20,7 @@ import { ContinueCard } from "@/components/dashboard/ContinueCard";
 import { DailyGoalCard } from "@/components/dashboard/DailyGoalCard";
 import type { RecentLessonItem } from "@/components/dashboard/RecentLessonsList";
 import { SparkCompanionCard } from "@/components/dashboard/SparkCompanionCard";
+import { LockedRedirectToast } from "@/components/dashboard/LockedRedirectToast";
 import { LevelUpModal } from "@/components/promptly/LevelUpModal";
 import { ReferralModalProvider } from "@/components/promptly/ReferralModalProvider";
 import { LearningMap } from "@/components/promptly/map/LearningMap";
@@ -40,13 +41,23 @@ export function generateMetadata(): Metadata {
   };
 }
 
-export default async function DashboardPage() {
+interface DashboardPageProps {
+  searchParams?: { locked?: string };
+}
+
+export default async function DashboardPage({
+  searchParams,
+}: DashboardPageProps) {
   const supabase = createClient();
   const { data: userData } = await supabase.auth.getUser();
   const user = userData?.user;
   if (!user) {
     redirect("/auth");
   }
+  // Picked up by the toast component below — server-side, the lesson
+  // route appends `?locked=path2` when a user deep-links to a locked
+  // Path 2 lesson.
+  const showLockedToast = searchParams?.locked === "path2";
 
   const profile = await getUserProfile(supabase, user.id);
   if (!profile || !profile.onboarding_completed_at) {
@@ -193,6 +204,13 @@ export default async function DashboardPage() {
             fromLevel={profile.last_level_up_notified}
             toLevel={currentLevel}
             language={lang}
+          />
+        )}
+
+        {showLockedToast && (
+          <LockedRedirectToast
+            message={mapCopy.comingSoonToast}
+            dismissLabel={mapCopy.modal.closeAria}
           />
         )}
 

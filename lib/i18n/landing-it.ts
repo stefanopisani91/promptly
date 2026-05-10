@@ -307,6 +307,10 @@ export const landingCopyIt: LandingCopy = {
       editingAfterAttempt: "Sto qui. Quando hai un'idea nuova, scrivila.",
       limit: "Per ora basta. Iscriviti se vuoi continuare con me.",
     },
+    writeHereOverlay: {
+      desktop: "Scrivi qui il tuo prompt",
+      mobile: "Scrivi qui",
+    },
     footer:
       "Un piccolo assaggio di Promptly — l'app che ti insegna a fare vibe coding davvero.",
   },

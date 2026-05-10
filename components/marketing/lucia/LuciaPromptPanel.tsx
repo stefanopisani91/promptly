@@ -29,6 +29,7 @@ import type {
   ScoreBand,
 } from "@/lib/landing-demo/types";
 import { bandFromScore } from "@/lib/landing-demo/types";
+import { LuciaWriteHereOverlay } from "./LuciaWriteHereOverlay";
 
 const ANIM_FRAMES = 60;
 const ANIM_INTERVAL_MS = 16;
@@ -116,6 +117,10 @@ interface Props {
   onReset: () => void;
   /** Disabled when the user has hit the per-session attempt cap. */
   evaluateDisabledReason: "limit" | null;
+  /** When true, render the floating "write here" arrow above the
+   * textarea. Falsey for logged-in users (they're not on the demo
+   * surface in the same form). */
+  showWriteHereOverlay?: boolean;
 }
 
 export function LuciaPromptPanel({
@@ -127,10 +132,15 @@ export function LuciaPromptPanel({
   onEvaluate,
   onReset,
   evaluateDisabledReason,
+  showWriteHereOverlay = false,
 }: Props) {
   const reducedMotion = usePrefersReducedMotion();
 
   const [userPrompt, setUserPrompt] = useState("");
+  // True once the user has focused the textarea at least once. The
+  // "write here" overlay watches this — it fades out the moment the
+  // user signals they understood the affordance.
+  const [textareaTouched, setTextareaTouched] = useState(false);
   const [animatedScore, setAnimatedScore] = useState(0);
   const [animatedDims, setAnimatedDims] =
     useState<Record<DimensionKey, number>>(ZERO_DIMS);
@@ -241,6 +251,21 @@ export function LuciaPromptPanel({
   const showPrevAttempt = phase === "editing" && prevScore !== null;
 
   return (
+    // Outer wrapper hosts the "write here" overlay so it can extend
+    // above the panel without being clipped by the panel's
+    // `overflow: hidden` (which we keep so the rounded corners + result
+    // animations stay clean).
+    <div style={{ position: "relative", display: "flex", flex: 1 }}>
+      <LuciaWriteHereOverlay
+        textDesktop={copy.writeHereOverlay.desktop}
+        textMobile={copy.writeHereOverlay.mobile}
+        visible={
+          showWriteHereOverlay &&
+          phase === "editing" &&
+          userPrompt.length === 0 &&
+          !textareaTouched
+        }
+      />
     <div
       aria-busy={isLoading}
       style={{
@@ -261,6 +286,7 @@ export function LuciaPromptPanel({
         flexDirection: "column",
         position: "relative",
         transition: "box-shadow 0.5s",
+        flex: 1,
       }}
     >
       {/* macOS chrome */}
@@ -387,8 +413,15 @@ export function LuciaPromptPanel({
           onChange={(v, e) => {
             setUserPrompt(v);
             updateCursor(e);
+            // First keystroke also dismisses the overlay — covers the
+            // edge case where the user types via mobile autofill /
+            // paste without ever firing a focus event.
+            if (!textareaTouched) setTextareaTouched(true);
           }}
           onCursor={updateCursor}
+          onFirstFocus={() => {
+            if (!textareaTouched) setTextareaTouched(true);
+          }}
           isLoading={isLoading}
           lineNumbers={lineNumbers}
           cursorLine={cursorPos.line}
@@ -592,6 +625,7 @@ export function LuciaPromptPanel({
         }
       `}</style>
     </div>
+    </div>
   );
 }
 
@@ -604,6 +638,7 @@ function EditorBody({
   userPrompt,
   onChange,
   onCursor,
+  onFirstFocus,
   isLoading,
   lineNumbers,
   cursorLine,
@@ -615,6 +650,10 @@ function EditorBody({
     e: React.ChangeEvent<HTMLTextAreaElement>,
   ) => void;
   onCursor: (e: React.SyntheticEvent<HTMLTextAreaElement>) => void;
+  /** Optional — fires on the FIRST focus event (used by the parent to
+   * dismiss the "write here" overlay). Not de-duped here; the parent
+   * guards re-firing via state. */
+  onFirstFocus?: () => void;
   isLoading: boolean;
   lineNumbers: number[];
   cursorLine: number;
@@ -655,7 +694,10 @@ function EditorBody({
         onChange={(e) => onChange(e.target.value, e)}
         onKeyUp={onCursor}
         onClick={onCursor}
-        onFocus={onCursor}
+        onFocus={(e) => {
+          onCursor(e);
+          onFirstFocus?.();
+        }}
         placeholder={copy.placeholder}
         disabled={isLoading}
         spellCheck={false}

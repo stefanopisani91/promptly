@@ -9,8 +9,12 @@ import { LuciaDemo } from "./LuciaDemo";
 interface Props {
   copy: LuciaDemoCopy;
   lang: Lang;
+  /** Forwarded to LuciaDemo so the "write here" overlay is hidden for
+   * users with an active session. Resolved server-side by the page so
+   * this stays a pure client-component prop. */
+  isLoggedIn?: boolean;
 }
 
-export function LuciaDemoSection({ copy, lang }: Props) {
-  return <LuciaDemo copy={copy} lang={lang} />;
+export function LuciaDemoSection({ copy, lang, isLoggedIn = false }: Props) {
+  return <LuciaDemo copy={copy} lang={lang} isLoggedIn={isLoggedIn} />;
 }

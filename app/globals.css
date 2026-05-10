@@ -1265,4 +1265,23 @@ h6 {
   .animate-cta-ring {
     animation: none !important;
   }
+  .lucia-write-here-arrow,
+  .lucia-write-here-overlay {
+    animation: none !important;
+    transform: none !important;
+  }
+}
+
+/* ─── Lucia demo "write here" overlay (May 2026) ───
+   The overlay sits above the prompt textarea and bounces gently to
+   draw the eye. The bounce moves only the arrow icon (3px peak) so
+   the text stays readable; the wrapper itself doesn't translate to
+   keep the centred-translate(-50%) pinned. */
+@keyframes lucia-write-here-bounce {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(5px); }
+}
+.lucia-write-here-arrow {
+  animation: lucia-write-here-bounce 1.2s ease-in-out infinite;
+  will-change: transform;
 }

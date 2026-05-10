@@ -9,7 +9,7 @@
 // after mount on desktop.
 
 import { useEffect, useState } from "react";
-import { Crown } from "lucide-react";
+import { Clock, Crown } from "lucide-react";
 import type { Lang } from "@/types";
 
 import {
@@ -114,16 +114,27 @@ export function MapSection({
               {copy.pathPro}
             </span>
           )}
-          <span className="ml-1 rounded-full bg-text-primary/85 px-2 py-0.5 font-mono text-[10px] font-semibold text-white">
-            {section.completedLessons}/{section.totalLessons}
-          </span>
+          {section.isComingSoon && (
+            // Replaces the lesson-counter pill on coming-soon paths.
+            // Tone: soft orange (brand) + clock icon — clearly time-gated,
+            // not pay-gated.
+            <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-primary-deep">
+              <Clock className="h-2.5 w-2.5" aria-hidden />
+              {copy.pathComingSoonBadge}
+            </span>
+          )}
+          {!section.isComingSoon && (
+            <span className="ml-1 rounded-full bg-text-primary/85 px-2 py-0.5 font-mono text-[10px] font-semibold text-white">
+              {section.completedLessons}/{section.totalLessons}
+            </span>
+          )}
         </header>
       ) : (
         <header
           className="absolute left-1/2 z-10 w-[88%] max-w-md -translate-x-1/2 rounded-2xl border border-border bg-background px-4 py-3 text-center"
           style={{ top: 12 }}
         >
-          <div className="flex items-center justify-center gap-2">
+          <div className="flex flex-wrap items-center justify-center gap-2">
             <h3 className="font-heading text-base font-bold leading-tight text-text-primary">
               {pathCopy.title}
             </h3>
@@ -133,16 +144,24 @@ export function MapSection({
                 {copy.pathPro}
               </span>
             )}
+            {section.isComingSoon && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-primary-deep">
+                <Clock className="h-3 w-3" aria-hidden />
+                {copy.pathComingSoonBadge}
+              </span>
+            )}
           </div>
           <p className="mt-0.5 text-xs text-text-secondary">{pathCopy.tagline}</p>
-          <p className="mt-1 font-mono text-[11px] text-text-muted">
-            {section.isUnlocked || section.isPro
-              ? copy.pathProgress(section.completedLessons, section.totalLessons)
-              : copy.pathLockedHint(
-                  copy.paths[PATH_META[section.slug].prerequisitePath ?? "mindset"]
-                    .title,
-                )}
-          </p>
+          {!section.isComingSoon && (
+            <p className="mt-1 font-mono text-[11px] text-text-muted">
+              {section.isUnlocked || section.isPro
+                ? copy.pathProgress(section.completedLessons, section.totalLessons)
+                : copy.pathLockedHint(
+                    copy.paths[PATH_META[section.slug].prerequisitePath ?? "mindset"]
+                      .title,
+                  )}
+            </p>
+          )}
         </header>
       )}
 

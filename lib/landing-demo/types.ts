@@ -343,5 +343,17 @@ export interface LuciaDemoCopy {
     limit: string;
   };
 
+  /** Floating "write here" overlay shown above the textarea on first
+   * paint, until the user focuses or starts typing. Hidden for logged-in
+   * users (they'll be on the dashboard, not this demo) and once the
+   * textarea has any content. See `LuciaWriteHereOverlay`. */
+  writeHereOverlay: {
+    /** Long-form copy shown on desktop (≥768px). */
+    desktop: string;
+    /** Short copy shown on mobile (<768px) where horizontal real estate
+     * is tight. Should still be a complete imperative phrase. */
+    mobile: string;
+  };
+
   footer: string;
 }
