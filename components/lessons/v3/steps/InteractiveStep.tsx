@@ -20,6 +20,19 @@ import { Fireworks } from "@/components/marketing/Fireworks";
 import { Spark } from "../Spark";
 import { StepCard } from "../StepCard";
 
+// Single source of truth for victory thresholds in the Lucia widget.
+// Calibrated 10 May 2026 (BACKLOG URGENTE 1 leva 1): victory was 85,
+// which an "honest intermediate" prompt couldn't reach without the
+// concept of constraints (taught only in Lez 4). Lowered to 70 so a
+// solid Lez-1-level prompt — clear language, all 3 bugs spotted, modest
+// constraint awareness — wins. Perfect threshold lowered 95 → 90 to
+// match: it's "wow you nailed it", not "you wrote an enterprise spec".
+//
+// Used by `won`, `handleFinalize.victory`, `pickReaction`, and `bandFor`.
+// Never duplicate the literal — import these constants instead.
+const LUCIA_VICTORY_THRESHOLD = 70;
+const LUCIA_PERFECT_THRESHOLD = 90;
+
 export interface InteractiveStepStrings {
   hint: string; // helper line under the textarea
   attemptCounterTemplate: string; // "Tentativo {current} / {max}"
@@ -138,17 +151,17 @@ export function InteractiveStep({
 
   const exhausted = attemptCount >= MAX_LESSON_ATTEMPTS;
   // "Won" means TRUE victory — all 3 bugs fixed AND a strong prompt
-  // (score ≥ 85). Same threshold as `victory` in handleFinalize and as
-  // the `r.allBugsHighScore` reaction in pickReaction. Without the
-  // score gate, a user who simply listed the 3 bugs in a low-quality
-  // prompt would still get the "celebrate + lock textarea" treatment
-  // even though Spark explicitly told them to retry — bug observed
-  // 2026-05-09 (bestScore 69, all 3 bugs mentioned, textarea locked).
+  // (score ≥ LUCIA_VICTORY_THRESHOLD). Same threshold as `victory` in
+  // handleFinalize and as the `r.allBugsHighScore` reaction in
+  // pickReaction. Without the score gate, a user who simply listed the
+  // 3 bugs in a low-quality prompt would still get the "celebrate + lock
+  // textarea" treatment even though Spark explicitly told them to retry
+  // — bug observed 2026-05-09.
   const won =
     fixedBugs.foto &&
     fixedBugs.overflow &&
     fixedBugs.bottone &&
-    bestScore >= 85;
+    bestScore >= LUCIA_VICTORY_THRESHOLD;
 
   // Spark's bubble line. `reaction` is now hydrated from stepState on
   // mount, so a returning user reads the EXACT line they saw last time
@@ -249,7 +262,7 @@ export function InteractiveStep({
       {
         attempts: attemptCount,
         bestScore,
-        victory: fixedCount === 3 && bestScore >= 85,
+        victory: fixedCount === 3 && bestScore >= LUCIA_VICTORY_THRESHOLD,
         band,
         xpEarned,
       },
@@ -461,7 +474,7 @@ function bandFor(
   bestScore: number,
   fixedCount: number,
 ): "poor" | "one_bug" | "two_bugs" | "all_bugs" | "perfect" {
-  if (fixedCount === 3 && bestScore >= 95) return "perfect";
+  if (fixedCount === 3 && bestScore >= LUCIA_PERFECT_THRESHOLD) return "perfect";
   if (fixedCount === 3) return "all_bugs";
   if (fixedCount === 2) return "two_bugs";
   if (fixedCount === 1) return "one_bug";
@@ -497,7 +510,7 @@ function pickReaction(
   const isLast = attemptNumber >= maxAttempts;
   const bugCount = ev.bugs_menzionati.length;
 
-  if (ev.totale >= 85 && bugCount === 3) return r.allBugsHighScore;
+  if (ev.totale >= LUCIA_VICTORY_THRESHOLD && bugCount === 3) return r.allBugsHighScore;
   if (bugCount === 3) return r.allBugsLowScore;
   if (bugCount === 2) return r.twoBugs;
   if (bugCount === 1) return r.photoOnly;

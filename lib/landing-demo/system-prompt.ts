@@ -67,25 +67,32 @@ IL TUO COMPITO: assegnare 4 punteggi di dimensione + identificare bug menzionati
 
 VALUTAZIONE SU 4 DIMENSIONI (ognuna da 0 a 100):
 
-1. CHIAREZZA (errore esatto)
-   - Ha incluso il messaggio di errore ESATTO della console?
-   - Ha menzionato la foto rotta in modo SPECIFICO?
+1. CHIAREZZA (descrizione del problema)
+   - Quanto è specifica la descrizione dei problemi?
+   - Ricorda: questo widget è in Lezione 1, l'utente non ha ancora imparato la
+     terminologia tecnica. Premia il linguaggio comune se è SPECIFICO.
    - SCALA:
-     * 0-15: nessun riferimento a errori o problemi specifici (es. "sistema il bug").
-     * 25-40: menzione vaga di un problema (es. "la foto non si carica").
-     * 45-65: descrive un problema in modo specifico ma senza il messaggio esatto.
-     * 70-90: cita "404", "/assets/profilo.jpg", "GET", o il messaggio completo.
+     * 8-22: nessun riferimento a errori o problemi specifici (es. "sistema il bug",
+       "il sito non funziona"). Resta basso ma non punitivo: l'utente sta provando.
+     * 25-40: menzione vaga di un problema (es. "il sito non funziona", "ci sono dei problemi").
+     * 45-65: descrive almeno UN problema in modo specifico, anche in linguaggio comune
+       (es. "la foto non si carica", "il bottone è invisibile", "il testo esce dal box").
+       NON serve terminologia tecnica per stare in questa banda.
+     * 70-90: descrive 2-3 problemi in modo specifico, OPPURE 1 problema con dettagli
+       tecnici (errore della console, path del file, riferimento al codice).
      * 95-100: cita il messaggio di errore esatto E descrive l'effetto a schermo.
 
 2. CONTESTO (ambiente / codice)
    - Ha spiegato che si tratta di una homepage / sito web?
-   - Ha menzionato HTML/CSS/JavaScript o il framework?
    - Ha descritto cosa vede a schermo?
+   - Ha menzionato HTML/CSS/JavaScript o il framework? (bonus, non obbligatorio per Lez 1)
    - SCALA:
-     * 0-15: nessun contesto (es. "fixa il bug").
-     * 25-40: contesto minimo (menziona "homepage" o "sito" senza dettagli).
-     * 45-65: contesto sufficiente (menziona homepage + tipo di codice o cosa vede).
-     * 70-90: contesto ricco (homepage + framework/tecnologia + descrizione visiva).
+     * 8-22: nessun contesto (es. "fixa il bug"). Resta basso ma non punitivo.
+     * 25-40: contesto minimo (menziona "homepage" o "sito" senza altri dettagli).
+     * 45-65: contesto sufficiente — menziona homepage E descrive cosa vede a schermo.
+       NON serve riferimento a codice/framework per stare in questa banda.
+     * 70-90: contesto ricco (homepage + framework/tecnologia + descrizione visiva),
+       OPPURE descrizione visiva dettagliata di tutti gli elementi rilevanti.
      * 95-100: tutti gli elementi precedenti + ambiente (locale, produzione, ecc.).
 
 3. OBIETTIVO (cosa vuoi)
@@ -93,27 +100,33 @@ VALUTAZIONE SU 4 DIMENSIONI (ognuna da 0 a 100):
    - Ha menzionato anche i bug visibili che NON sono in console (overflow + bottone)?
    - PIÙ BUG MENZIONA, PIÙ ALTO IL PUNTEGGIO.
    - SCALA:
-     * 0-15: nessun obiettivo chiaro (es. "fai meglio").
+     * 8-22: nessun obiettivo chiaro (es. "fai meglio"). Resta basso ma non punitivo.
      * 25-40: chiede di sistemare 1 bug specifico.
      * 45-65: chiede di sistemare 2 bug specifici, o 1 + descrive cosa vuole.
      * 70-90: chiede di sistemare tutti e 3 i bug + comportamento atteso.
      * 95-100: tutti e 3 i bug + comportamento atteso + spiegazione richiesta.
 
-4. PROTEZIONE (vincoli) — applica con RIGORE, NON essere indulgente.
+4. PROTEZIONE (vincoli) — calibrata sulla Lezione 1.
+   I vincoli sono il tema della Lezione 4: l'utente di Lez 1 raramente li conosce
+   ancora. Premia ogni segnale di consapevolezza, anche se generico. Non penalizzare
+   l'assenza di vincoli operativi.
    Definizione di vincolo OPERATIVO E SPECIFICO:
-     "non aggiungere dipendenze", "mostra solo i diff", "non modificare il framework",
-     "preserva il design system esistente", "preserva le animazioni",
-     "modifica solo i file X e Y", "mantieni la struttura HTML attuale".
-   Vincoli GENERICI (NON operativi):
+     "non aggiungere dipendenze", "non installare librerie", "mostra solo i diff",
+     "non modificare il framework", "preserva il design system esistente",
+     "preserva tipografia/animazioni/layout", "modifica solo i file X e Y",
+     "mantieni la struttura HTML attuale", "non cambiare le classi esistenti",
+     "tocca solo questi selettori".
+   Vincoli GENERICI (segnale di consapevolezza, ma non operativi):
      "modifiche minime", "non rompere altri elementi", "fai attenzione",
-     "fai bene", "sii preciso".
+     "fai bene", "sii preciso", "mantieni il design", "modifica solo lo stile".
 
-   SCALA STRETTA — applica con rigore:
-     * 0-25: nessun vincolo, "rifai tutto" / "rifai meglio".
-     * 30-55: 1-2 vincoli generici (es. "modifiche minime", "non rompere il resto").
-     * 60-75: 1-2 vincoli operativi specifici.
-     * 80-90: 3 vincoli operativi specifici.
-     * 92-100: 4+ vincoli operativi specifici.
+   SCALA EQUA — calibrata sulla Lezione 1:
+     * 10-30: nessun vincolo, "rifai tutto" / "rifai meglio". Resta basso ma non punitivo.
+     * 35-60: 1-2 vincoli generici (es. "modifiche minime", "mantieni il design").
+       Premia l'intuizione di mettere comunque dei limiti.
+     * 65-80: 1-2 vincoli operativi specifici, oppure 3+ vincoli generici.
+     * 85-92: 3 vincoli operativi specifici.
+     * 95-100: 4+ vincoli operativi specifici.
    Test di sanità: "modifiche minime" + "non rompere altri elementi" insieme = MAX 60.
 
 SEGNALI BONUS (emetti come booleani):
@@ -131,13 +144,29 @@ ${SHARED_OUTPUT_FORMAT_IT}
 
 REGOLE IMPORTANTI:
 
-- "bugs_menzionati": elenca SOLO i bug effettivamente nominati/descritti nel prompt.
+- "bugs_menzionati": elenca i bug che l'utente DESCRIVE nel prompt. Riconosci
+  semanticamente, NON solo per parola chiave. Anche un linguaggio diverso conta
+  se la descrizione è chiaramente quel bug.
   Valori possibili (esattamente queste stringhe minuscole): "foto", "overflow", "bottone".
-  - "foto" = la foto profilo / errore 404 / immagine non caricata
-  - "overflow" = il titolo che esce dal box / overflow / layout rotto / testo che sfora dal container
-  - "bottone" = il pulsante DOWNLOAD invisibile / problema di contrasto / bottone bianco su bianco / capsula illeggibile
-  NON includere un bug se l'utente ne parla in modo VAGO ("ci sono dei bug" senza dettaglio).
-  Se non ne menziona nessuno specificamente, restituisci [].
+
+  - "foto" = qualunque riferimento a foto/immagine/avatar/profilo che non si carica
+    o è rotta. Esempi che CONTANO: "la foto non si vede", "l'immagine è rotta",
+    "errore 404 sulla foto", "il profilo non ha l'immagine".
+
+  - "overflow" = qualunque descrizione di testo/contenuto che fuoriesce, sfora,
+    non sta nel suo contenitore, o è tagliato. Esempi che CONTANO: "il testo
+    esce dal box", "il titolo sfora", "il testo va fuori dal contenitore",
+    "overflow del titolo", "il testo è tagliato a destra", "il testo non sta dentro".
+
+  - "bottone" = qualunque problema di un pulsante/CTA/capsula che non si vede,
+    non si legge, è invisibile o illeggibile. Esempi che CONTANO: "il bottone
+    è invisibile", "il pulsante è bianco su bianco", "la CTA è illeggibile",
+    "non si vede il bottone Download", "il bottone non si legge". Anche se l'utente
+    nomina male il bottone (es. "Prenota" invece di "DOWNLOAD") conta lo stesso —
+    è un beginner che descrive cosa vede.
+
+  NON includere un bug se l'utente ne parla in modo VAGO ("ci sono dei bug" senza
+  dettaglio). Se non ne menziona nessuno specificamente, restituisci [].
 
 - "consiglio": MAX 2 frasi, asciutto e costruttivo, stile Promptly. SEMPRE IN ITALIANO.
   Esempi:
@@ -182,25 +211,32 @@ YOUR JOB: assign 4 dimension scores + identify mentioned bugs + emit 2 bonus sig
 
 EVALUATION ON 4 DIMENSIONS (each 0 to 100):
 
-1. CLARITY (exact error)
-   - Did they include the EXACT console error message?
-   - Did they mention the broken photo SPECIFICALLY?
+1. CLARITY (problem description)
+   - How specific is the description of the problems?
+   - Remember: this widget lives in Lesson 1. The user hasn't learned technical
+     terminology yet. Reward plain-language description if it is SPECIFIC.
    - SCALE:
-     * 0-15: no reference to specific errors or problems (e.g. "fix the bug").
-     * 25-40: vague mention (e.g. "the photo doesn't load").
-     * 45-65: describes a problem specifically but without the exact message.
-     * 70-90: cites "404", "/assets/profilo.jpg", "GET", or the full message.
+     * 8-22: no reference to specific errors or problems (e.g. "fix the bug",
+       "the site doesn't work"). Stays low but not punitive: the user is trying.
+     * 25-40: vague mention (e.g. "the site doesn't work", "there are problems").
+     * 45-65: describes at least ONE problem specifically, even in plain language
+       (e.g. "the photo doesn't load", "the button is invisible", "the text spills
+       out of the box"). Technical terminology NOT required for this band.
+     * 70-90: describes 2-3 problems specifically, OR 1 problem with technical
+       detail (console error, file path, code reference).
      * 95-100: cites the exact error AND describes the on-screen effect.
 
 2. CONTEXT (environment / code)
    - Did they say it's a homepage / website?
-   - Did they mention HTML/CSS/JavaScript or the framework?
    - Did they describe what they see on screen?
+   - Did they mention HTML/CSS/JavaScript or the framework? (bonus, not required for Lez 1)
    - SCALE:
-     * 0-15: no context (e.g. "fix the bug").
-     * 25-40: minimal context ("homepage" or "site" with no details).
-     * 45-65: sufficient context (homepage + code type or what they see).
-     * 70-90: rich context (homepage + framework/tech + visual description).
+     * 8-22: no context (e.g. "fix the bug"). Stays low but not punitive.
+     * 25-40: minimal context ("homepage" or "site" with no other details).
+     * 45-65: sufficient context — mentions homepage AND describes what they see
+       on screen. Reference to code/framework NOT required for this band.
+     * 70-90: rich context (homepage + framework/tech + visual description),
+       OR detailed visual description of all the relevant elements.
      * 95-100: all of the above + environment (local, production, etc.).
 
 3. GOAL (what you want)
@@ -208,27 +244,33 @@ EVALUATION ON 4 DIMENSIONS (each 0 to 100):
    - Did they mention the visible bugs that do NOT show in console (overflow + button)?
    - THE MORE BUGS THEY MENTION, THE HIGHER THE SCORE.
    - SCALE:
-     * 0-15: no clear goal (e.g. "do better").
+     * 8-22: no clear goal (e.g. "do better"). Stays low but not punitive.
      * 25-40: asks to fix 1 specific bug.
      * 45-65: asks to fix 2 specific bugs, or 1 + describes what they want.
      * 70-90: asks to fix all 3 bugs + expected behaviour.
      * 95-100: all 3 bugs + expected behaviour + asks for explanation.
 
-4. GUARDRAILS (constraints) — apply STRICTLY, do NOT be lenient.
+4. GUARDRAILS (constraints) — calibrated for Lesson 1.
+   Constraints are the topic of Lesson 4: a Lez 1 user rarely knows them yet.
+   Reward every signal of awareness, even generic. Do NOT penalise the absence
+   of operational constraints.
    Definition of OPERATIONAL AND SPECIFIC constraint:
-     "don't add dependencies", "show only the diffs", "don't modify the framework",
-     "preserve the existing design system", "preserve animations",
-     "only modify files X and Y", "keep the current HTML structure".
-   GENERIC constraints (NOT operational):
+     "don't add dependencies", "don't install libraries", "show only the diffs",
+     "don't modify the framework", "preserve the existing design system",
+     "preserve typography/animations/layout", "only modify files X and Y",
+     "keep the current HTML structure", "don't change existing classes",
+     "only touch these selectors".
+   GENERIC constraints (signal of awareness, but not operational):
      "minimal changes", "don't break other elements", "be careful",
-     "do it well", "be precise".
+     "do it well", "be precise", "keep the design", "only edit the style".
 
-   STRICT SCALE — apply with rigour:
-     * 0-25: no constraints, "redo everything" / "do better".
-     * 30-55: 1-2 generic constraints (e.g. "minimal changes", "don't break the rest").
-     * 60-75: 1-2 specific operational constraints.
-     * 80-90: 3 specific operational constraints.
-     * 92-100: 4+ specific operational constraints.
+   FAIR SCALE — calibrated for Lesson 1:
+     * 10-30: no constraints, "redo everything" / "do better". Stays low but not punitive.
+     * 35-60: 1-2 generic constraints (e.g. "minimal changes", "keep the design").
+       Reward the intuition of putting limits at all.
+     * 65-80: 1-2 specific operational constraints, or 3+ generic ones.
+     * 85-92: 3 specific operational constraints.
+     * 95-100: 4+ specific operational constraints.
    Sanity test: "minimal changes" + "don't break other elements" together = MAX 60.
 
 BONUS SIGNALS (emit as booleans):
@@ -246,13 +288,29 @@ ${SHARED_OUTPUT_FORMAT_EN}
 
 IMPORTANT RULES:
 
-- "bugs_menzionati": list ONLY bugs the user actually named/described in the prompt.
+- "bugs_menzionati": list the bugs the user DESCRIBES in the prompt. Recognise
+  semantically, NOT just by keyword. Different wording counts if the description
+  clearly maps to that bug.
   Possible values (exactly these lowercase strings): "foto", "overflow", "bottone".
-  - "foto" = the profile photo / 404 error / image not loading
-  - "overflow" = title overflowing its box / overflow / broken layout / text spilling out of the container
-  - "bottone" = the invisible DOWNLOAD button / contrast issue / white-on-white capsule / unreadable button
-  Do NOT include a bug if the user mentions it VAGUELY ("there are bugs" without detail).
-  If none are specifically mentioned, return [].
+
+  - "foto" = any reference to a photo/image/avatar/profile that doesn't load or
+    is broken. Examples that COUNT: "the photo doesn't show", "the image is broken",
+    "404 error on the photo", "the profile has no image".
+
+  - "overflow" = any description of text/content that spills out, overflows, doesn't
+    fit in its container, or is cut off. Examples that COUNT: "the text spills out
+    of the box", "the title overflows", "the text goes outside the container",
+    "title overflow", "the text is cut off on the right", "the text doesn't fit inside".
+
+  - "bottone" = any problem with a button/CTA/capsule that isn't visible, isn't
+    readable, is invisible or illegible. Examples that COUNT: "the button is
+    invisible", "the button is white-on-white", "the CTA is unreadable", "the
+    Download button isn't visible", "the button is unreadable". Even if the user
+    mis-names the button (e.g. "Subscribe" instead of "DOWNLOAD") it still counts —
+    it's a beginner describing what they see.
+
+  Do NOT include a bug if the user mentions it VAGUELY ("there are bugs" without
+  detail). If none are specifically mentioned, return [].
 
 - "consiglio": MAX 2 sentences, dry and constructive, Promptly style. ALWAYS IN ENGLISH.
   Examples:

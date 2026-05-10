@@ -89,7 +89,12 @@ export interface DemoOutcome {
 
 // Bonus weights enforced server-side. The LLM's totale field (if any) is
 // ignored — only the raw dimensions + bonus signals it returns are used.
-export const BONUS_ALL_3_BUGS = 5;
+//
+// BONUS_ALL_3_BUGS bumped 5 → 10 (10 May 2026, BACKLOG URGENTE 1 leva 4)
+// to reward thorough observation more strongly: spotting all 3 bugs is the
+// pedagogical core of Lez 1, and the previous +5 was too thin to push an
+// "honest intermediate" prompt past the victory threshold.
+export const BONUS_ALL_3_BUGS = 10;
 export const BONUS_3_PLUS_OPERATIONAL_CONSTRAINTS = 5;
 export const BONUS_FIX_EXPLANATION = 3;
 
@@ -110,11 +115,15 @@ export function computeTotale(
   has3PlusOperationalConstraints: boolean,
   asksFixExplanation: boolean,
 ): number {
+  // Rebalanced 10 May 2026 (BACKLOG URGENTE 1 leva 3): shifted 5 weight
+  // points from "protezione" (concept introduced in Lez 4) to "chiarezza"
+  // (concept introduced in Lez 1). Lez 1 is where this widget lives, so
+  // the rubric should match what the user has been taught so far.
   const base =
-    chiarezza * 0.25 +
+    chiarezza * 0.3 +
     contesto * 0.25 +
     obiettivo * 0.3 +
-    protezione * 0.2;
+    protezione * 0.15;
   let bonus = 0;
   if (bugsMentioned.length === 3) bonus += BONUS_ALL_3_BUGS;
   if (has3PlusOperationalConstraints)
