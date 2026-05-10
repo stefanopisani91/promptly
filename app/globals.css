@@ -814,7 +814,13 @@ h6 {
    `color` style fed from the palette per pillar key. The
    `font-feature-settings: "tnum"` keeps the glyph optically centred
    across browsers (some render the bullet character with side-
-   bearing). */
+   bearing).
+   The gradient + clip-to-text trick is gated behind `@supports`:
+   when background-clip:text is NOT supported we fall back to
+   `color` (solid hex). Without this gate, an inline
+   `-webkit-text-fill-color: transparent` would render the text
+   invisible while the gradient fills the entire span box →
+   colored rectangle (bug observed 10 May 2026). */
 .prompt-arch-symbol {
   font-size: 60px;
   line-height: 1;
@@ -822,6 +828,13 @@ h6 {
   text-align: center;
   margin-bottom: 16px;
   font-feature-settings: "tnum";
+}
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+  .prompt-arch-symbol {
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
 }
 
 /* Linear / Vercel-style multi-layer shadow on each pillar, plus a

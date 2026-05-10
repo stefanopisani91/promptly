@@ -647,6 +647,13 @@ export function PromptArchitecture({
         )}
 
         <DndContext
+          // Stable id avoids the SSR/CSR hydration mismatch on dnd-kit's
+          // internal `DndDescribedBy-N` aria-describedby IDs. Without it,
+          // dnd-kit increments a module-level counter (server resets to 0
+          // per request, client persists across navigations), producing
+          // a hydration warning and — in some cases — a brief window
+          // where pointer listeners attach late.
+          id="prompt-architecture-dnd"
           sensors={sensors}
           collisionDetection={closestCenter}
           onDragStart={handleDragStart}
@@ -1074,14 +1081,25 @@ function PillarCard({
       <span
         className="prompt-arch-symbol"
         style={{
-          // Diagonal gradient via background-clip: text. The hex
-          // `color` stays as a fallback for browsers without
-          // background-clip: text.
+          // Diagonal gradient + solid colour fallback. The
+          // `background-clip: text` + `-webkit-text-fill-color:
+          // transparent` rules live in CSS gated by `@supports`
+          // (globals.css §.prompt-arch-symbol) so a browser that
+          // can't clip to text falls through to the solid `color`
+          // and renders the glyph normally — instead of a coloured
+          // rectangle (the bug observed when text-fill-color:
+          // transparent fired without background-clip taking effect).
+          //
+          // Important: use `backgroundImage` (longhand), NOT
+          // `background` (shorthand). The shorthand resets ALL
+          // background sub-properties — including `background-clip`
+          // — back to their initial value. Inline `background: …`
+          // beats the CSS rule `background-clip: text` and the
+          // gradient ends up filling the entire span box → coloured
+          // rectangle. With the longhand we set only the image and
+          // leave the clip alone.
           color: palette.symbolHex,
-          background: palette.symbolGradient,
-          WebkitBackgroundClip: "text",
-          WebkitTextFillColor: "transparent",
-          backgroundClip: "text",
+          backgroundImage: palette.symbolGradient,
           fontSize: `${Math.round(60 * palette.symbolScale)}px`,
         }}
         aria-hidden="true"
