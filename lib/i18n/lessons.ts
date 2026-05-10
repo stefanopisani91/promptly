@@ -132,9 +132,13 @@ export interface LessonsCopy {
       siteTabLabel: string;
       reactions: {
         vague: string;
+        vagueRetry: string;
         photoOnly: string;
+        photoOnlyRetry: string;
         twoBugs: string;
+        twoBugsRetry: string;
         allBugsLowScore: string;
+        allBugsLowScoreRetry: string;
         allBugsHighScore: string;
         finalEncouragePartial: string;
         finalEncourageFull: string;
@@ -680,9 +684,13 @@ const it: LessonsCopy = {
       siteTabLabel: "Sito",
       reactions: {
         vague: "Aspetta. Hai scritto qualcosa, ma posso solo tirare a indovinare. È come se mi chiedessi «cucinami qualcosa» senza dirmi cosa hai nel frigo. Guarda di nuovo il sito di Lucia: cosa vedi che non funziona?",
+        vagueRetry: "Ehi, sei tornato. Il prompt però è ancora un po' troppo generico. Non ti scoraggiare — è normale al primo giro. Prova così: guarda il sito, scegli UN problema solo che vedi, e descrivimelo in due parole. Da lì costruiamo.",
         photoOnly: "Ok, qualcosa hai visto. Hai notato la foto rotta. L'ho sistemata — la vedi adesso? Ma c'è altro che non va. Continua a guardare con attenzione.",
+        photoOnlyRetry: "Sei ancora sulla foto. È un buon punto di partenza, ma ci sono altri due problemi sul sito che ti stanno aspettando. Indizio gentile: dai un'occhiata al titolo della sezione progetto, e al bottone Download.",
         twoBugs: "Quasi. Hai trovato due dei tre problemi. Ho sistemato entrambi. Manca ancora un elemento. Ti do un indizio: c'è qualcosa che dovrebbe essere visibile e non lo è.",
-        allBugsLowScore: "Hai notato tutti i problemi, complimenti per la vista. Ma il prompt è ancora vago. Mi hai detto cosa è rotto, non come sistemarlo. Riformula: cosa vuoi che IO faccia con quello che hai notato?",
+        twoBugsRetry: "Sei tornato con gli stessi due. Bene per loro, sistemati di nuovo. Il terzo è ancora lì che ti aspetta — qualcosa che dovrebbe leggersi e non si legge. È sotto i tuoi occhi, te lo prometto.",
+        allBugsLowScore: "Hai gli occhi giusti — hai visto tutti e 3 i problemi. Il prompt però è ancora un filo asciutto. Aggiungi una cosa qualunque che NON vuoi che venga toccata, tipo «mantieni il design» o «non aggiungere librerie». Anche solo una. Vedrai la differenza.",
+        allBugsLowScoreRetry: "Bene, hai ancora i 3 bug — la tua vista non sbaglia. Per portare il prompt sopra la soglia ti basta UN dettaglio operativo in più: dimmi cosa NON deve fare l'AI. Anche un vincolo solo basta. Sei davvero a un passo.",
         allBugsHighScore: "Ecco. Questo è un prompt vero. Mi hai detto cosa vedi, cosa vuoi, e mi hai dato i dettagli per non sbagliare. Guarda — ho sistemato tutto. Hai appena diretto un'AI come una professionista.",
         finalEncouragePartial: "Va bene così. Hai imparato la cosa più importante: per farmi funzionare devi dirmi cosa fare. Tornerai qui in futuro e farai un prompt perfetto.",
         finalEncourageFull: "Hai fatto un lavoro vero. Te lo segno mentalmente — sei già più avanti di quello che pensi.",
@@ -1146,9 +1154,13 @@ const en: LessonsCopy = {
       siteTabLabel: "Site",
       reactions: {
         vague: "Wait. You wrote something, but I can only guess. It's like asking me to «cook something» without telling me what's in the fridge. Look at Lucia's site again — what's not working?",
+        vagueRetry: "Hey, you're back. The prompt is still a bit too generic, though. Don't get discouraged — it's normal on the first run. Try this: look at the site, pick ONE problem you see, and describe it in two words. We build from there.",
         photoOnly: "Okay, you spotted something. You noticed the broken photo. I fixed it — see it now? But there's more. Keep looking carefully.",
+        photoOnlyRetry: "Still on the photo. It's a good starting point, but there are two more problems on the site waiting for you. Gentle hint: take a look at the project section title, and at the Download button.",
         twoBugs: "Almost. You found two of the three problems. Fixed both. Still one element missing. Hint: there's something that should be visible but isn't.",
-        allBugsLowScore: "You spotted every problem — good eye. But the prompt is still vague. You told me what's broken, not how to fix it. Try again: what do you want ME to do with what you noticed?",
+        twoBugsRetry: "Back with the same two. Good for them, fixed again. The third one is still there waiting — something that should be readable and isn't. It's right under your eyes, I promise.",
+        allBugsLowScore: "You've got the eyes — you spotted all 3 problems. The prompt is still a touch dry though. Add anything you DON'T want touched, like «keep the design» or «don't add libraries». Even one. You'll feel the difference.",
+        allBugsLowScoreRetry: "Good, you still have all 3 bugs — your eye is sharp. To push the prompt over the line you just need ONE more operational detail: tell me what the AI must NOT do. A single constraint is enough. You're really one step away.",
         allBugsHighScore: "There it is. That's a real prompt. You told me what you see, what you want, and gave me the details to get it right. Look — everything's fixed. You just directed an AI like a pro.",
         finalEncouragePartial: "It's fine. You learned the most important thing: to make me work, you have to tell me what to do. You'll come back to this and write a perfect prompt.",
         finalEncourageFull: "You did real work. I'm noting it — you're further along than you think.",

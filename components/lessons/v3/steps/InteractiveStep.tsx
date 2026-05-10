@@ -50,10 +50,19 @@ export interface InteractiveStepStrings {
   reactions: {
     // Reactions Spark fires depending on outcome + attempt number. Same
     // labels in both languages — caller picks IT or EN.
+    //
+    // The four `*Retry` variants fire on attempt 2+ when the user is
+    // still in the same band as before — Spark acknowledges the retry
+    // ("ancora qui", "stessa cosa di prima") instead of repeating the
+    // first-try line verbatim. Coherent + encouraging across attempts.
     vague: string;
+    vagueRetry: string;
     photoOnly: string;
+    photoOnlyRetry: string;
     twoBugs: string;
+    twoBugsRetry: string;
     allBugsLowScore: string;
+    allBugsLowScoreRetry: string;
     allBugsHighScore: string;
     finalEncouragePartial: string;
     finalEncourageFull: string;
@@ -508,14 +517,31 @@ function pickReaction(
 ): string {
   const r = strings.reactions;
   const isLast = attemptNumber >= maxAttempts;
+  // Attempt 2+ → user is on a retry. Spark acknowledges that ("you're
+  // still on the same problem") instead of replaying the first-try line.
+  // Reaction shape stays band-driven; the retry flag flips to a sibling
+  // string for the same band when one exists.
+  const isRetry = attemptNumber > 1;
   const bugCount = ev.bugs_menzionati.length;
 
+  // Victory: same line for any attempt (the celebration is identical).
   if (ev.totale >= LUCIA_VICTORY_THRESHOLD && bugCount === 3) return r.allBugsHighScore;
+
+  // Last attempt with low coverage → direct reveal.
+  if (isLast && bugCount <= 1) return r.thirdAttemptDirect;
+
+  // Retry-aware band: pick the *Retry sibling when the user is back for round 2+.
+  if (isRetry) {
+    if (bugCount === 3) return r.allBugsLowScoreRetry;
+    if (bugCount === 2) return r.twoBugsRetry;
+    if (bugCount === 1) return r.photoOnlyRetry;
+    return r.vagueRetry;
+  }
+
+  // First attempt — original lines.
   if (bugCount === 3) return r.allBugsLowScore;
   if (bugCount === 2) return r.twoBugs;
   if (bugCount === 1) return r.photoOnly;
-  if (isLast) return r.thirdAttemptDirect;
-  if (attemptNumber === 2) return r.secondAttemptHintImproved;
   return r.vague;
 }
 
