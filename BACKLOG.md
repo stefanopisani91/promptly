@@ -18,9 +18,36 @@
 
 ## 🚨 URGENTE 1 — Calibrare il Lucia widget perché l'utente arrivi più facilmente alla vittoria
 
-**Stato:** ⏳ proposed
+**Stato:** ✅ done (10 May 2026, commit `e173d5c`)
 **Priorità:** 🔴 alta
-**Aperta:** 9 May 2026
+**Aperta:** 9 May 2026 · Chiusa: 10 May 2026
+
+### Risoluzione
+
+Tre layer di fix applicati e validati su 23 prompt di test:
+
+**Code-side** ([types.ts](lib/landing-demo/types.ts) + [InteractiveStep.tsx](components/lessons/v3/steps/InteractiveStep.tsx)):
+- Soglia vittoria 85 → 70, perfect 95 → 90, estratte come costanti `LUCIA_VICTORY_THRESHOLD` / `LUCIA_PERFECT_THRESHOLD` (single source of truth)
+- `BONUS_ALL_3_BUGS` 5 → 10
+- Pesi `computeTotale`: chiarezza 0.25 → 0.30, protezione 0.20 → 0.15 (Lez 1 non ha ancora insegnato i vincoli)
+
+**System prompt OpenAI** ([system-prompt.ts](lib/landing-demo/system-prompt.ts), IT+EN):
+- CHIAREZZA: scala aperta a linguaggio comune (non più obbligatorio "404"/"/assets/profilo.jpg" per >65)
+- CONTESTO: descrizione visiva basta per 45-65 (non più richiesto riferimento a codice/framework)
+- PROTEZIONE: rimosso il tono "STRETTA/RIGORE/NON indulgente" che dava bias punitivo, rebranded come "calibrata sulla Lezione 1"
+- PROTEZIONE: bande allargate (0-30 niente, 35-60 generici)
+- PROTEZIONE: lista esempi di vincoli operativi ampliata ("preserva tipografia", "non installare librerie", "non cambiare le classi esistenti")
+- `bugs_menzionati`: passaggio da match per parola-chiave a riconoscimento semantico
+- Beginner floor: banda 0-15 → 8-22 (non punitivo per chi prova)
+
+**Calibrazione finale (23 prompt validati):**
+- Vague/off-topic: 5-12 (correttamente non vincono)
+- 1-2 bug coperti: 33-52 (retry zone)
+- 3 bug + 0 vincoli: 64-69 (near-miss — Spark dice "aggiungi un vincolo")
+- 3 bug + ≥1 vincolo: 76-79 (WIN ✅)
+- Avanzati (3 bug + 3+ operativi + spiegazione): 95-100 (PERFECT ✨)
+
+I "vincoli" restano il discriminator pedagogico tra near-miss e win, coerente con il preview di Lez 4.
 **Scope:** [components/lessons/v3/steps/InteractiveStep.tsx](components/lessons/v3/steps/InteractiveStep.tsx) + [lib/landing-demo/types.ts](lib/landing-demo/types.ts) + [lib/landing-demo/system-prompt.ts](lib/landing-demo/system-prompt.ts)
 
 ### Problema osservato (test reale 9 May 2026)
