@@ -347,6 +347,14 @@ const IT_TOKENS = new Set([
   "sono", "tu", "io", "mi", "ti", "ci",
   "fai", "fare", "spiega", "spiegami", "modifica",
   "vincoli", "vincolo", "framework", "design",
+  // Common Italian words / chat openers / help phrases — added to catch
+  // short prompts that previously fell into the EN fallback ("aiuto",
+  // "ciao", "grazie" used to misclassify as English).
+  "ciao", "salve", "grazie", "scusa", "scusami", "prego",
+  "aiuto", "aiutami", "aiutarmi",
+  "dimmi", "dammi", "fammi",
+  "sito", "schermo", "rotto", "rotta", "rotti", "rotte",
+  "cosa", "dove", "quando", "chi",
 ]);
 
 const EN_TOKENS = new Set([
@@ -364,7 +372,11 @@ const EN_TOKENS = new Set([
 ]);
 
 /** Returns "it" or "en" based on a quick word-frequency match.
- * Defaults to "en" on a tie or when the input is too short to score. */
+ * Defaults to "en" only on truly empty / unrecognisable input. Even a
+ * 2-word IT prompt like "sistema tutto" must classify as IT — previously
+ * the `< 3 tokens → en` short-circuit forced the English system prompt
+ * for short Italian commands, producing an English `consiglio` to an
+ * Italian user (bug observed 10 May 2026). */
 export function sniffLang(text: string): "it" | "en" {
   const tokens = text
     .toLowerCase()
@@ -373,7 +385,7 @@ export function sniffLang(text: string): "it" | "en" {
     .split(/\s+/)
     .filter((t) => t.length > 0);
 
-  if (tokens.length < 3) return "en";
+  if (tokens.length === 0) return "en";
 
   let it = 0;
   let en = 0;
@@ -389,6 +401,7 @@ export function sniffLang(text: string): "it" | "en" {
 
   if (it > en) return "it";
   if (en > it) return "en";
-  // tie → English fallback (matches our system-prompt fallback for unknown langs)
+  // tie (including both 0) → English fallback. Matches the system-prompt
+  // safety rule for unknown / off-topic input.
   return "en";
 }
