@@ -56,3 +56,8 @@ app/api/qa-login/
 
 # Supabase CLI scratch/cache files
 supabase/.temp/
+
+# Claude Code per-user local settings (permissions etc.) — never on git.
+# `.claude/agents/*.md` and a shared `.claude/settings.json` ARE checked in;
+# only the .local.json variant stays local to each developer.
+.claude/settings.local.json
