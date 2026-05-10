@@ -65,6 +65,82 @@ L'utente percepisce il widget come "ho fatto tutto giusto e mi dà 69, è blocca
 
 ---
 
+## 🚨 URGENTE 3 — Ruotare 3 password/secret finiti in git history (file settings.local.json)
+
+**Stato:** ⏳ proposed
+**Priorità:** 🔴 alta (azione di pulizia, non blocca utenti, ma non rimandare oltre il prossimo giro Pro/pubblicazione)
+**Aperta:** 10 May 2026
+
+### Cosa è successo (in parole semplici)
+
+Il file `.claude/settings.local.json` (la lista di permessi che Claude Code ha imparato comando per comando) è stato **tracciato in git** per molti mesi. Dentro, alcune approvazioni includevano comandi `curl` di test scritti in chiaro — e in quei comandi c'erano 3 segreti veri:
+
+1. **`x-qa-secret`** — la chiave che apre l'endpoint locale di QA login (`app/api/qa-login/`)
+2. **Password del test user `qa-test-A@promptly.test`** (Supabase Auth)
+3. **Password del test user `qa-test-C@promptly.test`** (Supabase Auth)
+
+I valori esatti vivono nella git history pre-`064e70c` — recuperali da lì se servono per identificare gli script di test che li usano (`git log --all -p -- .claude/settings.local.json | grep "x-qa-secret"`). NON copiarli in altri file tracciati.
+
+⚠️ **Questi 3 valori sono nella history di git anche dopo il commit `064e70c` che ha aggiunto il file a `.gitignore`**. Rimuoverlo dal tracking non li toglie dai commit passati.
+
+### Perché vale la pena agire (anche se la repo è privata)
+
+- "Privata oggi" non è "privata per sempre". Se un giorno la rendi pubblica → secrets esposti istantaneamente
+- Se aggiungi un collaboratore anche solo per 1 ora → vede tutta la history
+- Account compromesso (token GitHub rubato, password leak) → l'attaccante vede subito la history
+- Integrazioni OAuth che hai connesso (Netlify, Supabase MCP, ecc.) hanno già accesso al codice
+- L'endpoint `qa-login` è gitignored quindi NON è in produzione → il rischio reale dell'`x-qa-secret` è basso, ma è comunque pulizia da fare
+
+### Cosa fare (10 minuti totali)
+
+**1. Ruotare `x-qa-secret`** (~3 min)
+
+```bash
+# Genera nuovo hex random
+openssl rand -hex 24
+# Copia l'output, sostituisci il valore di QA_SECRET (o come si chiama)
+# nel tuo .env.local locale
+```
+
+Riavvia il dev server. L'endpoint `/api/qa-login` userà la nuova chiave automaticamente.
+
+**2. Ruotare la password di `qa-test-A@promptly.test`** (~3 min)
+
+- Vai su [Supabase Dashboard](https://supabase.com/dashboard) → progetto Promptly → **Authentication** → **Users**
+- Cerca `qa-test-A@promptly.test`
+- Click sul menu `...` accanto all'utente → **"Send password recovery"** (manda un link di reset)
+- Oppure: click sull'utente → **"Update password"** → genera una nuova password random e copiala in un password manager
+
+**3. Ruotare la password di `qa-test-C@promptly.test`** (~3 min)
+
+Stessa procedura del punto 2.
+
+**4. (Opzionale) Aggiornare gli script di test che usano queste password**
+
+Se hai script in `scripts/` o `qa-reports/` che hanno hardcodate le password vecchie, aggiornali con le nuove. Recupera i valori vecchi dalla git history (vedi sopra) e cercali nei file locali con `grep -r <vecchio_valore> .`.
+
+### Cosa NON serve fare (overkill)
+
+- ❌ Riscrivere la git history con `git filter-repo` per cancellare il file. Operazione invasiva (rompe i clone esistenti, riscrive ogni hash di commit) sproporzionata per 3 secret a basso impatto.
+- ❌ Cambiare `.env.local` in produzione: `QA_SECRET` non è in produzione (l'endpoint `qa-login` è gitignored e non viene deployato).
+
+### Quando rifare l'azione
+
+- ✅ **Subito**, quando hai 10 minuti di slow time
+- 🚨 **Obbligatorio prima** di qualsiasi di queste mosse:
+  - rendere pubblica la repo
+  - aggiungere un collaboratore esterno (anche temporaneo)
+  - migrare il codice in un altro provider git
+  - usare i test account su un ambiente di staging condiviso
+
+### Prevenzione futura
+
+Già fatto col commit `064e70c`: `.claude/settings.local.json` è in `.gitignore`. Niente di nuovo finirà accidentalmente in git da quel file.
+
+Per il futuro, evitare di approvare comandi `curl` con secret inline tra i pattern auto-approvati di Claude Code. Meglio: tenere i secret in `.env.local` e referenziarli con variabili (`-H "x-qa-secret: $QA_SECRET"`), così Claude approva il pattern del comando senza memorizzare il valore.
+
+---
+
 ## 🚨 URGENTE 2 — Reazioni di Spark devono correlare con i punteggi reali delle 4 dimensioni
 
 **Stato:** ⏳ proposed
