@@ -256,7 +256,7 @@
       "spark_state": "listening",
       "widget": "prompt_architecture",
       "intro": "Pronto? Trascina i 4 pilastri nello spazio sopra. Ricorda quello che ti ho appena insegnato — l'ordine giusto è quello controintuitivo. Quando ci arrivi, vedrai succedere una cosa.",
-      "max_attempts": 3,
+      "max_attempts": 5,
       "prompt_architecture_config": {
         "canvas_title": "L'Architettura",
         "canvas_subtitle": "Componi il tuo prompt giornaliero",

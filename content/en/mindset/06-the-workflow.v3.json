@@ -256,7 +256,7 @@
       "spark_state": "listening",
       "widget": "prompt_architecture",
       "intro": "Ready? Drag the 4 pillars into the space above. Remember what I just taught you — the right order is the counter-intuitive one. When you get it, you'll see something happen.",
-      "max_attempts": 3,
+      "max_attempts": 5,
       "prompt_architecture_config": {
         "canvas_title": "The Architecture",
         "canvas_subtitle": "Compose your daily prompt",

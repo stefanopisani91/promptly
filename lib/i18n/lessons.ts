@@ -465,6 +465,15 @@ export interface LessonsCopy {
       attemptCounterTemplate: string;
       // Spark's awaiting line before any pillar is dropped.
       awaitingPrompt: string;
+      // Contextual feedback after a WRONG attempt (0–1 / 4 correct).
+      // Indexed by attempt: [0] after attempt 1, [1] after 2, etc.
+      // Length is `max_attempts - 1` (4 for max_attempts=5) — the
+      // last attempt triggers auto-reveal so it never reads from
+      // this array.
+      wrongFeedbacks: string[];
+      // Contextual feedback after a PARTIAL attempt (2 / 4 correct).
+      // Same indexing as wrongFeedbacks.
+      partialFeedbacks: string[];
       // Inline feedback when the user runs out of attempts and we
       // auto-reveal the correct order.
       autoReveal: string;
@@ -833,6 +842,21 @@ const it: LessonsCopy = {
     promptArchitecture: {
       attemptCounterTemplate: "Tentativo {current} / {max}",
       awaitingPrompt: "Trascina i 4 pilastri nello spazio sopra. Ricorda l'ordine controintuitivo.",
+      // 4 messaggi a indizio crescente. Indice 0 dopo il 1° tentativo,
+      // 1 dopo il 2°, ecc. Il 5° tentativo, se sbagliato, scatena
+      // l'auto-reveal e non legge da qui.
+      wrongFeedbacks: [
+        "Quasi tutto fuori posto. Ricomincia: di cosa ha bisogno l'AI prima di tutto?",
+        "Riavvolgi: prima dici cosa stai costruendo, poi i limiti, poi cosa fare oggi, poi come si verifica.",
+        "Indizio forte: i vincoli vengono prima del task. È controintuitivo, ma serve a non far inventare l'AI.",
+        "Ultimo tentativo prima che te lo svelo io. CONTESTO → VINCOLI → TASK → VERIFICA, in quest'ordine.",
+      ],
+      partialFeedbacks: [
+        "Due al posto giusto. Ora guarda i due in mezzo: chi viene prima?",
+        "Ci sei vicino. I due al centro sono ancora invertiti.",
+        "Sempre due giusti. Pensa: i vincoli prima del task, perché l'AI non deve inventare quello che non sa.",
+        "Ultimo. La cura sta nei vincoli prima dell'azione — un'ultima volta.",
+      ],
       autoReveal: "Va bene, te lo mostro io. L'ordine giusto è CONTESTO → VINCOLI → TASK → VERIFICA. Adesso te lo metto a posto da sola così lo memorizzi.",
       celebrationTemplate: "Eccolo. Il tuo prompt giornaliero. Domani mattina lo apri, lo incolli in {tool}, modifichi solo il TASK del giorno, e lavori. Hai costruito il tuo manuale operativo. È tuo. Funziona.",
       sectionLabels: {
@@ -1303,6 +1327,21 @@ const en: LessonsCopy = {
     promptArchitecture: {
       attemptCounterTemplate: "Try {current} / {max}",
       awaitingPrompt: "Drag the 4 pillars into the space above. Remember the counter-intuitive order.",
+      // 4 escalating hints. Index 0 after attempt 1, 1 after 2, etc.
+      // The 5th wrong attempt triggers auto-reveal and never reads
+      // from this array.
+      wrongFeedbacks: [
+        "Almost all out of place. Start over: what does the AI need first?",
+        "Rewind: first you say what you're building, then the limits, then what to do today, then how you verify.",
+        "Strong hint: constraints come before the task. Counter-intuitive — it stops the AI from making things up.",
+        "Last try before I show you. CONTEXT → CONSTRAINTS → TASK → VERIFICATION, in that order.",
+      ],
+      partialFeedbacks: [
+        "Two in the right spot. Look at the two in the middle: which one comes first?",
+        "Close. The two in the middle are still swapped.",
+        "Still two correct. Think: constraints before the task, so the AI can't make up what it doesn't know.",
+        "Last try. The care lives in the constraints before the action — one more time.",
+      ],
       autoReveal: "All right, let me show you. The right order is CONTEXT → CONSTRAINTS → TASK → VERIFICATION. I'll arrange it now so it sticks.",
       celebrationTemplate: "There. Your daily prompt. Tomorrow morning you open it, paste it into {tool}, edit only the TASK of the day, and work. You built your own operating manual. It's yours. It works.",
       sectionLabels: {

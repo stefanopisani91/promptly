@@ -71,6 +71,12 @@ export interface GeneratedPromptBlocks {
 export interface PromptArchitectureStrings {
   attemptCounterTemplate: string;
   awaitingPrompt: string;
+  // Spark's contextual hints after a wrong / partial attempt.
+  // Indexed by 0-based attempt count (i.e. after attempt N, read
+  // index N-1). Length should be `max_attempts - 1` — the last
+  // attempt always triggers auto-reveal.
+  wrongFeedbacks: string[];
+  partialFeedbacks: string[];
   autoReveal: string;
   // Includes a `{tool}` placeholder.
   celebrationTemplate: string;
@@ -291,11 +297,33 @@ export function PromptArchitecture({
       );
     }
     if (revealed) return strings.autoReveal;
+    // Contextual hint right after a wrong/partial attempt — Spark
+    // escalates from vague ("you're close") to specific ("constraints
+    // before task") as `attemptCount` grows. The reset effect clears
+    // `feedback` to null after 1.6s, at which point we revert to the
+    // baseline `awaitingPrompt` line.
+    if (feedback?.kind === "wrong" || feedback?.kind === "partial") {
+      const idx = Math.min(
+        Math.max(0, attemptCount - 1),
+        feedback.kind === "wrong"
+          ? strings.wrongFeedbacks.length - 1
+          : strings.partialFeedbacks.length - 1,
+      );
+      const arr =
+        feedback.kind === "wrong"
+          ? strings.wrongFeedbacks
+          : strings.partialFeedbacks;
+      // Fallback to awaitingPrompt if the array is empty for any reason
+      // (defensive — content authoring should always provide entries).
+      return arr[idx] ?? strings.awaitingPrompt;
+    }
     return strings.awaitingPrompt;
   }, [
     won,
     generatedBlocks,
     revealed,
+    feedback,
+    attemptCount,
     strings,
     preferredToolDisplay,
   ]);
@@ -1358,11 +1386,14 @@ function xpForResult(
 ): number {
   if (revealed && !won) return 100;
   if (!won) return 0;
-  // Won path — bonus on first try.
+  // Won path — bonus on first try, then a smooth decay over 5 tries.
+  // Curve tuned for max_attempts=5: rewards quick insight without
+  // making later wins feel useless.
   if (attempts === 1) return 550; // 400 base + 150 bonus
-  if (attempts === 2) return 280;
-  if (attempts === 3) return 180;
-  return 100;
+  if (attempts === 2) return 350;
+  if (attempts === 3) return 250;
+  if (attempts === 4) return 180;
+  return 100; // attempt 5 (or auto-reveal at 5)
 }
 
 // Fisher-Yates shuffle. Returns a NEW array; original is untouched.
