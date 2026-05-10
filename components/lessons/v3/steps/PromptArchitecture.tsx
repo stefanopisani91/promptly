@@ -564,13 +564,32 @@ export function PromptArchitecture({
 
   // Auto-evaluate 500ms after all 4 pillars are in place (matches
   // blueprint UX). Skipped if already won/revealed/exhausted.
+  //
+  // Critical: the `feedback === null` gate prevents the effect from
+  // re-firing after a wrong/partial attempt. Without it, every state
+  // change inside `evaluate` (setAttemptCount, setFeedback) re-creates
+  // the `evaluate` callback (it lists attemptCount in deps), which
+  // re-runs this effect — and as long as the placement is still full
+  // (1.6s reset window), allPlaced/won/exhausted/revealed/evaluating
+  // all stay false and the effect schedules ANOTHER evaluate. Two
+  // re-fires later, attemptCount hits max_attempts and the widget
+  // auto-reveals after a single user placement. Bug observed
+  // 10 May 2026.
   useEffect(() => {
-    if (!allPlaced || won || exhausted || revealed || evaluating) return;
+    if (
+      !allPlaced ||
+      won ||
+      exhausted ||
+      revealed ||
+      evaluating ||
+      feedback !== null
+    )
+      return;
     const t = window.setTimeout(() => {
       evaluate();
     }, 500);
     return () => window.clearTimeout(t);
-  }, [allPlaced, won, exhausted, revealed, evaluating, evaluate]);
+  }, [allPlaced, won, exhausted, revealed, evaluating, feedback, evaluate]);
 
   // ─── Reset placement after a wrong / partial attempt ──────────────
 
