@@ -300,6 +300,10 @@ export const landingCopyIt: LandingCopy = {
       victory: "Bingo. Sistemato. Ora lo sai fare anche tu.",
       low: "Non ancora. I bug sono tre — riguardali e riprova.",
       partial: "Quasi. Manca qualcosa. Rileggi gli errori e riscrivi.",
+      partialPhotoOnly: "Hai visto la foto. È un buon inizio. Ma sul sito ci sono altri due problemi — un titolo che sfora e un bottone che non si legge.",
+      partialOneLeft: "Ci sei quasi. Hai trovato due bug, ne manca solo uno. Indizio: c'è un elemento che dovrebbe vedersi e non si vede.",
+      partialMidAllBugs: "Hai gli occhi giusti, hai visto tutti e 3 i bug. Aggiungi un piccolo dettaglio operativo — tipo «non aggiungere librerie» — e arrivi alla vittoria.",
+      partialHighIncomplete: "Prompt forte. Però un bug è scappato — riguarda il sito, c'è ancora qualcosa che non torna.",
       limit: "Per ora basta. Iscriviti se vuoi continuare con me.",
     },
     footer:

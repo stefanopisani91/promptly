@@ -320,8 +320,19 @@ export interface LuciaDemoCopy {
     victory: string;
     /** Score < 50 — gentle nudge, no judgement. */
     low: string;
-    /** Mid score, partial coverage. */
+    /** Generic partial fallback — used when the editor is mid-attempt
+     * (between submits) without a fresh outcome. The 4 below are picked
+     * post-evaluation, one per `messageKey`, so Spark's line matches
+     * what the user just saw on the homepage. */
     partial: string;
+    /** Mid score (61-84), 0-1 bugs spotted: "you saw the photo, two more on the page". */
+    partialPhotoOnly: string;
+    /** Mid score (61-84), 2 bugs spotted: "almost — one bug to go". */
+    partialOneLeft: string;
+    /** Mid score (61-84), all 3 bugs spotted: "good eye, prompt is just a touch dry". */
+    partialMidAllBugs: string;
+    /** High score (85+) but missed at least one bug: "strong prompt, one bug went unseen". */
+    partialHighIncomplete: string;
     /** User hit the per-session attempt cap. */
     limit: string;
   };

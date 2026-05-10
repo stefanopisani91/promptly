@@ -696,7 +696,22 @@ function resolveSparkNarration(
     if (outcome.messageKey === "scoreLow") {
       return { state: "sad", message: spark.low };
     }
-    return { state: "idle", message: spark.partial };
+    // Pick a partial-* sibling that matches the actual outcome — one
+    // generic `partial` for 4 different states felt incoherent (e.g.
+    // user with a high-score 88 and 2 bugs fixed on the homepage was
+    // told "manca qualcosa, rileggi gli errori" while the home was
+    // already largely repaired). Now Spark's line tracks the visual.
+    const partialMessage =
+      outcome.messageKey === "scoreMidOnePhotoOnly"
+        ? spark.partialPhotoOnly
+        : outcome.messageKey === "scoreMidPartialOneLeft"
+          ? spark.partialOneLeft
+          : outcome.messageKey === "scoreMidAllBugs"
+            ? spark.partialMidAllBugs
+            : outcome.messageKey === "scoreHighPartial"
+              ? spark.partialHighIncomplete
+              : spark.partial;
+    return { state: "idle", message: partialMessage };
   }
   // Default editing state — Spark is patient and watching.
   // After at least one attempt without victory she stays in "listening"

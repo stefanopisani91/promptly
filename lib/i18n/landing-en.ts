@@ -297,6 +297,10 @@ export const landingCopyEn: LandingCopy = {
       victory: "Bingo. Fixed. Now you know how to do it too.",
       low: "Not yet. There are three bugs — look again and try once more.",
       partial: "Close. Something's missing. Re-read the errors and rewrite.",
+      partialPhotoOnly: "You spotted the photo. Good start. But there are two more problems on the site — a title that overflows and a button that's unreadable.",
+      partialOneLeft: "Almost there. You found two bugs, one to go. Hint: there's an element that should be visible and isn't.",
+      partialMidAllBugs: "You've got the eyes — all 3 bugs spotted. Add one small operational detail — like «don't add libraries» — and you cross the line.",
+      partialHighIncomplete: "Strong prompt. But one bug slipped past you — take another look at the site, there's still something off.",
       limit: "Enough for now. Sign up if you want to keep going with me.",
     },
     footer:
