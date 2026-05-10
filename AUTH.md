@@ -1,5 +1,11 @@
 # PROMPTLY — Auth & Onboarding Brief
 
+> # ⚠️ DEPRECATED (10 May 2026) — Onboarding non è più 3 step.
+>
+> Questo brief descriveva un onboarding originale a 3 step (Nome / Lingua / Daily goal). Oggi l'onboarding ha **12 step profilanti** (Welcome → Name → Experience → Intent → Project → Tools → PreferredTool → Time → Motivation → Recap → Promises → Transition). Vedi `CLAUDE.md` § "User journey" + [`components/onboarding/profiling/steps/`](components/onboarding/profiling/steps/).
+>
+> Il flusso auth (magic link + Google OAuth + callback + expired link) descritto qui è ancora corretto in linea generale. Le sezioni `/auth` e `/auth/callback` rispecchiano la realtà attuale; le sezioni "onboarding state machine" sono stale.
+
 > Brief completo per l'implementazione di auth + onboarding di Promptly.
 > Da leggere insieme a `PROMPTLY.md` (single source of truth) e `LANDING.md` (sorgente del traffico in entrata).
 > Versione 1.0 — 29 April 2026.

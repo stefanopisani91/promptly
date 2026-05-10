@@ -1,5 +1,11 @@
 # PROMPTLY — Master Context File
 
+> # ⚠️ DEPRECATED (10 May 2026) — vedi `CLAUDE.md` per la verità attuale.
+>
+> Questo file era la "single source of truth" fino a maggio 2026 ma contiene ora info stale: lessons V1/V2 invece di V3 (formato attivo), `daily_goal` 3 valori invece di 4, onboarding 3 step invece di 12, dashboard "lista di card" invece della LearningMap. Mantenuto come reference storica della vision/business + taxonomy PostHog (ancora valido) + design system rationale (ancora valido).
+>
+> Per qualsiasi decisione tecnica nuova: leggi `CLAUDE.md`.
+
 > Read this file BEFORE touching any other file in the project.
 > This is the single source of truth for vision, design, data model, and UI language.
 > Version 2.3 — Updated 2 May 2026 (lessons V2 pivot).

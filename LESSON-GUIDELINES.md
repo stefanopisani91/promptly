@@ -1,5 +1,14 @@
 # LESSON-GUIDELINES.md
 
+> # ⚠️ AGGIORNAMENTO (10 May 2026) — Schema V3 in `CLAUDE.md`.
+>
+> Stato delle sezioni di questo file:
+> - ✅ **§ V3 quick-win rules** (in cima) — ATTUALI, vincolanti per ogni nuovo widget interattivo
+> - ✅ **§ Workflow autoraggio** + decisioni di stile (lunghezza, tono, citazioni, errori da evitare) — ATTUALI
+> - 🚫 **Schema V2** (§3.b, §11) e **schema V1** (§3.a) — STALE: il formato attivo è V3 (card-step + Spark mascot, `steps[]`)
+>
+> Per lo schema V3 e il dispatch V1/V2/V3 vedi `CLAUDE.md` § "Schema lezioni V3" + `types/index.ts`.
+
 > Guida operativa alla scrittura delle lezioni di Path 1 e Path 2.
 > File **autosufficiente**: aprilo in una chat nuova e hai tutto il contesto per continuare il lavoro senza dover leggere conversazioni precedenti.
 >
