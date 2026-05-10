@@ -980,48 +980,51 @@ function DraggablePillar({
     id,
   });
 
-  // With <DragOverlay>, the original element STAYS in place during a
-  // drag — we just dim it to a "ghost" so the user sees the slot it
-  // came from. The visual movement is handled by the overlay clone
-  // rendered at the root of <DndContext>. This preserves the layout:
-  // flexbox sees the dragged pillar as still occupying its space, so
-  // the remaining 3 pillars don't compress on narrow viewports.
-  const style: React.CSSProperties = {
-    cursor: isDragging ? "grabbing" : "grab",
-    touchAction: "none",
-    opacity: isDragging ? 0.2 : 1,
-  };
-
+  // PillarCard IS the draggable element — drag refs/listeners are
+  // attached directly to its outer div. Previously a thin wrapper div
+  // sat between dnd-kit's setNodeRef and the visible card; in some
+  // flex contexts the wrapper's bounding box drifted from the card's,
+  // and dnd-kit measured the wrapper for overlay positioning → the
+  // overlay clone appeared shifted (typically rightward) from where
+  // the cursor actually was. Bug observed 10 May 2026.
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      {...listeners}
-      {...attributes}
-      role="button"
-      tabIndex={0}
-      aria-label={`${pillar.title} — ${pillar.description}`}
-    >
-      <PillarCard pillar={pillar} feedback={feedback} />
-    </div>
+    <PillarCard
+      pillar={pillar}
+      feedback={feedback}
+      dragRef={setNodeRef}
+      dragListeners={listeners as Record<string, unknown> | undefined}
+      dragAttributes={attributes as unknown as Record<string, unknown>}
+      isDragging={isDragging}
+    />
   );
 }
 
-// Pure-visual pillar card. Used in two places:
-//   1. Inside <DraggablePillar> as the in-flow card (ghosts on drag).
-//   2. Inside <DragOverlay> as the floating clone that tracks the
-//      pointer (`isOverlay = true` adds the 2° tilt + heavier shadow
-//      via the `is-dragging` CSS class).
+// Pillar card. Renders in two roles:
+//   1. In-flow draggable: receives `dragRef` + listeners + attributes
+//      from <DraggablePillar>. Ghosts (opacity 0.2) while being dragged.
+//   2. Inside <DragOverlay> as the floating clone: pass `isOverlay`,
+//      no drag refs (the overlay handles its own positioning).
 // Geometry: 100×140 on phone, 140×200 from sm+. Stack: symbol top,
 // uppercase title centre, italic description bottom.
 function PillarCard({
   pillar,
   feedback,
   isOverlay = false,
+  isDragging = false,
+  dragRef,
+  dragListeners,
+  dragAttributes,
 }: {
   pillar: PromptArchitecturePillar;
   feedback: "correct" | "wrong" | null;
   isOverlay?: boolean;
+  isDragging?: boolean;
+  dragRef?: (node: HTMLElement | null) => void;
+  // Listeners + attributes from useDraggable. The exact types are
+  // intentionally loose (Record<string, unknown>) so we can spread
+  // without coupling to dnd-kit's internal types.
+  dragListeners?: Record<string, unknown>;
+  dragAttributes?: Record<string, unknown>;
 }) {
   const palette = PILLAR_PALETTE[pillar.key];
   const feedbackClass =
@@ -1033,16 +1036,36 @@ function PillarCard({
 
   return (
     <div
+      ref={dragRef}
+      {...(dragListeners ?? {})}
+      {...(dragAttributes ?? {})}
+      role={dragRef ? "button" : undefined}
+      tabIndex={dragRef ? 0 : undefined}
+      aria-label={
+        dragRef ? `${pillar.title} — ${pillar.description}` : undefined
+      }
       // Multi-layer shadow + hover lift come from `.prompt-arch-pillar`
       // (globals.css). `is-dragging` swaps the shadow stack to its
-      // heaviest version — only applied when this card is rendered
-      // as the overlay clone.
+      // heaviest version — applied to the overlay clone for visual
+      // weight while flying.
       className={`prompt-arch-pillar relative flex h-[140px] w-[100px] flex-col items-center justify-between rounded-2xl border-2 px-3 py-3 sm:h-[200px] sm:w-[140px] sm:px-4 sm:py-5 ${palette.cardBg} ${palette.cardBorder} ${feedbackClass} ${isOverlay ? "is-dragging" : ""}`}
       style={{
         // CSS var consumed by .prompt-arch-pillar::before for the
         // top-edge highlight (Mod 3). React types don't know about
         // custom properties, hence the cast.
         ["--highlight-color" as string]: palette.symbolHex,
+        // In-flow drag state: dim the original to a ghost; cursor +
+        // touchAction tell the browser this is a draggable element.
+        ...(isDragging && {
+          opacity: 0.2,
+          cursor: "grabbing",
+          touchAction: "none",
+        }),
+        ...(dragRef &&
+          !isDragging && {
+            cursor: "grab",
+            touchAction: "none",
+          }),
         // Subtle 2° tilt only on the overlay clone — the in-place
         // ghost stays upright so it doesn't fight the layout.
         ...(isOverlay && { transform: "rotate(2deg)" }),

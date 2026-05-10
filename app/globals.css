@@ -591,13 +591,25 @@ h6 {
   from { opacity: 0; transform: translateX(-28px) scale(0.99); }
   to   { opacity: 1; transform: translateX(0)     scale(1);    }
 }
+/* Two side-effects of the previous version were breaking <DragOverlay>
+   in PromptArchitecture (lez 6 step 13) — the dragged pillar drifted
+   away from the cursor:
+     1) `animation-fill-mode: both` left `transform: translateX(0)
+        scale(1)` permanently applied (a non-`none` transform creates
+        a containing block for `position: fixed` descendants).
+     2) `will-change: transform` does the same on Chromium/Safari even
+        when no transform value is currently active — the browser
+        promotes the element and treats it as a containing block.
+   Both removed: the slide animation still runs (transform interpolates
+   from translateX(28px) to nothing during the 300ms), and after it
+   ends the element is back to a plain block with no transform and no
+   will-change → no containing block → DragOverlay anchors to the
+   viewport as expected. */
 .step-slide-fwd {
-  animation: step-slide-fwd 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
-  will-change: transform, opacity;
+  animation: step-slide-fwd 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 .step-slide-back {
-  animation: step-slide-back 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
-  will-change: transform, opacity;
+  animation: step-slide-back 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 /* PrincipleStep — staggered headline + emphasis pop */
