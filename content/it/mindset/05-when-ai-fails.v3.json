@@ -276,7 +276,7 @@
           {
             "role": "ai",
             "severity": "warning",
-            "text": "Ho aggiunto un sistema di error handling avanzato con sentry-mock-shield. Ora dovrebbe funzionare.",
+            "text": "Ho aggiunto un sistema di gestione errori avanzato con sentry-mock-shield. Ora dovrebbe funzionare.",
             "highlights": [
               { "snippet": "sentry-mock-shield", "severity": "red" }
             ]

@@ -18,9 +18,20 @@ interface Props {
   // homepage + console panels keep their natural proportions in a
   // side-by-side grid instead of getting compressed.
   wide?: boolean;
+  // Same opt-in spirit, one notch tighter: `max-w-4xl` (896px) for
+  // widgets whose content row is ~700-780px wide (e.g. lez 6 step 13
+  // PromptArchitecture — 4 pillars at 140px + gaps + card padding).
+  // `wide` would leave too much horizontal whitespace; default would
+  // overflow. Takes precedence over `wide` when both are passed.
+  medium?: boolean;
 }
 
-export function StepCard({ children, variant = "default", wide = false }: Props) {
+export function StepCard({
+  children,
+  variant = "default",
+  wide = false,
+  medium = false,
+}: Props) {
   const direction = useLessonDirection();
 
   const tone =
@@ -37,7 +48,7 @@ export function StepCard({ children, variant = "default", wide = false }: Props)
   const slideClass =
     direction === "back" ? "step-slide-back" : "step-slide-fwd";
 
-  const widthClass = wide ? "max-w-5xl" : "max-w-2xl";
+  const widthClass = medium ? "max-w-4xl" : wide ? "max-w-5xl" : "max-w-2xl";
 
   return (
     <div

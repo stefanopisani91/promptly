@@ -184,7 +184,7 @@
       "spark_state": "idle",
       "paragraphs": [
         "Ti faccio un esempio reale.",
-        "Il CLAUDE.md di Promptly contiene roba tipo: «sto costruendo un'app educational, [[term:stack]]stack[[/term]] Supabase + Netlify, non aggiungere [[term:dipendenza]]dipendenze[[/term]] senza chiedermi, mostrami i diff prima di applicare modifiche.»",
+        "Il CLAUDE.md di Promptly contiene roba tipo: «sto costruendo un'app educational, [[term:stack]]stack[[/term]] Supabase + Netlify, non aggiungere [[term:dipendenza]]dipendenze[[/term]] senza chiedermi, mostrami i [[term:diff]]diff[[/term]] prima di applicare modifiche.»",
         "Sei righe. Sei righe che fanno la differenza tra un'AI che fa danni e una che lavora con me."
       ],
       "vignettes": [

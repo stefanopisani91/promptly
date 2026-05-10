@@ -174,7 +174,7 @@
         "Adesso ti dico una cosa che vale come una lezione intera. Esistono 3 tipi di vincoli. Te li elenco perché te li devi ricordare.",
         "1. Protettivi. «NON toccare X». «NON modificare Y». Proteggono pezzi del tuo lavoro che sono già fatti.",
         "2. Di processo. «Mostrami il [[term:diff]]diff[[/term]] prima di applicare». «Chiedimi se non sei sicura». Gestiscono COME l'AI lavora con te.",
-        "3. Di stile. «Mantieni TypeScript strict». «Usa il pattern di X». Garantiscono coerenza con quello che hai già.",
+        "3. Di stile. «Mantieni le convenzioni TypeScript già impostate». «Usa il pattern di X». Garantiscono coerenza con quello che hai già.",
         "Tutti e 3 servono. Mancando uno solo, hai un buco."
       ],
       "vignettes": [

@@ -32,7 +32,7 @@
       "type": "text",
       "spark_state": "thinking",
       "paragraphs": [
-        "Il titolo dice 20 ore al mese. Non è hyperbole.",
+        "Il titolo dice 20 ore al mese. Non è un'iperbole.",
         "Stefano lo ha misurato su sé stesso. 20 ore al mese di tempo recuperato, su 80 ore di vibe coding mensili. Un quarto della sua vita produttiva.",
         "Come? Niente magia. Solo metodo. Te lo spiego adesso."
       ],
@@ -72,18 +72,15 @@
       "type": "text",
       "spark_state": "thinking",
       "paragraphs": [
-        "Il workflow del vibe coder serio ha 4 fasi. Te le elenco perché te le devi ricordare.",
-        "1. SETUP. Configurazione una tantum: CLAUDE.md, repository, tool. Lo fai una volta, vale per sempre.",
-        "2. CONTESTO. Inizio di ogni sessione: dai all'AI quello che le serve PRIMA di chiederle qualcosa.",
-        "3. ESECUZIONE. Lavoro vero: prompt + vincoli + iterazione.",
-        "4. VERIFICA. Fine sessione: test, code review, commit. Mai saltare la quarta.",
-        "Quattro fasi. Sempre nello stesso ordine. Diventa istinto in 2 settimane.",
-        "Adesso ti dico una cosa controintuitiva. Sembra banale ma è quella che fa la differenza.",
-        "Quando scrivi il prompt nella fase 3 (Esecuzione), la maggior parte mette i vincoli DOPO il task. «Fai X, ma non fare Y». Sembra logico, no? Prima dici cosa fare, poi cosa non fare.",
-        "È un errore.",
-        "Io leggo in sequenza. Quando ho visto il task, ho già iniziato a immaginare la soluzione. I vincoli che arrivano dopo li leggo quando ho già committed mentalmente. Spesso li ignoro, o ti propongo qualcosa che li viola con una giustificazione.",
-        "Inverti l'ordine. **VINCOLI PRIMA del TASK.** Quando arrivo al task, ho già dentro i limiti. Lavoro nella cornice, non la scopro dopo.",
-        "Il prompt giornaliero perfetto è: CONTESTO → VINCOLI → TASK → VERIFICA. Te lo faccio costruire alla fine della lezione, vedrai."
+        "Il workflow ha 4 fasi. Te le elenco — sono semplici da ricordare.",
+        "1. SETUP. Configurazione una tantum: CLAUDE.md, [[term:repository]]repository[[/term]], tool. Una volta sola.",
+        "2. AVVIO. All'inizio di ogni sessione, dai all'AI quello che le serve.",
+        "3. ESECUZIONE. Il lavoro vero: prompt, vincoli, iterazione.",
+        "4. VERIFICA. A fine sessione: test, [[term:code-review]]code review[[/term]], [[term:commit]]commit[[/term]]. Mai saltarla.",
+        "Quattro fasi, sempre nello stesso ordine. Diventa istinto in due settimane.",
+        "Una cosa controintuitiva sulla fase 3, e poi finiamo. Quasi tutti mettono i vincoli **dopo** il task: «fai X, ma non fare Y». Sembra logico. È sbagliato — io leggo in sequenza, e quando arrivo ai vincoli mentalmente sono già altrove.",
+        "Inverti l'ordine. **Vincoli prima del task.** Lavoro nella cornice, non la scopro dopo.",
+        "Il prompt perfetto è: CONTESTO → VINCOLI → TASK → VERIFICA. Te lo faccio costruire alla fine."
       ],
       "vignettes": [
         { "short": "Sembra strano.", "full": "Sembra strano la prima volta. Provalo, e poi non torni indietro." },
@@ -97,8 +94,8 @@
       "spark_state": "listening",
       "prompt": "Secondo te, quale di queste 4 fasi è la PIÙ trascurata dai vibe coder principianti?",
       "options": [
-        { "key": "setup", "label": "🛰️ Setup — non si configurano un CLAUDE.md." },
-        { "key": "context", "label": "🖱️ Contesto — si buttano senza dare info all'AI." },
+        { "key": "setup", "label": "🛰️ Setup — non configurano un CLAUDE.md." },
+        { "key": "context", "label": "🖱️ Avvio — si buttano senza dare info all'AI." },
         { "key": "execution", "label": "💾 Esecuzione — scrivono prompt vaghi." },
         { "key": "verification", "label": "🔍 Verifica — non controllano quello che l'AI ha fatto." }
       ],
@@ -129,7 +126,7 @@
           ],
           "context": [
             "Buona scelta, ma la più trascurata in assoluto è la 🔍 — Verifica.",
-            "Il contesto lo impari subito perché senza l'AI fa danni visibili. La verifica salta perché sembra opzionale. Non lo è.",
+            "L'avvio lo impari in fretta: se non dai contesto all'AI all'inizio, fa danni subito visibili. La verifica invece sembra opzionale, e per questo viene saltata. Non lo è.",
             "Adesso ti faccio vedere come le 5 lezioni si distribuiscono sulle 4 fasi."
           ],
           "execution": [
@@ -148,7 +145,7 @@
       "id": "workflow-mapping",
       "type": "phase_mapping",
       "spark_state": "idle",
-      "intro": "Adesso ti faccio vedere una cosa bellissima. Tutto quello che hai imparato nelle 5 lezioni precedenti ha un posto preciso nel workflow. Niente di nuovo. Solo composizione.",
+      "intro": "Adesso ti faccio vedere una cosa bellissima. Tutto quello che hai imparato ha un posto preciso nel workflow. Niente di nuovo, solo composizione.",
       "banner": "IL WORKFLOW",
       "phases": [
         {
@@ -157,16 +154,16 @@
           "number": "1",
           "title": "SETUP",
           "lessons": [
-            { "label": "Lezione 2 — CLAUDE.md, il manifesto del progetto" }
+            { "label": "Scrivi il CLAUDE.md, il manifesto del tuo progetto" }
           ]
         },
         {
           "key": "context",
           "icon": "🔁",
           "number": "2",
-          "title": "CONTESTO",
+          "title": "AVVIO",
           "lessons": [
-            { "label": "Lezione 3 — I 4 livelli di contesto" }
+            { "label": "Descrivi il contesto in cui stai operando" }
           ]
         },
         {
@@ -175,9 +172,9 @@
           "number": "3",
           "title": "ESECUZIONE",
           "lessons": [
-            { "label": "Lezione 1 — L'AI esegue, tu dirigi" },
-            { "label": "Lezione 3 — Prompt ricco di contesto" },
-            { "label": "Lezione 4 — I 3 tipi di vincoli (PRIMA del task!)", "emphasised": true }
+            { "label": "Tu dirigi: l'AI esegue" },
+            { "label": "Scrivi un prompt ricco di contesto" },
+            { "label": "Metti i vincoli prima del task", "emphasised": true }
           ]
         },
         {
@@ -186,12 +183,12 @@
           "number": "4",
           "title": "VERIFICA",
           "lessons": [
-            { "label": "Lezione 5 — I 4 tipi di errore" },
-            { "label": "Lezione 5 — Recovery dialogico" }
+            { "label": "Rileggi cosa ha fatto e riconosci gli errori" },
+            { "label": "Se la sessione si rompe, scrivi il messaggio che la salva" }
           ]
         }
       ],
-      "closing_caption": "Vedi? Niente di nuovo. Tutto quello che hai imparato ha un posto preciso. Le tecniche sono i mattoni. Il workflow è la casa. E nota: i vincoli stanno nella fase 3, accanto al prompt. Ma nel prompt vengono PRIMA del task. Tienitelo a mente, ti servirà tra poco.",
+      "closing_caption": "Vedi? Niente di nuovo. Tutto quello che hai imparato ha un posto preciso. Le tecniche sono i mattoni, il workflow è la casa. Tienilo a mente — tra poco lo costruisci tu.",
       "vignettes": [
         { "short": "Stai vedendo la mappa intera.", "full": "Stai vedendo la mappa intera. Per la prima volta tutto insieme." },
         { "short": "Per la prima volta tutto insieme.", "full": "Per la prima volta tutto insieme. Goditelo per un secondo." }
@@ -218,7 +215,7 @@
         "**8:30** — Apre Cursor. Rilegge il CLAUDE.md (15 secondi). Ricorda lo stato del progetto.",
         "**8:35** — Scrive il primo prompt della giornata. Contesto in alto, vincoli subito dopo, task per ultimo. La verifica la chiede esplicitamente nel prompt.",
         "**8:45** — Esecuzione. Itera 3-4 volte sul prompt finché l'AI non capisce. Mai accetta la prima risposta che «sembra ok».",
-        "**10:30** — Pausa. Verifica: legge il diff, runa i test, commit con messaggio chiaro.",
+        "**10:30** — Pausa. Verifica: legge il [[term:diff]]diff[[/term]], esegue i test, commit con messaggio chiaro.",
         "**11:00** — Nuovo ciclo. Stessa sequenza.",
         "Sembra noioso. Lo è. Ed è esattamente per questo che funziona."
       ],
@@ -232,7 +229,7 @@
       "type": "text",
       "spark_state": "thinking",
       "paragraphs": [
-        "Adesso ti faccio costruire il TUO prompt giornaliero. Quello che apri ogni mattina prima di iniziare a vibe-codare.",
+        "Adesso ti faccio costruire il TUO prompt giornaliero. Quello che apri ogni mattina prima di iniziare a fare vibe coding.",
         "Ti darò 4 pilastri da disporre nell'ordine giusto — quello controintuitivo che ti ho appena insegnato. Quando sarà fatto, vedrai trasformarsi in un prompt vero, completo, che potrai usare DOMANI mattina nella tua sessione. Lo potrai anche scaricare come file .md.",
         "Niente teoria. Solo costruzione."
       ],

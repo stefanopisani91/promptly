@@ -119,7 +119,10 @@ function ExpandedVignette({
       }}
     >
       {/* Backdrop as its own button so click-to-close is keyboard-accessible
-          (Escape also closes via the keydown listener above). */}
+          (Escape also closes via the keydown listener above). Solid
+          --background (not the previous translucent dim) so the page
+          behind doesn't bleed through — the expanded vignette reads
+          as a focused sheet, not a modal-over-content. */}
       <button
         type="button"
         aria-label={closeLabel}
@@ -127,8 +130,7 @@ function ExpandedVignette({
         style={{
           position: "absolute",
           inset: 0,
-          background: "rgba(15, 18, 24, 0.45)",
-          backdropFilter: "blur(2px)",
+          background: "var(--background)",
           border: "none",
           cursor: "pointer",
         }}
@@ -170,14 +172,14 @@ function ExpandedVignette({
         <p
           style={{
             fontStyle: "italic",
-            fontSize: 15,
-            lineHeight: 1.55,
+            fontSize: 17,
+            lineHeight: 1.6,
             color: "var(--text-primary)",
             margin: 0,
             paddingRight: 24,
           }}
         >
-          “{vignette.full}”
+          {vignette.full}
         </p>
       </div>
     </div>

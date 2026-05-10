@@ -202,6 +202,17 @@ export function LessonV3View({
     // input keystroke doesn't trigger a save on every character.
   }, [stepIndex, lesson.id, lesson.path_slug, stepState]);
 
+  // ─── Reset scroll on step change ───────────────────────────────────
+  // Without this, advancing from a long step (e.g. a "text" with many
+  // paragraphs the user scrolled through) lands the next step mid-page,
+  // so on mobile its title falls under the sticky <SparkHeader>. We
+  // jump back to the top on every navigation; the directional slide
+  // animation in <main> covers the cut.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.scrollTo(0, 0);
+  }, [stepIndex]);
+
   // ─── Per-step state mutators ────────────────────────────────────────
   const updateStepState = useCallback(
     (stepId: string, value: unknown) => {
@@ -317,7 +328,10 @@ export function LessonV3View({
           // Bottom padding on mobile leaves clearance for the fixed CTA
           // overlay (~96px footer including gradient + safe-area). On
           // ≥768px the footer is in normal flow so no extra padding.
-          "flex flex-1 flex-col items-center gap-4 px-4 pt-4 pb-28 sm:px-6 sm:pt-10 sm:pb-10 md:gap-6",
+          // Top padding on mobile is pt-6 (was pt-4) so the first
+          // element of each step has breathing room below the sticky
+          // <SparkHeader> — paired with the scroll-reset effect above.
+          "flex flex-1 flex-col items-center gap-4 px-4 pt-6 pb-28 sm:px-6 sm:pt-10 sm:pb-10 md:gap-6",
           // "Single-card" steps (PRINCIPLE / REWARD / archetype reveal) are
           // short and benefit from being vertically centred in the leftover
           // viewport so the card sits at thumb-height. Tall steps keep the

@@ -38,6 +38,7 @@ import {
 } from "react";
 import {
   DndContext,
+  DragOverlay,
   PointerSensor,
   TouchSensor,
   closestCenter,
@@ -631,8 +632,13 @@ export function PromptArchitecture({
 
   // ─── Render ────────────────────────────────────────────────────────
 
+  // `medium` (max-w-4xl) instead of `wide` (max-w-5xl): the canvas
+  // row is ~600px and the orange container + StepCard padding push
+  // the natural content to ~780px. max-w-5xl on desktop left ~230px
+  // of empty side-padding per side; max-w-4xl tightens it without
+  // squashing the prompt overlay shown after victory.
   return (
-    <StepCard wide>
+    <StepCard medium>
       <div className="flex flex-col gap-6">
         {step.intro && (
           <p className="text-base leading-relaxed text-text-secondary sm:text-lg">
@@ -696,6 +702,23 @@ export function PromptArchitecture({
               {counter}
             </p>
           </div>
+
+          {/* DragOverlay — the floating clone that follows the pointer.
+              The original draggable stays in place (rendered with low
+              opacity as a ghost) so the tray/canvas layout doesn't
+              reflow as the flexbox redistributes space. Without this,
+              on narrow viewports the remaining 3 pillars compress
+              visibly while one is mid-drag. */}
+          <DragOverlay dropAnimation={null}>
+            {activeDragKey
+              ? (() => {
+                  const pillar = pillarByKey.get(activeDragKey);
+                  return pillar ? (
+                    <PillarCard pillar={pillar} feedback={null} isOverlay />
+                  ) : null;
+                })()
+              : null}
+          </DragOverlay>
         </DndContext>
 
         {/* Spark dialogue */}
@@ -953,28 +976,54 @@ function DraggablePillar({
   feedback: "correct" | "wrong" | null;
 }) {
   const id = location === "tray" ? `tray-${pillar.key}` : `canvas-${index}`;
-  const { attributes, listeners, setNodeRef, transform, isDragging } =
-    useDraggable({ id });
-  const palette = PILLAR_PALETTE[pillar.key];
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+    id,
+  });
 
-  // Vertical pillar geometry (T2): 100×140 on phone, 140×200 from
-  // sm+. Stack: symbol (60px, palette colour, top), uppercase title
-  // (centre), italic description (bottom). Hover scales the whole
-  // card; drag adds a 2° tilt + the heaviest shadow.
-  const baseScale = isDragging ? "scale(1.1)" : "scale(1)";
-  const baseRotate = isDragging ? "rotate(2deg)" : "rotate(0deg)";
-  // Inline CSS variable consumed by the .prompt-arch-pillar::before
-  // highlight rule (Mod 3). React types don't know about custom
-  // properties, hence the cast.
+  // With <DragOverlay>, the original element STAYS in place during a
+  // drag — we just dim it to a "ghost" so the user sees the slot it
+  // came from. The visual movement is handled by the overlay clone
+  // rendered at the root of <DndContext>. This preserves the layout:
+  // flexbox sees the dragged pillar as still occupying its space, so
+  // the remaining 3 pillars don't compress on narrow viewports.
   const style: React.CSSProperties = {
-    transform: transform
-      ? `translate3d(${transform.x}px, ${transform.y}px, 0) ${baseScale} ${baseRotate}`
-      : undefined,
     cursor: isDragging ? "grabbing" : "grab",
     touchAction: "none",
-    ["--highlight-color" as string]: palette.symbolHex,
+    opacity: isDragging ? 0.2 : 1,
   };
 
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...listeners}
+      {...attributes}
+      role="button"
+      tabIndex={0}
+      aria-label={`${pillar.title} — ${pillar.description}`}
+    >
+      <PillarCard pillar={pillar} feedback={feedback} />
+    </div>
+  );
+}
+
+// Pure-visual pillar card. Used in two places:
+//   1. Inside <DraggablePillar> as the in-flow card (ghosts on drag).
+//   2. Inside <DragOverlay> as the floating clone that tracks the
+//      pointer (`isOverlay = true` adds the 2° tilt + heavier shadow
+//      via the `is-dragging` CSS class).
+// Geometry: 100×140 on phone, 140×200 from sm+. Stack: symbol top,
+// uppercase title centre, italic description bottom.
+function PillarCard({
+  pillar,
+  feedback,
+  isOverlay = false,
+}: {
+  pillar: PromptArchitecturePillar;
+  feedback: "correct" | "wrong" | null;
+  isOverlay?: boolean;
+}) {
+  const palette = PILLAR_PALETTE[pillar.key];
   const feedbackClass =
     feedback === "correct"
       ? "ring-2 ring-emerald-400 ring-offset-2"
@@ -984,27 +1033,27 @@ function DraggablePillar({
 
   return (
     <div
-      ref={setNodeRef}
-      style={style}
-      {...listeners}
-      {...attributes}
-      // Multi-layer shadow + hover lift come from the
-      // `.prompt-arch-pillar` CSS class (see globals.css). When the
-      // pillar is being dragged we add `is-dragging` so the class
-      // drops the transform transition — dnd-kit's per-frame
-      // translate3d would otherwise lag.
-      className={`prompt-arch-pillar relative flex h-[140px] w-[100px] flex-col items-center justify-between rounded-2xl border-2 px-3 py-3 sm:h-[200px] sm:w-[140px] sm:px-4 sm:py-5 ${palette.cardBg} ${palette.cardBorder} ${feedbackClass} ${isDragging ? "is-dragging" : ""}`}
-      role="button"
-      tabIndex={0}
-      aria-label={`${pillar.title} — ${pillar.description}`}
+      // Multi-layer shadow + hover lift come from `.prompt-arch-pillar`
+      // (globals.css). `is-dragging` swaps the shadow stack to its
+      // heaviest version — only applied when this card is rendered
+      // as the overlay clone.
+      className={`prompt-arch-pillar relative flex h-[140px] w-[100px] flex-col items-center justify-between rounded-2xl border-2 px-3 py-3 sm:h-[200px] sm:w-[140px] sm:px-4 sm:py-5 ${palette.cardBg} ${palette.cardBorder} ${feedbackClass} ${isOverlay ? "is-dragging" : ""}`}
+      style={{
+        // CSS var consumed by .prompt-arch-pillar::before for the
+        // top-edge highlight (Mod 3). React types don't know about
+        // custom properties, hence the cast.
+        ["--highlight-color" as string]: palette.symbolHex,
+        // Subtle 2° tilt only on the overlay clone — the in-place
+        // ghost stays upright so it doesn't fight the layout.
+        ...(isOverlay && { transform: "rotate(2deg)" }),
+      }}
     >
       <span
         className="prompt-arch-symbol"
         style={{
           // Diagonal gradient via background-clip: text. The hex
           // `color` stays as a fallback for browsers without
-          // background-clip: text (negligible market share, but the
-          // symbol still reads if Webkit-text-fill-color is ignored).
+          // background-clip: text.
           color: palette.symbolHex,
           background: palette.symbolGradient,
           WebkitBackgroundClip: "text",

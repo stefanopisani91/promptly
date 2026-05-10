@@ -88,7 +88,10 @@ export function PhaseMappingBlocks({ step }: Props) {
   }, [reduced, step.phases, total]);
 
   return (
-    <StepCard wide>
+    // Default `max-w-2xl` (NOT `wide`) — the phase rows are stacked
+    // vertically and read fine at the standard text-heavy width. The
+    // wider container is reserved for widgets with side-by-side panes.
+    <StepCard>
       <div className="flex flex-col gap-6">
         {step.intro && (
           <p className="text-base leading-relaxed text-text-secondary sm:text-lg">

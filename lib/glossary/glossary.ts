@@ -197,7 +197,7 @@ export const GLOSSARY: Record<string, GlossaryTerm> = {
       "Il diff è la differenza tra «com'era prima» e «com'è dopo» quando modifichi del codice. Tipo le modifiche tracciate di Word: vedi cosa è stato aggiunto, tolto, cambiato. Chiedere all'AI di mostrartelo prima di applicare è uno dei vincoli di processo più utili che esistano.",
     definition_en:
       "A diff is the difference between «before» and «after» when you modify code. Like Word's tracked changes: you see what was added, removed, changed. Asking AI to show you the diff before applying is one of the most useful process constraints out there.",
-    first_lesson: "mindset-04",
+    first_lesson: "mindset-02",
   },
 
   // ─── Lezione 5 ────────────────────────────────────────────────
@@ -230,6 +230,38 @@ export const GLOSSARY: Record<string, GlossaryTerm> = {
     definition_en:
       "To AI, a token is a small chunk of text: a short word is one token, a long one takes two or three. When I «write», what I do is pick the most likely next token, every time. API bills are charged per token: that's why long prompts cost more than short ones, even for the same request.",
     first_lesson: "mindset-05",
+  },
+
+  // ─── Lezione 6 ────────────────────────────────────────────────
+  repository: {
+    id: "repository",
+    label_it: "repository",
+    label_en: "repository",
+    definition_it:
+      "Un repository (o «repo») è la cartella del tuo progetto tenuta sotto controllo di versione: dentro vivono il codice, la storia di tutte le modifiche, e il messaggio di ogni commit. GitHub e GitLab sono i posti dove i repository vivono online. È il posto dove l'AI ti aiuta, e dove tu controlli quello che ha fatto.",
+    definition_en:
+      "A repository (or «repo») is your project folder kept under version control: inside live the code, the full history of changes, and a message for every commit. GitHub and GitLab are where repositories live online. It's the place where AI helps you, and where you check what it actually did.",
+    first_lesson: "mindset-06",
+  },
+  commit: {
+    id: "commit",
+    label_it: "commit",
+    label_en: "commit",
+    definition_it:
+      "Un commit è uno scatto del tuo codice in un punto del tempo, con un messaggio breve che dice cosa è cambiato. Tipo salvare una versione del documento Word con la data sopra. Se domani rompi qualcosa, sai esattamente al commit a cui tornare. Nel vibe coding, fare commit spesso è una rete di sicurezza: l'AI può cambiare tanto in un colpo, e tu vuoi poter tornare indietro.",
+    definition_en:
+      "A commit is a snapshot of your code at a point in time, with a short message saying what changed. Like saving a versioned copy of a Word doc with the date on it. If you break something tomorrow, you know exactly which commit to roll back to. In vibe coding, committing often is a safety net: AI can change a lot in one go, and you want to be able to step back.",
+    first_lesson: "mindset-06",
+  },
+  "code-review": {
+    id: "code-review",
+    label_it: "code review",
+    label_en: "code review",
+    definition_it:
+      "La code review è quando qualcuno legge il codice scritto da un altro per cercare errori e migliorie prima che entri nel progetto. Nel vibe coding sei tu a fare la code review all'AI: rileggi quello che ha prodotto, prima di accettarlo. Saltarla è il modo più veloce per ritrovarsi bug nascosti tre giorni dopo.",
+    definition_en:
+      "A code review is when someone reads code written by someone else to catch errors and suggest improvements before it lands in the project. In vibe coding you do the review on the AI: re-read what it produced, before accepting it. Skipping it is the fastest way to find hidden bugs three days later.",
+    first_lesson: "mindset-06",
   },
 };
 

@@ -72,18 +72,15 @@
       "type": "text",
       "spark_state": "thinking",
       "paragraphs": [
-        "The serious vibe coder's workflow has 4 phases. I'll list them because you need to remember them.",
-        "1. SETUP. One-time configuration: CLAUDE.md, repository, tools. Do it once, lasts forever.",
-        "2. CONTEXT. Start of every session: give the AI what it needs BEFORE asking it for anything.",
-        "3. EXECUTION. Real work: prompt + constraints + iteration.",
-        "4. VERIFICATION. End of session: tests, code review, commit. Never skip the fourth.",
-        "Four phases. Always in the same order. Becomes instinct in 2 weeks.",
-        "Now I'm going to tell you something counter-intuitive. Sounds trivial but it's the thing that makes the difference.",
-        "When you write the prompt in phase 3 (Execution), most people put constraints AFTER the task. «Do X, but don't do Y». Logical, right? First say what to do, then what not to do.",
-        "It's a mistake.",
-        "I read in sequence. By the time I've seen the task, I've already started imagining the solution. Constraints arriving after, I read them once I've already committed mentally. I often ignore them, or propose something that violates them with a justification.",
-        "Flip the order. **CONSTRAINTS BEFORE the TASK.** When I get to the task, I already have the limits inside me. I work within the frame, I don't discover it after.",
-        "The perfect daily prompt is: CONTEXT → CONSTRAINTS → TASK → VERIFICATION. I'll have you build it at the end of the lesson, you'll see."
+        "The workflow has 4 phases. I'll list them — easy to remember.",
+        "1. SETUP. One-time configuration: CLAUDE.md, [[term:repository]]repository[[/term]], tools. Once and done.",
+        "2. KICKOFF. At the start of every session, give the AI what it needs.",
+        "3. EXECUTION. The real work: prompt, constraints, iteration.",
+        "4. VERIFICATION. End of session: tests, [[term:code-review]]code review[[/term]], [[term:commit]]commit[[/term]]. Never skip it.",
+        "Four phases, always in the same order. Becomes instinct in two weeks.",
+        "One counter-intuitive thing about phase 3, then we're done. Most people put constraints **after** the task: «do X, but don't do Y». Sounds logical. It's wrong — I read in sequence, and by the time I get to constraints I'm already mentally elsewhere.",
+        "Flip the order. **Constraints before the task.** I work inside the frame, I don't discover it after.",
+        "The perfect prompt is: CONTEXT → CONSTRAINTS → TASK → VERIFICATION. I'll have you build it at the end."
       ],
       "vignettes": [
         { "short": "Sounds odd.", "full": "Sounds odd the first time. Try it, then you don't go back." },
@@ -98,7 +95,7 @@
       "prompt": "Which of these 4 phases do you think is the MOST neglected by beginner vibe coders?",
       "options": [
         { "key": "setup", "label": "🛰️ Setup — they don't configure a CLAUDE.md." },
-        { "key": "context", "label": "🖱️ Context — they dive in without giving the AI any info." },
+        { "key": "context", "label": "🖱️ Kickoff — they dive in without giving the AI any info." },
         { "key": "execution", "label": "💾 Execution — they write vague prompts." },
         { "key": "verification", "label": "🔍 Verification — they don't check what the AI actually did." }
       ],
@@ -129,7 +126,7 @@
           ],
           "context": [
             "Good guess, but the most neglected of all is 🔍 — Verification.",
-            "Context you learn fast because without it the AI does visible damage. Verification gets skipped because it looks optional. It isn't.",
+            "Kickoff you learn fast: if you don't give context up front, the AI does visible damage immediately. Verification, instead, looks optional, so it gets skipped. It isn't.",
             "Now I'll show you how the 5 lessons distribute across the 4 phases."
           ],
           "execution": [
@@ -148,7 +145,7 @@
       "id": "workflow-mapping",
       "type": "phase_mapping",
       "spark_state": "idle",
-      "intro": "Now I'll show you something beautiful. Everything you learned in the previous 5 lessons has a precise place in the workflow. Nothing new. Just composition.",
+      "intro": "Now I'll show you something beautiful. Everything you learned has a precise place in the workflow. Nothing new, just composition.",
       "banner": "THE WORKFLOW",
       "phases": [
         {
@@ -157,16 +154,16 @@
           "number": "1",
           "title": "SETUP",
           "lessons": [
-            { "label": "Lesson 2 — CLAUDE.md, the project manifesto" }
+            { "label": "Write your CLAUDE.md, the manifesto of your project" }
           ]
         },
         {
           "key": "context",
           "icon": "🔁",
           "number": "2",
-          "title": "CONTEXT",
+          "title": "KICKOFF",
           "lessons": [
-            { "label": "Lesson 3 — The 4 levels of context" }
+            { "label": "Describe the context you're operating in" }
           ]
         },
         {
@@ -175,9 +172,9 @@
           "number": "3",
           "title": "EXECUTION",
           "lessons": [
-            { "label": "Lesson 1 — The AI executes, you direct" },
-            { "label": "Lesson 3 — Context-rich prompt" },
-            { "label": "Lesson 4 — The 3 types of constraints (BEFORE the task!)", "emphasised": true }
+            { "label": "You direct: the AI executes" },
+            { "label": "Write a context-rich prompt" },
+            { "label": "Put the constraints before the task", "emphasised": true }
           ]
         },
         {
@@ -186,12 +183,12 @@
           "number": "4",
           "title": "VERIFICATION",
           "lessons": [
-            { "label": "Lesson 5 — The 4 types of error" },
-            { "label": "Lesson 5 — Dialogue recovery" }
+            { "label": "Re-read what it did and spot the errors" },
+            { "label": "If the session breaks, write the message that saves it" }
           ]
         }
       ],
-      "closing_caption": "See? Nothing new. Everything you learned has a precise place. Techniques are bricks. The workflow is the house. And note: constraints sit in phase 3, next to the prompt. But inside the prompt they come BEFORE the task. Keep that close, you'll need it shortly.",
+      "closing_caption": "See? Nothing new. Everything you learned has a precise place. Techniques are the bricks, the workflow is the house. Keep that close — in a moment you'll build it yourself.",
       "vignettes": [
         { "short": "You're seeing the whole map.", "full": "You're seeing the whole map. For the first time, all together." },
         { "short": "All together.", "full": "All together for the first time. Enjoy it for a second." }
@@ -218,7 +215,7 @@
         "**8:30** — Opens Cursor. Re-reads the CLAUDE.md (15 seconds). Remembers the project's state.",
         "**8:35** — Writes the first prompt of the day. Context up top, constraints right after, task last. Verification asked explicitly inside the prompt.",
         "**8:45** — Execution. Iterates 3-4 times on the prompt until the AI gets it. Never accepts the first response that «seems ok».",
-        "**10:30** — Break. Verification: reads the diff, runs the tests, commits with a clear message.",
+        "**10:30** — Break. Verification: reads the [[term:diff]]diff[[/term]], runs the tests, commits with a clear message.",
         "**11:00** — New cycle. Same sequence.",
         "Sounds boring. It is. And that's exactly why it works."
       ],
