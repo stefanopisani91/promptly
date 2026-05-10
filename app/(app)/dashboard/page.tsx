@@ -185,8 +185,17 @@ export default async function DashboardPage({
   const activeLessonHref =
     activeNode?.href ??
     (activeNode?.lessonId ? `/lesson/${activeNode.lessonId}` : null);
+  // Hide the Continue card when the robot is parked on a completed
+  // lesson (stuck-pawn state — buildMapData pins the pawn to the last
+  // finished lesson so the user still sees their progress on the map,
+  // but there's nothing to continue). The Spark hero variant takes
+  // over instead.
   const showContinue =
-    !!activeSection && !!activeNode && !!activeLessonHref && !!activeNode.title;
+    !!activeSection &&
+    !!activeNode &&
+    !!activeLessonHref &&
+    !!activeNode.title &&
+    activeNode.state !== "completed";
 
   return (
     <ReferralModalProvider

@@ -220,6 +220,32 @@ export async function buildMapData(
       break;
     }
   }
+  // Stuck-pawn fallback: the loop above didn't find an incomplete
+  // lesson but the user has progress. This is the "finished Path 1,
+  // Path 2 not yet open" case — the next path is gated, there's
+  // nothing to continue, but we still want to anchor the robot to the
+  // last completed lesson so the user sees their position on the map
+  // (instead of an empty robot-less canvas). We walk PATH_ORDER in
+  // reverse and pick the latest accessible path the user has worked
+  // through; coming-soon and Pro paths are skipped because the robot
+  // shouldn't pin to a locked node even if historical V1 progress
+  // exists there.
+  if (current.pathSlug === null && allProgress.length > 0) {
+    for (let i = PATH_ORDER.length - 1; i >= 0; i--) {
+      const slug = PATH_ORDER[i];
+      if (PRO_PATHS.has(slug)) continue;
+      if (COMING_SOON_PATHS.has(slug)) continue;
+      const completedCount = completedIdsBySlug[slug].size;
+      if (completedCount > 0) {
+        current = {
+          pathSlug: slug,
+          lessonIndex: completedCount - 1,
+          isAtStart: false,
+        };
+        break;
+      }
+    }
+  }
   // Edge: brand-new user with zero progress everywhere — show the START
   // indicator near mindset lesson 0.
   if (allProgress.length === 0) {
