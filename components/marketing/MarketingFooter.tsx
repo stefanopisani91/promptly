@@ -1,9 +1,9 @@
-import Image from "next/image";
 import Link from "next/link";
 import type { ComponentType, SVGProps } from "react";
 import type { Lang } from "@/types";
 import type { LandingCopy } from "@/lib/i18n/landing";
 import { LangSwitcher } from "@/components/i18n/LangSwitcher";
+import { PromptlyWordmark } from "./PromptlyWordmark";
 
 interface Props {
   lang: Lang;
@@ -44,22 +44,23 @@ const SOCIAL_ICON = {
   github: GithubGlyph,
 } as const;
 
+/**
+ * Marketing footer (rev. May 2026):
+ * - Wordmark tipografico al posto del logo SVG
+ * - Background ereditato dal canvas globale (cream warm) — niente più
+ *   bg-surface-muted grigino che spezzava il flusso
+ * - Separazione dal contenuto: solo hairline border-top (rispiro pulito)
+ */
 export function MarketingFooter({ lang, copy }: Props) {
   const cols = [copy.columns.product, copy.columns.resources, copy.columns.legal];
 
   return (
-    <footer className="mt-16 border-t border-border bg-surface-muted">
+    <footer className="mt-16 border-t border-border">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
         <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
           <div className="flex flex-col gap-3">
             <Link href={`/${lang}`} aria-label="Promptly">
-              <Image
-                src="/brand/logo-horizontal.svg"
-                alt="Promptly"
-                width={140}
-                height={32}
-                className="h-8 w-auto"
-              />
+              <PromptlyWordmark size="xl" />
             </Link>
             <p className="text-sm text-text-muted">{copy.builtWith}</p>
           </div>
@@ -69,7 +70,7 @@ export function MarketingFooter({ lang, copy }: Props) {
         <div className="mt-10 grid grid-cols-2 gap-8 sm:grid-cols-3">
           {cols.map((col) => (
             <div key={col.heading}>
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-text-muted">
+              <h3 className="font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-text-muted">
                 {col.heading}
               </h3>
               <ul className="mt-3 space-y-2">
@@ -92,9 +93,9 @@ export function MarketingFooter({ lang, copy }: Props) {
             still work as soon as the handles go live; until then they
             404 visibly which is preferable to silently breaking. */}
         <div className="mt-10 flex flex-col gap-3 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-xs text-text-muted">{copy.rights}</p>
+          <p className="font-mono text-[11px] text-text-muted">{copy.rights}</p>
           <div className="flex items-center gap-3">
-            <span className="text-xs font-semibold uppercase tracking-wider text-text-muted">
+            <span className="font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-text-muted">
               {copy.socialHeading}
             </span>
             <ul className="flex items-center gap-2">

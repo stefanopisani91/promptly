@@ -42,7 +42,20 @@ type AppEvent =
       props: { attempts_used: number; hints_used: 0 | 1 | 2 | 3 };
     }
   | { name: "landing_exercise_cta_clicked"; props?: Record<string, never> }
-  | { name: "landing_socialproof_viewed"; props?: Record<string, never> }
+  | { name: "landing_meet_spark_viewed"; props?: Record<string, never> }
+  | { name: "landing_tools_viewed"; props?: Record<string, never> }
+  | {
+      name: "landing_tool_clicked";
+      props: {
+        tool_slug:
+          | "cursor"
+          | "claude-code"
+          | "windsurf"
+          | "copilot"
+          | "bolt"
+          | "v0";
+      };
+    }
   | { name: "landing_faq_opened"; props: { question_index: number } }
   | { name: "landing_closing_cta_viewed"; props?: Record<string, never> }
   | { name: "landing_closing_cta_clicked"; props?: Record<string, never> }

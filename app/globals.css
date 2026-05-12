@@ -5,6 +5,11 @@
 :root {
   /* Backgrounds — neutral palette (Aceternity-style, zero warm tint) */
   --background: #fafafa;
+  /* Marketing-only canvas — warm cream (rev. May 2026). Usato SOLO dal
+     route group (marketing) (landing + privacy/terms/cookie): il brand è
+     arancione, la tipografia editoriale, la voce di Spark calda — sul
+     canvas crema l'identità respira meglio. L'app vera resta sul neutro. */
+  --marketing-bg: #FBF6F0;
   --surface: #ffffff;
   --surface-muted: #f5f5f5;
   --border: #e5e5e5;
@@ -1284,4 +1289,244 @@ h6 {
 .lucia-write-here-arrow {
   animation: lucia-write-here-bounce 1.2s ease-in-out infinite;
   will-change: transform;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   iPhone 15 frame — hero landing visual (May 2026)
+   ────────────────────────────────────────────────────────────────
+   Cornice iPhone 15 in CSS puro con prospettiva 3D e carosello
+   orizzontale di 7 schermate. Tutti i valori derivano da
+   --iphone-frame-w (default 280px, scalabile via prop o classe).
+   Le proporzioni e i raggi sono fedeli alle dimensioni fisiche
+   dell'iPhone 15: 147.6×71.6mm, ratio 2.087:1.
+   ════════════════════════════════════════════════════════════════ */
+
+.iphone-wrap {
+  display: flex;
+  justify-content: center;
+  perspective: 1800px;
+  perspective-origin: 50% 40%;
+}
+
+.iphone-frame {
+  --iphone-frame-w: 280px;
+  --iphone-frame-h: calc(var(--iphone-frame-w) * 2.087);
+  --iphone-bezel: calc(var(--iphone-frame-w) * 0.033);
+  --iphone-body-radius: calc(var(--iphone-frame-w) * 0.155);
+  --iphone-screen-radius: calc(var(--iphone-body-radius) - var(--iphone-bezel));
+
+  --iphone-rotate-y: -14deg;
+  --iphone-rotate-x: 6deg;
+  --iphone-rotate-z: -1deg;
+
+  --iphone-titanium-light: #4a4a4c;
+  --iphone-titanium-mid:   #2e2e30;
+  --iphone-titanium-dark:  #1a1a1c;
+
+  position: relative;
+  width: var(--iphone-frame-w);
+  height: var(--iphone-frame-h);
+  padding: var(--iphone-bezel);
+  border-radius: var(--iphone-body-radius);
+  background:
+    linear-gradient(135deg,
+      var(--iphone-titanium-light) 0%,
+      var(--iphone-titanium-mid) 30%,
+      var(--iphone-titanium-mid) 70%,
+      var(--iphone-titanium-dark) 100%);
+  transform:
+    rotateY(var(--iphone-rotate-y))
+    rotateX(var(--iphone-rotate-x))
+    rotateZ(var(--iphone-rotate-z));
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.10),
+    inset 0 1px 3px rgba(255, 255, 255, 0.12),
+    12px 4px 12px rgba(0, 0, 0, 0.06),
+    20px 16px 32px rgba(0, 0, 0, 0.10),
+    30px 50px 80px -20px rgba(15, 15, 15, 0.28),
+    40px 70px 120px -30px rgba(15, 15, 15, 0.22);
+}
+
+@media (min-width: 1280px) {
+  .iphone-frame { --iphone-frame-w: 320px; }
+}
+
+/* Chamfer sottile attorno al corpo */
+.iphone-frame::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--iphone-body-radius);
+  padding: 1px;
+  background: linear-gradient(180deg,
+    rgba(255,255,255,0.18) 0%,
+    rgba(255,255,255,0.04) 40%,
+    rgba(255,255,255,0) 60%,
+    rgba(255,255,255,0.06) 100%);
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  pointer-events: none;
+}
+
+.iphone-screen {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--iphone-screen-radius);
+  overflow: hidden;
+  background: #000;
+  position: relative;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.6);
+}
+
+/* Carosello: 7 schermate + 1 duplicato della prima per loop senza scatti */
+.iphone-carousel {
+  display: flex;
+  width: 800%;
+  height: 100%;
+  animation: iphone-carousel-slide 28s ease-in-out infinite;
+}
+.iphone-carousel img,
+.iphone-carousel > * {
+  width: 12.5%;
+  height: 100%;
+  object-fit: cover;
+  flex-shrink: 0;
+  display: block;
+}
+.iphone-frame:hover .iphone-carousel {
+  animation-play-state: paused;
+}
+@keyframes iphone-carousel-slide {
+  0%, 11%       { transform: translateX(0%); }
+  13.5%, 23.5%  { transform: translateX(-12.5%); }
+  26%, 36%      { transform: translateX(-25%); }
+  38.5%, 48.5%  { transform: translateX(-37.5%); }
+  51%, 61%      { transform: translateX(-50%); }
+  63.5%, 73.5%  { transform: translateX(-62.5%); }
+  76%, 86%      { transform: translateX(-75%); }
+  88.5%, 100%   { transform: translateX(-87.5%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .iphone-carousel {
+    animation: none;
+    transform: translateX(0%);
+  }
+}
+
+/* Dynamic Island */
+.iphone-island {
+  position: absolute;
+  top: calc(var(--iphone-bezel) + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(var(--iphone-frame-w) * 0.31);
+  height: calc(var(--iphone-frame-w) * 0.094);
+  background: #000;
+  border-radius: 999px;
+  z-index: 3;
+}
+
+/* Side buttons */
+.iphone-btn-side {
+  position: absolute;
+  background: linear-gradient(180deg,
+    var(--iphone-titanium-light),
+    var(--iphone-titanium-mid));
+  border-radius: 1.5px;
+}
+.iphone-btn-side.iphone-btn-action   { left: -1.5px;  top: calc(var(--iphone-frame-w) * 0.28); width: 2.5px; height: calc(var(--iphone-frame-w) * 0.075); }
+.iphone-btn-side.iphone-btn-vol-up   { left: -1.5px;  top: calc(var(--iphone-frame-w) * 0.38); width: 2.5px; height: calc(var(--iphone-frame-w) * 0.11); }
+.iphone-btn-side.iphone-btn-vol-down { left: -1.5px;  top: calc(var(--iphone-frame-w) * 0.52); width: 2.5px; height: calc(var(--iphone-frame-w) * 0.11); }
+.iphone-btn-side.iphone-btn-power    { right: -1.5px; top: calc(var(--iphone-frame-w) * 0.32); width: 2.5px; height: calc(var(--iphone-frame-w) * 0.16); }
+
+/* ════════════════════════════════════════════════════════════════
+   MeetSpark portrait — placeholder mascotte (May 2026)
+   Verrà sostituito dall'illustrazione vera quando commissionata.
+   ════════════════════════════════════════════════════════════════ */
+.meet-spark-portrait {
+  position: relative;
+  width: 100%;
+  max-width: 320px;
+  aspect-ratio: 1 / 1;
+  margin: 0 auto;
+}
+.meet-spark-body {
+  position: absolute;
+  inset: 12% 12% 8% 12%;
+  border-radius: 999px;
+  background: radial-gradient(circle at 32% 28%, #FFD2B5 0%, var(--primary) 55%, #B84520 100%);
+  box-shadow:
+    inset 0 -16px 32px rgba(40, 20, 5, 0.18),
+    0 30px 60px -30px rgba(184, 69, 32, 0.4);
+}
+.meet-spark-body::before,
+.meet-spark-body::after {
+  content: "";
+  position: absolute;
+  width: 14%;
+  height: 14%;
+  border-radius: 999px;
+  background: #1F1B16;
+  top: 38%;
+}
+.meet-spark-body::before { left: 27%; }
+.meet-spark-body::after  { right: 27%; }
+.meet-spark-highlight {
+  position: absolute;
+  top: 18%;
+  left: 24%;
+  width: 18%;
+  height: 12%;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.45);
+  filter: blur(1px);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   FAQ editorial accordion — toggle + / − tipografico
+   Usato dal componente FAQSection (versione editoriale May 2026)
+   ════════════════════════════════════════════════════════════════ */
+.faq-editorial-item summary {
+  list-style: none;
+}
+.faq-editorial-item summary::-webkit-details-marker {
+  display: none;
+}
+.faq-editorial-item summary::after {
+  content: "+";
+  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--text-muted);
+  transition: color 0.2s ease;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.faq-editorial-item[open] summary::after {
+  content: "−";
+  color: var(--primary);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   Tools section — IDE card hover vignette
+   ════════════════════════════════════════════════════════════════ */
+.tool-card {
+  background-image: radial-gradient(circle at 30% 0%,
+    rgba(232, 112, 63, 0.04) 0%,
+    rgba(232, 112, 63, 0) 70%);
+  transition:
+    transform .25s ease,
+    border-color .25s ease,
+    box-shadow .25s ease,
+    background-image .25s ease;
+}
+.tool-card:hover {
+  background-image: radial-gradient(circle at 30% 0%,
+    rgba(232, 112, 63, 0.08) 0%,
+    rgba(232, 112, 63, 0) 70%);
 }

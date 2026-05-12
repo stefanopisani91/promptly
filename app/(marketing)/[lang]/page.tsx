@@ -3,11 +3,11 @@ import { isLang, type Lang } from "@/types";
 import { getLandingCopy } from "@/lib/i18n/landing";
 import { createClient } from "@/lib/supabase/server";
 import { HeroSection } from "@/components/marketing/HeroSection";
-import { ProblemSection } from "@/components/marketing/ProblemSection";
-import { SolutionSection } from "@/components/marketing/SolutionSection";
+import { MethodSection } from "@/components/marketing/MethodSection";
+import { MeetSparkSection } from "@/components/marketing/MeetSparkSection";
 import { LuciaDemoSection } from "@/components/marketing/lucia/LuciaDemoSection";
+import { ToolsSection } from "@/components/marketing/ToolsSection";
 import { CurriculumPreview } from "@/components/marketing/CurriculumPreview";
-import { SocialProofSection } from "@/components/marketing/SocialProofSection";
 import { FAQSection } from "@/components/marketing/FAQSection";
 import { ClosingCTA } from "@/components/marketing/ClosingCTA";
 import { JsonLdCourse } from "@/components/marketing/JsonLdCourse";
@@ -44,12 +44,15 @@ export default async function LandingPage({
         description={copy.meta.description}
       />
       <JsonLdFAQ items={copy.faq.items} />
+      {/* Composizione landing editoriale (rev. May 2026):
+          Hero (iPhone 3D + carosello) → Metodo → Meet Spark →
+          Demo Lucia → Strumenti (6 IDE) → Curriculum → FAQ → Closing */}
       <HeroSection copy={copy.hero} lang={lang} />
-      <ProblemSection copy={copy.problem} />
-      <SolutionSection copy={copy.solution} />
+      <MethodSection copy={copy.method} />
+      <MeetSparkSection copy={copy.meetSpark} />
       <LuciaDemoSection copy={copy.demo} lang={lang} isLoggedIn={isLoggedIn} />
+      <ToolsSection copy={copy.tools} />
       <CurriculumPreview copy={copy.curriculum} />
-      <SocialProofSection copy={copy.socialProof} />
       <FAQSection copy={copy.faq} />
       <ClosingCTA copy={copy.closingCta} lang={lang} />
     </>

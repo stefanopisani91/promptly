@@ -17,52 +17,57 @@ export interface LandingCopy {
   hero: {
     eyebrow: string;
     headline: string;
+    /** Inline highlight reso come <em> con sfondo accent-soft.
+     * Se presente, viene inserito alla fine della headline (oppure usato dal
+     * componente per evidenziare una parte specifica). */
+    headlineHighlight?: string;
     sub: string;
     ctaPrimary: string;
     ctaSecondary: string;
-    ctaBug: string;
     reminder: string;
-    mockup: {
-      url: string;
-      lessonTitle: string;
-      lessonStep: string;
-      sparkLabel: string;
-      cardEyebrow: string;
-      cardTitle: string;
-      cardBody: string;
-      chip1: string;
-      chip2: string;
-      xpToast: string;
+    /** Carosello iPhone: alt text per accessibilità delle 7 schermate.
+     * Le immagini stesse vivono in `public/brand/mobile/` come WebP. */
+    carousel: {
+      ariaLabel: string;
+      slides: string[]; // 7 alt strings, una per schermata
     };
   };
-  problem: {
-    eyebrow: string;
+  method: {
+    kicker: string;
+    /** Lead headline. Il componente cerca pattern `**testo**` e li renderizza
+     * come <em> con sfondo accent. */
+    lead: string;
+    paragraphs: {
+      bold: string;
+      body: string;
+      quiet?: string;
+    }[];
+  };
+  meetSpark: {
+    kicker: string;
+    name: string;
+    portraitCaption: string;
+    /** Paragrafi in voce. `**testo**` = bold, `«testo»` = spark-quote highlighted */
+    paragraphs: string[];
+    /** Chip "regole di voce" — kind decide il prefisso ✓/✕ */
+    rules: { kind: "yes" | "no"; label: string }[];
+  };
+  tools: {
+    kicker: string;
     title: string;
     sub: string;
-    steps: {
-      iconSlug: "idea" | "wrench" | "loop";
-      kickerEyebrow?: string;
-      title: string;
-      description: string;
-      kickerEnd?: string;
-    }[];
-    conclusion: {
-      line1: string;
-      microExpertise: string;
-      bridge: string;
-    };
-  };
-  solution: {
-    title: string;
-    steps: {
-      number: string;
-      eyebrow: string;
-      iconSlug: "mindset" | "prompt" | "build";
-      title: string;
-      sub: string;
+    /** 6 IDE cards. `slug` identifica il tool per analytics + routing futuro. */
+    cards: {
+      slug: "cursor" | "claude-code" | "windsurf" | "copilot" | "bolt" | "v0";
+      name: string;
+      desc: string;
+      badge: string;
+      ariaLabel: string;
     }[];
   };
   curriculum: {
+    /** Microtext sopra al titolo, stile editoriale. */
+    kicker: string;
     title: string;
     sub: string;
     cards: {
@@ -70,6 +75,8 @@ export interface LandingCopy {
       iconSlug: "mindset" | "prompt" | "build" | "debug" | "ship";
       level: "beginner" | "intermediate" | "advanced";
       title: string;
+      /** Descrizione editoriale di una riga del percorso. */
+      desc: string;
       meta: string;
       tier: "free" | "pro";
       tierLabel: string;
@@ -105,21 +112,6 @@ export interface LandingCopy {
     };
   };
   demo: LuciaDemoCopy;
-  socialProof: {
-    eyebrow: string;
-    title: string;
-    sub: string;
-    counter: string;
-    /** Three product-screenshot cards. Each one is a real moment from
-     * the app. The image src is a path under /public/brand/preview-*.png
-     * declared in the consuming component (kept out of the copy so the
-     * copy stays text-only). */
-    previews: {
-      kicker: string;
-      title: string;
-      caption: string;
-    }[];
-  };
   faq: {
     title: string;
     sub: string;

@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
@@ -8,12 +7,24 @@ import type { Lang } from "@/types";
 import type { LandingCopy } from "@/lib/i18n/landing";
 import { cn } from "@/lib/utils";
 import { LangSwitcher } from "@/components/i18n/LangSwitcher";
+import { PromptlyWordmark } from "./PromptlyWordmark";
 
 interface Props {
   lang: Lang;
   copy: LandingCopy["header"];
 }
 
+/**
+ * Marketing header (rev. May 2026):
+ * - Wordmark tipografico (PromptlyWordmark) al posto del logo SVG
+ * - Background bianco puro (bg-surface) costante, niente più liquid glass.
+ *   La superficie bianca "galleggia" sul canvas cream come una shelf chiara
+ *   ed è coerente con le card bianche delle Tool / lessons.
+ * - Su scroll: appare solo una shadow-sm sotto per dare elevation feedback.
+ *   Lo height shrinka di 8px (64 → 56) come unico altro segnale di scroll.
+ * - Border-bottom permanente: la separazione dal canvas è sempre marcata,
+ *   anche quando l'utente è a inizio pagina.
+ */
 export function MarketingHeader({ lang, copy }: Props) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
@@ -37,15 +48,9 @@ export function MarketingHeader({ lang, copy }: Props) {
 
   return (
     <header
-      // Border is always `border-border` — what changes is the background
-      // and the border opacity. Switching the border *colour class* on
-      // scroll caused a visible "snap" the moment the threshold flipped;
-      // animating opacity keeps the transition continuous.
       className={cn(
-        "sticky top-0 z-40 w-full border-b border-border transition-all duration-200",
-        scrolled
-          ? "bg-surface/80 backdrop-blur-md"
-          : "border-transparent bg-surface",
+        "sticky top-0 z-40 w-full border-b border-border bg-surface transition-shadow duration-200",
+        scrolled ? "shadow-sm" : "",
       )}
     >
       <div
@@ -57,16 +62,9 @@ export function MarketingHeader({ lang, copy }: Props) {
         <Link
           href={`/${lang}`}
           aria-label="Promptly"
-          className="flex items-center"
+          className="inline-flex items-center"
         >
-          <Image
-            src="/brand/logo-horizontal.svg"
-            alt="Promptly"
-            width={140}
-            height={32}
-            priority
-            className="h-7 w-auto sm:h-8"
-          />
+          <PromptlyWordmark size="xl" />
         </Link>
 
         {/* Desktop nav */}

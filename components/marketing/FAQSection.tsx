@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ChevronDown } from "lucide-react";
 import type { SyntheticEvent } from "react";
 import { track } from "@/lib/analytics/posthog";
 import type { LandingCopy } from "@/lib/i18n/landing";
@@ -13,7 +12,12 @@ function useReveal(threshold = 0.15) {
     const el = ref.current;
     if (!el) return;
     const obs = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { setVisible(true); obs.disconnect(); } },
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          obs.disconnect();
+        }
+      },
       { threshold },
     );
     obs.observe(el);
@@ -26,8 +30,17 @@ interface Props {
   copy: LandingCopy["faq"];
 }
 
+/**
+ * FAQ in stile editoriale (rev. May 2026):
+ * niente più box arrotondate, solo accordion con hairline border-bottom
+ * fra domande, toggle tipografico + / − a destra (renderizzato via CSS
+ * `::after` su `details/summary` — vedi `.faq-editorial-item` in globals.css).
+ *
+ * Per design: 6 domande max. Quelle che restano da chiedere quando uno è
+ * arrivato fino qui — il resto deve essere chiaro dalle sezioni sopra.
+ */
 export function FAQSection({ copy }: Props) {
-  const [titleRef, titleVisible] = useReveal(0.3);
+  const [headerRef, headerVisible] = useReveal(0.3);
   const [listRef, listVisible] = useReveal(0.08);
 
   const handleToggle = (
@@ -43,52 +56,49 @@ export function FAQSection({ copy }: Props) {
     <section
       id="faq"
       aria-labelledby="faq-title"
-      className="overflow-hidden py-16 sm:py-20 lg:py-24"
+      className="overflow-hidden border-t border-border py-16 sm:py-20 lg:py-24"
     >
-      <div
-        ref={titleRef as React.RefObject<HTMLDivElement>}
-        className={`scroll-reveal mx-auto max-w-3xl px-4 text-center sm:px-6 ${titleVisible ? "in-view" : ""}`}
-      >
-        <h2
-          id="faq-title"
-          className="font-heading text-3xl font-bold leading-tight text-text-primary text-balance sm:text-4xl"
+      <div className="mx-auto max-w-3xl px-4 sm:px-6">
+        <div
+          ref={headerRef as React.RefObject<HTMLDivElement>}
+          className={`scroll-reveal ${headerVisible ? "in-view" : ""}`}
         >
-          {copy.title}
-        </h2>
-        <p className="mt-3 text-base text-text-secondary sm:text-lg">
-          {copy.sub}
-        </p>
-      </div>
-
-      <ul
-        ref={listRef as React.RefObject<HTMLUListElement>}
-        className="mx-auto mt-10 max-w-3xl space-y-3 px-4 sm:px-6"
-      >
-        {copy.items.map((item, i) => (
-          <li
-            key={i}
-            className={`scroll-reveal ${listVisible ? "in-view" : ""}`}
-            style={{ transitionDelay: listVisible ? `${i * 70}ms` : "0ms" }}
+          <h2
+            id="faq-title"
+            className="max-w-xl font-heading text-3xl font-bold leading-tight tracking-[-0.025em] text-text-primary text-balance sm:text-4xl lg:text-[44px]"
           >
+            {copy.title}
+          </h2>
+          {copy.sub ? (
+            <p className="mt-3 text-base text-text-secondary sm:text-lg">
+              {copy.sub}
+            </p>
+          ) : null}
+        </div>
+
+        <div
+          ref={listRef as React.RefObject<HTMLDivElement>}
+          className="mt-10 sm:mt-12"
+        >
+          {copy.items.map((item, i) => (
             <details
-              name="faq-group"
+              key={i}
+              name="faq-editorial-group"
+              open={i === 0}
               onToggle={(e) => handleToggle(e, i)}
-              className="group rounded-xl border border-border bg-surface transition-colors open:border-primary/40 open:shadow-sm"
+              className={`faq-editorial-item scroll-reveal border-b border-border py-5 sm:py-6 ${listVisible ? "in-view" : ""}`}
+              style={{ transitionDelay: listVisible ? `${i * 70}ms` : "0ms" }}
             >
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 rounded-xl px-5 py-4 text-left text-base font-medium text-text-primary transition-colors hover:bg-surface-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-deep sm:px-6 sm:text-lg [&::-webkit-details-marker]:hidden">
+              <summary className="flex cursor-pointer items-center justify-between gap-4 font-heading text-base font-semibold tracking-[-0.01em] text-text-primary outline-none transition-colors hover:text-primary-deep focus-visible:text-primary-deep sm:text-lg">
                 <span>{item.q}</span>
-                <ChevronDown
-                  className="h-5 w-5 shrink-0 text-text-muted transition-transform duration-200 group-open:rotate-180 group-open:text-primary"
-                  aria-hidden
-                />
               </summary>
-              <div className="px-5 pb-5 pt-0 text-sm leading-relaxed text-text-secondary sm:px-6 sm:text-base">
-                <p>{item.a}</p>
-              </div>
+              <p className="mt-3 max-w-prose text-[15px] leading-relaxed text-text-secondary sm:text-base">
+                {item.a}
+              </p>
             </details>
-          </li>
-        ))}
-      </ul>
+          ))}
+        </div>
+      </div>
     </section>
   );
 }

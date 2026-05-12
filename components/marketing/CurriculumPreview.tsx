@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
-import { cn } from "@/lib/utils";
 import type { LandingCopy } from "@/lib/i18n/landing";
 
 interface Props {
@@ -16,7 +14,12 @@ function useReveal(threshold = 0.1) {
     const el = ref.current;
     if (!el) return;
     const obs = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { setVisible(true); obs.disconnect(); } },
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          obs.disconnect();
+        }
+      },
       { threshold },
     );
     obs.observe(el);
@@ -25,19 +28,19 @@ function useReveal(threshold = 0.1) {
   return [ref, visible] as const;
 }
 
-const LEVEL_BAR: Record<"beginner" | "intermediate" | "advanced", string> = {
-  beginner: "bg-success",
-  intermediate: "bg-warning",
-  advanced: "bg-primary-deep",
-};
-
-const TIER_BADGE: Record<"free" | "pro", string> = {
-  free: "bg-success-light text-success",
-  pro: "bg-pro-light text-pro-accent",
-};
-
+/**
+ * Curriculum in stile editoriale (rev. May 2026):
+ * lista verticale di 5 capitoli (PERCORSO 01 piccolo / titolo grande
+ * / descrizione 1 riga / meta), separati da hairline border.
+ *
+ * Nessuna barra colorata di difficoltà, nessun badge Pro esposto —
+ * il piano tier viene scoperto dopo signup (per design coerente con
+ * il LANDING.md brief: "Pricing nascosto in landing"). I dati `tier`
+ * e `level` restano nei tipi/i18n perché sono usati da altre surface
+ * (admin, dashboard, ecc) — qui semplicemente non li renderizziamo.
+ */
 export function CurriculumPreview({ copy }: Props) {
-  const [titleRef, titleVisible] = useReveal(0.3);
+  const [headerRef, headerVisible] = useReveal(0.25);
   const [listRef, listVisible] = useReveal(0.08);
 
   return (
@@ -46,80 +49,52 @@ export function CurriculumPreview({ copy }: Props) {
       aria-labelledby="curriculum-title"
       className="overflow-hidden py-16 sm:py-20 lg:py-24"
     >
-      <div
-        ref={titleRef as React.RefObject<HTMLDivElement>}
-        className={`scroll-reveal mx-auto max-w-3xl px-4 text-center sm:px-6 ${titleVisible ? "in-view" : ""}`}
-      >
-        <h2
-          id="curriculum-title"
-          className="font-heading text-3xl font-bold leading-tight text-text-primary text-balance sm:text-4xl"
+      <div className="mx-auto max-w-5xl px-4 sm:px-6">
+        <div
+          ref={headerRef as React.RefObject<HTMLDivElement>}
+          className={`scroll-reveal max-w-2xl ${headerVisible ? "in-view" : ""}`}
         >
-          {copy.title}
-        </h2>
-        <p className="mt-3 text-base text-text-secondary sm:text-lg">
-          {copy.sub}
-        </p>
-      </div>
+          <p className="font-mono text-xs font-medium uppercase tracking-[0.06em] text-text-muted">
+            {copy.kicker}
+          </p>
+          <h2
+            id="curriculum-title"
+            className="mt-3 font-heading text-3xl font-bold leading-tight tracking-[-0.025em] text-text-primary text-balance sm:text-4xl lg:text-5xl"
+          >
+            {copy.title}
+          </h2>
+          {copy.sub ? (
+            <p className="mt-4 text-base leading-relaxed text-text-secondary sm:text-lg">
+              {copy.sub}
+            </p>
+          ) : null}
+        </div>
 
-      {/* Mobile: horizontal scroll-snap. Desktop ≥lg: 5-column grid. */}
-      <div className="mx-auto mt-10 max-w-6xl">
-        <ul
-          ref={listRef as React.RefObject<HTMLUListElement>}
-          className={cn(
-            "flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 sm:px-6",
-            "lg:grid lg:grid-cols-5 lg:overflow-visible lg:px-6 lg:pb-0",
-          )}
+        <div
+          ref={listRef as React.RefObject<HTMLDivElement>}
+          className="mt-10 lg:mt-14"
         >
-          {copy.cards.map((card, idx) => (
-            <li
+          {copy.cards.map((card, i) => (
+            <article
               key={card.number}
-              className={cn(
-                "scroll-reveal group flex w-64 shrink-0 snap-start flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-sm",
-                "transition-all duration-300 hover:-translate-y-1 hover:shadow-lg",
-                "lg:w-auto",
-                listVisible ? "in-view" : "",
-              )}
-              style={{ transitionDelay: listVisible ? `${idx * 80}ms` : "0ms" }}
+              className={`scroll-reveal grid grid-cols-[80px_1fr] items-start gap-x-4 gap-y-2 border-t border-border py-6 last:border-b md:grid-cols-[110px_1fr_1.4fr_auto] md:items-center md:gap-x-10 md:gap-y-0 md:py-10 ${listVisible ? "in-view" : ""}`}
+              style={{ transitionDelay: listVisible ? `${i * 90}ms` : "0ms" }}
             >
-              <div
-                className={cn("h-1.5 w-full", LEVEL_BAR[card.level])}
-                aria-hidden
-              />
-              <div className="flex flex-1 flex-col p-5">
-                <div className="flex items-start justify-between gap-2">
-                  <Image
-                    src={`/brand/icon-path-${card.iconSlug}.svg`}
-                    alt=""
-                    width={40}
-                    height={40}
-                    className="h-10 w-10"
-                    aria-hidden
-                  />
-                  <span
-                    className={cn(
-                      "rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider",
-                      TIER_BADGE[card.tier],
-                    )}
-                  >
-                    {card.tierLabel}
-                  </span>
-                </div>
-                <p className="mt-4 text-xs font-semibold uppercase tracking-wider text-text-muted">
-                  {card.number}
-                </p>
-                <h3 className="mt-1 font-heading text-base font-semibold leading-snug text-text-primary">
-                  {card.title}
-                </h3>
-                <p className="mt-2 text-xs text-text-secondary">{card.meta}</p>
-                {card.startHere && (
-                  <p className="mt-3 inline-flex w-fit rounded-full bg-primary-light px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-primary-deep">
-                    {card.startHere}
-                  </p>
-                )}
-              </div>
-            </li>
+              <p className="col-start-1 row-start-1 font-mono text-xs uppercase tracking-[0.04em] text-text-muted md:text-[13px]">
+                {card.number}
+              </p>
+              <h3 className="col-start-2 row-start-1 font-heading text-xl font-semibold leading-snug tracking-[-0.02em] text-text-primary md:text-2xl lg:text-[28px]">
+                {card.title}
+              </h3>
+              <p className="col-span-2 col-start-1 row-start-2 mt-1 text-[15px] leading-relaxed text-text-secondary md:col-span-1 md:col-start-3 md:row-start-1 md:mt-0">
+                {card.desc}
+              </p>
+              <p className="col-span-2 col-start-1 row-start-3 mt-1 whitespace-nowrap font-mono text-xs text-text-muted md:col-span-1 md:col-start-4 md:row-start-1 md:mt-0">
+                {card.meta}
+              </p>
+            </article>
           ))}
-        </ul>
+        </div>
       </div>
     </section>
   );

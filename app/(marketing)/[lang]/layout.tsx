@@ -110,7 +110,7 @@ export default function MarketingLayout({
   return (
     <Suspense fallback={null}>
       <PostHogProvider>
-        <div className="flex min-h-screen flex-col bg-background">
+        <div className="flex min-h-screen flex-col bg-[var(--marketing-bg)]">
           <MarketingHeader lang={lang} copy={copy.header} />
           <main className="flex-1">{children}</main>
           <MarketingFooter lang={lang} copy={copy.footer} />
