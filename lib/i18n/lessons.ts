@@ -332,6 +332,33 @@ export interface LessonsCopy {
       // replaced with the localised label of the clicked term.
       prefillTemplate: string;
     };
+    // Spark Helper — the contextual tutor that lives INSIDE a V3 quick-win
+    // widget (lessons 2-6). Distinct from `chat` (free, lesson-wide): the
+    // helper is scoped to one exercise and never hands over the answer.
+    // ⚠️ The KEYS of `suggestions` double as the client-side allowlist of
+    // helper-enabled widgets — LessonV3View renders the trigger only for a
+    // step.widget that has chips here. Keep them in sync with
+    // SPARK_HELPER_WIDGETS in lib/lessons/v3/spark-helper-config.ts (the
+    // server-side allowlist + the per-widget anti-leak context notes).
+    sparkHelper: {
+      triggerLabel: string; // floating-button label ("Spark, aiutami")
+      triggerSubLabel: string; // hover / title sub-line
+      panelTitle: string;
+      intro: string; // Spark's opening line inside the panel
+      inputPlaceholder: string;
+      sendCta: string;
+      sending: string;
+      closeLabel: string; // aria-label for the X
+      quotaQuickWinHit: string; // gentle "you've talked plenty" nudge
+      quotaDailyHit: string; // "come back tomorrow"
+      unauthorized: string;
+      unavailable: string; // 503 — feature columns not provisioned yet
+      networkError: string;
+      apiError: string;
+      // widgetKey -> up to 4 quick-question chips. Stable per widget —
+      // must not change between clicks (a moving target confuses users).
+      suggestions: Record<string, readonly string[]>;
+    };
     // Lesson-specific copy injected at server-render time. Lives here
     // because it's translated alongside the rest of the lesson UI; the
     // values themselves are consumed by lib/lessons/v3/personalize.ts
@@ -912,6 +939,56 @@ const it: LessonsCopy = {
       prefillTemplate:
         "Mi puoi spiegare meglio cos'è {term}? Non mi è chiaro al 100%.",
     },
+    sparkHelper: {
+      triggerLabel: "Spark, aiutami",
+      triggerSubLabel: "Fammi una domanda se sei bloccato",
+      panelTitle: "Spark, aiutami",
+      intro:
+        "Eccomi. Cosa ti serve? Posso spiegarti un termine, darti un esempio diverso, o aiutarti a guardare l'esercizio da un'altra angolazione. Non ti do la risposta — ma ti sblocco.",
+      inputPlaceholder: "Oppure scrivi la tua domanda…",
+      sendCta: "Chiedi",
+      sending: "Sto pensando…",
+      closeLabel: "Chiudi l'aiuto",
+      quotaQuickWinHit:
+        "Ne abbiamo già parlato parecchio. Prova a buttarti — ce la fai.",
+      quotaDailyHit: "Per oggi basta domande a me. Torna domani.",
+      unauthorized: "Devi essere loggato per chiedermi aiuto.",
+      unavailable: "Questo aiuto non è ancora disponibile. Riprova più tardi.",
+      networkError: "Connessione assente. Riprova.",
+      apiError: "Non riesco a risponderti adesso. Riprova tra un momento.",
+      suggestions: {
+        claudemd_editor: [
+          "Cos'è uno stack?",
+          "Cosa metto nelle «house rules»?",
+          "Esempio per un'app come la mia",
+          "Quali sono i miei strumenti?",
+        ],
+        context_prompt_editor: [
+          "Cosa significa «contesto codice»?",
+          "Come faccio a essere specifico?",
+          "Esempio per il mio progetto",
+          "Cos'è un pattern?",
+        ],
+        constraints_editor: [
+          "Cos'è uno schema di database?",
+          "Differenza tra protettivo e di processo?",
+          "Esempio nel mio caso",
+          "Come si scrive una negazione efficace?",
+        ],
+        broken_session_debugger: [
+          "Cos'è OAuth?",
+          "Cos'è un middleware?",
+          "Come faccio rollback con l'AI?",
+          "Esempio di messaggio chirurgico",
+        ],
+        prompt_architecture: [
+          "Perché i vincoli prima del task?",
+          "Cosa metto nella verifica?",
+          "Esempio adattato al mio progetto",
+          "Come uso questo prompt domani?",
+        ],
+      },
+    },
     mindset01: {
       projectRecall: {
         intro: "Adesso parliamo di te.",
@@ -1396,6 +1473,56 @@ const en: LessonsCopy = {
       bottomSheetGrabberLabel: "Drag to close",
       prefillTemplate:
         "Can you explain {term} a bit more? I'm not 100% sure I get it.",
+    },
+    sparkHelper: {
+      triggerLabel: "Spark, help me",
+      triggerSubLabel: "Ask me something if you're stuck",
+      panelTitle: "Spark, help me",
+      intro:
+        "Here I am. What do you need? I can explain a term, give you a different example, or help you look at the exercise from another angle. I won't give you the answer — but I'll unblock you.",
+      inputPlaceholder: "Or type your own question…",
+      sendCta: "Ask",
+      sending: "Thinking…",
+      closeLabel: "Close help",
+      quotaQuickWinHit:
+        "We've talked plenty already. Give it a shot — you've got this.",
+      quotaDailyHit: "Enough questions for me today. Come back tomorrow.",
+      unauthorized: "You need to be logged in to ask me for help.",
+      unavailable: "This help isn't available yet. Try again later.",
+      networkError: "You're offline. Try again.",
+      apiError: "I can't answer right now. Try again in a moment.",
+      suggestions: {
+        claudemd_editor: [
+          "What's a stack?",
+          "What goes in the house rules?",
+          "Example for an app like mine",
+          "What are my tools?",
+        ],
+        context_prompt_editor: [
+          "What does code context mean?",
+          "How do I get specific?",
+          "Example for my project",
+          "What's a pattern?",
+        ],
+        constraints_editor: [
+          "What's a database schema?",
+          "Protective vs. process — what's the difference?",
+          "Example in my case",
+          "How do I write an effective negative constraint?",
+        ],
+        broken_session_debugger: [
+          "What's OAuth?",
+          "What's a middleware?",
+          "How do I roll back with the AI?",
+          "Example of a surgical message",
+        ],
+        prompt_architecture: [
+          "Why constraints before the task?",
+          "What goes in the verify block?",
+          "Example fitted to my project",
+          "How do I use this prompt tomorrow?",
+        ],
+      },
     },
     mindset01: {
       projectRecall: {

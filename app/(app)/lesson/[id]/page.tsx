@@ -181,6 +181,7 @@ export default async function LessonPage({ params }: PageProps) {
       brokenSessionDebugger: lessonsCopy.v3.brokenSessionDebugger,
       promptArchitecture: lessonsCopy.v3.promptArchitecture,
       chat: lessonsCopy.v3.chat,
+      sparkHelper: lessonsCopy.v3.sparkHelper,
       glossary: lessonsCopy.v3.glossary,
     };
 

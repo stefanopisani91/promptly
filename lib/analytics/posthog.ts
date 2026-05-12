@@ -66,7 +66,22 @@ type AppEvent =
       props: { source: "clipboard" | "share_api" };
     }
   | { name: "referral_converted"; props: { xp_awarded: number } }
-  | { name: "referral_path_y_unlocked"; props?: Record<string, never> };
+  | { name: "referral_path_y_unlocked"; props?: Record<string, never> }
+  // Spark Helper — contextual tutor inside V3 quick-win widgets.
+  // `widget` is the quick-win widget key (e.g. "broken_session_debugger").
+  | { name: "spark_helper_opened"; props: { widget: string; lesson_id: string } }
+  | {
+      name: "spark_helper_suggestion_clicked";
+      props: { widget: string; suggestion_index: number };
+    }
+  | {
+      name: "spark_helper_message_sent";
+      props: { widget: string; from_suggestion: boolean };
+    }
+  | {
+      name: "spark_helper_quota_hit";
+      props: { widget: string; scope: "quick_win" | "daily" };
+    };
 
 // Kept as a deprecated alias so any external imports keep compiling.
 // Prefer `AppEvent` going forward.

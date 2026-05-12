@@ -67,6 +67,7 @@ import {
   type PromptArchitectureStrings,
   type GeneratedPromptBlocks,
 } from "./steps/PromptArchitecture";
+import { SparkHelperHost } from "./SparkHelper";
 import type { PromptArchitecturePillarKey } from "@/types";
 import {
   GlossaryProvider,
@@ -97,9 +98,26 @@ export interface LessonV3ViewStrings {
   brokenSessionDebugger: BrokenSessionDebuggerStrings;
   promptArchitecture: PromptArchitectureStrings;
   chat: import("./SparkChat").SparkChatStrings;
+  // Spark Helper — contextual tutor inside the quick-win widgets.
+  sparkHelper: import("./SparkHelper").SparkHelperStrings;
   // Glossario Vivo — popover chrome strings + the prefill template
   // used when the user clicks "approfondisci" inside a term popover.
   glossary: GlossaryStrings;
+}
+
+/**
+ * True once an interactive step has been finalised — every quick-win widget
+ * (and the Lucia loop) writes `{ result, … }` into stepState on its
+ * "Continua" click. Used to hide the Spark Helper trigger on a completed
+ * step (e.g. when replaying a finished lesson).
+ */
+function quickWinFinalised(stepEntry: unknown): boolean {
+  return (
+    typeof stepEntry === "object" &&
+    stepEntry !== null &&
+    "result" in stepEntry &&
+    Boolean((stepEntry as { result?: unknown }).result)
+  );
 }
 
 interface Props {
@@ -361,6 +379,26 @@ export function LessonV3View({
               goNext: goNextForce,
             },
           )}
+          {/* Spark Helper — the contextual tutor floating affordance.
+              Lives INSIDE this key={stepIndex} subtree so it (a) only
+              exists while the current step is the quick-win and (b)
+              remounts on navigation (panel state resets when you leave).
+              A widget is helper-enabled iff it has chips in
+              strings.sparkHelper.suggestions (kept in sync with the
+              server-side allowlist in lib/lessons/v3/spark-helper-config.ts).
+              Hidden once the quick-win has been finalised — so it never
+              reappears on a replay of a completed lesson. */}
+          {step.type === "interactive" &&
+            typeof step.widget === "string" &&
+            strings.sparkHelper.suggestions[step.widget] !== undefined &&
+            !quickWinFinalised(stepState[step.id]) && (
+              <SparkHelperHost
+                widgetKey={step.widget}
+                lessonId={lesson.id}
+                pathSlug={lesson.path_slug}
+                strings={strings.sparkHelper}
+              />
+            )}
         </div>
 
         {completed && isLastStep && (

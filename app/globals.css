@@ -487,6 +487,57 @@ h6 {
   }
 }
 
+/* Spark Helper (contextual tutor inside V3 quick-wins). See
+   components/lessons/v3/SparkHelper.tsx.
+   - Trigger: a small one-shot fade+rise when the interactive step mounts,
+     so the affordance is noticed once without nagging (no looping pulse —
+     unlike AskSparkBubble, which is the lesson-wide chat).
+   - Panel: enters as a bottom-sheet on phone (slides up) and as a right
+     drawer on desktop (slides in from the side). One class, the keyframe
+     name swapped at the sm breakpoint.
+   - Overlay: a quick opacity fade. All transform/opacity only. */
+@keyframes spark-helper-trigger-in {
+  0%   { opacity: 0; transform: translateY(12px) scale(0.96); }
+  100% { opacity: 1; transform: translateY(0)    scale(1); }
+}
+.spark-helper-trigger {
+  animation: spark-helper-trigger-in 0.32s ease-out both;
+}
+
+@keyframes spark-helper-slide-up {
+  0%   { transform: translateY(100%); }
+  100% { transform: translateY(0); }
+}
+@keyframes spark-helper-slide-in {
+  0%   { transform: translateX(100%); }
+  100% { transform: translateX(0); }
+}
+.spark-helper-panel {
+  animation: spark-helper-slide-up 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: transform;
+}
+@media (min-width: 640px) {
+  .spark-helper-panel {
+    animation-name: spark-helper-slide-in;
+  }
+}
+
+@keyframes spark-helper-fade {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+.spark-helper-overlay {
+  animation: spark-helper-fade 0.18s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spark-helper-trigger,
+  .spark-helper-panel,
+  .spark-helper-overlay {
+    animation: none;
+  }
+}
+
 /* Lesson completion choreography (CompletionCard in LessonV3View).
    Spark leads, then the UI follows — see PROMPTLY.md "narrative
    animations". Total duration ~700ms, all transform/opacity only so the
