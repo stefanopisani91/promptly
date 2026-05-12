@@ -762,6 +762,110 @@ export async function incrementDailySparkUsage(
   return { count: newCount };
 }
 
+// ─── Spark Helper rate limit (contextual tutor in V3 quick-wins) ──────
+//
+// Two isolated counters so the helper never shares a budget with chat or
+// with the evaluators:
+//   - user_progress.spark_helper_count : per-(user, lesson) — sibling of
+//     spark_chat_count. Backs the per-quick-win cap.
+//   - spark_usage_daily.helper_messages_count : per-(user, day) — sibling
+//     of message_count / *_attempts_count. Backs the daily cap.
+//
+// NOTE: both columns are added by migration
+// 20260512120000_spark_helper_quota.sql. Until that migration runs these
+// helpers throw (unknown column), and /api/spark-helper turns that into a
+// 503 — fail-closed, so the feature stays dark instead of running
+// uncapped. They self-heal the moment the migration is applied.
+
+export async function getSparkHelperCount(
+  supabase: AppSupabaseClient,
+  userId: string,
+  lessonId: string,
+): Promise<number> {
+  const { data, error } = await supabase
+    .from("user_progress")
+    .select("spark_helper_count")
+    .eq("user_id", userId)
+    .eq("lesson_id", lessonId)
+    .maybeSingle();
+  if (error) throw error;
+  return data?.spark_helper_count ?? 0;
+}
+
+/**
+ * Atomically increment `spark_helper_count` for a (user, lesson) row,
+ * returning the new count. Creates the row with count=1 if the user
+ * hadn't opened the lesson yet — mirrors incrementSparkChatCount.
+ */
+export async function incrementSparkHelperCount(
+  supabase: AppSupabaseClient,
+  params: { userId: string; lessonId: string; pathSlug: PathSlug },
+): Promise<{ count: number }> {
+  const { data: existing, error: readErr } = await supabase
+    .from("user_progress")
+    .select("id, spark_helper_count")
+    .eq("user_id", params.userId)
+    .eq("lesson_id", params.lessonId)
+    .maybeSingle();
+  if (readErr) throw readErr;
+
+  const newCount = (existing?.spark_helper_count ?? 0) + 1;
+  const { error: writeErr } = await supabase
+    .from("user_progress")
+    .upsert(
+      {
+        user_id: params.userId,
+        lesson_id: params.lessonId,
+        path_slug: params.pathSlug,
+        spark_helper_count: newCount,
+      },
+      { onConflict: "user_id,lesson_id" },
+    );
+  if (writeErr) throw writeErr;
+  return { count: newCount };
+}
+
+export async function getDailySparkHelperUsage(
+  supabase: AppSupabaseClient,
+  userId: string,
+  date: string,
+): Promise<number> {
+  const { data, error } = await supabase
+    .from("spark_usage_daily")
+    .select("helper_messages_count")
+    .eq("user_id", userId)
+    .eq("usage_date", date)
+    .maybeSingle();
+  if (error) throw error;
+  return data?.helper_messages_count ?? 0;
+}
+
+export async function incrementDailySparkHelperUsage(
+  supabase: AppSupabaseClient,
+  params: { userId: string; date: string },
+): Promise<{ count: number }> {
+  const { data: existing, error: readErr } = await supabase
+    .from("spark_usage_daily")
+    .select("helper_messages_count")
+    .eq("user_id", params.userId)
+    .eq("usage_date", params.date)
+    .maybeSingle();
+  if (readErr) throw readErr;
+
+  const newCount = (existing?.helper_messages_count ?? 0) + 1;
+  const { error: writeErr } = await supabase.from("spark_usage_daily").upsert(
+    {
+      user_id: params.userId,
+      usage_date: params.date,
+      helper_messages_count: newCount,
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: "user_id,usage_date" },
+  );
+  if (writeErr) throw writeErr;
+  return { count: newCount };
+}
+
 // ─── Promise generation rate limit (Round 8b) ─────────────────────────
 //
 // Mirrors the Spark daily counter pattern but uses a separate column on

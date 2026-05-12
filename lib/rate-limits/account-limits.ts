@@ -33,6 +33,14 @@ export interface AccountLimits {
   // the whole daily budget on its own. Scales proportionally to
   // chat_messages_per_day so the ratio (~17%) stays consistent.
   chat_messages_per_lesson: number;
+  // Spark Helper — contextual tutor inside V3 quick-win widgets.
+  // Its own budget, separate from chat AND from the evaluators, so a
+  // user can't drain one by leaning on another. Per-day caps the
+  // Anthropic spend across all quick-wins; per-quick-win is the spec's
+  // "max 10 messages, then a gentle 'give it a shot'" nudge (scales
+  // for the wider tiers, same as chat_messages_per_lesson).
+  helper_messages_per_day: number;
+  helper_messages_per_quick_win: number;
 }
 
 export const LIMITS_BY_ACCOUNT_TYPE: Record<AccountType, AccountLimits> = {
@@ -40,26 +48,36 @@ export const LIMITS_BY_ACCOUNT_TYPE: Record<AccountType, AccountLimits> = {
     evaluations_per_day_per_route: 10,
     chat_messages_per_day: 30,
     chat_messages_per_lesson: 5,
+    helper_messages_per_day: 30,
+    helper_messages_per_quick_win: 10,
   },
   beta: {
     evaluations_per_day_per_route: 100,
     chat_messages_per_day: 300,
     chat_messages_per_lesson: 50,
+    helper_messages_per_day: 300,
+    helper_messages_per_quick_win: 100,
   },
   press: {
     evaluations_per_day_per_route: 50,
     chat_messages_per_day: 150,
     chat_messages_per_lesson: 25,
+    helper_messages_per_day: 150,
+    helper_messages_per_quick_win: 50,
   },
   qa: {
     evaluations_per_day_per_route: Infinity,
     chat_messages_per_day: Infinity,
     chat_messages_per_lesson: Infinity,
+    helper_messages_per_day: Infinity,
+    helper_messages_per_quick_win: Infinity,
   },
   dev: {
     evaluations_per_day_per_route: Infinity,
     chat_messages_per_day: Infinity,
     chat_messages_per_lesson: Infinity,
+    helper_messages_per_day: Infinity,
+    helper_messages_per_quick_win: Infinity,
   },
 };
 

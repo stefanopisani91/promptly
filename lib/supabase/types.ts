@@ -162,6 +162,10 @@ export type Database = {
           current_step: number;
           step_state: Json;
           spark_chat_count: number;
+          // Spark Helper (contextual tutor in V3 quick-wins) — per-lesson
+          // message counter. Sibling of spark_chat_count. Added by
+          // migration 20260512120000_spark_helper_quota.sql.
+          spark_helper_count: number;
           created_at: string;
           updated_at: string;
         };
@@ -177,6 +181,7 @@ export type Database = {
           current_step?: number;
           step_state?: Json;
           spark_chat_count?: number;
+          spark_helper_count?: number;
           created_at?: string;
           updated_at?: string;
         };
@@ -192,6 +197,7 @@ export type Database = {
           current_step?: number;
           step_state?: Json;
           spark_chat_count?: number;
+          spark_helper_count?: number;
           created_at?: string;
           updated_at?: string;
         };
@@ -251,6 +257,11 @@ export type Database = {
           // Lesson 6 — counter for /api/lesson-architecture-prompt
           // calls (prompt-architecture hero widget). Same pattern.
           architecture_attempts_count: number;
+          // Spark Helper (contextual tutor in V3 quick-wins) — per-day
+          // message counter, across all quick-wins. Sibling of
+          // message_count / *_attempts_count. Added by migration
+          // 20260512120000_spark_helper_quota.sql.
+          helper_messages_count: number;
           updated_at: string;
         };
         Insert: {
@@ -263,6 +274,7 @@ export type Database = {
           constraints_attempts_count?: number;
           debug_attempts_count?: number;
           architecture_attempts_count?: number;
+          helper_messages_count?: number;
           updated_at?: string;
         };
         Update: {
@@ -275,6 +287,7 @@ export type Database = {
           constraints_attempts_count?: number;
           debug_attempts_count?: number;
           architecture_attempts_count?: number;
+          helper_messages_count?: number;
           updated_at?: string;
         };
         Relationships: [];

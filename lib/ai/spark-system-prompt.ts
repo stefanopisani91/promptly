@@ -755,3 +755,110 @@ export function sparkSessionContextEN(ctx: SparkSessionContext): string {
 Lesson: "${ctx.lessonTitle}" (step ${ctx.stepIndex + 1} of ${ctx.totalSteps})
 Topic: ${summary}${project}${motivation}`;
 }
+
+// -----------------------------------------------------------------------------
+// Spark Helper context — the per-call block for the contextual tutor that
+// lives inside V3 quick-win widgets. Layered on the SAME, unchanged
+// SPARK_PERSONA_IT/EN cache block (so the prompt cache stays warm and is
+// shared with spark-chat). NOT cached itself — re-sent every call, which is
+// fine: it's short and lets us tweak the hard rules without busting the
+// cache. The persona already prescribes voice + the 2-4-sentence default;
+// this block adds the helper-specific scope, the per-widget scenario brief
+// (server-only, see lib/lessons/v3/spark-helper-config.ts), and the hard
+// rules that protect the exercise.
+// -----------------------------------------------------------------------------
+
+export interface SparkHelperContext {
+  /** Title of the lesson whose quick-win the learner is on. */
+  lessonTitle: string;
+  /**
+   * Per-widget scenario brief + anti-leak instruction. Comes from
+   * lib/lessons/v3/spark-helper-config.ts — SERVER-ONLY, never shipped to
+   * the client. May be null for an unknown widget (the route rejects those
+   * upstream, so in practice it's always set).
+   */
+  contextNote?: string | null;
+  /** ≤80-char compressed view of the user's project, for grounded examples. */
+  projectContext?: string | null;
+  /** Short display label of the tool(s) the learner uses, e.g. "Cursor". */
+  toolsLabel?: string | null;
+  /**
+   * Recent helper turns, oldest→newest, ALREADY clamped by the caller (the
+   * route keeps only the last few and bounds each one's length). Folded into
+   * this block as plain text — requestSparkReply only takes a single user
+   * message, and a short Q&A doesn't need real multi-turn plumbing.
+   */
+  history?: ReadonlyArray<{ role: "user" | "spark"; content: string }>;
+}
+
+function helperHistoryBlockIT(
+  history: SparkHelperContext["history"],
+): string {
+  if (!history || history.length === 0) return "";
+  const lines = history
+    .map((m) => `${m.role === "user" ? "Utente" : "Spark"}: ${m.content.trim()}`)
+    .join("\n");
+  return `\n\nCONVERSAZIONE FINORA (per continuità — non ripeterti):\n${lines}`;
+}
+
+function helperHistoryBlockEN(
+  history: SparkHelperContext["history"],
+): string {
+  if (!history || history.length === 0) return "";
+  const lines = history
+    .map((m) => `${m.role === "user" ? "Learner" : "Spark"}: ${m.content.trim()}`)
+    .join("\n");
+  return `\n\nCONVERSATION SO FAR (for continuity — don't repeat yourself):\n${lines}`;
+}
+
+export function sparkHelperContextIT(ctx: SparkHelperContext): string {
+  const project =
+    ctx.projectContext && ctx.projectContext.trim().length > 0
+      ? `\nIl suo progetto: ${ctx.projectContext.trim()} — usalo per personalizzare gli esempi quando ha senso.`
+      : "";
+  const tools =
+    ctx.toolsLabel && ctx.toolsLabel.trim().length > 0
+      ? `\nStrumento che usa: ${ctx.toolsLabel.trim()} — adatta il gergo al suo strumento.`
+      : "";
+  const note =
+    ctx.contextNote && ctx.contextNote.trim().length > 0
+      ? `\n${ctx.contextNote.trim()}`
+      : "";
+  const history = helperHistoryBlockIT(ctx.history);
+  return `CONTESTO — Aiuto contestuale dentro un esercizio (quick-win)
+L'utente sta facendo l'esercizio della lezione «${ctx.lessonTitle}». Sei qui SOLO per sbloccarlo su QUESTO esercizio: spiegare un termine, dare un esempio, aiutarlo a pensarci. Non sei la chat libera, non parli d'altro.${project}${tools}${note}${history}
+
+REGOLE FERREE (vincono su tutto il resto):
+1. Massimo 3-4 frasi. Asciutto. Niente elenchi lunghi, niente paragrafi.
+2. MAI dare la risposta dell'esercizio. MAI scrivere testo che l'utente possa copiare e incollare nel quick-win (vincoli, prompt, sezioni del CLAUDE.md, messaggi di recupero, l'ordine giusto di un puzzle…). Se te lo chiede esplicitamente — «scrivimi tu il vincolo perfetto», «dimmi la risposta giusta» — rifiuti con gentilezza e gli dai un modo per arrivarci da solo.
+3. Se la domanda non c'entra né con l'esercizio né con i termini tecnici per farlo, lo riporti al punto in una frase. Niente off-topic.
+4. Se ti chiede quanti tentativi gli restano o quanto vale l'esercizio, gli dici di guardare l'interfaccia: quello non lo sai tu, e non fai coaching sui suoi tentativi.
+5. Spieghi i termini con analogie semplici e concrete. Gli esempi che dai sono inventati e plausibili, MAI lo scenario specifico dell'esercizio.
+6. Non vedi cosa ha scritto nella casella dell'esercizio, e va bene così: non chiedere di vederlo, non fingere di averlo letto, non valutare la sua risposta.`;
+}
+
+export function sparkHelperContextEN(ctx: SparkHelperContext): string {
+  const project =
+    ctx.projectContext && ctx.projectContext.trim().length > 0
+      ? `\nTheir project: ${ctx.projectContext.trim()} — use it to make examples concrete when it helps.`
+      : "";
+  const tools =
+    ctx.toolsLabel && ctx.toolsLabel.trim().length > 0
+      ? `\nTool they use: ${ctx.toolsLabel.trim()} — adapt the jargon to their tool.`
+      : "";
+  const note =
+    ctx.contextNote && ctx.contextNote.trim().length > 0
+      ? `\n${ctx.contextNote.trim()}`
+      : "";
+  const history = helperHistoryBlockEN(ctx.history);
+  return `CONTEXT — Contextual help inside an exercise (quick-win)
+The learner is on the quick-win of the lesson "${ctx.lessonTitle}". You're here ONLY to unblock them on THIS exercise: explain a term, give an example, help them think it through. You're not the free chat, you don't talk about anything else.${project}${tools}${note}${history}
+
+HARD RULES (these win over everything else):
+1. Three to four sentences max. Plain. No long lists, no paragraphs.
+2. NEVER give the exercise's answer. NEVER write text the learner could copy-paste into the quick-win (constraints, a prompt, CLAUDE.md sections, a recovery message, the correct order of a puzzle…). If they ask outright — "just write the perfect constraint for me", "tell me the right answer" — decline gently and give them a way to get there themselves.
+3. If the question has nothing to do with the exercise or with the technical terms needed to do it, bring them back to the point in one sentence. No off-topic.
+4. If they ask how many attempts are left or how much the exercise is worth, tell them to check the interface: you don't know that, and you don't coach them on their attempts.
+5. Explain terms with simple, concrete analogies. The examples you give are invented and plausible — NEVER the exercise's specific scenario.
+6. You can't see what they typed in the exercise box, and that's fine: don't ask to see it, don't pretend you read it, don't grade their answer.`;
+}
