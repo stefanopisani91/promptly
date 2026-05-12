@@ -332,29 +332,23 @@ export interface LessonsCopy {
       // replaced with the localised label of the clicked term.
       prefillTemplate: string;
     };
-    // Spark Helper — the contextual tutor that lives INSIDE a V3 quick-win
-    // widget (lessons 2-6). Distinct from `chat` (free, lesson-wide): the
-    // helper is scoped to one exercise and never hands over the answer.
+    // Spark Helper — copy for "helper mode" of the chat panel (SparkChat),
+    // which kicks in on a V3 quick-win step (lessons 2-6): the panel talks
+    // to /api/spark-helper instead of the free chat, shows the widget's
+    // quick-question chips, and never hands over the exercise's answer.
     // ⚠️ The KEYS of `suggestions` double as the client-side allowlist of
-    // helper-enabled widgets — LessonV3View renders the trigger only for a
-    // step.widget that has chips here. Keep them in sync with
-    // SPARK_HELPER_WIDGETS in lib/lessons/v3/spark-helper-config.ts (the
-    // server-side allowlist + the per-widget anti-leak context notes).
+    // helper-enabled widgets — LessonV3View flips the chat into helper mode
+    // (and boosts the Ask-Spark bubble) only for a step.widget that has
+    // chips here. Keep them in sync with SPARK_HELPER_WIDGETS in
+    // lib/lessons/v3/spark-helper-config.ts (the server-side allowlist +
+    // the per-widget anti-leak context notes). Shape mirrors
+    // SparkHelperStrings in components/lessons/v3/SparkChat.tsx.
     sparkHelper: {
-      triggerLabel: string; // floating-button label ("Spark, aiutami")
-      triggerSubLabel: string; // hover / title sub-line
-      panelTitle: string;
-      intro: string; // Spark's opening line inside the panel
-      inputPlaceholder: string;
-      sendCta: string;
-      sending: string;
-      closeLabel: string; // aria-label for the X
+      panelTitle: string; // chat title while in helper mode
+      intro: string; // Spark's opening line in the empty state
       quotaQuickWinHit: string; // gentle "you've talked plenty" nudge
       quotaDailyHit: string; // "come back tomorrow"
-      unauthorized: string;
       unavailable: string; // 503 — feature columns not provisioned yet
-      networkError: string;
-      apiError: string;
       // widgetKey -> up to 4 quick-question chips. Stable per widget —
       // must not change between clicks (a moving target confuses users).
       suggestions: Record<string, readonly string[]>;
@@ -940,22 +934,13 @@ const it: LessonsCopy = {
         "Mi puoi spiegare meglio cos'è {term}? Non mi è chiaro al 100%.",
     },
     sparkHelper: {
-      triggerLabel: "Spark, aiutami",
-      triggerSubLabel: "Fammi una domanda se sei bloccato",
       panelTitle: "Spark, aiutami",
       intro:
         "Eccomi. Cosa ti serve? Posso spiegarti un termine, darti un esempio diverso, o aiutarti a guardare l'esercizio da un'altra angolazione. Non ti do la risposta — ma ti sblocco.",
-      inputPlaceholder: "Oppure scrivi la tua domanda…",
-      sendCta: "Chiedi",
-      sending: "Sto pensando…",
-      closeLabel: "Chiudi l'aiuto",
       quotaQuickWinHit:
         "Ne abbiamo già parlato parecchio. Prova a buttarti — ce la fai.",
       quotaDailyHit: "Per oggi basta domande a me. Torna domani.",
-      unauthorized: "Devi essere loggato per chiedermi aiuto.",
       unavailable: "Questo aiuto non è ancora disponibile. Riprova più tardi.",
-      networkError: "Connessione assente. Riprova.",
-      apiError: "Non riesco a risponderti adesso. Riprova tra un momento.",
       suggestions: {
         claudemd_editor: [
           "Cos'è uno stack?",
@@ -1475,22 +1460,13 @@ const en: LessonsCopy = {
         "Can you explain {term} a bit more? I'm not 100% sure I get it.",
     },
     sparkHelper: {
-      triggerLabel: "Spark, help me",
-      triggerSubLabel: "Ask me something if you're stuck",
       panelTitle: "Spark, help me",
       intro:
         "Here I am. What do you need? I can explain a term, give you a different example, or help you look at the exercise from another angle. I won't give you the answer — but I'll unblock you.",
-      inputPlaceholder: "Or type your own question…",
-      sendCta: "Ask",
-      sending: "Thinking…",
-      closeLabel: "Close help",
       quotaQuickWinHit:
         "We've talked plenty already. Give it a shot — you've got this.",
       quotaDailyHit: "Enough questions for me today. Come back tomorrow.",
-      unauthorized: "You need to be logged in to ask me for help.",
       unavailable: "This help isn't available yet. Try again later.",
-      networkError: "You're offline. Try again.",
-      apiError: "I can't answer right now. Try again in a moment.",
       suggestions: {
         claudemd_editor: [
           "What's a stack?",

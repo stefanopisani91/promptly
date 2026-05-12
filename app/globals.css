@@ -487,54 +487,38 @@ h6 {
   }
 }
 
-/* Spark Helper (contextual tutor inside V3 quick-wins). See
-   components/lessons/v3/SparkHelper.tsx.
-   - Trigger: a small one-shot fade+rise when the interactive step mounts,
-     so the affordance is noticed once without nagging (no looping pulse —
-     unlike AskSparkBubble, which is the lesson-wide chat).
-   - Panel: enters as a bottom-sheet on phone (slides up) and as a right
-     drawer on desktop (slides in from the side). One class, the keyframe
-     name swapped at the sm breakpoint.
-   - Overlay: a quick opacity fade. All transform/opacity only. */
-@keyframes spark-helper-trigger-in {
-  0%   { opacity: 0; transform: translateY(12px) scale(0.96); }
-  100% { opacity: 1; transform: translateY(0)    scale(1); }
+/* "Boosted" Ask-Spark bubble — fires when the lesson reaches a quick-win
+   step. A one-shot grow-pop to grab the eye, then a bigger-amplitude pulse
+   than the resting bubble so it reads as "ask me for help on this
+   exercise". Transform/opacity only. See AskSparkBubble.tsx. */
+@keyframes ask-spark-boost-in {
+  0%   { transform: scale(0.82); }
+  55%  { transform: scale(1.18); }
+  100% { transform: scale(1); }
 }
-.spark-helper-trigger {
-  animation: spark-helper-trigger-in 0.32s ease-out both;
+@keyframes ask-spark-pulse-boosted {
+  0%, 100% { transform: scale(1.02); box-shadow: 0 4px 14px rgba(0,0,0,0.20); }
+  50%      { transform: scale(1.30); box-shadow: 0 8px 22px rgba(0,0,0,0.26); }
 }
-
-@keyframes spark-helper-slide-up {
-  0%   { transform: translateY(100%); }
-  100% { transform: translateY(0); }
-}
-@keyframes spark-helper-slide-in {
-  0%   { transform: translateX(100%); }
-  100% { transform: translateX(0); }
-}
-.spark-helper-panel {
-  animation: spark-helper-slide-up 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+.ask-spark-bubble-boosted {
+  animation:
+    ask-spark-boost-in 0.42s cubic-bezier(0.34, 1.56, 0.64, 1) both,
+    ask-spark-pulse-boosted 1.5s ease-in-out 0.42s infinite;
   will-change: transform;
 }
-@media (min-width: 640px) {
-  .spark-helper-panel {
-    animation-name: spark-helper-slide-in;
-  }
+.ask-spark-bubble-boosted:hover {
+  animation-play-state: paused;
+  transform: scale(1.16);
 }
-
-@keyframes spark-helper-fade {
-  0%   { opacity: 0; }
-  100% { opacity: 1; }
-}
-.spark-helper-overlay {
-  animation: spark-helper-fade 0.18s ease-out both;
+.ask-spark-bubble-boosted:active {
+  animation-play-state: paused;
+  transform: scale(0.94);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .spark-helper-trigger,
-  .spark-helper-panel,
-  .spark-helper-overlay {
+  .ask-spark-bubble-boosted {
     animation: none;
+    transform: none; /* the larger size already comes from the px width/height */
   }
 }
 

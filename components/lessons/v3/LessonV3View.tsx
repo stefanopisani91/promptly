@@ -67,7 +67,6 @@ import {
   type PromptArchitectureStrings,
   type GeneratedPromptBlocks,
 } from "./steps/PromptArchitecture";
-import { SparkHelperHost } from "./SparkHelper";
 import type { PromptArchitecturePillarKey } from "@/types";
 import {
   GlossaryProvider,
@@ -98,8 +97,9 @@ export interface LessonV3ViewStrings {
   brokenSessionDebugger: BrokenSessionDebuggerStrings;
   promptArchitecture: PromptArchitectureStrings;
   chat: import("./SparkChat").SparkChatStrings;
-  // Spark Helper — contextual tutor inside the quick-win widgets.
-  sparkHelper: import("./SparkHelper").SparkHelperStrings;
+  // Spark Helper — copy for "helper mode" of the chat panel (the chips, the
+  // intro line, the quota nudges). The type now lives in SparkChat.
+  sparkHelper: import("./SparkChat").SparkHelperStrings;
   // Glossario Vivo — popover chrome strings + the prefill template
   // used when the user clicks "approfondisci" inside a term popover.
   glossary: GlossaryStrings;
@@ -248,6 +248,23 @@ export function LessonV3View({
   const canAdvance = canAdvanceFromStep(step, stepState);
   const isLastStep = stepIndex >= totalSteps - 1;
 
+  // ─── Spark Helper mode ──────────────────────────────────────────────
+  // The widget key of the current step iff it's a helper-enabled quick-win
+  // that hasn't been finalised yet — else null. Drives two things: the
+  // chat panel runs in "helper mode" (routes to /api/spark-helper, shows
+  // the widget's chips), and the Ask-Spark bubble grows + pulses harder to
+  // advertise itself. A widget is helper-enabled iff it has chips in
+  // strings.sparkHelper.suggestions (kept in sync with SPARK_HELPER_WIDGETS
+  // in lib/lessons/v3/spark-helper-config.ts). Cleared after the quick-win
+  // is finalised — so a replay of a completed lesson is plain free chat.
+  const helperWidget =
+    step.type === "interactive" &&
+    typeof step.widget === "string" &&
+    strings.sparkHelper.suggestions[step.widget] !== undefined &&
+    !quickWinFinalised(stepState[step.id])
+      ? step.widget
+      : null;
+
   function goBack() {
     if (stepIndex > 0) {
       setNavDirection("back");
@@ -338,6 +355,11 @@ export function LessonV3View({
           limit: chatLimit,
           label: strings.chat.launcherLabel,
           exhaustedLabel: strings.chat.quotaExhausted,
+          // On a quick-win step the bubble grows + pulses harder and stays
+          // in the active "?" state regardless of the free-chat quota —
+          // it's the "stuck? ask Spark" affordance, and the panel will run
+          // in helper mode (its own quota) when opened.
+          boosted: helperWidget !== null,
         }}
       />
 
@@ -379,26 +401,6 @@ export function LessonV3View({
               goNext: goNextForce,
             },
           )}
-          {/* Spark Helper — the contextual tutor floating affordance.
-              Lives INSIDE this key={stepIndex} subtree so it (a) only
-              exists while the current step is the quick-win and (b)
-              remounts on navigation (panel state resets when you leave).
-              A widget is helper-enabled iff it has chips in
-              strings.sparkHelper.suggestions (kept in sync with the
-              server-side allowlist in lib/lessons/v3/spark-helper-config.ts).
-              Hidden once the quick-win has been finalised — so it never
-              reappears on a replay of a completed lesson. */}
-          {step.type === "interactive" &&
-            typeof step.widget === "string" &&
-            strings.sparkHelper.suggestions[step.widget] !== undefined &&
-            !quickWinFinalised(stepState[step.id]) && (
-              <SparkHelperHost
-                widgetKey={step.widget}
-                lessonId={lesson.id}
-                pathSlug={lesson.path_slug}
-                strings={strings.sparkHelper}
-              />
-            )}
         </div>
 
         {completed && isLastStep && (
@@ -443,6 +445,13 @@ export function LessonV3View({
           totalLimit={chatLimit}
           strings={strings.chat}
           initialDraft={chatDraft}
+          // On a helper-enabled quick-win step the panel runs in helper
+          // mode — routes to /api/spark-helper, shows the widget's chips.
+          helper={
+            helperWidget
+              ? { widgetKey: helperWidget, strings: strings.sparkHelper }
+              : undefined
+          }
           onClose={() => {
             setChatOpen(false);
             setChatDraft(undefined);

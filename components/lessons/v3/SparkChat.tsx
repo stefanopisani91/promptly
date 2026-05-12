@@ -14,7 +14,28 @@
 import { useEffect, useRef, useState } from "react";
 import { Send, X } from "lucide-react";
 import type { PathSlug } from "@/types";
+import { track } from "@/lib/analytics/posthog";
 import { Spark } from "./Spark";
+
+// "Helper mode": when the panel is opened on a V3 quick-win step it talks
+// to /api/spark-helper instead of /api/spark-chat — a tutor scoped to that
+// exercise (per-widget anti-leak context, its own quota, never gives the
+// answer) plus the widget's quick-question chips. Same panel UI, different
+// brain. LessonV3View flips it on for helper-enabled interactive steps.
+export interface SparkHelperStrings {
+  // Panel title while in helper mode (instead of the plain "Spark").
+  panelTitle: string;
+  // Spark's opening line in the empty state (replaces the free-chat hint).
+  intro: string;
+  // Gentle "you've talked plenty" nudge — per-quick-win cap hit.
+  quotaQuickWinHit: string;
+  // "come back tomorrow" — per-day helper cap hit.
+  quotaDailyHit: string;
+  // 503 — the helper's DB columns aren't provisioned yet.
+  unavailable: string;
+  // widgetKey -> up to 4 stable quick-question chips.
+  suggestions: Record<string, readonly string[]>;
+}
 
 export interface SparkChatStrings {
   launcherLabel: string;
@@ -55,6 +76,10 @@ interface Props {
   // "approfondisci" CTA so the chat opens with a ready-to-send question
   // about the clicked term. The user can still edit before sending.
   initialDraft?: string;
+  // When set, the panel runs in "helper mode" for the named quick-win
+  // widget — routes to /api/spark-helper, shows the widget's chips, uses
+  // the helper's own quota messages. Absent => normal lesson-wide chat.
+  helper?: { widgetKey: string; strings: SparkHelperStrings };
   onClose: () => void;
   onMessageSent: (newRemaining: number) => void;
 }
@@ -70,14 +95,22 @@ export function SparkChat({
   totalLimit,
   strings,
   initialDraft,
+  helper,
   onClose,
   onMessageSent,
 }: Props) {
-  // Per-user, per-lesson key. The remaining counter is server-authoritative
-  // (incrementSparkChatCount) so transcript replay can't cheat the quota —
-  // this cache is purely UX so the user sees their history when reopening
-  // the chat in the same browser session.
-  const historyStorageKey = `spark-chat:${userId}:${lessonId}`;
+  // Helper mode caps a message at 200 chars (the /api/spark-helper
+  // contract) and replays the last few turns; free chat allows 600 and
+  // sends no history.
+  const maxChars = helper ? 200 : 600;
+  // Per-user, per-lesson key (per-widget too in helper mode, so the tutor
+  // transcript doesn't bleed into the free-chat one). The remaining
+  // counter is server-authoritative so transcript replay can't cheat the
+  // quota — this cache is purely UX so the user sees their history when
+  // reopening the panel in the same browser session.
+  const historyStorageKey = helper
+    ? `spark-helper:${userId}:${lessonId}:${helper.widgetKey}`
+    : `spark-chat:${userId}:${lessonId}`;
   const [messages, setMessages] = useState<ChatMessage[]>(() => {
     if (typeof window === "undefined") return [];
     try {
@@ -102,6 +135,11 @@ export function SparkChat({
   const [draft, setDraft] = useState(initialDraft ?? "");
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Helper-mode quota state — separate from the free chat's `remaining`
+  // prop. Set when /api/spark-helper answers a 403.
+  const [helperCapped, setHelperCapped] = useState<"quick_win" | "daily" | null>(
+    null,
+  );
   // Tracks the current visualViewport height so the panel can shrink when
   // the iOS virtual keyboard appears. `null` = no measurement yet (SSR /
   // first paint) → fall back to the CSS dvh-based formula.
@@ -117,6 +155,19 @@ export function SparkChat({
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
+
+  // Fire-once when the panel opens in helper mode. The panel remounts
+  // (key=chatOpenSeq in LessonV3View) on every open, so [] is the right
+  // dep list — "on mount" == "on open".
+  useEffect(() => {
+    if (helper) {
+      track({
+        name: "spark_helper_opened",
+        props: { widget: helper.widgetKey, lesson_id: lessonId },
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Lock the page scroll while the modal is open. Without this, swiping
   // inside the chat on iOS scrolls the lesson page underneath the modal.
@@ -165,26 +216,52 @@ export function SparkChat({
     }
   }, [messages, historyStorageKey]);
 
-  async function send() {
-    if (sending || draft.trim().length < 2 || remaining <= 0) return;
-    const userMessage = draft.trim().slice(0, 600);
-    setMessages((prev) => [...prev, { role: "user", content: userMessage }]);
+  // Source of `text`: the textarea (send()) or a tapped chip (helper mode).
+  async function sendText(
+    text: string,
+    opts?: { fromChip?: boolean; chipIndex?: number },
+  ) {
+    const trimmed = text.trim().slice(0, maxChars);
+    if (sending || trimmed.length < 2) return;
+    if (helper ? helperCapped !== null : remaining <= 0) return;
+    if (helper && opts?.fromChip && typeof opts.chipIndex === "number") {
+      track({
+        name: "spark_helper_suggestion_clicked",
+        props: { widget: helper.widgetKey, suggestion_index: opts.chipIndex },
+      });
+    }
+    // The helper wants `message` = current turn, `history` = the turns
+    // before it. `messages` here is still the pre-append value.
+    const priorHistory = helper ? messages.slice(-6) : [];
+    setMessages((prev) => [...prev, { role: "user", content: trimmed }]);
     setDraft("");
     setSending(true);
     setError(null);
     try {
-      const res = await fetch("/api/spark-chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          lessonId,
-          pathSlug,
-          lessonTitle,
-          stepIndex,
-          totalSteps,
-          message: userMessage,
-        }),
-      });
+      const res = helper
+        ? await fetch("/api/spark-helper", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              lessonId,
+              pathSlug,
+              widgetKey: helper.widgetKey,
+              message: trimmed,
+              history: priorHistory,
+            }),
+          })
+        : await fetch("/api/spark-chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              lessonId,
+              pathSlug,
+              lessonTitle,
+              stepIndex,
+              totalSteps,
+              message: trimmed,
+            }),
+          });
       if (!res.ok) {
         if (res.status === 401) { setError(strings.unauthorized); return; }
         if (res.status === 403) {
@@ -193,27 +270,54 @@ export function SparkChat({
             const errBody = (await res.json()) as { error?: string };
             errorCode = errBody.error;
           } catch { /* keep errorCode undefined */ }
-          setError(
-            errorCode === "daily_quota_exceeded"
-              ? strings.dailyQuotaExhausted
-              : strings.quotaExhausted,
-          );
-          onMessageSent(0);
+          if (helper) {
+            const scope =
+              errorCode === "daily_quota_exceeded" ? "daily" : "quick_win";
+            setHelperCapped(scope);
+            track({
+              name: "spark_helper_quota_hit",
+              props: { widget: helper.widgetKey, scope },
+            });
+            // The cap message is shown by the input-area banner (isExhausted),
+            // not as an error line — don't double it up.
+          } else {
+            setError(
+              errorCode === "daily_quota_exceeded"
+                ? strings.dailyQuotaExhausted
+                : strings.quotaExhausted,
+            );
+            onMessageSent(0);
+          }
           return;
         }
-        if (res.status === 502 || res.status === 503) { setError(strings.networkError); return; }
+        if (res.status === 503) {
+          setError(helper ? helper.strings.unavailable : strings.networkError);
+          return;
+        }
+        if (res.status === 502) { setError(strings.networkError); return; }
         setError(strings.apiError);
         return;
       }
       const body = (await res.json()) as { reply?: string; remaining?: number };
       if (typeof body.reply !== "string") { setError(strings.apiError); return; }
       setMessages((prev) => [...prev, { role: "spark", content: body.reply! }]);
-      if (typeof body.remaining === "number") onMessageSent(body.remaining);
+      if (helper) {
+        track({
+          name: "spark_helper_message_sent",
+          props: { widget: helper.widgetKey, from_suggestion: Boolean(opts?.fromChip) },
+        });
+      } else if (typeof body.remaining === "number") {
+        onMessageSent(body.remaining);
+      }
     } catch {
       setError(strings.networkError);
     } finally {
       setSending(false);
     }
+  }
+
+  function send() {
+    void sendText(draft);
   }
 
   function onKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
@@ -228,13 +332,24 @@ export function SparkChat({
     .replace("{limit}", String(totalLimit));
 
   const isEmpty = messages.length === 0;
-  const isExhausted = remaining <= 0;
+  // In helper mode the chat's per-lesson `remaining` is irrelevant — the
+  // tutor has its own quota, surfaced via helperCapped after a 403.
+  const isExhausted = helper ? helperCapped !== null : remaining <= 0;
+  const exhaustedMessage = helper
+    ? helperCapped === "daily"
+      ? helper.strings.quotaDailyHit
+      : helper.strings.quotaQuickWinHit
+    : strings.quotaExhausted;
+  const panelTitle = helper ? helper.strings.panelTitle : strings.modalTitle;
+  const chips = helper
+    ? helper.strings.suggestions[helper.widgetKey] ?? []
+    : [];
 
   return (
     <div
       role="dialog"
       aria-modal="true"
-      aria-label={strings.modalTitle}
+      aria-label={panelTitle}
       // Top offset is tight on mobile so the panel can use the full
       // visualViewport height — when the iOS keyboard opens we drop to
       // ~280-350px of usable space and a 72px top padding crushed the
@@ -294,9 +409,13 @@ export function SparkChat({
         <header className="flex shrink-0 items-center gap-3 border-b border-border bg-surface px-4 py-3 sm:px-5" style={{ borderRadius: "28px 28px 0 0" }}>
           <div className="flex min-w-0 flex-1 flex-col">
             <p className="truncate font-heading text-sm font-semibold text-text-primary">
-              {strings.modalTitle}
+              {panelTitle}
             </p>
-            <p className="text-[11px] text-text-muted">{subtitle}</p>
+            {/* The free-chat quota subtitle is meaningless in helper mode
+                (the tutor has its own budget) — hide it there. */}
+            {!helper && (
+              <p className="text-[11px] text-text-muted">{subtitle}</p>
+            )}
           </div>
           <button
             type="button"
@@ -333,11 +452,13 @@ export function SparkChat({
                 Nessuna conversazione
               </p>
               <p className="max-w-xs text-sm italic text-text-secondary">
-                {strings.quotaExhausted}
+                {exhaustedMessage}
               </p>
             </div>
           ) : isEmpty ? (
-            /* Hero empty state — "Chiedimi pure!" */
+            /* Hero empty state — "Chiedimi pure!" (helper mode: Spark's
+               intro line; the quick-question chips live in the input area
+               below so they stay reachable after the first message). */
             <div className="flex flex-1 flex-col items-center justify-center gap-5 py-4 text-center">
               <div style={{ animation: "completion-spark-pop 380ms cubic-bezier(0.34,1.56,0.64,1) both" }}>
                 <Spark state="happy" size={72} ariaLabel="Spark" />
@@ -347,19 +468,21 @@ export function SparkChat({
                   {strings.emptyHero}
                 </p>
                 <p className="mt-2 text-sm italic text-text-secondary">
-                  {strings.emptyHint}
+                  {helper ? helper.strings.intro : strings.emptyHint}
                 </p>
               </div>
-              <ul
-                className="flex flex-col gap-2"
-                style={{ animation: "completion-fade-up 300ms ease-out 300ms both" }}
-              >
-                {strings.hintExamples.map((h, i) => (
-                  <li key={i} className="text-xs italic text-text-muted before:mr-2 before:content-['·']">
-                    {h}
-                  </li>
-                ))}
-              </ul>
+              {!helper && (
+                <ul
+                  className="flex flex-col gap-2"
+                  style={{ animation: "completion-fade-up 300ms ease-out 300ms both" }}
+                >
+                  {strings.hintExamples.map((h, i) => (
+                    <li key={i} className="text-xs italic text-text-muted before:mr-2 before:content-['·']">
+                      {h}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           ) : (
             <>
@@ -406,17 +529,36 @@ export function SparkChat({
         {/* ── Input area / read-only notice ── */}
         {isExhausted ? (
           /* Quota esaurita — banner sola lettura senza Spark (già nel body) */
-          <div className="flex shrink-0 items-center justify-center border-t border-border bg-surface-muted/40 px-4 py-3 sm:px-5" style={{ borderRadius: "0 0 28px 28px" }}>
+          <div className="flex shrink-0 items-center justify-center gap-2 border-t border-border bg-surface-muted/40 px-4 py-3 sm:px-5" style={{ borderRadius: "0 0 28px 28px" }}>
+            {helper && <Spark state="happy" size={24} ariaLabel="Spark" />}
             <p className="text-xs italic text-text-secondary">
-              {strings.quotaExhausted}
+              {exhaustedMessage}
             </p>
           </div>
         ) : (
           <div className="flex shrink-0 flex-col gap-2 border-t border-border bg-surface px-4 py-3 sm:px-5" style={{ borderRadius: "0 0 28px 28px" }}>
+            {/* Helper mode: the quick-question chips. Stable per widget,
+                always reachable (not just in the empty state) — tapping one
+                sends it like a typed message. */}
+            {helper && chips.length > 0 && (
+              <div className="flex flex-wrap gap-1.5">
+                {chips.map((chip, i) => (
+                  <button
+                    key={chip}
+                    type="button"
+                    disabled={sending}
+                    onClick={() => void sendText(chip, { fromChip: true, chipIndex: i })}
+                    className="rounded-full border border-border bg-surface-muted/60 px-2.5 py-1 text-xs text-text-secondary transition-colors hover:bg-surface-muted disabled:opacity-50 disabled:hover:bg-surface-muted/60"
+                  >
+                    {chip}
+                  </button>
+                ))}
+              </div>
+            )}
             <textarea
               ref={inputRef}
               value={draft}
-              onChange={(e) => setDraft(e.target.value.slice(0, 600))}
+              onChange={(e) => setDraft(e.target.value.slice(0, maxChars))}
               onKeyDown={onKeyDown}
               placeholder={strings.placeholder}
               disabled={sending}

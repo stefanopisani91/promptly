@@ -28,13 +28,16 @@ interface Props {
   };
   // Free-chat affordance: opens the SparkChat modal in LessonV3View. The
   // bubble lives next to Spark instead of being a separate floating button
-  // (Promptly_Spark_Master_Configuration.md §2).
+  // (Promptly_Spark_Master_Configuration.md §2). On a quick-win step it's
+  // `boosted` — bigger + a stronger pulse — so it reads as the "stuck? ask
+  // Spark" affordance (the panel runs in helper mode there).
   askSpark: {
     onOpen: () => void;
     remaining: number;
     limit: number;
     label: string;
     exhaustedLabel: string;
+    boosted?: boolean;
   };
 }
 
@@ -111,6 +114,7 @@ export function SparkHeader({
             limit={askSpark.limit}
             label={askSpark.label}
             exhaustedLabel={askSpark.exhaustedLabel}
+            boosted={askSpark.boosted}
           />
         </div>
 
