@@ -90,11 +90,19 @@ interface Props {
     | {
         result?: InteractiveStepResult;
         editorTexts?: Record<string, string>;
+        // Persisted from the last submit so Spark's reply + the 3
+        // dimension bars survive navigation/reload (rule #3 in
+        // LESSON-GUIDELINES.md §V3 — same as InteractiveStep /
+        // BrokenSessionDebugger).
+        lastEvaluation?: ConstraintsEvaluation;
       }
     | undefined;
   onComplete: (
     result: InteractiveStepResult,
-    extras: { editorTexts: Record<string, string> },
+    extras: {
+      editorTexts: Record<string, string>;
+      lastEvaluation: ConstraintsEvaluation | null;
+    },
   ) => void;
   onAdvance: () => void;
 }
@@ -120,8 +128,10 @@ export function ConstraintsEditor({
 
   const [attemptCount, setAttemptCount] = useState(persisted?.attempts ?? 0);
   const [bestScore, setBestScore] = useState(persisted?.bestScore ?? 0);
+  // Hydrated from stepState so a returning user reads the exact reply +
+  // dimension bars they saw last time (instead of "awaiting your prompt").
   const [evaluation, setEvaluation] = useState<ConstraintsEvaluation | null>(
-    null,
+    state?.lastEvaluation ?? null,
   );
   const [evaluating, setEvaluating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -137,7 +147,13 @@ export function ConstraintsEditor({
 
   const sparkLine = evaluation?.spark_reply ?? strings.awaitingPrompt;
   const exhausted = attemptCount >= step.max_attempts;
-  const won = evaluation?.feedback_case === "excellent";
+  // Require both the feedback_case AND a total >= 80 before locking the
+  // editor. The server now derives total from clamped scores and downgrades
+  // an inconsistent "excellent" — this client-side check is a belt-and-
+  // suspenders defence against stale clients caching an older API response.
+  const won =
+    evaluation?.feedback_case === "excellent" &&
+    (evaluation?.total ?? 0) >= 80;
 
   // Each textarea's trimmed length, used both for per-textarea counters
   // and for unlocking the submit button (every kind must be ≥ min).
@@ -292,11 +308,20 @@ export function ConstraintsEditor({
   ]);
 
   function handleFinalize() {
-    if (!finishedRef.current) {
-      finishedRef.current = true;
-      const band = bandForCase(evaluation?.feedback_case ?? null);
+    // Persist the latest snapshot (Spark reply, dimension scores, best
+    // score, band, XP) so a retry-on-return actually updates the stored
+    // result instead of keeping the first finalisation's stale data.
+    // Same approach as InteractiveStep; onComplete → updateStepState is
+    // idempotent, so re-firing it is harmless.
+    //
+    // Gated on `evaluation` so a no-resubmit re-finalisation of legacy
+    // persisted state (written before lastEvaluation was tracked, so
+    // `evaluation` is null on mount) doesn't clobber a good stored
+    // result with a "poor"/0-XP one.
+    if (evaluation) {
+      const band = bandForCase(evaluation.feedback_case);
       const xpEarned = xpForResult(
-        evaluation?.feedback_case ?? null,
+        evaluation.feedback_case,
         bestScore,
         config,
         attemptCount,
@@ -305,13 +330,14 @@ export function ConstraintsEditor({
         {
           attempts: attemptCount,
           bestScore,
-          victory: evaluation?.feedback_case === "excellent",
+          victory: evaluation.feedback_case === "excellent",
           band,
           xpEarned,
         },
-        { editorTexts: texts },
+        { editorTexts: texts, lastEvaluation: evaluation },
       );
     }
+    finishedRef.current = true;
     onAdvance();
   }
 

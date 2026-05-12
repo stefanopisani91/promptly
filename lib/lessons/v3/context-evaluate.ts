@@ -138,7 +138,7 @@ export async function evaluateContext(
   if (!parsed) {
     return { ok: false, error: { kind: "invalid_response" } };
   }
-  const evaluation = validateEvaluation(parsed);
+  const evaluation = validateEvaluation(parsed, input.lang);
   if (!evaluation) {
     return { ok: false, error: { kind: "invalid_response" } };
   }
@@ -325,7 +325,10 @@ const VALID_CASES = new Set<ContextFeedbackCase>([
 ]);
 const MAX_REPLY_LEN = 600;
 
-function validateEvaluation(raw: unknown): ContextEvaluation | null {
+function validateEvaluation(
+  raw: unknown,
+  lang: Lang,
+): ContextEvaluation | null {
   if (!raw || typeof raw !== "object") return null;
   const r = raw as Record<string, unknown>;
   const scores = r.scores as Record<string, unknown> | undefined;
@@ -342,10 +345,13 @@ function validateEvaluation(raw: unknown): ContextEvaluation | null {
   ) {
     return null;
   }
-  const total =
-    typeof r.total === "number" && Number.isFinite(r.total)
-      ? Math.max(0, Math.min(100, Math.round(r.total)))
-      : project + code + constraints + examples;
+  // Always derive total from the sum of individually-validated, clamped
+  // scores rather than trusting the AI-reported total. The AI sometimes
+  // inflates its own `total` field (e.g. returns total=88 while individual
+  // scores sum to 45), which would incorrectly trigger `won = true` on the
+  // client and lock the entire editor after a clearly non-excellent attempt.
+  // Same bug + fix as claudemd-evaluate.ts (reported 2026-05-12).
+  const total = project + code + constraints + examples;
 
   // missing_layer can be null (good/excellent) or a valid layer key.
   let missingLayer: ContextLayer | null = null;
@@ -379,14 +385,57 @@ function validateEvaluation(raw: unknown): ContextEvaluation | null {
   ) {
     return null;
   }
+  // Enforce consistency: if the AI returned "excellent" but the real sum of
+  // clamped scores is below the rubric's excellent cut (85), downgrade to
+  // the case that matches the score. Prevents the UI from locking when the
+  // AI assigns an inconsistent feedback_case (observed on claudemd:
+  // scenario-mismatch submissions where the AI inflated scores / the total).
+  // On a downgrade we also replace the AI's "excellent"-toned spark_reply
+  // with a canned line for the new case — otherwise Spark celebrates while
+  // the dimension bars show a mediocre score.
+  let feedbackCase = r.feedback_case as ContextFeedbackCase;
+  let sparkReply = r.spark_reply.trim();
+  if (feedbackCase === "excellent" && total < 85) {
+    feedbackCase =
+      total >= 66 ? "good" : total >= 40 ? "missing_one" : "incomplete";
+    sparkReply = downgradedSparkReply(feedbackCase, lang);
+  }
   return {
     scores: { project, code, constraints, examples },
     total,
     missing_layer: missingLayer,
     richest_layer: r.richest_layer as ContextLayer,
-    feedback_case: r.feedback_case as ContextFeedbackCase,
-    spark_reply: r.spark_reply.trim(),
+    feedback_case: feedbackCase,
+    spark_reply: sparkReply,
   };
+}
+
+// Canned Spark reply used when validateEvaluation downgrades an
+// inconsistent "excellent" verdict. Never called with "excellent". The
+// 4 dimension bars rendered below the reply carry the per-layer detail,
+// so these lines stay short and don't name the weak layer themselves.
+function downgradedSparkReply(
+  c: Exclude<ContextFeedbackCase, "excellent">,
+  lang: Lang,
+): string {
+  if (lang === "it") {
+    switch (c) {
+      case "good":
+        return 'Bene. Ci sono tutti e 4 i livelli di contesto. Per arrivare a "eccellente", porta gli altri allo stesso dettaglio del livello più forte.';
+      case "missing_one":
+        return "Quasi. Hai dato all'AI un po' di terra sotto i piedi, ma un livello è ancora troppo vago — guarda quale ha la barra più bassa qui sotto.";
+      case "incomplete":
+        return "È ancora un prompt scarno, solo più lungo. Mancano almeno 2 dei 4 livelli di contesto: l'AI improvviserebbe lo stesso.";
+    }
+  }
+  switch (c) {
+    case "good":
+      return 'Good. All 4 context levels are there. To reach "excellent", bring the others up to the same detail as your strongest level.';
+    case "missing_one":
+      return "Almost. You gave the AI some ground to stand on, but one level is still too vague — check which bar is lowest below.";
+    case "incomplete":
+      return "This is still a thin prompt, just longer. At least 2 of the 4 context levels are missing: the AI would improvise anyway.";
+  }
 }
 
 function clampScore(v: unknown): number | null {

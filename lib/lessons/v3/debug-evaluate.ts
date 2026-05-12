@@ -132,7 +132,7 @@ export async function evaluateDebugRecovery(
     console.error("[debug-evaluate] failed to parse JSON; raw:", text.slice(0, 600));
     return { ok: false, error: { kind: "invalid_response" } };
   }
-  const evaluation = validateEvaluation(parsed);
+  const evaluation = validateEvaluation(parsed, input.lang);
   if (!evaluation) {
     console.error("[debug-evaluate] validation failed; parsed:", JSON.stringify(parsed));
     return { ok: false, error: { kind: "invalid_response" } };
@@ -306,7 +306,10 @@ const VALID_CASES = new Set<DebugFeedbackCase>([
 ]);
 const MAX_REPLY_LEN = 600;
 
-function validateEvaluation(raw: unknown): DebugEvaluation | null {
+function validateEvaluation(
+  raw: unknown,
+  lang: Lang,
+): DebugEvaluation | null {
   if (!raw || typeof raw !== "object") return null;
   const r = raw as Record<string, unknown>;
   const scores = r.scores as Record<string, unknown> | undefined;
@@ -323,10 +326,13 @@ function validateEvaluation(raw: unknown): DebugEvaluation | null {
   ) {
     return null;
   }
-  const total =
-    typeof r.total === "number" && Number.isFinite(r.total)
-      ? Math.max(0, Math.min(100, Math.round(r.total)))
-      : recognition + recalibration + future_control + rollback_bonus;
+  // Always derive total from the sum of individually-validated, clamped
+  // scores rather than trusting the AI-reported total. The AI sometimes
+  // inflates its own `total` field (e.g. returns total=92 while individual
+  // scores sum to 50), which would incorrectly trigger `won = true` on the
+  // client and lock the entire editor after a clearly non-excellent attempt.
+  // Same bug + fix as claudemd-evaluate.ts (reported 2026-05-12).
+  const total = recognition + recalibration + future_control + rollback_bonus;
 
   // weakest/strongest can be null when all three dimensions tie (e.g.
   // a 100-point recovery). We tolerate the model returning null /
@@ -362,15 +368,58 @@ function validateEvaluation(raw: unknown): DebugEvaluation | null {
   ) {
     return null;
   }
+  // Enforce consistency: if the AI returned "excellent" but the real sum of
+  // clamped scores is below the rubric's excellent cut (90), downgrade to
+  // the case that matches the score. Prevents the UI from locking when the
+  // AI assigns an inconsistent feedback_case (observed on claudemd:
+  // submissions where the AI inflated individual scores / the total). On a
+  // downgrade we also replace the AI's "excellent"-toned spark_reply with a
+  // canned line for the new case — otherwise Spark celebrates while the
+  // dimension bars show a mediocre score.
+  let feedbackCase = r.feedback_case as DebugFeedbackCase;
+  let sparkReply = r.spark_reply.trim();
+  if (feedbackCase === "excellent" && total < 90) {
+    feedbackCase =
+      total >= 70 ? "good" : total >= 50 ? "missing_one" : "incomplete";
+    sparkReply = downgradedSparkReply(feedbackCase, lang);
+  }
   return {
     scores: { recognition, recalibration, future_control, rollback_bonus },
     total,
     weakest_dimension,
     strongest_dimension,
-    feedback_case: r.feedback_case as DebugFeedbackCase,
+    feedback_case: feedbackCase,
     would_have_saved: r.would_have_saved,
-    spark_reply: r.spark_reply.trim(),
+    spark_reply: sparkReply,
   };
+}
+
+// Canned Spark reply used when validateEvaluation downgrades an
+// inconsistent "excellent" verdict. Never called with "excellent". The
+// 3 dimension bars rendered below the reply carry the per-dimension
+// detail, so these lines stay short and don't name the weak one.
+function downgradedSparkReply(
+  c: Exclude<DebugFeedbackCase, "excellent">,
+  lang: Lang,
+): string {
+  if (lang === "it") {
+    switch (c) {
+      case "good":
+        return 'Bene. Il tuo messaggio avrebbe salvato la sessione. Per arrivare a "chirurgico", rendi tutte e 3 le dimensioni specifiche quanto la più forte.';
+      case "missing_one":
+        return "Ci sei vicino. Due dimensioni su tre sono solide — una è ancora debole, guarda quale ha la barra più bassa qui sotto.";
+      case "incomplete":
+        return "Il tuo messaggio non avrebbe fermato il disastro: l'AI sarebbe rimasta fuori carreggiata.";
+    }
+  }
+  switch (c) {
+    case "good":
+      return 'Good. Your message would have saved the session. To reach "surgical", make all 3 dimensions as specific as your strongest one.';
+    case "missing_one":
+      return "You're close. Two of the three dimensions are solid — one is still weak, check which bar is lowest below.";
+    case "incomplete":
+      return "Your message wouldn't have stopped the disaster: the AI would have stayed off track.";
+  }
 }
 
 function clampScore(v: unknown, max: number): number | null {

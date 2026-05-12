@@ -142,7 +142,7 @@ export async function evaluateClaudemd(
   if (!parsed) {
     return { ok: false, error: { kind: "invalid_response" } };
   }
-  const evaluation = validateEvaluation(parsed);
+  const evaluation = validateEvaluation(parsed, input.lang);
   if (!evaluation) {
     return { ok: false, error: { kind: "invalid_response" } };
   }
@@ -315,7 +315,10 @@ const VALID_CASES = new Set<ClaudemdFeedbackCase>([
 ]);
 const MAX_REPLY_LEN = 600;
 
-function validateEvaluation(raw: unknown): ClaudemdEvaluation | null {
+function validateEvaluation(
+  raw: unknown,
+  lang: Lang,
+): ClaudemdEvaluation | null {
   if (!raw || typeof raw !== "object") return null;
   const r = raw as Record<string, unknown>;
   const scores = r.scores as Record<string, unknown> | undefined;
@@ -332,10 +335,12 @@ function validateEvaluation(raw: unknown): ClaudemdEvaluation | null {
   ) {
     return null;
   }
-  const total =
-    typeof r.total === "number" && Number.isFinite(r.total)
-      ? Math.max(0, Math.min(100, Math.round(r.total)))
-      : clarity + specificity + rules + workflow;
+  // Always derive total from the sum of individually-validated, clamped
+  // scores rather than trusting the AI-reported total. The AI sometimes
+  // inflates its own `total` field (e.g. returns total=85 while individual
+  // scores sum to 48), which would incorrectly trigger `won = true` on the
+  // client, locking the entire editor after a clearly non-excellent attempt.
+  const total = clarity + specificity + rules + workflow;
   if (
     typeof r.strongest_dimension !== "string" ||
     !VALID_DIMS.has(r.strongest_dimension as ClaudemdDimension)
@@ -361,14 +366,68 @@ function validateEvaluation(raw: unknown): ClaudemdEvaluation | null {
   ) {
     return null;
   }
+  // Enforce consistency: if the AI returned "excellent" but the actual sum
+  // of scores is < 80, downgrade to the appropriate case. This prevents the
+  // UI from locking when the AI assigns an inconsistent feedback_case
+  // (observed: project-mismatch submissions where AI inflated individual
+  // scores or the reported total, causing `won = true` despite a negative
+  // spark_reply — "tutto bloccato" bug reported 2026-05-12). On a downgrade
+  // we also replace the AI's "excellent"-toned spark_reply with a canned
+  // line for the new case — otherwise Spark celebrates while the dimension
+  // bars show a mediocre score.
+  let feedbackCase = r.feedback_case as ClaudemdFeedbackCase;
+  let sparkReply = r.spark_reply.trim();
+  if (feedbackCase === "excellent" && total < 80) {
+    feedbackCase =
+      total >= 60 && workflow < 12
+        ? "missing_workflow"
+        : total >= 60
+        ? "generic_complete"
+        : total >= 40
+        ? "partial_basics"
+        : "vague";
+    sparkReply = downgradedSparkReply(feedbackCase, lang);
+  }
   return {
     scores: { clarity, specificity, rules, workflow },
     total,
     strongest_dimension: r.strongest_dimension as ClaudemdDimension,
     weakest_dimension: r.weakest_dimension as ClaudemdDimension,
-    feedback_case: r.feedback_case as ClaudemdFeedbackCase,
-    spark_reply: r.spark_reply.trim(),
+    feedback_case: feedbackCase,
+    spark_reply: sparkReply,
   };
+}
+
+// Canned Spark reply used when validateEvaluation downgrades an
+// inconsistent "excellent" verdict. Never called with "excellent". The
+// 4 dimension bars rendered below the reply carry the per-dimension
+// detail, so these lines stay short and don't name the weak one.
+function downgradedSparkReply(
+  c: Exclude<ClaudemdFeedbackCase, "excellent">,
+  lang: Lang,
+): string {
+  if (lang === "it") {
+    switch (c) {
+      case "missing_workflow":
+        return "Quasi. Hai descritto il progetto, ma manca il pezzo operativo: come vuoi che l'AI lavori — il diff prima di scrivere? pianificare prima? Aggiungilo.";
+      case "generic_complete":
+        return "Hai tutti i pezzi, ma sono ancora troppo generici. Rendi concreti stack, regole e workflow — guarda quali barre sono più basse qui sotto.";
+      case "partial_basics":
+        return "C'è una base, ma manca metà del lavoro. Aggiungi uno stack concreto, regole che proteggono il lavoro e un workflow esplicito.";
+      case "vague":
+        return "Aspetta — questo è ancora troppo vago. Un CLAUDE.md serve solo se è specifico: progetto, stack, regole, workflow, tutto concreto.";
+    }
+  }
+  switch (c) {
+    case "missing_workflow":
+      return "Almost. You described the project, but the operational piece is missing: how do you want the AI to work — show the diff first? plan before writing? Add it.";
+    case "generic_complete":
+      return "You've got all the pieces, but they're still too generic. Make the stack, rules and workflow concrete — check which bars are lowest below.";
+    case "partial_basics":
+      return "There's a base here, but half the work is missing. Add a concrete stack, rules that protect the work, and an explicit workflow.";
+    case "vague":
+      return "Wait — this is still too vague. A CLAUDE.md only earns its keep if it's specific: project, stack, rules, workflow — all concrete.";
+  }
 }
 
 function clampScore(v: unknown): number | null {

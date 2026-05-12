@@ -129,7 +129,7 @@ export async function evaluateConstraints(
   if (!parsed) {
     return { ok: false, error: { kind: "invalid_response" } };
   }
-  const evaluation = validateEvaluation(parsed);
+  const evaluation = validateEvaluation(parsed, input.lang);
   if (!evaluation) {
     return { ok: false, error: { kind: "invalid_response" } };
   }
@@ -302,7 +302,10 @@ const VALID_CASES = new Set<ConstraintsFeedbackCase>([
 ]);
 const MAX_REPLY_LEN = 600;
 
-function validateEvaluation(raw: unknown): ConstraintsEvaluation | null {
+function validateEvaluation(
+  raw: unknown,
+  lang: Lang,
+): ConstraintsEvaluation | null {
   if (!raw || typeof raw !== "object") return null;
   const r = raw as Record<string, unknown>;
   const scores = r.scores as Record<string, unknown> | undefined;
@@ -319,10 +322,13 @@ function validateEvaluation(raw: unknown): ConstraintsEvaluation | null {
   ) {
     return null;
   }
-  const total =
-    typeof r.total === "number" && Number.isFinite(r.total)
-      ? Math.max(0, Math.min(100, Math.round(r.total)))
-      : protective + process + style + systemBonus;
+  // Always derive total from the sum of individually-validated, clamped
+  // scores rather than trusting the AI-reported total. The AI sometimes
+  // inflates its own `total` field (e.g. returns total=92 while individual
+  // scores sum to 50), which would incorrectly trigger `won = true` on the
+  // client and lock the entire editor after a clearly non-excellent attempt.
+  // Same bug + fix as claudemd-evaluate.ts (reported 2026-05-12).
+  const total = protective + process + style + systemBonus;
 
   if (
     typeof r.weakest_constraint !== "string" ||
@@ -350,15 +356,59 @@ function validateEvaluation(raw: unknown): ConstraintsEvaluation | null {
   ) {
     return null;
   }
+  // Enforce consistency: if the AI returned "excellent" but the real sum of
+  // clamped scores is below the rubric's excellent cut (90), downgrade to
+  // the case that matches the score. Prevents the UI from locking when the
+  // AI assigns an inconsistent feedback_case (observed on claudemd:
+  // project-mismatch submissions where the AI inflated scores / the total).
+  // On a downgrade we also replace the AI's "excellent"-toned spark_reply
+  // with a canned line for the new case — otherwise Spark celebrates while
+  // the dimension bars show a mediocre score.
+  let feedbackCase = r.feedback_case as ConstraintsFeedbackCase;
+  let sparkReply = r.spark_reply.trim();
+  if (feedbackCase === "excellent" && total < 90) {
+    feedbackCase =
+      total >= 70 ? "good" : total >= 50 ? "missing_one" : "incomplete";
+    sparkReply = downgradedSparkReply(feedbackCase, lang);
+  }
   return {
     scores: { protective, process, style, system_bonus: systemBonus },
     total,
     weakest_constraint: r.weakest_constraint as ConstraintsKind,
     strongest_constraint: r.strongest_constraint as ConstraintsKind,
-    feedback_case: r.feedback_case as ConstraintsFeedbackCase,
+    feedback_case: feedbackCase,
     would_have_prevented: r.would_have_prevented,
-    spark_reply: r.spark_reply.trim(),
+    spark_reply: sparkReply,
   };
+}
+
+// Canned Spark reply used when validateEvaluation downgrades an
+// inconsistent "excellent" verdict — keeps the tone in step with the
+// (now lower) score. Never called with "excellent". The dimension bars
+// rendered below the reply carry the per-constraint detail, so these
+// lines stay short and don't name the weak constraint themselves.
+function downgradedSparkReply(
+  c: Exclude<ConstraintsFeedbackCase, "excellent">,
+  lang: Lang,
+): string {
+  if (lang === "it") {
+    switch (c) {
+      case "good":
+        return 'Bene. I tuoi 3 vincoli avrebbero fermato il disastro. Per arrivare a "eccellente", rendili tutti specifici quanto il più forte.';
+      case "missing_one":
+        return "Quasi. Due dei tuoi vincoli avrebbero aiutato, uno è ancora troppo debole — guarda quale ha il punteggio più basso qui sotto.";
+      case "incomplete":
+        return "I tuoi vincoli sono ancora troppo generici. Con questi davanti, l'AI avrebbe toccato il database lo stesso.";
+    }
+  }
+  switch (c) {
+    case "good":
+      return 'Good. Your 3 constraints would have stopped the disaster. To reach "excellent", make them all as specific as your strongest one.';
+    case "missing_one":
+      return "Almost. Two of your constraints would have helped, one is still too weak — check which one scored lowest below.";
+    case "incomplete":
+      return "Your constraints are still too generic. With these in front of it, the AI would have touched the database anyway.";
+  }
 }
 
 function clampScore(v: unknown, max: number): number | null {

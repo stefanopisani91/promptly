@@ -154,7 +154,13 @@ export function BrokenSessionDebugger({
 
   const draftLength = draft.trim().length;
   const exhausted = attemptCount >= step.max_attempts;
-  const won = evaluation?.feedback_case === "excellent";
+  // Require both the feedback_case AND a total >= 80 before locking the
+  // editor. The server now derives total from clamped scores and downgrades
+  // an inconsistent "excellent" — this client-side check is a belt-and-
+  // suspenders defence against stale clients caching an older API response.
+  const won =
+    evaluation?.feedback_case === "excellent" &&
+    (evaluation?.total ?? 0) >= 80;
 
   const submitDisabled =
     evaluating ||
@@ -297,11 +303,20 @@ export function BrokenSessionDebugger({
   ]);
 
   function handleFinalize() {
-    if (!finishedRef.current) {
-      finishedRef.current = true;
-      const band = bandForCase(evaluation?.feedback_case ?? null);
+    // Persist the latest snapshot (Spark reply, dimension scores, best
+    // score, band, XP) so a retry-on-return actually updates the stored
+    // result instead of keeping the first finalisation's stale data.
+    // Same approach as InteractiveStep; onComplete → updateStepState is
+    // idempotent, so re-firing it is harmless.
+    //
+    // Gated on `evaluation` so a no-resubmit re-finalisation of legacy
+    // persisted state (written before lastEvaluation was tracked, so
+    // `evaluation` is null on mount) doesn't clobber a good stored
+    // result with a "poor"/0-XP one.
+    if (evaluation) {
+      const band = bandForCase(evaluation.feedback_case);
       const xpEarned = xpForResult(
-        evaluation?.feedback_case ?? null,
+        evaluation.feedback_case,
         bestScore,
         config,
         attemptCount,
@@ -310,7 +325,7 @@ export function BrokenSessionDebugger({
         {
           attempts: attemptCount,
           bestScore,
-          victory: evaluation?.feedback_case === "excellent",
+          victory: evaluation.feedback_case === "excellent",
           band,
           xpEarned,
         },
@@ -322,6 +337,7 @@ export function BrokenSessionDebugger({
         },
       );
     }
+    finishedRef.current = true;
     onAdvance();
   }
 

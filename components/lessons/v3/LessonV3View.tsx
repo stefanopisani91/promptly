@@ -487,6 +487,9 @@ function renderStep(step: LessonV3Step, ctx: RenderContext) {
                     result?: InteractiveStepResult;
                     editorText?: string;
                     selectedProject?: string;
+                    lastEvaluation?: import(
+                      "./steps/ClaudemdEditor"
+                    ).ClaudemdEvaluation;
                   }
                 | undefined
             }
@@ -495,6 +498,7 @@ function renderStep(step: LessonV3Step, ctx: RenderContext) {
                 result,
                 editorText: extras.editorText,
                 selectedProject: extras.selectedProject,
+                lastEvaluation: extras.lastEvaluation,
               })
             }
             onAdvance={ctx.goNext}
@@ -513,6 +517,9 @@ function renderStep(step: LessonV3Step, ctx: RenderContext) {
                     result?: InteractiveStepResult;
                     editorText?: string;
                     selectedScenario?: string;
+                    lastEvaluation?: import(
+                      "./steps/ContextPromptEditor"
+                    ).ContextEvaluation;
                   }
                 | undefined
             }
@@ -521,6 +528,7 @@ function renderStep(step: LessonV3Step, ctx: RenderContext) {
                 result,
                 editorText: extras.editorText,
                 selectedScenario: extras.selectedScenario,
+                lastEvaluation: extras.lastEvaluation,
               })
             }
             onAdvance={ctx.goNext}
@@ -538,6 +546,9 @@ function renderStep(step: LessonV3Step, ctx: RenderContext) {
                 | {
                     result?: InteractiveStepResult;
                     editorTexts?: Record<string, string>;
+                    lastEvaluation?: import(
+                      "./steps/ConstraintsEditor"
+                    ).ConstraintsEvaluation;
                   }
                 | undefined
             }
@@ -545,6 +556,7 @@ function renderStep(step: LessonV3Step, ctx: RenderContext) {
               ctx.updateStepState(step.id, {
                 result,
                 editorTexts: extras.editorTexts,
+                lastEvaluation: extras.lastEvaluation,
               })
             }
             onAdvance={ctx.goNext}

@@ -117,11 +117,20 @@ interface Props {
         result?: InteractiveStepResult;
         editorText?: string;
         selectedProject?: string;
+        // Persisted from the last submit so Spark's reply + the 4
+        // dimension bars survive navigation/reload (rule #3 in
+        // LESSON-GUIDELINES.md §V3 — same as InteractiveStep /
+        // BrokenSessionDebugger).
+        lastEvaluation?: ClaudemdEvaluation;
       }
     | undefined;
   onComplete: (
     result: InteractiveStepResult,
-    extras: { editorText: string; selectedProject: string },
+    extras: {
+      editorText: string;
+      selectedProject: string;
+      lastEvaluation: ClaudemdEvaluation | null;
+    },
   ) => void;
   onAdvance: () => void;
 }
@@ -162,7 +171,11 @@ export function ClaudemdEditor({
 
   const [attemptCount, setAttemptCount] = useState(persisted?.attempts ?? 0);
   const [bestScore, setBestScore] = useState(persisted?.bestScore ?? 0);
-  const [evaluation, setEvaluation] = useState<ClaudemdEvaluation | null>(null);
+  // Hydrated from stepState so a returning user reads the exact reply +
+  // dimension bars they saw last time (instead of "awaiting your prompt").
+  const [evaluation, setEvaluation] = useState<ClaudemdEvaluation | null>(
+    state?.lastEvaluation ?? null,
+  );
   const [evaluating, setEvaluating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [editorEffect, setEditorEffect] = useState<
@@ -182,7 +195,14 @@ export function ClaudemdEditor({
     strings.awaitingPrompt;
 
   const exhausted = attemptCount >= step.max_attempts;
-  const won = evaluation?.feedback_case === "excellent";
+  // Guard: require both the feedback_case AND a total >= 75 before locking
+  // the editor. The server now enforces this server-side (total derived from
+  // clamped individual scores, feedback_case downgraded when inconsistent),
+  // but this client-side check is a belt-and-suspenders defence against
+  // stale clients that cache an older API response shape.
+  const won =
+    evaluation?.feedback_case === "excellent" &&
+    (evaluation?.total ?? 0) >= 75;
 
   // Map the JSON's `projects[]` (with the legacy `key` field) into the
   // generic OptionCardItem shape the reusable selector consumes. Memoised
@@ -399,8 +419,18 @@ export function ClaudemdEditor({
   ]);
 
   function handleFinalize() {
-    if (!finishedRef.current && selectedProject) {
-      finishedRef.current = true;
+    // Persist the latest snapshot (Spark reply, dimension scores, best
+    // score, band, XP) so a retry-on-return actually updates the stored
+    // result instead of keeping the first finalisation's stale data.
+    // Same approach as InteractiveStep; onComplete → updateStepState is
+    // idempotent, so re-firing it is harmless.
+    //
+    // Gated on `evaluation` so a no-resubmit re-finalisation of legacy
+    // persisted state (written before lastEvaluation was tracked, so
+    // `evaluation` is null on mount) doesn't clobber a good stored
+    // result with a "poor"/0-XP one. selectedProject is always set by
+    // the time the final CTA shows.
+    if (evaluation && selectedProject) {
       const band = bandForCase(evaluation?.feedback_case ?? null);
       const xpEarned = xpForResult(
         evaluation?.feedback_case ?? null,
@@ -422,9 +452,11 @@ export function ClaudemdEditor({
           // 4 sections on next mount via hydrateSectionContent().
           editorText: composedBody,
           selectedProject,
+          lastEvaluation: evaluation,
         },
       );
     }
+    finishedRef.current = true;
     onAdvance();
   }
 
