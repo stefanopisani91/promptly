@@ -64,6 +64,12 @@ export interface ContextEvaluation {
 
 export interface ContextPromptEditorStrings {
   intro: string;
+  // Shown under the disabled submit button so the user knows why it's
+  // locked. {min}/{max} = the rewritten-prompt bounds; {current} = its
+  // live length.
+  pickScenarioHint: string;
+  minLengthHint: string;
+  maxLengthHint: string;
   selectScenarioLabel: string;
   emptyPromptLabel: string;
   // Sub-label appended under the empty box header — clarifies it's a
@@ -223,6 +229,24 @@ export function ContextPromptEditor({
     exhausted ||
     won ||
     dailyExhausted;
+
+  // When the submit button is locked for a *fixable* reason (no scenario,
+  // prompt too short / too long), say so under it — the button alone gave
+  // the user no idea why it wouldn't click. null when it's enabled or
+  // locked for a non-text reason (evaluating, daily cap, attempts done,
+  // already won — each has its own messaging).
+  const submitHint =
+    evaluating || won || exhausted || dailyExhausted || !submitDisabled
+      ? null
+      : !selectedScenarioData
+      ? strings.pickScenarioHint
+      : trimmedLength < MIN_DRAFT_CHARS
+      ? strings.minLengthHint
+          .replace("{min}", String(MIN_DRAFT_CHARS))
+          .replace("{current}", String(trimmedLength))
+      : trimmedLength > config.max_chars
+      ? strings.maxLengthHint.replace("{max}", String(config.max_chars))
+      : null;
 
   const counter = strings.totalCharCounterTemplate
     .replace("{current}", String(trimmedLength))
@@ -565,6 +589,11 @@ export function ContextPromptEditor({
                 {evaluating ? strings.submitting : strings.submitCta}
                 {!evaluating && <Send size={14} />}
               </button>
+              {submitHint && (
+                <p className="text-[11px] italic leading-relaxed text-text-muted">
+                  {submitHint}
+                </p>
+              )}
               {error && (
                 <div
                   className="flex items-start gap-2 rounded-xl border border-error/30 bg-error/5 px-3 py-2"

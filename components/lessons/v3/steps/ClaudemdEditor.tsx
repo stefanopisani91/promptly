@@ -68,6 +68,12 @@ export interface ClaudemdEvaluation {
 
 export interface ClaudemdEditorStrings {
   intro: string;
+  // Shown under the disabled submit button so the user knows why it's
+  // locked. {min}/{max} = the total-user-content bounds; {current} = the
+  // live total across the 4 sections.
+  pickProjectHint: string;
+  minLengthHint: string;
+  maxLengthHint: string;
   selectProjectLabel: string;
   selectedLabel: string;
   sectionPlaceholderHint: string;
@@ -288,6 +294,24 @@ export function ClaudemdEditor({
     exhausted ||
     won ||
     dailyExhausted;
+
+  // When the submit button is locked for a *fixable* reason (no project,
+  // content too short / too long), say so under it — the button alone gave
+  // the user no idea why it wouldn't click. null when it's enabled or
+  // locked for a non-text reason (evaluating, daily cap, attempts done,
+  // already won — each has its own messaging).
+  const submitHint =
+    evaluating || won || exhausted || dailyExhausted || !submitDisabled
+      ? null
+      : !selectedProject
+      ? strings.pickProjectHint
+      : userContentLength < MIN_DRAFT_CHARS
+      ? strings.minLengthHint
+          .replace("{min}", String(MIN_DRAFT_CHARS))
+          .replace("{current}", String(userContentLength))
+      : userContentLength > config.max_chars
+      ? strings.maxLengthHint.replace("{max}", String(config.max_chars))
+      : null;
 
   // Unified footer counter — shows total *user* characters across the 4
   // sections (excluding the auto-generated `## Heading` lines) against
@@ -587,6 +611,11 @@ export function ClaudemdEditor({
                   {evaluating ? strings.submitting : strings.submitCta}
                   {!evaluating && <Send size={14} />}
                 </button>
+                {submitHint && (
+                  <p className="text-[11px] italic leading-relaxed text-text-muted">
+                    {submitHint}
+                  </p>
+                )}
                 {error && (
                   <div
                     className="flex items-start gap-2 rounded-xl border border-error/30 bg-error/5 px-3 py-2"

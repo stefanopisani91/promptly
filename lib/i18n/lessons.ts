@@ -158,6 +158,12 @@ export interface LessonsCopy {
     // Lesson 2 — CLAUDE.md editor widget.
     claudemdEditor: {
       intro: string;
+      // Shown under the disabled submit button so the user knows why it's
+      // locked: no project picked, or total user content below {min} /
+      // above {max} ({current} = the live total).
+      pickProjectHint: string;
+      minLengthHint: string;
+      maxLengthHint: string;
       selectProjectLabel: string;
       selectedLabel: string;
       sectionPlaceholderHint: string;
@@ -207,6 +213,12 @@ export interface LessonsCopy {
     // examples). Same animation effects, different rubric copy.
     contextEditor: {
       intro: string;
+      // Shown under the disabled submit button so the user knows why it's
+      // locked: no scenario picked, or the rewritten prompt is below {min}
+      // / above {max} ({current} = the live length).
+      pickScenarioHint: string;
+      minLengthHint: string;
+      maxLengthHint: string;
       selectScenarioLabel: string;
       emptyPromptLabel: string;
       // Sub-label clarifying the empty box is a read-only example.
@@ -742,6 +754,11 @@ const it: LessonsCopy = {
     },
     claudemdEditor: {
       intro: "Scegli uno dei tre progetti, poi scrivi il tuo CLAUDE.md. Lo leggo io e ti dico cosa funziona e cosa manca.",
+      pickProjectHint: "Per inviare, scegli prima uno dei tre progetti qui sopra.",
+      minLengthHint:
+        "Per inviare servono almeno {min} caratteri di contenuto tuo tra le 4 sezioni (ora: {current}) — le intestazioni non contano.",
+      maxLengthHint:
+        "Hai superato i {max} caratteri — accorcia un po' e potrai inviare.",
       selectProjectLabel: "Scegli il progetto",
       selectedLabel: "Selezionato",
       sectionPlaceholderHint: "Scrivi qui le tue 4 sezioni. Tieni separati i blocchi con un'a capo.",
@@ -767,6 +784,11 @@ const it: LessonsCopy = {
     },
     contextEditor: {
       intro: "Scegli uno scenario. A destra hai il prompt vuoto come riferimento. A sinistra trasformalo aggiungendo i 4 livelli di contesto.",
+      pickScenarioHint: "Per inviare, scegli prima uno dei tre scenari qui sopra.",
+      minLengthHint:
+        "Il prompt riscritto deve essere almeno {min} caratteri (ora: {current}) — aggiungi i 4 livelli di contesto.",
+      maxLengthHint:
+        "Hai superato i {max} caratteri — accorcia un po' e potrai inviare.",
       selectScenarioLabel: "Scegli lo scenario",
       emptyPromptLabel: "PROMPT VUOTO",
       emptyPromptSubtitle: "(esempio, non modificabile)",
@@ -1272,6 +1294,11 @@ const en: LessonsCopy = {
     },
     claudemdEditor: {
       intro: "Pick one of the three projects, then write your CLAUDE.md. I'll read it and tell you what works and what's missing.",
+      pickProjectHint: "To send, pick one of the three projects above first.",
+      minLengthHint:
+        "To send, you need at least {min} characters of your own content across the 4 sections (now: {current}) — headings don't count.",
+      maxLengthHint:
+        "You're over {max} characters — trim it a bit and you'll be able to send.",
       selectProjectLabel: "Pick a project",
       selectedLabel: "Selected",
       sectionPlaceholderHint: "Write your 4 sections here. Keep blocks apart with a blank line.",
@@ -1297,6 +1324,11 @@ const en: LessonsCopy = {
     },
     contextEditor: {
       intro: "Pick a scenario. The empty prompt is on the right as a reference. Transform it on the left by adding the 4 levels of context.",
+      pickScenarioHint: "To send, pick one of the three scenarios above first.",
+      minLengthHint:
+        "The rewritten prompt needs at least {min} characters (now: {current}) — add the 4 levels of context.",
+      maxLengthHint:
+        "You're over {max} characters — trim it a bit and you'll be able to send.",
       selectScenarioLabel: "Pick a scenario",
       emptyPromptLabel: "EMPTY PROMPT",
       emptyPromptSubtitle: "(example, read-only)",
