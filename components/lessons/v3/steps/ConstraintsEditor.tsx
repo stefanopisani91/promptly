@@ -64,6 +64,11 @@ export interface ConstraintsEditorStrings {
   // Header above the editor — "Scrivi i 3 vincoli che..."
   editorHeader: string;
   charCounterTemplate: string; // "{current} / {max}"
+  // Shown under the disabled submit button so the user knows why it's
+  // locked. {min}/{max} = per-textarea bounds, {boxes} = comma-joined
+  // labels of the constraints still too short.
+  minLengthHint: string;
+  maxLengthHint: string;
   attemptCounterTemplate: string; // "Tentativo {current} / {max}"
   submitCta: string;
   submitting: string;
@@ -186,6 +191,28 @@ export function ConstraintsEditor({
     exhausted ||
     won ||
     dailyExhausted;
+
+  // When the submit button is locked for a *fixable text* reason (a box is
+  // too short / too long), surface a one-line explanation under it — the
+  // button alone gave the user no idea why it wouldn't click. null when the
+  // button is enabled, or locked for a non-text reason (evaluating, daily
+  // cap, attempts exhausted, already won — each has its own messaging).
+  const shortBoxLabels = config.textareas
+    .filter((t) => (lengths[t.kind] ?? 0) < config.min_chars_per_textarea)
+    .map((t) => t.label);
+  const submitHint =
+    evaluating || dailyExhausted || won || exhausted || !submitDisabled
+      ? null
+      : !allLongEnough
+      ? strings.minLengthHint
+          .replace("{min}", String(config.min_chars_per_textarea))
+          .replace("{boxes}", shortBoxLabels.join(", "))
+      : anyTooLong
+      ? strings.maxLengthHint.replace(
+          "{max}",
+          String(config.max_chars_per_textarea),
+        )
+      : null;
 
   const attemptCounter = strings.attemptCounterTemplate
     .replace("{current}", String(Math.min(attemptCount + 1, step.max_attempts)))
@@ -486,6 +513,11 @@ export function ConstraintsEditor({
                 {evaluating ? strings.submitting : strings.submitCta}
                 {!evaluating && <Send size={14} />}
               </button>
+              {submitHint && (
+                <p className="text-[11px] italic leading-relaxed text-text-muted">
+                  {submitHint}
+                </p>
+              )}
               {error && (
                 <div
                   className="flex items-start gap-2 rounded-xl border border-error/30 bg-error/5 px-3 py-2"

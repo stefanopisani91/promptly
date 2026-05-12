@@ -254,6 +254,11 @@ export interface LessonsCopy {
       // Eyebrow header above the 3-textarea grid.
       editorHeader: string;
       charCounterTemplate: string;
+      // Shown under the disabled "Invia a Spark" button so the user knows
+      // why it's locked. {min}/{max} = per-textarea bounds; {boxes} = the
+      // comma-joined labels of the constraints that are still too short.
+      minLengthHint: string;
+      maxLengthHint: string;
       attemptCounterTemplate: string;
       submitCta: string;
       submitting: string;
@@ -795,6 +800,10 @@ const it: LessonsCopy = {
       intro: "Adesso ti tocca. Ecco il disastro: scrivi i 3 vincoli che l'avrebbero prevenuto.",
       editorHeader: "Scrivi i 3 vincoli che avrebbero prevenuto questo disastro",
       charCounterTemplate: "{current} / {max}",
+      minLengthHint:
+        "Per inviare servono almeno {min} caratteri in ogni vincolo — una frase intera, come negli esempi. Ancora un po' corti: {boxes}.",
+      maxLengthHint:
+        "Un vincolo supera i {max} caratteri — accorcialo un po' e potrai inviare.",
       attemptCounterTemplate: "Tentativo {current} / {max}",
       submitCta: "Invia a Spark",
       submitting: "Sto leggendo…",
@@ -1321,6 +1330,10 @@ const en: LessonsCopy = {
       intro: "Now it's your turn. Here's the disaster: write the 3 constraints that would have prevented it.",
       editorHeader: "Write the 3 constraints that would have prevented this disaster",
       charCounterTemplate: "{current} / {max}",
+      minLengthHint:
+        "To send, each constraint needs at least {min} characters — a full sentence, like the placeholders. Still a bit short: {boxes}.",
+      maxLengthHint:
+        "A constraint is over {max} characters — trim it a bit and you'll be able to send.",
       attemptCounterTemplate: "Try {current} / {max}",
       submitCta: "Send to Spark",
       submitting: "Reading…",
