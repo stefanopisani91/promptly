@@ -226,6 +226,7 @@
             "key": "login",
             "icon": "🔐",
             "title": "Add login",
+            "short_title": "Login",
             "description": "User authentication system.",
             "empty_prompt": "Add login to the app."
           },
@@ -233,6 +234,7 @@
             "key": "notifications",
             "icon": "📨",
             "title": "Add email notifications",
+            "short_title": "Notifications",
             "description": "Auto-send email on a key event.",
             "empty_prompt": "When something happens, send an email."
           },
@@ -240,6 +242,7 @@
             "key": "stats",
             "icon": "📊",
             "title": "Add stats page",
+            "short_title": "Stats",
             "description": "Dashboard with user data charts.",
             "empty_prompt": "Add a page with user stats."
           }

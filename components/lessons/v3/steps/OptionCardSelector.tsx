@@ -37,6 +37,10 @@ export interface OptionCardItem {
   // Single visible glyph above the title (emoji or one-char label).
   icon: string;
   title: string;
+  // Compact label used on the card on narrow screens (the 3-up grid), where
+  // the full `title` would wrap badly across ~75px of card width. Optional
+  // — falls back to `title` when absent. The full `title` always shows ≥sm.
+  shortTitle?: string;
   description: string;
 }
 
@@ -100,7 +104,12 @@ export function OptionCardSelector({
     <div
       role="radiogroup"
       aria-label={ariaLabel}
-      className="grid grid-cols-1 gap-3 sm:grid-cols-3"
+      // 3-up at every width — the cards are meant to be compared at a
+      // glance. On phones each card is ~75px of usable text, so the card
+      // body below drops the description, shrinks the type/padding/icon,
+      // and uses `shortTitle` when the caller provided one. ≥sm goes back
+      // to the roomy layout (full title + description, p-4).
+      className="grid grid-cols-3 gap-2 sm:gap-3"
     >
       {options.map((option) => {
         const isSelected = selected === option.id;
@@ -118,7 +127,7 @@ export function OptionCardSelector({
             aria-checked={isSelected}
             onClick={() => handleSelect(option.id)}
             disabled={disabled}
-            className={`option-card group relative flex h-full flex-col gap-2 rounded-2xl border p-4 text-left transition-[transform,border-color,background-color,box-shadow] duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
+            className={`option-card group relative flex h-full flex-col gap-1.5 rounded-xl border p-2.5 text-left transition-[transform,border-color,background-color,box-shadow] duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 sm:gap-2 sm:rounded-2xl sm:p-4 ${
               isSelected
                 ? "option-card-selected border-2 border-primary bg-primary-light scale-[1.02]"
                 : "border border-border bg-surface hover:border-primary/60 hover:bg-primary-light/40 hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
@@ -137,16 +146,23 @@ export function OptionCardSelector({
           >
             <span
               aria-hidden
-              className={`option-card-icon text-2xl transition-transform duration-200 ${
+              className={`option-card-icon text-xl transition-transform duration-200 sm:text-2xl ${
                 isSelected ? "scale-[1.05]" : "group-hover:scale-[1.05] group-hover:rotate-2"
               }`}
             >
               {option.icon}
             </span>
-            <span className="font-heading text-base font-semibold text-text-primary">
-              {option.title}
+            <span className="font-heading font-semibold text-text-primary">
+              {/* Phones: compact label (falls back to the full title);
+                  ≥sm: the full title, at the regular size. */}
+              <span className="block text-[13px] leading-tight sm:hidden">
+                {option.shortTitle ?? option.title}
+              </span>
+              <span className="hidden text-base sm:block">{option.title}</span>
             </span>
-            <span className="text-sm text-text-secondary">
+            {/* Description is reference-level detail — only the desktop card
+                has room for it; on phones the icon + label carry the choice. */}
+            <span className="hidden text-sm text-text-secondary sm:block">
               {option.description}
             </span>
           </button>

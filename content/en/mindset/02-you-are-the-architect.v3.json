@@ -219,18 +219,21 @@
             "key": "ecommerce",
             "icon": "🛒",
             "title": "E-commerce",
+            "short_title": "E-commerce",
             "description": "Small online shop: catalog, cart, checkout, payments."
           },
           {
             "key": "habits",
             "icon": "📊",
             "title": "Habit tracker app",
+            "short_title": "Habits",
             "description": "Personal routines with stats and streaks."
           },
           {
             "key": "website",
             "icon": "🌐",
             "title": "Website",
+            "short_title": "Website",
             "description": "Personal portfolio or business landing page."
           }
         ],

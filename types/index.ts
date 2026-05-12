@@ -591,6 +591,10 @@ export interface ClaudemdProjectOption {
   // Glyph rendered above the title (single character, can be an emoji).
   icon: string;
   title: string;
+  // Compact label shown on the card on narrow screens (the 3-up grid),
+  // where the full `title` would wrap badly. Optional — the card falls
+  // back to `title` when absent. The full `title` is still used at ≥sm.
+  short_title?: string;
   description: string;
 }
 
@@ -637,6 +641,10 @@ export interface ContextScenarioOption {
   key: string;
   icon: string;
   title: string;
+  // Compact label shown on the card on narrow screens (the 3-up grid),
+  // where the full `title` would wrap badly. Optional — the card falls
+  // back to `title` when absent. The full `title` is still used at ≥sm.
+  short_title?: string;
   description: string;
   // The bare prompt the user is asked to enrich. Shown read-only on the
   // left of the editor and forwarded to the rubric so it can grade the

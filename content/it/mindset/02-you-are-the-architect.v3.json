@@ -219,18 +219,21 @@
             "key": "ecommerce",
             "icon": "🛒",
             "title": "E-commerce",
+            "short_title": "E-commerce",
             "description": "Piccolo negozio online: catalogo, carrello, checkout, pagamenti."
           },
           {
             "key": "habits",
             "icon": "📊",
             "title": "App tracker abitudini",
+            "short_title": "Abitudini",
             "description": "Routine personali con statistiche e streak."
           },
           {
             "key": "website",
             "icon": "🌐",
             "title": "Sito web",
+            "short_title": "Sito web",
             "description": "Portfolio personale o landing page aziendale."
           }
         ],

@@ -203,6 +203,7 @@ export function ContextPromptEditor({
         id: s.key,
         icon: s.icon,
         title: s.title,
+        shortTitle: s.short_title,
         description: s.description,
       })),
     [config.scenarios],

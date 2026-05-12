@@ -213,6 +213,7 @@ export function ClaudemdEditor({
         id: p.key,
         icon: p.icon,
         title: p.title,
+        shortTitle: p.short_title,
         description: p.description,
       })),
     [config.projects],
