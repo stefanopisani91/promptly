@@ -1,22 +1,20 @@
 # PROMPTLY — Backlog Post-Launch
 
-> File dove vivono tutte le iterazioni / miglioramenti / modifiche da fare DOPO l'MVP iniziale.
+> Iterazioni / miglioramenti / modifiche da affrontare dopo l'MVP iniziale. Lo stato attuale del prodotto è in `CLAUDE.md`; le spec storiche sono in `docs/archive/`.
 >
-> I file `PROMPTLY.md`, `AUTH.md`, `LANDING.md` restano la spec "pulita" del prodotto. Qui invece si accumulano richieste vive che emergono durante l'uso.
->
-> Ogni voce ha: stato (⏳ proposed / 🚧 in progress / ✅ done), priorità (🔴 alta / 🟡 media / 🟢 bassa), descrizione, e quando è il momento di partire un mini-prompt per Claude Code.
+> Ogni voce ha: stato (⏳ proposed / 🚧 in progress / ✅ done), priorità (🔴 alta / 🟡 media / 🟢 bassa) e descrizione.
 >
 > Versione 1.0 — 29 April 2026.
 
 ---
 
-# 🚨 COSE TO DO URGENTI
+# Voci urgenti
 
-> Voci che bloccano l'esperienza utente o che vanno fixate prima del prossimo ciclo di test. Aggiungere qui le cose **da affrontare per prime**, lasciare le altre nel backlog numerato sotto.
+> Voci che bloccano l'esperienza utente o che conviene affrontare prima del prossimo ciclo di test. Le altre stanno nel backlog numerato più sotto.
 
 ---
 
-## 🚨 URGENTE 1 — Calibrare il Lucia widget perché l'utente arrivi più facilmente alla vittoria
+## Urgente 1 — Calibrare il Lucia widget perché l'utente arrivi più facilmente alla vittoria
 
 **Stato:** ✅ done (10 May 2026, commit `e173d5c`)
 **Priorità:** 🔴 alta
@@ -92,7 +90,7 @@ L'utente percepisce il widget come "ho fatto tutto giusto e mi dà 69, è blocca
 
 ---
 
-## 🚨 URGENTE 3 — Ruotare 3 password/secret finiti in git history (file settings.local.json)
+## Urgente 3 — Ruotare 3 password/secret finiti in git history (file settings.local.json)
 
 **Stato:** ⏳ proposed
 **Priorità:** 🔴 alta (azione di pulizia, non blocca utenti, ma non rimandare oltre il prossimo giro Pro/pubblicazione)
@@ -153,8 +151,8 @@ Se hai script in `scripts/` o `qa-reports/` che hanno hardcodate le password vec
 
 ### Quando rifare l'azione
 
-- ✅ **Subito**, quando hai 10 minuti di slow time
-- 🚨 **Obbligatorio prima** di qualsiasi di queste mosse:
+- Quando capita, in 10 minuti di slow time
+- **Da fare prima** di qualsiasi di queste mosse:
   - rendere pubblica la repo
   - aggiungere un collaboratore esterno (anche temporaneo)
   - migrare il codice in un altro provider git
@@ -168,7 +166,7 @@ Per il futuro, evitare di approvare comandi `curl` con secret inline tra i patte
 
 ---
 
-## 🚨 URGENTE 2 — Reazioni di Spark devono correlare con i punteggi reali delle 4 dimensioni
+## Urgente 2 — Reazioni di Spark devono correlare con i punteggi reali delle 4 dimensioni
 
 **Stato:** ⏳ proposed
 **Priorità:** 🔴 alta
@@ -485,8 +483,7 @@ nuovo standard è:
 - **File paralleli**: `<order>-<slug>.v2.json` accanto al file V1, finché il renderer V2 non è in produzione.
 - **API key**: `.env.example` contiene `OPENAI_API_KEY` + `OPENAI_MODEL=gpt-4o-mini` (da riempire).
 
-Spec completa: `LESSON-GUIDELINES.md` (banner ⚠️ V2 in cima, §3.b, §11).
-Master: `PROMPTLY.md` (banner V2 in cima, sezione "Exercise Formats — B").
+Nota: la riscrittura è poi passata da V2 a **V3** (`steps[]` card-step). Per il formato attuale vedi `CLAUDE.md` § "Formato delle lezioni" e `LESSON-GUIDELINES.md`. Spec storica V1/V2: `docs/archive/LESSONS.md`.
 
 ### Stato V2
 
@@ -502,9 +499,9 @@ dalle V2 una a una. Restano in produzione finché la V2 non viene wired.
 
 ### Il renderer V2 è una voce di codice separata
 
-Vedi `LESSONS.md` "Round 4 — V2 lesson format" per la checklist
-implementativa (types, componenti, API route OpenAI, ecc.). Lo si fa
-DOPO che almeno la prima lezione V2 è scritta e validata sul testo.
+Il renderer e i tipi V3 sono già implementati (`components/lessons/v3/`,
+`types/index.ts`, `lib/lessons/load.ts`). Spec storica della pipeline V1/V2:
+`docs/archive/LESSONS.md`.
 
 ### File di riferimento
 
@@ -537,7 +534,7 @@ di Path 1, oppure tutto Path 1+2). Messaggio suggerito:
 
 ### Contesto
 
-`Promptly_Spark_Master_Configuration.md` §3 prescrive due tier:
+Le quote per-tier di Spark (definite nel codice, vedi `lib/ai/` e `app/api/spark-chat/route.ts`):
 
 | Feature | Free | Pro |
 |---|---|---|

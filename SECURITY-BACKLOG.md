@@ -304,19 +304,18 @@ Output vuoto = OK.
 
 ### Contesto
 
-Durante la sessione di vibe coding del 5 May 2026 (switch di Spark ad
-Anthropic — vedi `Promptly_Spark_Master_Configuration.md` §6, "Sessione 1"),
-il valore completo di `OPENAI_API_KEY` è transitato nel context della
-conversazione Claude almeno 3 volte:
+Durante la sessione di vibe coding del 5 May 2026 (passaggio di Spark ad
+Anthropic), il valore completo di `OPENAI_API_KEY` è transitato nel context
+della conversazione Claude almeno 3 volte:
 
 1. Lettura iniziale di `.env.local` per esplorare il progetto.
 2. Re-lettura di `.env.local` dopo aggiunta della sezione Anthropic.
 3. Lettura delle env vars Netlify via MCP — il `dev` context ritornava il
    valore non mascherato.
 
-L'assistant non ha mai echo-ato la chiave nel proprio output di testo
-(sempre referenziata come `sk-proj-FvJumZ3g…uAsA`), ma i tool result sono
-parte della conversation log a tutti gli effetti.
+L'assistant non ha mai trascritto la chiave nel proprio output di testo
+(sempre referenziata in forma abbreviata), ma i tool result fanno comunque
+parte del log della conversazione.
 
 ### Perché bassa priorità
 
@@ -331,7 +330,7 @@ parte della conversation log a tutti gli effetti.
 Combina questa task con la voce #1 (scope a `Model capabilities → Write`)
 e #5 (whitelist modello a livello Project) — un giro solo.
 
-1. https://platform.openai.com/api-keys → revoca `sk-proj-FvJumZ3g…uAsA`
+1. https://platform.openai.com/api-keys → revoca `la vecchia chiave`
 2. Crea nuova key Restricted (vedi voce #1) → name `Promptly v3`
 3. Aggiorna in 2 posti:
    - `.env.local` riga `OPENAI_API_KEY=` → riavvia `npm run dev`

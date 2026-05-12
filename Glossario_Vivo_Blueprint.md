@@ -1,9 +1,9 @@
-# 📖 Promptly — Glossario Vivo Blueprint
+# Promptly — Glossario Vivo Blueprint
 
-**Tipo di documento:** Specifica completa della feature "parole cliccabili che attivano spiegazioni di Spark".
-**Scope:** Trasversale a tutte le lezioni del Path 1 (e successivi). Inizia con Lezione 1, propaga a 2 e 3.
-**Tempo stimato implementazione:** 4-6 ore di vibe coding.
-**Funzione strategica:** Risolve simultaneamente 2 problemi: (1) abbassare la soglia per iniziare a parlare con Spark, (2) insegnare progressivamente il lessico tecnico senza interrompere il flusso.
+> Blueprint storico della feature "parole cliccabili che attivano spiegazioni di Spark", oggi implementata. La verità di runtime è nel codice: `lib/glossary/` (dizionario + parser del markup `[[term:...]]`), `components/glossary/` (`GlossaryTerm`, `GlossaryPopover`, `GlossaryProvider`, `RichText`). Alcuni dettagli qui (cartella `hooks/`, uso di framer-motion) non rispecchiano l'implementazione finale. Per il quadro generale: `CLAUDE.md`.
+
+**Cosa fa:** durante una lezione certi termini tecnici sono cliccabili; il click apre un popover con la definizione (voce di Spark) e un bottone che apre la chat con un draft precompilato.
+**Funzione strategica:** abbassa la soglia per iniziare a parlare con Spark e insegna il lessico tecnico progressivamente, senza interrompere il flusso.
 
 ---
 
@@ -16,7 +16,7 @@ Quando l'utente vede un termine tecnico durante una lezione (es. *"dipendenza"*,
 3. Avere la possibilità di **fare una domanda di follow-up** se ancora non gli è chiaro
 4. Tornare alla lezione **senza perdere il contesto**
 
-Tre principi non negoziabili:
+Tre principi guida:
 
 1. **Non rompere il flusso della lezione** — la spiegazione è un'aggiunta, non una deviazione
 2. **Spark resta in personaggio** anche nelle definizioni — concise, asciutte, non da Wikipedia
@@ -334,7 +334,7 @@ Aggiungerli quando scriverai quelle lezioni. Ogni lezione introduce 3-5 nuovi te
 
 ---
 
-## ⚠️ ERRORI DA EVITARE
+## Errori da evitare
 
 ### Errori UX
 

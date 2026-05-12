@@ -1,14 +1,10 @@
-# PROMPTLY — Master Context File
+# PROMPTLY — Master Context File (archivio)
 
-> # ⚠️ DEPRECATED (10 May 2026) — vedi `CLAUDE.md` per la verità attuale.
+> **Documento storico.** Era il brief principale del prodotto fino a maggio 2026. Diversi dettagli tecnici qui sotto sono superati: lezioni V1/V2 invece di V3, `daily_goal` a 3 valori invece di 4, onboarding a 3 step invece di 12, dashboard a lista di card invece della LearningMap, deploy su Vercel invece di Netlify, DeepSeek. Per lo stato attuale: [`/CLAUDE.md`](../../CLAUDE.md).
 >
-> Questo file era la "single source of truth" fino a maggio 2026 ma contiene ora info stale: lessons V1/V2 invece di V3 (formato attivo), `daily_goal` 3 valori invece di 4, onboarding 3 step invece di 12, dashboard "lista di card" invece della LearningMap. Mantenuto come reference storica della vision/business + taxonomy PostHog (ancora valido) + design system rationale (ancora valido).
+> Resta utile per: vision, business model freemium, razionale del design system (palette, "tool view"), taxonomy degli eventi PostHog.
 >
-> Per qualsiasi decisione tecnica nuova: leggi `CLAUDE.md`.
-
-> Read this file BEFORE touching any other file in the project.
-> This is the single source of truth for vision, design, data model, and UI language.
-> Version 2.3 — Updated 2 May 2026 (lessons V2 pivot).
+> Versione storica 2.3 — 2 May 2026.
 
 ---
 

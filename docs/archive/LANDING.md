@@ -1,8 +1,95 @@
-# PROMPTLY — Landing Page Brief
+# PROMPTLY — Landing Page Brief (archivio)
 
-> Brief completo per l'implementazione della landing page pubblica di Promptly.
-> Da leggere insieme a `PROMPTLY.md` (single source of truth) e `assets/README.md` (brand assets).
-> Versione 1.0 — 29 April 2026.
+> **Documento storico.** Brief della prima landing (aprile 2026). Superato dal redesign editoriale di maggio 2026 — vedi la sezione "REVISIONE" qui sotto per cosa è cambiato. Restano validi: target, tono, pricing nascosto in landing, bilinguismo, performance target. Per lo stato attuale del codice: [`/CLAUDE.md`](../../CLAUDE.md).
+>
+> Versione storica 1.0 — 29 April 2026.
+
+---
+
+## REVISIONE — Maggio 2026
+
+> Il brief originale è stato significativamente superato dal redesign editoriale dell'11 maggio 2026. Le decisioni strategiche di alto livello (target, tono, bilinguismo, pricing nascosto in landing, performance target) restano valide; la composizione delle sezioni, il visual e gran parte del copy sono cambiati. Quando una sezione più sotto contraddice questa nota, vince questa nota.
+
+### Composizione sezioni — confronto
+
+| # | Brief originale (Apr 2026) | Stato attuale (May 2026) |
+|---|---|---|
+| 1 | Hero (mockup statico card-lezione + chip orbitanti + toast XP) | Hero (iPhone 15 3D angolato + carosello CSS-only di 7 schermate WebP) |
+| 2 | Problema (3 step "ciclo infinito dei bug") | _eliminata, assorbita nel Method_ |
+| 3 | Soluzione (3 step "impara/prova/costruisci") | _eliminata, assorbita nel Method_ |
+| — | _(nuova)_ | Method (prose editoriale, 2 paragrafi affiancati) |
+| — | _(nuova)_ | Meet Spark (intro mascotte placeholder + 5 chip "voice rules") |
+| 4 | Curriculum (5 card colorate con barre difficoltà + badge Pro) | Curriculum (5 capitoli in vertical list editoriale — `PERCORSO 01 / titolo / desc / meta`. No barre colorate, no Pro badge esposto.) |
+| 5 | Esercizio fill-in-the-blank inline | _eliminata — la Lucia demo ne ha preso il ruolo_ |
+| — | _(esisteva ma riveduta)_ | Demo Lucia (tool view dialect, sfondo black, identica al brief separato) |
+| — | _(nuova)_ | Tools (6 IDE clickabili: Cursor, Claude Code, Windsurf, Copilot, Bolt, v0 — slug-routed per future lezioni IDE-specifiche) |
+| 6 | Social proof (3 preview placeholder + counter "[n] studenti early access") | _eliminata in produzione_ (niente social proof finta finché non c'è quella vera) |
+| 7 | FAQ (10-12 domande, accordion shadcn boxed) | FAQ (**6 domande**, "Quello che resta da chiedere.", accordion borderless con toggle `+`/`−` tipografico) |
+| 8 | Closing CTA (full-bleed arancione + repeat headline) | Closing editoriale (link sottolineato in accent, niente banner orange) |
+
+### Cambi al design system globale
+
+- **Canvas globale `--background`**: `#FAFAFA` neutro cool → **`#FBF6F0` cream caldo**. Era una scelta default Aceternity/Tailwind, ora un cream editoriale che amplifica l'identità dell'arancione brand. Cambio in `app/globals.css`, eredita tutto il sito (landing + dashboard + lezioni + onboarding).
+- **Logo header/footer**: `<Image>` SVG raster → **wordmark tipografico** (`components/marketing/PromptlyWordmark.tsx`). Plus Jakarta Sans 700, 20px, dot arancione 6×6px translateY(-2px). Il logo SVG ufficiale resta per OG image / favicon / press kit.
+- **Header**: liquid glass blur + transparent → **bianco puro solido** (`bg-surface` costante) con border-bottom permanente. Su scroll: solo `shadow-sm` come lift indicator. Niente più transparency/blur su nessuno stato.
+- **Footer**: `bg-surface-muted` (grigio neutro `#F5F5F5`) → eredita il canvas cream globale. Hairline `border-t` come unica separazione.
+- **Typography kicker**: ALL CAPS sparsi `tracking-[0.18em]` con `text-primary-deep` → **`font-mono` `tracking-[0.06em]` `text-text-muted`** coerente fra tutte le sezioni della landing e i column-headings del footer.
+
+### Componenti aggiunti (May 2026)
+
+- `components/marketing/IphoneCarousel.tsx` — Cornice iPhone 15 in CSS puro con `perspective: 1800px`, rotazione 3D (`rotateY -14° / rotateX 6° / rotateZ -1°`), carosello orizzontale di 7 schermate WebP in loop di 28s (ogni schermata ~2.7s visibile), hover-pause, `prefers-reduced-motion` respect, scale fluido tramite CSS var `--iphone-frame-w`.
+- `components/marketing/MethodSection.tsx`
+- `components/marketing/MeetSparkSection.tsx`
+- `components/marketing/ToolsSection.tsx`
+- `components/marketing/PromptlyWordmark.tsx`
+
+### Componenti rimossi
+
+- `HeroMockup.tsx`
+- `AlternatingDemoButton.tsx`
+- `InfinityBugAnimation.tsx`
+- `ProblemSection.tsx`
+- `SolutionSection.tsx`
+- `SocialProofSection.tsx`
+
+### Asset nuovi
+
+- `public/brand/mobile/screen-{1..7}.webp` — 7 schermate dell'app per il carosello hero. PNG sorgenti (1179×2556) → WebP a qualità 88 (max width 1080px). Compressione totale: 6.6 MB → 457 KB (**93% in meno**), media 65 KB/file. Lighthouse mobile sopra a 90 confermato.
+
+### i18n landing
+
+- Type `LandingCopy` in `lib/i18n/landing.ts`: aggiunto `method`, `meetSpark`, `tools`. Rimosso `problem`, `solution`, `socialProof`, `hero.mockup`, `hero.ctaBug`. Aggiunto `curriculum.kicker` e `curriculum.cards[].desc`.
+- `landing-it.ts` e `landing-en.ts` rimirrorati con la nuova copy editoriale. FAQ ridotte da 12 a 6 domande in entrambe le lingue.
+
+### PostHog events (taxonomy aggiornata)
+
+In `lib/analytics/posthog.ts`:
+- **Aggiunti**: `landing_meet_spark_viewed`, `landing_tools_viewed`, `landing_tool_clicked` (con `tool_slug` typed: `"cursor" | "claude-code" | "windsurf" | "copilot" | "bolt" | "v0"`).
+- **Rimossi**: `landing_socialproof_viewed`.
+
+### Cosa del brief originale resta valido
+
+- **Target prioritario**: beginner non-tech (marketer, designer, freelancer, curiosi).
+- **Tono di voce**: caldo & rassicurante, no hype, no motivazionale.
+- **Pricing nascosto in landing** (Pro scoperto dopo signup).
+- **Bilinguismo EN/IT** con toggle, URL `/en/` e `/it/`, auto-detect Accept-Language.
+- **Routing struttura** `app/(marketing)/[lang]/`.
+- **Founder story esclusa** — non c'è una sezione "About Stefano" nella landing.
+- **Performance target**: Lighthouse mobile ≥ 90, LCP < 2.5s.
+- **SEO**: JSON-LD `Course` e `FAQPage` (i due componenti `JsonLdCourse` e `JsonLdFAQ` esistono e renderizzati nella page).
+
+### Cosa del brief originale è esplicitamente superato
+
+- Sezione composition (vedi tabella sopra).
+- Hero copy ("Trasforma le tue idee in app vere..." → "Il vibe coding, insegnato per bene.").
+- Mockup hero stilizzato → iPhone 15 angolato con prodotto vero dentro.
+- Esercizio inline fill-in-the-blank → la Lucia demo ne ha preso il ruolo come "prova senza signup".
+- Social proof banner + counter → eliminato.
+- Closing CTA full-bleed orange → editoriale a una riga con link sottolineato.
+
+---
+
+> Il brief originale segue qui sotto, **mantenuto come contesto storico**. Quando una sezione tra quelle sotto contraddice quanto descritto qui sopra, vince questa head note.
 
 ---
 

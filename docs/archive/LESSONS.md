@@ -1,24 +1,10 @@
-# PROMPTLY — Lessons Brief (Round 3)
+# PROMPTLY — Lessons Brief (Round 3) (archivio)
 
-> # ⚠️ DEPRECATED (10 May 2026) — vedi `CLAUDE.md` per il sistema lezioni attuale.
+> **Documento storico.** Descriveva il formato lezioni V1 (`fill_blank`), poi superato da V2 e oggi da **V3** (card-step + Spark). Lo schema V3 e il dispatch V1/V2/V3 sono in [`/CLAUDE.md`](../../CLAUDE.md) § "Formato delle lezioni" e nei tipi (`types/index.ts`).
 >
-> Questo brief descriveva il formato V1 fill-in-the-blank. Era stato marcato "V2 superseded" il 2 May 2026 e ora anche V2 è stato superato da **V3** (card-step + Spark mascot). Lo schema V3 + il dispatch V1/V2/V3 sono in `CLAUDE.md` § "Schema lezioni V3" + nei TypeScript types (`types/index.ts`, righe 483+).
+> Conservato per la cronologia delle decisioni V1.
 >
-> Mantenuto per cronologia delle decisioni V1.
-
-> Brief completo per l'implementazione del sistema lezioni di Path 1 e Path 2.
->
-> Da leggere insieme a `PROMPTLY.md` (single source of truth), `AUTH.md` (utente già autenticato), e `vibe-coding-teoria-completa.md` (fonte primaria del materiale didattico).
->
-> Versione 1.0 — 29 April 2026.
->
-> ⚠️ **Aggiornamento 2 May 2026 — pivot V2.** Il formato esercizio
-> descritto in questo file (`fill_blank` con validazione client-side e
-> sinonimi) è **superseded** per i nuovi contenuti. La spec attiva del
-> formato V2 (open_question + archetype_quiz + commento GPT-4o mini con
-> system prompt per-lezione) vive in `LESSON-GUIDELINES.md` (banner ⚠️
-> V2 in cima, §3.b, §11). Le sezioni qui sotto restano valide per il
-> renderer V1 in produzione finché non viene sostituito.
+> Versione storica 1.0 — 29 April 2026.
 
 ---
 

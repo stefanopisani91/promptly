@@ -1,14 +1,8 @@
-# PROMPTLY — Dashboard V2 Design Spec
+# PROMPTLY — Dashboard V2 Design Spec (archivio)
 
-> # ⚠️ DEPRECATED (10 May 2026) — Spec implementata, mantenuta come "design memorial".
+> **Documento storico.** Spec di design della "mappa visiva" della dashboard, oggi implementata: vedi `components/promptly/map/` (LearningMap, MapNode, MapPathLine, MapRobotCursor, ecc.) e `app/(app)/dashboard/page.tsx`. Resta utile per le decisioni di design originali: zone bioma, sistema livelli/robot, catalogo e condizioni di sblocco delle bonus path, sistema referral. Alcuni dettagli (es. `content/map-layout.json`, cartella `hooks/`) non rispecchiano l'implementazione finale. Per lo stato attuale: [`/CLAUDE.md`](../../CLAUDE.md).
 >
-> Questa era la spec di design originale per la rivisitazione "mappa visiva" della dashboard. È stata implementata ed è oggi il dashboard live: vedi [`components/promptly/map/`](components/promptly/map/) (LearningMap, MapNode, MapPathLine, MapRobotCursor, ecc.) e [`app/(app)/dashboard/page.tsx`](app/(app)/dashboard/page.tsx).
->
-> Tieni questo doc per consultare le decisioni originali di design (zone biome, condizioni di sblocco bonus, sistema livelli). Per lo stato attuale e i flussi: `CLAUDE.md`.
-
-> Design document per la rivisitazione della dashboard: mappa visiva, robot avatar, sistema livelli XP, bonus path, referral.
-> Da leggere insieme a `PROMPTLY.md` (single source of truth).
-> Versione 1.0 — 30 April 2026.
+> Versione storica 1.0 — 30 April 2026.
 
 ---
 

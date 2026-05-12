@@ -1,38 +1,30 @@
 # LESSON-GUIDELINES.md
 
-> # ⚠️ AGGIORNAMENTO (10 May 2026) — Schema V3 in `CLAUDE.md`.
+> Guida operativa alla scrittura delle lezioni e al comportamento dei widget interattivi.
 >
-> Stato delle sezioni di questo file:
-> - ✅ **§ V3 quick-win rules** (in cima) — ATTUALI, vincolanti per ogni nuovo widget interattivo
-> - ✅ **§ Workflow autoraggio** + decisioni di stile (lunghezza, tono, citazioni, errori da evitare) — ATTUALI
-> - 🚫 **Schema V2** (§3.b, §11) e **schema V1** (§3.a) — STALE: il formato attivo è V3 (card-step + Spark mascot, `steps[]`)
+> **Cosa è attuale, cosa è storico:**
+> - **Regole sui quick-win V3** (sezione iniziale) — attuali, valgono per ogni nuovo widget interattivo.
+> - **Decisioni di stile** (lunghezza, tono, citazioni, esempi, errori da evitare — §2, §6, §7) — attuali per chi scrive lezioni.
+> - **Schema V2 e workflow di autoraggio** (§3.b, §5, §11) e **schema V1** (§3.a) — storici: il formato attivo è V3 (`steps[]` card-step). Per lo schema V3 e il dispatch V1/V2/V3 vedi `CLAUDE.md` § "Formato delle lezioni" e `types/index.ts`.
 >
-> Per lo schema V3 e il dispatch V1/V2/V3 vedi `CLAUDE.md` § "Schema lezioni V3" + `types/index.ts`.
-
-> Guida operativa alla scrittura delle lezioni di Path 1 e Path 2.
-> File **autosufficiente**: aprilo in una chat nuova e hai tutto il contesto per continuare il lavoro senza dover leggere conversazioni precedenti.
->
-> Da leggere insieme a:
-> - `LESSONS.md` — spec tecnica del sistema lezioni (schema, routing, types)
-> - `vibe-coding-teoria-completa.md` — fonte teorica primaria
-> - `PROMPTLY.md` — single source of truth del progetto
+> Contesto generale del progetto: `CLAUDE.md`. Spec storica del sistema lezioni: `docs/archive/LESSONS.md`.
 >
 > Versione 2.0 — 2 May 2026.
 
 ---
 
-## 🔥 V3 — Regole NON NEGOZIABILI sui quick win (9 May 2026)
+## Regole sui quick-win V3 (9 May 2026)
 
-Queste regole valgono per **tutti** i widget interattivi V3 (i quattro
-"quick win" delle lezioni 1, 2, 3, 4 — Lucia / Claudemd / Context /
-Constraints — e ogni futuro widget che chieda all'utente di scrivere
-testo per essere valutato dall'AI).
+Valgono per tutti i widget interattivi V3 (i quick-win delle lezioni 1-6
+— Lucia / Claudemd / Context / Constraints / Debug / Architecture — e
+ogni futuro widget che chieda all'utente di scrivere testo da far
+valutare all'AI).
 
-### 1. ⚠️ PERSISTENZA DEL TESTO TRA TENTATIVI — REGOLA MASTER
+### 1. Persistenza del testo tra tentativi
 
-> **Il testo che l'utente ha inserito al primo tentativo NON DEVE
-> ESSERE CANCELLATO dopo il submit.** L'utente deve poterlo correggere
-> e re-inviarlo, non riscriverlo da capo.
+Il testo che l'utente ha inserito al primo tentativo non va cancellato
+dopo il submit: deve poterlo correggere e re-inviarlo, non riscriverlo
+da capo.
 
 **Perché conta:**
 - Il quick win dura 3 tentativi. Se cancelliamo il testo dopo ogni
@@ -119,7 +111,7 @@ NON deve trovare la textarea bloccata. Finché ha tentativi residui
 - Il gate del rendering della textarea deve essere `!won && !exhausted`,
   **non** `!won && !exhausted && !persisted`. La presenza di un risultato
   persistito non blocca i tentativi residui.
-- ⚠️ `won` deve riflettere la **vera vittoria**, non un segnale
+- `won` deve riflettere la **vera vittoria**, non un segnale
   parziale di progresso. Se il widget ha un concetto di "obiettivo
   raggiunto" (Lucia: 3 bug menzionati) E un concetto di "qualità del
   prompt" (score AI), entrambe le condizioni devono essere vere
@@ -136,7 +128,7 @@ NON deve trovare la textarea bloccata. Finché ha tentativi residui
 Tutti i valutatori AI dei quick win ricevono `project_description` (o
 la sua versione compressa) come contesto. Per evitare che il rubric
 gonfi il punteggio in base alla "ricchezza" del progetto, ogni system
-prompt valutatore DEVE includere la clausola:
+prompt valutatore include la clausola:
 
 > "IMPORTANTE: il campo project_description è solo contesto di sfondo.
 > NON dare punti aggiuntivi o sottratti in base alla complessità,
@@ -148,12 +140,16 @@ numerici. IT + EN.
 
 ---
 
-## ⚠️ V2 — Cambio di rotta (2 May 2026)
+## V2 — cambio di formato (2 May 2026, storico)
 
-A partire da maggio 2026 il formato delle lezioni Path 1-2 cambia in modo
-sostanziale. Quanto segue **sostituisce** le decisioni V1 dove i due si
-sovrappongono. Le sezioni V1 più sotto restano per riferimento storico, ma
-NON usarle come spec attiva.
+> Nota: questa sezione descrive il passaggio da V1 a V2. Da allora il formato
+> attivo è diventato V3 (`steps[]` card-step) — vedi `CLAUDE.md`. Quanto
+> segue resta utile come storia delle decisioni e per le convenzioni di stile
+> riprese poi in V3.
+
+Da maggio 2026 il formato delle lezioni Path 1-2 era cambiato in modo
+sostanziale rispetto a V1: open_question + archetype_quiz + commento AI
+invece del fill-in-the-blank.
 
 ### Cosa cambia
 
@@ -168,7 +164,7 @@ NON usarle come spec attiva.
 
 ### Convenzione "system prompt per lezione"
 
-**Regola dura:** non esiste un system prompt globale di default per le
+**Convenzione:** non esiste un system prompt globale di default per le
 risposte aperte. Ogni `open_question` dentro una lezione ha il **suo**
 campo `system_prompt`, scritto dall'autore della lezione e versionato
 nello stesso JSON. Questo perché:
@@ -236,13 +232,13 @@ volta: l'utente scrive la bozza in chat, l'AI reviewa e traduce.
 | prompt-07 | Il problema della versione | intermediate | ⏳ pending | §7 |
 | prompt-08 | Libreria di pattern | intermediate | ⏳ pending | §7 |
 
-> ⚠️ I file V1 in produzione (formato `fill_blank`) restano live finché non
-> arriva il renderer V2 e il primo file V2 non viene wired. Non cancellarli.
-> Le V2 vivono accanto come `<order>-<slug>.v2.json` (vedi §3).
+> I file V1 in produzione (formato `fill_blank`) restano live finché la
+> lezione non viene migrata. Non cancellarli; le versioni nuove vivono
+> accanto con suffisso `.v2.json` / `.v3.json` (vedi §3).
 
 ---
 
-## 2. Decisioni di stile (NON deviare)
+## 2. Decisioni di stile
 
 ### 2.1 Lunghezza
 - Teoria totale: **300-500 parole** (sweet spot 350-450).
@@ -755,56 +751,36 @@ Poi verifica deploy verde su Netlify.
 
 ---
 
-## 9. Prompt di kickoff per nuova chat (V2)
+## 9. Workflow di autoraggio (storico, formato V2)
 
-Da copiare/incollare all'inizio di una chat nuova:
+> Per le lezioni V3 il workflow è analogo nello spirito (l'autore scrive la
+> bozza, l'AI revisiona con proposte numerate, poi traduce e salva i JSON IT
+> + EN, niente commit fino a fine blocco di lavoro), adattato allo schema
+> `steps[]` invece di `body[]`. Quanto segue è la versione V2 originale.
 
-```
-Sto continuando il lavoro sulle lezioni di Promptly in formato V2.
-Apri LESSON-GUIDELINES.md nel workspace e leggilo INTERAMENTE,
-specialmente il banner ⚠️ V2 in cima e le sezioni 2.5, 3.b, 5, 11.
-Apri anche /content/it/mindset/01-what-is-vibe-coding.v2.json come
-fixture V2.
+1. L'autore scrive la bozza della lezione in italiano, con i blocchi nominati come nello schema (paragraph, section_heading, open_question, archetype_quiz, …).
+2. L'AI revisiona con proposte numerate, senza modificare nulla.
+3. L'autore conferma quali proposte accettare.
+4. L'AI integra, salva `/content/it/<path>/<file>.<ext>` e traduce / salva `/content/en/<path>/<file>.<ext>`.
+5. Validazione: parse JSON + word count + sanity check.
+6. Niente commit per singola lezione: commit unico a fine blocco di lavoro coerente.
 
-Workflow approvato (invertito rispetto a V1):
-1. IO scrivo la bozza della lezione in italiano in chat, blocchi
-   nominati come nello schema V2 (paragraph, section_heading,
-   open_question, archetype_quiz, ...).
-2. TU revisioni con proposte numerate, senza modificare nulla.
-3. Io confermo quali proposte accettare.
-4. Tu integri, salvi /content/it/<path>/<file>.v2.json e traduci /
-   salvi /content/en/<path>/<file>.v2.json.
-5. Validazione (parse + word count + sanity check V2).
-6. NON committare. Commit unico quando finisce il blocco di lavoro.
-
-Stato V2:
-- mindset-01 ✅ scritta (file v2 in repo)
-- da fare: tutto il resto
-
-Iniziamo dalla lezione <id>.
-Ricorda: niente regole forzate, niente metafore eccessive, ogni
-open_question deve avere il suo system_prompt (vedi §11),
-archetype_quiz richiede tie_breaker_priority esplicito.
-```
+Vincoli di stile da tenere a mente: niente regole forzate, niente metafore eccessive, ogni `open_question` ha il suo `system_prompt` (vedi §11), gli `archetype_quiz` richiedono `tie_breaker_priority` esplicito.
 
 ---
 
-## 10. File di riferimento nel workspace
+## 10. File di riferimento
 
 | File | Cosa contiene |
 |---|---|
-| `LESSON-GUIDELINES.md` (questo file) | Guida operativa al workflow di scrittura |
-| `LESSONS.md` | Spec tecnica del sistema lezioni (schema, types, routing) |
-| `vibe-coding-teoria-completa.md` | Fonte teorica primaria (20 sezioni) |
-| `PROMPTLY.md` | Single source of truth del progetto (vision, design, hosting) |
-| `BACKLOG.md` | Backlog post-launch (refresh lezioni è la voce 4) |
-| `/content/it/mindset/01-what-is-vibe-coding.v2.json` | **Fixture V2** — apri sempre prima di iniziare una nuova lezione V2 |
-| `/content/en/mindset/01-what-is-vibe-coding.v2.json` | Fixture V2 EN |
-| `/content/it/mindset/04-break-it-down.json` | Fixture stilistica V1 (per registro / tono di scrittura) |
-| `/content/<lang>/<path>/<order>-<slug>.json` | File V1 in produzione (NON cancellare finché renderer V2 non live) |
-| `/content/<lang>/<path>/<order>-<slug>.v2.json` | File V2 paralleli (in lavorazione) |
-| `/public/brand/lessons/<id>.svg` | Icone già pronte, non toccare |
-| `.env.example` | Variabili d'ambiente: `OPENAI_API_KEY`, `OPENAI_MODEL=gpt-4o-mini` |
+| `CLAUDE.md` | Contesto operativo del progetto, schema lezioni V3 attuale |
+| `LESSON-GUIDELINES.md` (questo file) | Regole quick-win V3 + decisioni di stile + workflow di scrittura |
+| `BACKLOG.md` | Backlog post-launch (la riscrittura lezioni è la voce 4) |
+| `docs/archive/LESSONS.md`, `docs/archive/PROMPTLY.md` | Spec storiche (sistema lezioni V1, vision/design originali) |
+| `/content/it/mindset/04-break-it-down.json` | Fixture stilistica V1 — registro e tono di scrittura |
+| `/content/it/mindset/01-what-is-vibe-coding.v3.json` | Lezione V3 di riferimento per lo schema `steps[]` |
+| `/public/brand/lessons/<id>.svg` | Icone delle lezioni, già pronte |
+| `.env.example` | Variabili d'ambiente attese (`ANTHROPIC_*`, `OPENAI_*`, ecc.) |
 
 ---
 

@@ -1,379 +1,251 @@
-# CLAUDE.md — Promptly: contesto operativo
+# CLAUDE.md — Promptly
 
-> File di riferimento aggiornato. Leggilo PRIMA di toccare qualsiasi altro file della repo.
->
-> Sostituisce nei fatti `PROMPTLY.md` come single source of truth. I `.md` storici (PROMPTLY, LESSONS, LESSON-GUIDELINES, AUTH, DASHBOARD_V2, LANDING) sono mantenuti per cronologia ma sono parzialmente o totalmente stale — vedi `§ Mappa documenti` in fondo.
->
-> Versione 1.0 — 10 May 2026 (lessons V3 — card-step + Spark mascot).
+Sintesi operativa del progetto. Pensata per chi (persona o agente) apre la repo e deve orientarsi in fretta: cos'è il prodotto, com'è fatto il codice, dove vivono le cose, come si lavora.
+
+Tienilo aggiornato quando cambia lo stack, il formato delle lezioni o le convenzioni. Per i dettagli storici di una singola feature, vedi i documenti elencati in fondo.
 
 ---
 
-## Per umani che aprono la repo per la prima volta
+## Il prodotto
 
-Promptly è una webapp che insegna **vibe coding** — la pratica di costruire software a parole, non a codice. Stefano (il founder + autore unico) l'ha pensata come un corso strutturato e gamificato dove ogni concetto si tocca con mano, non si legge soltanto. La mascotte si chiama **Spark** ed è un personaggio vero: parla in prima persona, dolce ma diretta, mai paternalistica, mai motivazionale-da-LinkedIn. Spark non è un wrapper di ChatGPT, è una persona con regole di voce (vedi `lib/ai/spark-system-prompt.ts`).
+Promptly insegna il **vibe coding**: costruire software descrivendo a parole cosa si vuole, lasciando che l'AI scriva il codice. Non una raccolta di tutorial — un corso strutturato e gamificato dove ogni concetto si pratica subito con un esercizio valutato dall'AI.
 
-Il sito è bilingue (IT/EN), responsive (mobile-first), gira su Next.js 14 + Supabase + Netlify. È pubblico su `https://learnpromptly.app/`. La verità della repo non sta in un singolo .md monolitico — sta nei TypeScript types (`types/index.ts`), nei contenuti (`/content/<lang>/<path>/<file>.v3.json`) e nei componenti (`components/lessons/v3/`). Questo file ti orienta.
-
-Il prodotto ha attraversato tre formati di lezione (V1 fill-in-the-blank → V2 open-question + GPT-4o mini → V3 card-step + Spark mascot). Oggi V3 è lo standard attivo per i nuovi contenuti. V1 e V2 coesistono temporaneamente per le lezioni non ancora migrate.
+- **Tagline:** *"Learn to build with words, not code."* / *"Impara a costruire con le parole, non con il codice."*
+- **Pubblico:** dal principiante non-tech (marketer, designer, freelancer, curiosi) al junior developer che vuole accelerare con l'AI. Insegna pensiero e comunicazione, non sintassi.
+- **Mascotte: Spark** — un mentore conversazionale con regole di voce precise (vedi `lib/ai/spark-system-prompt.ts`): parla in prima persona, calda ma diretta, niente toni paternalistici, niente "bravissimo/geniale", niente motivazionale-da-LinkedIn, niente emoji decorative. Usa le virgolette caporali italiane (`«»`).
+- **Bilingue** IT/EN, mobile-first, in produzione su `https://learnpromptly.app/` (Netlify, deploy automatico da `main`).
+- **Modello freemium (pianificato, Stripe non ancora integrato):** Free = Path 1 + Path 2 (quando Path 2 sarà sbloccato — vedi sotto). Pro (€6,99/mese o €29 una tantum) = Path 3-5 + valutazione AI estesa + certificato. Finché Stripe non è wired, il Pro non è raggiungibile da utente; la quota Spark per-tier esiste nel codice ma è inattiva.
 
 ---
 
-## Per AI/dev: stato del progetto in 30 secondi
+## Stato attuale (maggio 2026)
 
-| Asse | Stato attuale (10 May 2026) |
+| | |
 |---|---|
-| Hosting | `https://learnpromptly.app/` su Netlify, deploy auto da `main` |
-| Stack | Next.js 14 (App Router) + Supabase (Postgres + Auth) + Tailwind + shadcn/ui + Stripe non wired |
-| Tipi e schema | TypeScript strict, no `any`. Tutti i types in [types/index.ts](types/index.ts) (1030 righe) |
-| Lezioni live | Path 1 V3 (6) + Path 2 V1 (8) — entrambi visibili agli utenti |
-| AI provider attivi | OpenAI GPT-4o mini (open_question V2 + Lucia landing demo + alcuni evaluator V3); Anthropic Claude Haiku 4.5 (Spark chat + alcuni evaluator V3) |
-| Dashboard | Mappa visiva interattiva (`LearningMap`) — non più la lista V1 |
-| Onboarding | 12 step (Welcome → … → Promises → Transition) — non più 3 |
-| Pro tier | Stripe NON wired, Pro non raggiungibile da utente. Quota Spark per-tier presente in code, attiverà quando Stripe è online |
+| **Path 1 — Mindset** | 6 lezioni in formato **V3** (`*.v3.json`). Live, accessibile agli utenti. |
+| **Path 2 — Prompt** | 8 lezioni in formato **V1** (`fill_blank`), presenti su disco ma **bloccate fino al lancio (1 giugno 2026)**: sulla mappa appaiono con un lock "in arrivo", e `/lesson/[id]` reindirizza i deep-link a `/dashboard?locked=path2`. Lo slug `"prompt"` è in `COMING_SOON_PATHS` (`lib/map/data.ts`). Le V1 verranno riscritte in V3 prima dello sblocco. |
+| **Path 3-5 e bonus path** | Solo segnaposti sulla mappa. Nessun contenuto scritto. |
+| **Dashboard** | Mappa visiva interattiva (`LearningMap`), non più una lista di card. |
+| **Onboarding** | 12 step di profilazione (Welcome → Name → Experience → Intent → Project → Tools → PreferredTool → Time → Motivation → Recap → Promises → Transition). |
+| **Pagamenti** | Stripe non integrato. |
 
 ---
 
-## Vision e business model
+## Stack
 
-**Tagline:** *"Learn to build with words, not code."* (IT: *"Impara a costruire con le parole, non con il codice."*)
-
-**Cos'è davvero Promptly:** ogni guida sul vibe coding online è un articolo da leggere. Promptly è il primo **corso strutturato e interattivo** che ti fa praticare. Niente video lezioni, niente blog post lunghi: ogni lezione termina con un esercizio "quick win" valutato dall'AI, e ogni concetto si applica subito.
-
-**Target:** beginner non-tech (marketer, designer, freelancer, curiosi) → junior developer che vuole accelerare con AI. Funziona per entrambi perché insegna **pensiero e comunicazione**, non sintassi.
-
-**Freemium model (pianificato, Stripe non wired):**
-
-| Tier | Accesso | Prezzo |
-|---|---|---|
-| **Free** | Path 1 (Mindset, 6 lez) + Path 2 (Prompt, 8 lez) | €0 |
-| **Pro** | Path 3 + Path 4 + Path 5 + AI prompt evaluation + completion certificate | €6.99/mese o €29 una tantum |
-
-Path 3-5 + Pro tier sono **discussione aperta, nessuna timeline**. Quando si attiva, lo Stripe webhook → `users.subscription_tier`.
+- **Framework:** Next.js 14 (App Router), React 18, TypeScript strict (no `any`).
+- **UI:** Tailwind + shadcn/ui (`components/ui/` è la base shadcn — non modificarla direttamente). Animazioni: CSS keyframes in `app/globals.css` come default; `framer-motion`, `lottie-react`, `canvas-confetti` dove serve; `@dnd-kit` per il drag-and-drop (widget lezione 6).
+- **Backend:** Supabase (Postgres + Auth). `middleware.ts` fa solo il refresh della sessione.
+- **AI:** Anthropic Claude Haiku 4.5 (`claude-haiku-4-5-20251001`) per la chat di Spark e per gli evaluator delle lezioni V3 2-6 — client in `lib/ai/anthropic.ts`, system prompt prompt-cached. OpenAI `gpt-4o-mini` per la demo Lucia / quick-win lezione 1 e per il commento V2 `open_question` — client in `lib/ai/openai.ts`. (`docs/archive/PROMPTLY.md` cita anche DeepSeek per i futuri Path 3-5: non è ancora wired.)
+- **Email:** Resend (`lib/notifications/email-templates/`). Welcome email attiva; reminder streak pianificato.
+- **Notifiche push:** Web Push (PWA install). Cron di reminder pianificato.
+- **Analytics:** PostHog (istanza EU) via il wrapper `lib/analytics/posthog.ts`.
+- **Hosting:** Netlify, deploy automatico da `main` (se il webhook salta: pannello Netlify → Trigger deploy → Clear cache and deploy site).
 
 ---
 
-## Stato lezioni — cosa esiste, in che formato
+## Comandi
 
+```bash
+npm run dev          # dev server
+npm run build        # build di produzione (il prebuild esegue check-spark-tokens)
+npm run lint         # next lint
+npm run check-spark  # conta i token del system prompt di Spark
+npx tsc --noEmit     # type-check
 ```
-content/
-├── en/
-│   ├── mindset/        # Path 1 — V3 (.v3.json) per tutte le 6
-│   └── prompt/         # Path 2 — V1 (.json fill_blank) per tutte le 8
-└── it/                 # mirror IT
-```
 
-**Path 1 — Mindset (V3 attivo)**, 6 lezioni:
-1. `mindset-01` — L'AI esegue. Tu dirigi. *(introduzione, archetipi, Lucia quick-win)*
-2. `mindset-02` — Il giusto setup *(CLAUDE.md, IDE AI, claudemd_editor quick-win)*
-3. `mindset-03` — Il contesto vale più del prompt *(4 livelli di contesto, context_prompt_editor quick-win)*
-4. `mindset-04` — I vincoli ti salvano la vita *(3 tipi di vincoli, constraints_editor quick-win)*
-5. `mindset-05` — Quando l'AI sbaglia, sbagli tu *(4 tipi di errore, broken_session_debugger quick-win)*
-6. `mindset-06` — Il workflow ti farà risparmiare 20 ore al mese *(4 fasi del workflow, prompt_architecture quick-win)*
-
-**Path 2 — Prompt (V1 fill-in-the-blank)**, 8 lezioni: 01-anatomy → 08-patterns-library. Visibili in produzione. **Prossima priorità: riscrittura in V3.**
-
-**Path 3-5** non esistono come contenuto, solo segnaposti su mappa.
-
-### Dispatch dei formati
-
-`lib/lessons/load.ts` carica per ogni lesson id il file con il `format_version` più alto disponibile. La pagina `/lesson/[id]` poi dispatcha in base al `format_version`:
-
-- `format_version` assente → V1 → renderer `TheoryRenderer` + `ExerciseFillBlank`
-- `format_version === 2` → V2 → `LessonV2View`
-- `format_version === 3` → V3 → `LessonV3View` (vedi sotto)
-
-I file V1 e V2 vivono accanto ai V3 (es. `01-what-is-vibe-coding.json` + `01-what-is-vibe-coding.v3.json`) — il loader sceglie il più nuovo. Questa è la strategia di rollout: scrivi il `.v3.json`, il vecchio si auto-pensiona alla prima visita.
+- Prima di un push: `npx tsc --noEmit && npm run build` devono essere puliti.
+- Dopo aver modificato una lesson JSON: validala, es. `node -e "JSON.parse(require('fs').readFileSync('content/it/mindset/06-the-workflow.v3.json','utf8'))"`.
+- Ogni cambio di testo in IT va rispecchiato in EN (salvo decisioni esplicite di drift).
+- Commit per blocco di lavoro coerente, non micro-commit. Push manuale.
+- Script di supporto in `scripts/`: `check-spark-tokens.ts`, `calibrate-motivation-compress.ts`, `spark-coherence-test.mjs`, `spark-raw-call.mjs`.
 
 ---
 
-## Schema lezioni V3 (formato attivo)
+## Struttura del progetto
 
-V3 è un **array di step** card-by-card invece di un body scrollabile. L'utente naviga step-by-step come una conversazione con Spark, non legge un articolo.
+```
+app/
+├── (marketing)/[lang]/   # Landing pubblica (en|it) + login/signup alternativi + privacy/terms/cookie
+├── (auth)/auth/          # Magic link + Google OAuth (+ callback, check-email, expired)
+├── (auth)/onboarding/    # 12 step di profilazione
+├── (app)/dashboard/      # LearningMap
+├── (app)/path/[slug]/    # Overview di un path
+├── (app)/lesson/[id]/    # Pagina lezione — dispatch V1/V2/V3 in base a format_version
+├── (app)/settings/       # Account, lingua, daily goal, notifiche, billing (placeholder)
+├── (app)/admin/users/    # Pannello admin (gated server-side su account_type)
+└── api/
+    ├── spark-chat/                  # Chat libera con Spark (Haiku)
+    ├── comment-answer/              # Commento V2 open_question (gpt-4o-mini)
+    ├── landing-evaluate/            # Demo Lucia + quick-win lezione 1 (gpt-4o-mini)
+    ├── lesson-claudemd-evaluate/    # Quick-win lezione 2 (Haiku)
+    ├── lesson-context-evaluate/     # Quick-win lezione 3 (Haiku)
+    ├── lesson-constraints-evaluate/ # Quick-win lezione 4 (Haiku)
+    ├── lesson-debug-evaluate/       # Quick-win lezione 5 (Haiku)
+    ├── lesson-architecture-prompt/  # Quick-win lezione 6 (Haiku)
+    └── qa-login/                    # Bypass QA dev-only (gitignored secret)
 
-```typescript
-{
-  id: "mindset-06",
-  format_version: 3,
-  path_slug: "mindset",
-  order: 6,
-  title: string,                // titolo principale lezione
-  map_title?: string,           // label corto per la mappa (≤30 char)
-  subtitle?: string,            // sottotitolo opzionale
-  difficulty: "beginner" | "intermediate" | "advanced",
-  estimated_minutes: number,
-  base_xp: number,
-  difficulty_bonus_xp: number,
-  icon?: string,                // /brand/lessons/<id>.svg
-  cliffhanger?: string,         // mostrato dopo completamento, anticipa lezione successiva
-  steps: LessonV3Step[]
-}
+components/
+├── ui/                   # shadcn base — non modificare
+├── marketing/            # Landing (redesign editoriale maggio 2026): PromptlyWordmark, HeroSection,
+│                         #   IphoneCarousel, MethodSection, MeetSparkSection, ToolsSection,
+│                         #   CurriculumPreview, FAQSection, ClosingCTA, MarketingHeader/Footer,
+│                         #   InteractiveExerciseDemo, lucia/, JsonLd*, ecc.
+├── auth/  onboarding/profiling/steps/  settings/
+├── dashboard/            # ContinueCard, DailyGoalCard, StreakHeatmap, SparkCompanionCard, ProfileMenu, ecc.
+├── promptly/             # Cross-app: RobotAvatar, LevelBadge, LevelUpModal, ReferralCard, XPLevelBar
+│   └── map/              # LearningMap, MapSection, MapNode, MapPathLine, MapRobotCursor, BiomeBackground, ecc.
+├── glossary/             # GlossaryTerm, GlossaryPopover, GlossaryProvider, RichText
+└── lessons/
+    ├── (V1 legacy)       # LessonShell, TheoryRenderer, ExerciseFillBlank, OpenQuestion, ArchetypeQuiz, ...
+    ├── LessonV2View.tsx
+    └── v3/
+        ├── LessonV3View.tsx   # Renderer top-level V3
+        ├── SparkHeader.tsx    # Top bar sticky: vignette + Spark + contatore step
+        ├── StepCard.tsx       # Wrapper card (larghezze: default max-w-2xl / medium max-w-4xl / wide max-w-5xl)
+        ├── VignetteCloud.tsx  # Pensieri di Spark orbitanti
+        ├── SparkChat.tsx  AskSparkBubble.tsx
+        └── steps/             # TextStep, PrincipleStep, ChoiceStep, InputStep, InteractiveStep (dispatcher),
+                               #   RewardStep, OptionCardSelector, SectionAccordion, ErrorTaxonomyBlocks,
+                               #   PhaseMappingBlocks, ClaudemdEditor, ConstraintsEditor, ContextPromptEditor,
+                               #   PromptArchitecture, DatabaseDisasterMockup, BrokenSessionDebugger
+
+lib/
+├── ai/            # anthropic.ts, openai.ts, spark-system-prompt.ts, promises.ts
+├── lessons/       # load.ts (version detection), display.ts, validate.ts, progress.ts, paths.ts; v3/ evaluator
+├── landing-demo/  # Demo Lucia: sito diegetico + console + tipi + system prompt + rate-limit
+├── supabase/      # client.ts, server.ts, queries.ts (tutte le query DB), service.ts, types.ts
+├── glossary/      # glossary.ts (dizionario), markup.ts (parser [[term:...]])
+├── i18n/          # Stringhe IT/EN per ogni surface (auth, lessons, map, profiling, landing-it/en, ...)
+├── notifications/ # Template email Resend + push
+├── onboarding/    # project.ts, compress-project.ts, compress-motivation.ts, tools.ts
+├── map/           # data.ts (dati LearningMap), layout.ts
+├── rate-limits/   # Quota per account_type
+├── analytics/posthog.ts
+└── xp.ts  streak.ts  levels.ts  daily-goal.ts  bonus-paths.ts  unlock.ts  referral.ts  avatar.ts  confetti.ts  site.ts
+
+content/<lang>/<path>/   # Lesson JSON statici (V1/V2/V3 convivono nella stessa cartella)
+public/brand/            # Logo, icone lezioni (lessons/<id>.svg), OG image, brand/mobile/ (screenshot carosello)
+types/index.ts           # Tutti i tipi TypeScript (~1000 righe — è il riferimento sui contratti dati)
 ```
 
-**Step types** (definiti in `types/index.ts`):
+---
 
-| Type | Cosa fa | Renderer |
-|---|---|---|
-| `text` | Paragrafi di prosa narrativa di Spark, supporta markdown bold + glossary markup + numbered list auto-rendering | `TextStep` |
-| `principle` | Card "manifesto" con headline + emphasis + caption | `PrincipleStep` |
-| `choice` | Domanda multiple-choice, può ramificare il prossimo `text` step via `paragraphs_by_choice` | `ChoiceStep` |
-| `input` | Risposta aperta dell'utente, commentata da Spark in 2-3 frasi (GPT-4o mini) | `InputStep` |
-| `interactive` | Quick-win widget pesante (uno per lezione). Vedi sotto | `InteractiveStep` (dispatcher) |
-| `reward` | Pop-up "+150 XP" o reveal archetipo con bonus | `RewardStep` |
-| `error_taxonomy` | Lista di N tipi di errore con cura associata (specifico lez 5) | `ErrorTaxonomyBlocks` |
-| `phase_mapping` | Lista di fasi con sub-elenco di azioni narrative (specifico lez 6) | `PhaseMappingBlocks` |
+## Formato delle lezioni
 
-Ogni step può avere `vignettes: Vignette[]` — pensieri di Spark che orbitano attorno alla mascotte (chip cliccabili che espandono in popup).
+`lib/lessons/load.ts` carica, per ogni lesson id, il file con il `format_version` più alto disponibile. La pagina `/lesson/[id]` sceglie il renderer in base a quel valore (vedi le type guard `isLessonV2Content` / `isLessonV3Content` in `types/index.ts`):
+
+- nessun `format_version` → **V1** → `TheoryRenderer` + `ExerciseFillBlank` (`fill_blank` con hint progressivi, validazione client-side)
+- `format_version === 2` → **V2** → `LessonV2View` (`body` misto: prosa + `open_question` con commento gpt-4o-mini + `archetype_quiz` statico). Il `system_prompt` di ogni `open_question` è per-lezione, dentro il JSON — niente default globale.
+- `format_version === 3` → **V3** → `LessonV3View` (formato attivo per i nuovi contenuti)
+
+I file delle diverse versioni convivono (es. `01-what-is-vibe-coding.json` accanto a `.v2.json` e `.v3.json`): è la strategia di migrazione — si scrive la nuova versione e la vecchia si auto-pensiona alla prima visita. Non cancellare i file V1 finché la lezione non è migrata. Il contenuto vive in `/content`, **non** nel DB; nel DB vivono solo progresso utente, XP, streak, subscription.
+
+### Lezioni V3
+
+Una lezione V3 è un array di **step** mostrati card-by-card, vissuti come una conversazione con Spark invece che come un articolo. Tipi di step (definiti in `types/index.ts`, renderer in `components/lessons/v3/steps/`):
+
+| Step | Cosa fa |
+|---|---|
+| `text` | Prosa narrativa di Spark; supporta `**bold**`, markup glossario, liste numerate |
+| `principle` | Card "manifesto": headline + emphasis + caption |
+| `choice` | Domanda a scelta multipla; può ramificare il `text` successivo |
+| `input` | Risposta aperta dell'utente, commentata da Spark in 2-3 frasi |
+| `interactive` | Il "quick-win" widget — uno per lezione (vedi sotto) |
+| `reward` | Pop-up "+XP" o reveal archetipo |
+| `error_taxonomy` | Lista di tipi di errore con cura associata (lezione 5) |
+| `phase_mapping` | Lista di fasi con azioni (lezione 6) |
+
+Ogni step può avere `vignettes`: fino a 3 chip orbitanti attorno a Spark che si espandono in popup. Larghezza della card via `StepCard` (default / `medium` / `wide`).
 
 ### Quick-win widget (uno per lezione)
 
-Sono i blocchi `interactive` con `widget: "<key>"`. Ogni lezione di Path 1 V3 ne ha esattamente uno, alla fine, vissuto come "ho costruito qualcosa di mio":
+Sono gli step `interactive`, alla fine di ogni lezione di Path 1, vissuti come "ho costruito qualcosa di mio":
 
-| Lez | Widget | API route | Cosa produce |
+| Lez | Widget | Route API | Produce |
 |---|---|---|---|
 | 1 | `lucia_prompt_loop` | `/api/landing-evaluate` | Fix dei 3 bug del sito di Lucia |
 | 2 | `claudemd_editor` | `/api/lesson-claudemd-evaluate` | CLAUDE.md scaricabile |
 | 3 | `context_prompt_editor` | `/api/lesson-context-evaluate` | Prompt context-rich scaricabile |
 | 4 | `constraints_editor` | `/api/lesson-constraints-evaluate` | I 3 vincoli del progetto |
 | 5 | `broken_session_debugger` | `/api/lesson-debug-evaluate` | Messaggio di stop che salva una sessione |
-| 6 | `prompt_architecture` | `/api/lesson-architecture-prompt` | Prompt giornaliero CONTESTO→VINCOLI→TASK→VERIFICA, scaricabile come .md |
+| 6 | `prompt_architecture` | `/api/lesson-architecture-prompt` | Prompt CONTESTO→VINCOLI→TASK→VERIFICA scaricabile |
 
-Le regole NON negoziabili sui quick-win sono in `LESSON-GUIDELINES.md` §V3 (persistenza testo tra tentativi, lock anti-doppio-submit, persistenza reazione AI tra rientri, sblocco textarea su rientro, bias clause su `project_description`).
+Regole di comportamento dei widget (da rispettare per ogni widget nuovo — dettagli in `LESSON-GUIDELINES.md` § V3):
 
----
-
-## User journey end-to-end
-
-```
-LANDING (/it o /en)
-  ├── Hero + mockup app + CTA "Inizia gratis"
-  ├── Mini-demo Lucia (giocabile senza signup, 3 tentativi)
-  ├── Sezioni: problema, soluzione, curriculum, social proof, FAQ
-  └── CTA finale "Inizia gratis"
-        ↓
-AUTH (/auth)
-  ├── Magic link (email) o Google OAuth
-  └── /auth/callback → check profilo
-        ↓
-ONBOARDING (/onboarding) — 12 step interattivi
-  Step 1   Welcome (Spark si presenta)
-  Step 2   Nome
-  Step 3   Experience level (mai_sentito / letto_non_provato / saltuario / quotidiano)
-  Step 4   Intent (perché sei qui)
-  Step 5   Project (preciso / vago / esplorando) + descrizione
-  Step 6   Tools (multi-select IDE + LLM usati)
-  Step 7   Preferred tool (single select tra quelli scelti)
-  Step 8   Time (mini=2/trivial=5/easy=10/pro=15 min al giorno)
-  Step 9   Motivation (come Spark può aiutarti meglio)
-  Step 10  Recap (Spark riassume quello che ha capito)
-  Step 11  Promises (impegni reciproci utente/Spark)
-  Step 12  Transition (ingresso animato in dashboard)
-        ↓
-DASHBOARD (/dashboard) — `LearningMap` mappa visuale verticale
-  ├── Top bar: avatar + livello XP + streak + total XP + invite
-  ├── Mappa scrollabile: 5 path principali + bonus paths come ⭐ stelle laterali
-  ├── Card "Continua dove eri rimasto"
-  ├── DailyGoalCard + StreakHeatmap + recent lessons + Spark companion
-        ↓
-PATH OVERVIEW (/path/[slug])
-  └── Lista lezioni con stato (completed/current/locked)
-        ↓
-LESSON (/lesson/[id])
-  ├── V3: LessonV3View → SparkHeader + step cards + Footer (Indietro/Avanti)
-  ├── Step-by-step navigation, autosave per step in user_progress.step_state
-  ├── XP credito al completamento (con xpDelta su replay)
-  └── Cliffhanger card finale + ritorno al path overview
-        ↓
-SETTINGS (/settings/profile)
-  └── Avatar / lingua / daily goal / notifiche / billing (placeholder)
-```
-
-Pagine extra:
-- `/admin/users` (account_type='dev' o 'beta' può accedere, gating server-side)
-- `/[lang]/privacy`, `/[lang]/terms`, `/[lang]/cookie` (provisional, da rifare con legale prima del lancio pubblico)
+1. **Persistenza del testo tra tentativi.** Mai svuotare la textarea dopo un submit (no `setDraft("")` nel `finally`). Cascata: `sessionStorage` (chiave `<widget>:<userId>:<stepId>`) → stato persistito dal parent → vuoto. Più textarea = persistenza indipendente.
+2. **Lock sincrono anti-doppio-submit.** Un `useRef(false)` controllato *prima* dello state `evaluating`, rilasciato nel `finally` — altrimenti tre click rapidi bruciano tre tentativi.
+3. **Persistenza della reazione di Spark al rientro.** Lo `stepState` salva `lastReaction` (e `lastEvaluation` se ci sono barre dimensione); al mount si idrata da lì, niente ricostruzione band-based.
+4. **Textarea riapribile al rientro.** Gate `!won && !exhausted` — un risultato persistito non blocca i tentativi residui. `won` deve riflettere la *vera* vittoria (es. Lucia: 3 bug menzionati **e** score ≥ soglia), con un'unica fonte di verità per la soglia.
+5. **Clausola anti-bias su `project_description`.** Ogni system prompt valutatore che riceve `project_description` deve dichiarare che è solo contesto di sfondo e che non va premiata la ricchezza/lunghezza del progetto — valutare solo l'artefatto secondo i criteri.
 
 ---
 
 ## Sistemi trasversali
 
-### Spark (mascotte conversazionale)
-
-**Voice canon:** [`lib/ai/spark-system-prompt.ts`](lib/ai/spark-system-prompt.ts) (~6000 token persona, prompt-cached con Anthropic). Spark è dolce ma diretta, parla in prima persona, mai paternalistica, **mai** "geniale!"/"bravissimo!", niente emoji, niente motivational-da-LinkedIn.
-
-**Chat libera:** componenti `SparkHeader` + `AskSparkBubble` + `SparkChat`. Quote: 5 messaggi/lezione + 20/giorno per Free; 20/lez + 80/giorno per Pro (gating attivo lato code, non raggiungibile finché Stripe non è wired). Storage: `user_progress.spark_chat_count` per-lezione + `spark_usage_daily` table per daily.
-
-**Vignette:** ogni step V3 può avere fino a 3 chip orbitanti attorno a Spark (`Vignette[]`). Click → popup espanso con la frase intera. Solo Italian curly quotes via Unicode (`«»`), mai virgolette doppie ASCII.
-
-### Glossario Vivo (termini cliccabili)
-
-22 termini live in [`lib/glossary/glossary.ts`](lib/glossary/glossary.ts), copertura cross-Path 1. Markup nei contenuti: `[[term:diff]]diff[[/term]]`. Render: `RichText` parsa il markup + processa `**bold**` markdown inline; il termine diventa `<GlossaryTerm>` con popover che mostra la definizione di Spark + bottone "approfondisci" che apre la chat con un draft pre-compilato.
-
-Convenzione: la prima occorrenza cross-app del termine è cliccabile (visivamente "highlighter"), le successive sono attenuate ma sempre cliccabili. Tracking dei "seen" via `user_profiles.glossary_seen` text[].
-
-### XP, livelli, streak, daily goal
-
-- **XP**: cosmetico (non sblocca contenuto). Formula in [`lib/xp.ts`](lib/xp.ts). Display: navbar + LevelUpModal + completion card.
-- **Livelli**: derivati da XP totale via [`lib/levels.ts`](lib/levels.ts). Robot avatar evolve di forma a milestone.
-- **Streak**: 1 freeze/settimana ISO che si auto-applica al primo missed day. Storage in `users.current_streak` + `users.freeze_*` + `daily_activity` + `streak_events`. Logic in [`lib/streak.ts`](lib/streak.ts).
-- **Daily goal**: 4 valori (mini=2 / trivial=5 / easy=10 / pro=15 min). Determina pienezza del DailyGoalRing, copy reminder, quando uno streak day "conta".
-
-### Mappa visiva (LearningMap)
-
-Spec di design in `DASHBOARD_V2.md`, implementata in [`components/promptly/map/`](components/promptly/map/). 5 zone biome (villaggio/foresta/urbana/industriale/spazio per Path 1-5), nodi cerchio cliccabili per ogni lezione, robot cursor sull'ultima lezione completata, bonus paths come stelle laterali (oggi: visibili ma quasi tutti locked).
-
-### Bonus paths
-
-Definiti in [`lib/bonus-paths.ts`](lib/bonus-paths.ts) — 8 percorsi laterali (Auth, Pagamenti, AI Memory, ecc.) con condizioni di sblocco (XP threshold, achievement_path, ecc.). **Stato: visibili sulla LearningMap come stelle ⭐, contenuto delle lezioni bonus non scritto.** I types ci sono, le lezioni no.
-
-### Notifiche (push + email)
-
-- **Push** via Web Push (PWA install). Subscriptions in `users.push_subscription`.
-- **Email** via Resend. Templates in [`lib/notifications/email-templates/`](lib/notifications/email-templates/). Welcome email completata; reminder streak ⏳ pending.
-- **Cron** Vercel/Netlify ogni 15 min — `/api/notifications/cron` (planned).
-
-### Analytics
-
-PostHog (EU instance) — wrapper [`lib/analytics/posthog.ts`](lib/analytics/posthog.ts). Eventi standard: `signup_*`, `lesson_started/completed`, `streak_*`, `paywall_viewed`, ecc. Vedi PROMPTLY.md §Analytics per il taxonomy completo (ancora valido).
+- **Spark — chat libera.** `SparkHeader` + `AskSparkBubble` + `SparkChat`. Quote per-tier nel codice (Free: 5 messaggi/lezione, 20/giorno; Pro più alte) ma non attive finché Stripe non è wired. Storage: `user_progress.spark_chat_count` per-lezione + tabella `spark_usage_daily`. Voce canonica in `lib/ai/spark-system-prompt.ts`.
+- **Glossario Vivo.** Termini cliccabili definiti in `lib/glossary/glossary.ts`. Markup nei contenuti: `[[term:diff]]diff[[/term]]`; `RichText` parsa il markup e il `**bold**` inline. Il termine apre un popover con la definizione (voce di Spark) + bottone che apre la chat con un draft precompilato. Prima occorrenza cross-app evidenziata, le successive attenuate ma sempre cliccabili. "Seen" in `user_profiles.glossary_seen` (text[]).
+- **XP, livelli, streak, daily goal.** XP cosmetico (non sblocca contenuti) — formula in `lib/xp.ts`. 7 livelli derivati dall'XP totale — `lib/levels.ts`; il robot avatar (DiceBear `bottts`, seed fisso per livello) evolve a milestone. Streak con 1 freeze/settimana ISO auto-applicato al primo giorno saltato — `lib/streak.ts` (storage in `users.current_streak` + `daily_activity` + `streak_events`). Daily goal: 4 valori `mini` / `trivial` / `easy` / `pro`, mappati a 5 / 10 / 15 / 30 min in `lib/daily-goal.ts`.
+- **LearningMap.** Mappa verticale in `components/promptly/map/` (dati in `lib/map/`): 5 zone bioma per Path 1-5, nodi cliccabili per lezione, robot cursor sull'ultima lezione completata, bonus path come stelle laterali (oggi quasi tutte locked).
+- **Bonus path.** 8 percorsi laterali in `lib/bonus-paths.ts` con condizioni di sblocco (soglia XP, achievement_path, streak, referral, AND composito — logica in `lib/unlock.ts`). Visibili sulla mappa; contenuto delle lezioni non scritto.
+- **Referral.** Codice univoco per utente (`lib/referral.ts`), link `…/signup?ref=…`, XP al referrer e bonus al referee alla conversione, sblocca una bonus path. La conversione è tracciabile, lo share no.
+- **Notifiche.** Push via Web Push (subscription in `users.push_subscription`), email via Resend. Welcome email attiva; reminder streak pianificato (cron).
+- **Analytics.** Solo via `lib/analytics/posthog.ts`. Eventi standard: `signup_*`, `lesson_started/completed`, `streak_*`, `paywall_viewed`, `landing_*`, `map_*`, `level_up`, `referral_*`, ecc.
 
 ---
 
-## Design system in sintesi
+## Design system
 
-**Filosofia:** "Focused Academy" — Linear meets Duolingo. Calmo, professionale, con momenti di celebrazione misurati.
+Filosofia "Focused Academy": calmo e professionale, con momenti di celebrazione misurati. Linear più che Duolingo.
 
-**Palette tokens** (CSS vars in `app/globals.css`):
-- Brand: `--primary` `#E8703F` (orange), `--primary-hover` `#C8521F`
-- Canvas: `--background` `#FAFAFA`, `--surface` `#FFFFFF`, `--border` `#E5E5E5`
-- Text: `--text-primary` `#0A0A0A`, `--text-secondary` `#525252`, `--text-muted` `#A3A3A3`
-- Gamification: `--xp-gold` `#EAB308`, `--streak-fire` `#DC2626`, `--streak-freeze` `#38BDF8`
-- Pro: `--pro-accent` `#7C3AED`
-- Tool view (IDE/terminal scenes only — Lucia demo): vedi PROMPTLY.md §Tool view
-
-**Type:**
-- Headings: Plus Jakarta Sans 600-700
-- Body/UI: Inter 400 / 500 medium emphasis
-- Code/prompt: JetBrains Mono
-- Wordmark "PROMPTLY": Plus Jakarta Sans 700 (mai 800/900)
-
-**Componenti rilevanti:**
-- `StepCard` ha 3 width: default (`max-w-2xl`), `medium` (`max-w-4xl`, lez 6 step 13), `wide` (`max-w-5xl`, widget side-by-side)
-- shadcn/ui base in `components/ui/` — **non modificare direttamente**
+- **Colori:** tutti i colori sono CSS variables in `app/globals.css` — niente hex hardcoded. Brand `--primary` `#e8703f` (arancione, hover `#c8521f`). Canvas app `--background` `#fafafa`, `--surface` `#ffffff`; canvas marketing `--marketing-bg` `#FBF6F0` (cream caldo). Gamification: `--xp-gold` `#eab308`, `--streak-fire` `#dc2626`, `--streak-freeze` `#38bdf8`. Pro: `--pro-accent` `#7c3aed`.
+- **Tool view (eccezione):** le scene che rappresentano un editor/IDE/terminale (oggi la demo Lucia) usano il dialetto "tool view" — token `--tool-*` (canvas dark, accento lime), `--macos-*` per i pallini chrome. Scoped *solo* a quelle scene; vietato come decorazione su marketing/app/lezioni. Dentro la tool view l'arancione brand = "voce dell'utente", il lime = "voce dello strumento".
+- **Tipografia:** heading Plus Jakarta Sans 600-700; body/UI Inter; codice/prompt JetBrains Mono; wordmark "PROMPTLY" in Plus Jakarta Sans 700 (mai 800/900).
+- **Animazioni:** CSS keyframes in `globals.css`, transform + opacity, tutte con fallback `prefers-reduced-motion`.
 
 ---
 
-## Struttura cartelle (essenziale)
+## Convenzioni di codice
 
-```
-app/
-├── (marketing)/[lang]/         # Landing pubblica + privacy/terms/cookie
-├── (auth)/auth/                # Magic link + Google OAuth
-├── (auth)/onboarding/          # 12 step profilazione
-├── (app)/dashboard/            # LearningMap
-├── (app)/path/[slug]/          # Path overview
-├── (app)/lesson/[id]/          # Pagina lezione (V1/V2/V3 dispatch)
-├── (app)/settings/profile/     # Account + lingua + goal + notifiche
-├── (app)/admin/users/          # Pannello admin (account_type gated)
-└── api/
-    ├── comment-answer/             # V2 open_question (GPT-4o mini)
-    ├── landing-evaluate/           # Lucia demo + lez 1 quick-win
-    ├── spark-chat/                 # Chat libera con Spark (Haiku 4.5)
-    ├── lesson-claudemd-evaluate/   # Quick-win lez 2
-    ├── lesson-context-evaluate/    # Quick-win lez 3
-    ├── lesson-constraints-evaluate/ # Quick-win lez 4
-    ├── lesson-debug-evaluate/      # Quick-win lez 5
-    ├── lesson-architecture-prompt/ # Quick-win lez 6
-    └── qa-login/                   # GITIGNORED — dev-only QA bypass
-
-components/
-├── ui/                         # shadcn (NON modificare)
-├── marketing/                  # Landing components
-├── auth/                       # Auth + login
-├── onboarding/profiling/       # 12 step onboarding
-├── dashboard/                  # ContinueCard, DailyGoalCard, ecc.
-├── promptly/                   # Cross-app: map, level badge, robot avatar, referral
-├── glossary/                   # Glossario Vivo
-└── lessons/
-    ├── (V1 legacy)             # ExerciseFillBlank, TheoryRenderer, LessonShell
-    ├── LessonV2View.tsx        # V2 (open_question + archetype_quiz)
-    └── v3/
-        ├── LessonV3View.tsx    # Top-level V3 renderer
-        ├── SparkHeader.tsx     # Sticky top bar con vignette + Spark + step counter
-        ├── StepCard.tsx        # Wrapper card per ogni step (default/medium/wide)
-        ├── VignetteCloud.tsx   # Pensieri orbitanti di Spark
-        └── steps/              # 14 componenti step (TextStep, ChoiceStep, ...)
-
-lib/
-├── ai/                         # Anthropic + OpenAI clients + Spark system prompts
-├── glossary/                   # Dictionary + markup parser
-├── lessons/                    # Loader + version detection + V3 evaluators
-├── landing-demo/               # Lucia (sito + console + tipi + system prompt)
-├── supabase/                   # Client + queries (TUTTE le query DB qui)
-├── notifications/              # Email templates Resend + push (planned)
-├── i18n/                       # IT/EN strings per ogni surface
-├── analytics/                  # PostHog wrapper
-├── xp.ts                       # XP formula
-├── streak.ts                   # Streak + freeze logic
-├── levels.ts                   # XP → level mapping
-├── bonus-paths.ts              # Bonus paths config + unlock conditions
-├── daily-goal.ts               # Daily goal helpers
-└── map/data.ts                 # LearningMap data builder
-
-content/<lang>/<path>/          # Static lesson JSON (V1/V2/V3 coexisting)
-public/brand/                   # Logo, lesson icons, OG image
-assets/                         # SVG sources non-served
-types/index.ts                  # TUTTI i tipi (1030 righe — è la verità)
-```
+- Niente stringhe UI hardcoded nei componenti: usa `lib/i18n/`.
+- Tutte le query Supabase in `lib/supabase/queries.ts`, mai inline nei componenti.
+- Niente chiamate dirette ad Anthropic / OpenAI / Stripe nei componenti: passa da `lib/ai/` (e `lib/stripe/` quando esisterà).
+- TypeScript strict, niente `any`. Definisci i tipi in `types/index.ts` prima di usarli.
+- Niente colori hex nei componenti: usa le CSS variables del design system.
+- Logica XP solo in `lib/xp.ts`, logica streak solo in `lib/streak.ts`.
+- I `system_prompt` delle `open_question` V2 sono per-lezione, dentro il JSON: niente default globale, e se manca il campo si fallisce esplicitamente.
+- Non modificare `components/ui/` (base shadcn).
+- Eventi PostHog solo via `lib/analytics/posthog.ts`.
+- Quando Stripe esisterà: il webhook è la source of truth per `subscription_tier`; mai aggiornarlo da redirect client-side; check server-side prima di servire contenuto Pro.
+- Voce di Spark: virgolette caporali (`«»`), niente emoji decorative, niente "bravissimo/geniale/fantastico", niente promesse di risultati magici.
+- Mobile-first: testa su iPhone Safari (incluso schermo piccolo tipo SE) oltre al desktop.
 
 ---
 
-## Regole d'oro per Claude Code (non negoziabili)
+## Altri documenti della repo
 
-1. **NEVER** hardcode UI strings nei componenti. Usa `lib/i18n/`.
-2. **NEVER** scrivere DB queries dentro componenti. Tutte le query Supabase vivono in `lib/supabase/queries.ts`.
-3. **NEVER** modificare file in `components/ui/` (shadcn base).
-4. **NEVER** chiamare Anthropic / OpenAI / Stripe direttamente nei componenti. Usa `lib/ai/` e `lib/stripe/` (quando esisterà).
-5. **NEVER** usare `any` in TypeScript. Strict mode, niente eccezioni.
-6. **ALWAYS** definire types in `types/index.ts` prima di usarli.
-7. **ALWAYS** usare CSS variables del design system — niente hex hardcoded.
-8. **ALWAYS** server-side check su `subscription_tier` prima di servire contenuto Pro (non fidarsi del client).
-9. **ALWAYS** validare il `format_version` prima di trattare un lesson content come V1/V2/V3.
-10. **Lesson content** vive in `/content`, **NON** nel database. Progresso utente, streak, XP, subscription **vivono** nel database.
-11. **XP logic** sta solo in `lib/xp.ts`. **Streak logic** sta solo in `lib/streak.ts`.
-12. **System prompts V2 `open_question`** sono per-lezione, dentro la lesson JSON. Niente default globale, mai sostituire silenziosamente.
-13. **Quick-win widget V3**: persistenza testo tra tentativi obbligatoria, lock sincrono anti-doppio-submit obbligatorio. Vedi `LESSON-GUIDELINES.md` §V3.
-14. **Stripe webhook** è la source of truth per `subscription_tier`. Mai aggiornare da redirect client-side. (Quando esisterà.)
-15. **PostHog events** vanno via `lib/analytics/posthog.ts`. Niente `posthog.capture` inline.
-16. **Spark voice**: Italian curly quotes (`«»`), niente emoji decorative, niente "bravissimo"/"geniale"/"fantastico", mai promesse di risultati magici.
+In root (attuali):
 
----
+| File | A cosa serve |
+|---|---|
+| `BACKLOG.md` | Voci urgenti aperte (es. correlare le reazioni di Spark ai punteggi reali; ruotare i secret finiti in git history) + backlog post-launch. |
+| `SECURITY-BACKLOG.md` | Igiene operativa di secrets e auth (rotazione chiavi, scoping `OPENAI_API_KEY`, rate-limit per-utente su `/api/comment-answer`, ecc.). |
+| `LESSON-GUIDELINES.md` | Regole quick-win V3 (sezione iniziale — attuali) + decisioni di stile + workflow per scrivere lezioni. Lo schema V1/V2 più in basso è storico. |
+| `Glossario_Vivo_Blueprint.md` | Blueprint storico del Glossario Vivo; la verità di runtime è in `lib/glossary/` e `components/glossary/`. |
+| `Behavioral_Testing_Agent_Brief_v1.1.md` | Brief per l'agente di testing comportamentale (Playwright MCP): profili utente, scenari, formato report. |
+| `GUIDA-DOMINIO.md` | Note personali di Stefano, gitignored. |
+| `CLAUDE.draft.md` | Bozza di lavoro, non un riferimento — ignorabile. |
 
-## Mappa documenti del repo
+In `docs/archive/` (spec storiche — utili per il contesto di design e la cronologia delle decisioni, **non** per lo stato attuale; vedi `docs/archive/README.md`):
 
-| File | Stato | Da consultare per… |
-|---|---|---|
-| **CLAUDE.md** *(questo file)* | ✅ Attuale | Tutto. Punto di partenza unico. |
-| `BACKLOG.md` | ✅ Attuale | Voci urgenti + backlog post-launch features |
-| `SECURITY-BACKLOG.md` | ✅ Attuale | Igiene operativa secrets + auth |
-| `LESSON-GUIDELINES.md` | ⚠️ Parzialmente stale | Regole V3 quick-win (in cima, attuali). Schema V1/V2 (stale). Workflow autoraggio (attuale). |
-| `Glossario_Vivo_Blueprint.md` | ⚠️ Implementato | Spec storica della feature. Verità di runtime in `lib/glossary/`. |
-| `Behavioral_Testing_Agent_Brief_v1.1.md` | ✅ Attuale | Operativo per testing agent (Playwright MCP) |
-| `LANDING.md` | ⚠️ Parzialmente stale | Layout + sezioni landing (mostly current). Routing/components reference (verifica con codice). |
-| `PROMPTLY.md` | 🚫 STALE | Reference storica della vision. Dati tecnici stale (V1/V2, daily_goal 3 valori, onboarding 3 step). |
-| `LESSONS.md` | 🚫 STALE | Spec V1, già marcata superseded. |
-| `DASHBOARD_V2.md` | 🚫 STALE (memorial) | Spec design del map dashboard. Ora implementata in code. |
-| `AUTH.md` | 🚫 STALE | Onboarding 3 step (oggi 12). Auth flow ancora ok in linea generale. |
-| `GUIDA-DOMINIO.md` | 🔒 Gitignored | Note personali Stefano, non in git |
+| File | Cosa contiene di ancora utile |
+|---|---|
+| `PROMPTLY.md` | Vision, business model freemium, razionale del design system (palette, "tool view"), taxonomy degli eventi PostHog. |
+| `LANDING.md` | Brief landing di aprile 2026 + nota sul redesign editoriale di maggio 2026 (target, tono, pricing nascosto, bilinguismo, performance restano validi). |
+| `DASHBOARD_V2.md` | Design della mappa visiva: zone bioma, sistema livelli/robot, catalogo e sblocco delle bonus path, referral. |
+| `AUTH.md` | Flusso auth (magic link + Google OAuth + callback + link scaduto) e copy delle schermate. (L'onboarding lì è a 3 step; oggi sono 12.) |
+| `LESSONS.md` | Spec del sistema lezioni in formato V1. |
 
 ---
 
-## Pattern di lavoro consolidati
-
-- **Commit unico per blocco di lavoro coerente**, non commit-per-fix-mini. Push manuale, mai automatico.
-- **Build clean obbligatorio** prima di push: `npx tsc --noEmit && npm run build`
-- **JSON validation** dopo edit di lesson content: `node -e "JSON.parse(require('fs').readFileSync('content/it/mindset/06-the-workflow.v3.json','utf8'))"`
-- **Bilingue:** ogni cambio testo in IT richiede mirror in EN, salvo decisioni esplicite di drift
-- **Mobile-first:** test su iPhone Safari + iPhone SE schermo piccolo, in più desktop
-- **Hot reload + Netlify deploy auto** da `main` — webhook a volte salta, in quel caso `Trigger deploy → Clear cache and deploy site` dal pannello
-
----
-
-*Aggiorna questo file quando: cambia il formato lezioni, cambia lo stack, vengono aggiunti nuovi sistemi trasversali, cambiano le regole d'oro. Lo storico delle decisioni grosse vive nei commit + nel BACKLOG; questo è il "cosa è vero ADESSO".*
+*Aggiorna questo file quando cambia il formato delle lezioni, lo stack, i sistemi trasversali o le convenzioni. Lo storico delle decisioni grosse vive nei commit e in `BACKLOG.md`; qui sta "cosa è vero adesso".*

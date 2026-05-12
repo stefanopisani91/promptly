@@ -25,11 +25,16 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# local env files
+# local env files (committa solo .env.example)
+.env
+.env.local
 .env*.local
+.env.development
+.env.production
 
-# vercel
+# deploy provider scratch/cache
 .vercel
+.netlify/
 
 # typescript
 *.tsbuildinfo
@@ -38,6 +43,15 @@ next-env.d.ts
 # personal guides (private notes for the developer, never on git)
 GUIDA-*.md
 NOTE-*.md
+
+# work-in-progress drafts (es. CLAUDE.draft.md) — non su git finché non promossi
+*.draft.md
+
+# landing redesign scratch files (local mockups & raw screenshots) — never on git
+/iphone-mockup.PNG
+/iphone15-frame.html
+/landing-redesign-mockup.html
+/mobile-screenshot*
 
 # spark coherence test outputs (raw model responses + scratch files)
 scripts/_spark-test-output.json

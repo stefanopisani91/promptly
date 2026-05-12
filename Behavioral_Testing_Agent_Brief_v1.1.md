@@ -1,4 +1,4 @@
-# 🤖 Promptly — Behavioral Testing Agent Brief v1.1
+# Promptly — Behavioral Testing Agent Brief v1.1
 
 **Versione:** 1.1 (aggiornamento dopo 2 sessioni reali)
 **Tipo di documento:** Brief operativo per agente di testing comportamentale (Playwright MCP + Claude).
