@@ -217,74 +217,54 @@
       "id": "quickwin-editor",
       "type": "interactive",
       "spark_state": "listening",
-      "widget": "context_prompt_editor",
-      "intro": "Pick a scenario. I'll give you the empty prompt on the left. You transform it on the right by adding project, code, constraints and examples.",
+      "widget": "block_picker",
+      "intro": "Scenario: you're building a restaurant reservation app. The thin prompt is «Add login to the app». Tap four blocks — one per level — to turn it into a rich prompt.",
       "max_attempts": 3,
-      "context_config": {
+      "block_config": {
+        "required_blocks": 4,
         "scenarios": [
           {
             "key": "login",
             "icon": "🔐",
             "title": "Add login",
             "short_title": "Login",
-            "description": "User authentication system.",
+            "description": "You're building a restaurant reservation app. You need to add login.",
             "empty_prompt": "Add login to the app.",
             "briefing": {
-              "project_setting": "Imagine you're working on a restaurant reservation app.",
+              "project_setting": "You're building a restaurant reservation app for Italian restaurant owners.",
               "existing_assets": [
-                "`users` table in Supabase with email, password_hash",
-                "/components/forms folder with other forms already built (signup, contact)",
+                "`users` table in Supabase with email and password_hash fields",
+                "/components/forms folder with the signup form already built",
                 "Shared style guide in /lib/design-tokens.ts"
               ]
-            }
-          },
-          {
-            "key": "notifications",
-            "icon": "📨",
-            "title": "Add email notifications",
-            "short_title": "Notifications",
-            "description": "Auto-send email on a key event.",
-            "empty_prompt": "When something happens, send an email.",
-            "briefing": {
-              "project_setting": "Imagine you're working on a personal blog.",
-              "existing_assets": [
-                "`articles` table in Postgres with title, author, status",
-                "Email system already wired with Resend",
-                "Notification pattern already used in /lib/notifications/welcome.ts"
-              ]
-            }
-          },
-          {
-            "key": "stats",
-            "icon": "📊",
-            "title": "Add stats page",
-            "short_title": "Stats",
-            "description": "Dashboard with user data charts.",
-            "empty_prompt": "Add a page with user stats.",
-            "briefing": {
-              "project_setting": "Imagine you're working on a project-management SaaS.",
-              "existing_assets": [
-                "`tasks` table in Supabase with created_at, completed_at, user_id",
-                "/components/charts folder with an existing chart (LineChart)",
-                "Convention: format big numbers with `formatNumber()` from /lib/utils"
-              ]
-            }
+            },
+            "blocks": [
+              { "id": "login.project.correct",     "level": "project",     "quality": "correct",      "text": "I'm building a restaurant reservation app. The users are Italian restaurant owners managing their venue." },
+              { "id": "login.project.generic",     "level": "project",     "quality": "generic",      "text": "I'm building an app." },
+              { "id": "login.project.off",         "level": "project",     "quality": "off_scenario", "text": "I'm making a personal blog where I post cooking recipes." },
+              { "id": "login.code.correct",        "level": "code",        "quality": "correct",      "text": "Forms live in /components/forms. Signup already exists, only login is missing." },
+              { "id": "login.code.generic",        "level": "code",        "quality": "generic",      "text": "The code is somewhere in the project." },
+              { "id": "login.code.off",            "level": "code",        "quality": "off_scenario", "text": "Use a LineChart-style chart to visualize the data." },
+              { "id": "login.constraints.correct", "level": "constraints", "quality": "correct",      "text": "No OAuth, I want simple email and password. Do not install new npm packages." },
+              { "id": "login.constraints.generic", "level": "constraints", "quality": "generic",      "text": "Do whatever you think is best." },
+              { "id": "login.constraints.off",     "level": "constraints", "quality": "off_scenario", "text": "Do not change the site's color palette." },
+              { "id": "login.examples.correct",    "level": "examples",    "quality": "correct",      "text": "Reuse the style and structure of the existing signup form." },
+              { "id": "login.examples.generic",    "level": "examples",    "quality": "generic",      "text": "Make a nice example." },
+              { "id": "login.examples.off",        "level": "examples",    "quality": "off_scenario", "text": "Do it like Stripe Checkout, with a multi-step flow." }
+            ]
           }
         ],
-        "min_chars": 100,
-        "max_chars": 800,
         "xp_by_case": {
           "incomplete": 50,
           "missing_one": 120,
-          "good": 180,
-          "excellent": 250,
-          "perfect": 320
+          "good": 200,
+          "excellent": 280
         }
       },
       "vignettes": [
-        { "short": "Specific, always.", "full": "Specific, always. The more concrete you are, the more I respect you as an AI." },
-        { "short": "Three tries. Use them.", "full": "Three tries. Use them well. Hint on the second, plain answer on the third." },
-        { "short": "Keep the prompt.", "full": "Keep the prompt you write. Reuse it on your next real project." }
+        { "short": "Recognise, don't write.", "full": "Recognise, don't write. Today I'm asking you to pick — you compose the rich prompt by tapping." },
+        { "short": "Three tries. Use them.", "full": "Three tries. Hint on the second, plain answer on the third." },
+        { "short": "One per level.", "full": "One per level. Four levels — project, code, constraints, examples. Not more, not less." }
       ]
     },
     {

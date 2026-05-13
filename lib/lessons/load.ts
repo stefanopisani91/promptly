@@ -268,7 +268,7 @@ function isLessonV3Step(value: unknown): value is LessonV3Step {
       if (
         b.widget !== "lucia_prompt_loop" &&
         b.widget !== "claudemd_editor" &&
-        b.widget !== "context_prompt_editor" &&
+        b.widget !== "block_picker" &&
         b.widget !== "constraints_editor" &&
         b.widget !== "broken_session_debugger" &&
         b.widget !== "prompt_architecture"
@@ -306,16 +306,16 @@ function isLessonV3Step(value: unknown): value is LessonV3Step {
           return false;
         }
       }
-      if (b.widget === "context_prompt_editor") {
-        const cfg = b.context_config as
+      if (b.widget === "block_picker") {
+        const cfg = b.block_config as
           | Record<string, unknown>
           | undefined;
         if (!cfg || typeof cfg !== "object") return false;
-        if (!Array.isArray(cfg.scenarios) || cfg.scenarios.length < 2)
+        if (!Array.isArray(cfg.scenarios) || cfg.scenarios.length < 1)
           return false;
         if (
-          typeof cfg.min_chars !== "number" ||
-          typeof cfg.max_chars !== "number"
+          typeof cfg.required_blocks !== "number" ||
+          cfg.required_blocks < 1
         ) {
           return false;
         }
@@ -323,12 +323,27 @@ function isLessonV3Step(value: unknown): value is LessonV3Step {
           typeof cfg.xp_by_case !== "object" ||
           cfg.xp_by_case === null ||
           typeof (cfg.xp_by_case as Record<string, unknown>).incomplete !==
+            "number" ||
+          typeof (cfg.xp_by_case as Record<string, unknown>).excellent !==
             "number"
         ) {
           return false;
         }
-        // Each scenario must carry the empty prompt (used as the read-only
-        // baseline shown to the user and forwarded to the rubric).
+        // Every scenario must carry the 12 blocks (4 levels × 3 qualities,
+        // exactly one of each combination). The server resolves block
+        // metadata from this list at evaluation time, so any drift here
+        // breaks scoring silently — validate strictly.
+        const validLevels = new Set([
+          "project",
+          "code",
+          "constraints",
+          "examples",
+        ]);
+        const validQualities = new Set([
+          "correct",
+          "generic",
+          "off_scenario",
+        ]);
         for (const s of cfg.scenarios) {
           if (typeof s !== "object" || s === null) return false;
           const ss = s as Record<string, unknown>;
@@ -339,6 +354,29 @@ function isLessonV3Step(value: unknown): value is LessonV3Step {
           ) {
             return false;
           }
+          if (!Array.isArray(ss.blocks) || ss.blocks.length !== 12) {
+            return false;
+          }
+          const seen = new Set<string>();
+          for (const b of ss.blocks) {
+            if (typeof b !== "object" || b === null) return false;
+            const bb = b as Record<string, unknown>;
+            if (
+              typeof bb.id !== "string" ||
+              typeof bb.text !== "string" ||
+              typeof bb.level !== "string" ||
+              typeof bb.quality !== "string" ||
+              !validLevels.has(bb.level as string) ||
+              !validQualities.has(bb.quality as string)
+            ) {
+              return false;
+            }
+            const slot = `${bb.level}.${bb.quality}`;
+            if (seen.has(slot)) return false;
+            seen.add(slot);
+          }
+          // 4 levels × 3 qualities = 12 distinct slots.
+          if (seen.size !== 12) return false;
         }
       }
       if (b.widget === "constraints_editor") {

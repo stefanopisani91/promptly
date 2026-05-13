@@ -49,9 +49,9 @@ import {
   type ClaudemdEditorStrings,
 } from "./steps/ClaudemdEditor";
 import {
-  ContextPromptEditor,
-  type ContextPromptEditorStrings,
-} from "./steps/ContextPromptEditor";
+  BlockPicker,
+  type BlockPickerStrings,
+} from "./steps/BlockPicker";
 import {
   ConstraintsEditor,
   type ConstraintsEditorStrings,
@@ -92,7 +92,7 @@ export interface LessonV3ViewStrings {
   rewardStep: RewardStepStrings;
   interactiveStep: InteractiveStepStrings;
   claudemdEditor: ClaudemdEditorStrings;
-  contextEditor: ContextPromptEditorStrings;
+  blockPicker: BlockPickerStrings;
   constraintsEditor: ConstraintsEditorStrings;
   brokenSessionDebugger: BrokenSessionDebuggerStrings;
   promptArchitecture: PromptArchitectureStrings;
@@ -161,19 +161,9 @@ function helperPhaseFromState(
       if (hasPreviousAttempt && !finalised) return "between_attempts";
       return "writing_claudemd";
     }
-    case "context_prompt_editor": {
-      const scenario = state.selectedScenario;
-      if (typeof scenario !== "string" || scenario.length === 0) {
-        return "choosing_scenario";
-      }
+    case "block_picker": {
       if (hasPreviousAttempt && !finalised) return "between_attempts";
-      // Only the three canonical scenarios get a focused phase; any other
-      // string is silently coerced to choosing_scenario so the server's
-      // allowlist doesn't reject the call.
-      if (scenario === "login" || scenario === "notifications" || scenario === "stats") {
-        return `scenario_${scenario}_writing`;
-      }
-      return "choosing_scenario";
+      return "picking_blocks";
     }
     case "constraints_editor":
       if (hasPreviousAttempt && !finalised) return "between_attempts";
@@ -271,13 +261,15 @@ function previousAttemptFromState(
           typeof evObj.spark_reply === "string" ? evObj.spark_reply : null,
       };
     }
-    case "context_prompt_editor": {
-      const total = typeof evObj.total === "number" ? evObj.total : null;
+    case "block_picker": {
+      // BlockPickerEvaluation uses `totalScore` (clamped 0-100) and an
+      // optional `missing_level` token. The canned spark_reply doubles as
+      // the continuity hook.
+      const total =
+        typeof evObj.totalScore === "number" ? evObj.totalScore : null;
       if (total === null) return null;
-      // ContextEvaluation has `missing_layer` (or null when all 4 levels
-      // are present, in which case there's no single weakness to point at).
       const weakness =
-        typeof evObj.missing_layer === "string" ? evObj.missing_layer : null;
+        typeof evObj.missing_level === "string" ? evObj.missing_level : null;
       return {
         score: total,
         weakness,
@@ -320,10 +312,10 @@ interface Props {
   filenameSlug: string;
   preferredToolDisplay: string;
   // ≤80-char compressed view of the user's real project (compressed
-  // first, raw-truncated fallback). Forwarded to ContextPromptEditor so
-  // the lesson-3 briefing card can prefix itself with "your real
-  // project is X; today we're using this sample scenario:". Null when
-  // the user is exploring.
+  // first, raw-truncated fallback). Available to V3 widgets that want
+  // to tie a sample scenario back to the learner's real project. Null
+  // when the user is exploring. Currently unused by quick-wins after
+  // the Lesson 3 briefing card was removed.
   userProjectShort: string | null;
 }
 
@@ -676,7 +668,9 @@ interface RenderContext {
   // download filename and Spark's celebration template.
   filenameSlug: string;
   preferredToolDisplay: string;
-  // Lesson 3 — passed through to ContextPromptEditor's briefing card.
+  // Lessons that show the user's real project alongside the sample
+  // scenario (today none — historically BlockPicker's briefing card).
+  // Kept on the context shape for forward use without prop drilling.
   userProjectShort: string | null;
   onArchetype: (key: string) => void;
   onChoicePick: (step: ChoiceStepType, optionKey: string) => void;
@@ -751,34 +745,31 @@ function renderStep(step: LessonV3Step, ctx: RenderContext) {
           />
         );
       }
-      if (step.widget === "context_prompt_editor") {
+      if (step.widget === "block_picker") {
         return (
-          <ContextPromptEditor
+          <BlockPicker
             step={step}
             userId={ctx.userId}
-            userProjectShort={ctx.userProjectShort}
             state={
               ctx.stepState[step.id] as
                 | {
                     result?: InteractiveStepResult;
-                    editorText?: string;
-                    selectedScenario?: string;
-                    lastEvaluation?: import(
-                      "./steps/ContextPromptEditor"
-                    ).ContextEvaluation;
+                    selectedBlockIds?: string[];
+                    lastEvaluation?: import("@/types").BlockPickerEvaluation;
+                    lastReaction?: string;
                   }
                 | undefined
             }
             onComplete={(result, extras) =>
               ctx.updateStepState(step.id, {
                 result,
-                editorText: extras.editorText,
-                selectedScenario: extras.selectedScenario,
+                selectedBlockIds: extras.selectedBlockIds,
                 lastEvaluation: extras.lastEvaluation,
+                lastReaction: extras.lastReaction,
               })
             }
             onAdvance={ctx.goNext}
-            strings={ctx.strings.contextEditor}
+            strings={ctx.strings.blockPicker}
           />
         );
       }

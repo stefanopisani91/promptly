@@ -409,29 +409,16 @@ export async function POST(request: Request) {
   }
   const lessonTitle = lesson.title;
 
-  // Lesson 3 — when the learner is on a specific scenario_*_writing phase
-  // (or between_attempts after picking a scenario), pluck the per-scenario
-  // briefing from the loaded lesson JSON and hand it to Spark so she can
-  // hint about the briefing's «ingredients» (the user expects this — they
-  // just read it in the widget). Server is the authority: never trust a
-  // client-supplied briefing string. Drops gracefully when the phase
-  // doesn't name a scenario (e.g. choosing_scenario or non-lesson-3
-  // widgets).
+  // Lesson 3 — block_picker has a single scenario today, so as soon as the
+  // learner is on this widget we pluck its briefing and hand it to Spark
+  // so she can hint about the briefing's «ingredients» (the user expects
+  // this — they just read it in the widget). Server is the authority:
+  // never trust a client-supplied briefing string. Drops gracefully when
+  // the widget isn't block_picker.
   const scenarioBriefing = (() => {
-    if (
-      widgetKey !== "context_prompt_editor" ||
-      !currentPhase ||
-      !currentPhase.startsWith("scenario_") ||
-      !currentPhase.endsWith("_writing")
-    ) {
-      return null;
-    }
-    const scenarioKey = currentPhase.slice(
-      "scenario_".length,
-      currentPhase.length - "_writing".length,
-    );
-    const config = interactiveStep.context_config;
-    const scenario = config?.scenarios.find((s) => s.key === scenarioKey);
+    if (widgetKey !== "block_picker") return null;
+    const config = interactiveStep.block_config;
+    const scenario = config?.scenarios[0];
     return scenario?.briefing ?? null;
   })();
 

@@ -217,74 +217,54 @@
       "id": "quickwin-editor",
       "type": "interactive",
       "spark_state": "listening",
-      "widget": "context_prompt_editor",
-      "intro": "Scegli uno scenario. Ti do il prompt vuoto a sinistra. Tu lo trasformi a destra aggiungendo progetto, codice, vincoli ed esempi.",
+      "widget": "block_picker",
+      "intro": "Scenario: stai costruendo un'app di prenotazione ristoranti. Il prompt scarno è «Aggiungi login all'app». Tocca quattro blocchi — uno per ogni livello — per trasformarlo in un prompt ricco.",
       "max_attempts": 3,
-      "context_config": {
+      "block_config": {
+        "required_blocks": 4,
         "scenarios": [
           {
             "key": "login",
             "icon": "🔐",
             "title": "Aggiungi login",
             "short_title": "Login",
-            "description": "Sistema di autenticazione utenti.",
+            "description": "Stai costruendo un'app di prenotazione ristoranti. Devi aggiungere il login.",
             "empty_prompt": "Aggiungi login all'app.",
             "briefing": {
-              "project_setting": "Immagina di lavorare su un'app di prenotazione ristoranti.",
+              "project_setting": "Stai costruendo un'app di prenotazione ristoranti per ristoratori italiani.",
               "existing_assets": [
-                "Tabella `users` in Supabase con campi email, password_hash",
-                "Cartella /components/forms con altre form già fatte (registrazione, contatti)",
+                "Tabella `users` in Supabase con campi email e password_hash",
+                "Cartella /components/forms con la registrazione già fatta",
                 "Style guide condivisa in /lib/design-tokens.ts"
               ]
-            }
-          },
-          {
-            "key": "notifications",
-            "icon": "📨",
-            "title": "Aggiungi notifiche email",
-            "short_title": "Notifiche",
-            "description": "Email automatica quando succede un evento.",
-            "empty_prompt": "Quando succede qualcosa, manda email.",
-            "briefing": {
-              "project_setting": "Immagina di lavorare su un blog personale.",
-              "existing_assets": [
-                "Tabella `articles` in Postgres con titolo, autore, status",
-                "Sistema email già configurato con Resend",
-                "Pattern di notifica già usato in /lib/notifications/welcome.ts"
-              ]
-            }
-          },
-          {
-            "key": "stats",
-            "icon": "📊",
-            "title": "Aggiungi pagina statistiche",
-            "short_title": "Statistiche",
-            "description": "Dashboard con grafici dei dati utente.",
-            "empty_prompt": "Aggiungi una pagina con statistiche utente.",
-            "briefing": {
-              "project_setting": "Immagina di lavorare su una SaaS di gestione progetti.",
-              "existing_assets": [
-                "Tabella `tasks` in Supabase con created_at, completed_at, user_id",
-                "Cartella /components/charts con un grafico già fatto (LineChart)",
-                "Convenzione: i numeri grandi vanno formattati con `formatNumber()` da /lib/utils"
-              ]
-            }
+            },
+            "blocks": [
+              { "id": "login.project.correct",     "level": "project",     "quality": "correct",      "text": "Sto costruendo un'app di prenotazione ristoranti. Gli utenti sono ristoratori italiani che gestiscono il loro locale." },
+              { "id": "login.project.generic",     "level": "project",     "quality": "generic",      "text": "Sto costruendo un'app." },
+              { "id": "login.project.off",         "level": "project",     "quality": "off_scenario", "text": "Sto facendo un blog personale dove pubblico ricette di cucina." },
+              { "id": "login.code.correct",        "level": "code",        "quality": "correct",      "text": "I file delle form sono in /components/forms. La registrazione esiste già, manca solo il login." },
+              { "id": "login.code.generic",        "level": "code",        "quality": "generic",      "text": "Il codice è da qualche parte nel progetto." },
+              { "id": "login.code.off",            "level": "code",        "quality": "off_scenario", "text": "Usa un grafico tipo LineChart per visualizzare i dati." },
+              { "id": "login.constraints.correct", "level": "constraints", "quality": "correct",      "text": "Niente OAuth, voglio email e password semplici. Non installare nuove librerie." },
+              { "id": "login.constraints.generic", "level": "constraints", "quality": "generic",      "text": "Fai come credi sia meglio." },
+              { "id": "login.constraints.off",     "level": "constraints", "quality": "off_scenario", "text": "Non modificare la palette colori del sito." },
+              { "id": "login.examples.correct",    "level": "examples",    "quality": "correct",      "text": "Riusa lo stile e la struttura della form di registrazione che già esiste." },
+              { "id": "login.examples.generic",    "level": "examples",    "quality": "generic",      "text": "Fai un esempio bello." },
+              { "id": "login.examples.off",        "level": "examples",    "quality": "off_scenario", "text": "Fai come Stripe Checkout, con flusso multi-step." }
+            ]
           }
         ],
-        "min_chars": 100,
-        "max_chars": 800,
         "xp_by_case": {
           "incomplete": 50,
           "missing_one": 120,
-          "good": 180,
-          "excellent": 250,
-          "perfect": 320
+          "good": 200,
+          "excellent": 280
         }
       },
       "vignettes": [
-        { "short": "Sii specifico, sempre.", "full": "Sii specifico, sempre. Più sei concreto, più ti rispetto come AI." },
-        { "short": "Tre tentativi. Usali bene.", "full": "Tre tentativi. Usali bene. Al secondo ti do un indizio, al terzo te lo dico chiaro." },
-        { "short": "Il prompt te lo tieni.", "full": "Il prompt che scrivi te lo porti a casa. Lo riusi nel tuo prossimo progetto vero." }
+        { "short": "Riconosci, non scrivere.", "full": "Riconosci, non scrivere. Oggi ti chiedo solo di scegliere — il prompt ricco lo componi tappando." },
+        { "short": "Tre tentativi. Usali bene.", "full": "Tre tentativi. Al secondo ti dico cosa manca, al terzo te lo dico chiaro." },
+        { "short": "Uno per livello.", "full": "Uno per livello. Quattro livelli — progetto, codice, vincoli, esempi. Non di più, non di meno." }
       ]
     },
     {

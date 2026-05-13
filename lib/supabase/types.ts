@@ -242,9 +242,9 @@ export type Database = {
           // the CLAUDE.md grader has its own daily budget independent of
           // chat and promise spend.
           claudemd_attempts_count: number;
-          // Lesson 3 — counter for /api/lesson-context-evaluate calls so
-          // the context-prompt grader has its own daily budget too. Same
-          // pattern as claudemd_attempts_count.
+          // Lesson 3 — legacy daily counter for the v3 context-prompt
+          // grader (replaced by block_picker, scored deterministically).
+          // Column kept to avoid a migration; no longer incremented.
           context_attempts_count: number;
           // Lesson 4 — counter for /api/lesson-constraints-evaluate calls.
           // Independent budget so the user can finish lesson 2/3 and

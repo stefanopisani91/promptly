@@ -836,8 +836,8 @@ export interface SparkHelperContext {
    * Lesson 3 only — the scenario-specific briefing the learner has been
    * shown in the widget. Server resolves it from the loaded lesson JSON
    * so Spark hint examples cite the same "ingredients" the learner can
-   * see ("tabella users", "/components/forms", ...). Null when the phase
-   * doesn't name a scenario or the widget isn't context_prompt_editor.
+   * see ("tabella users", "/components/forms", ...). Null when the
+   * widget isn't block_picker.
    */
   scenarioBriefing?: {
     project_setting: string;
@@ -878,25 +878,13 @@ const PHASE_GUIDANCE: Record<string, { it: string; en: string }> = {
     it: "Ha appena tentato un CLAUDE.md e sta per riprovare. Trovi sotto il punteggio e la dimensione debole del tentativo precedente — usali per indicare PRECISAMENTE su quale delle 4 sezioni lavorare (es. «specificity era debole, prova a essere più concreto sulle house rules»). NON ripetere il punteggio, NON suggerire di copiare/incollare il testo precedente, NON scrivere tu le sezioni.",
     en: "They just attempted a CLAUDE.md and are about to retry. Below you'll find the previous attempt's score + weakest dimension — use them to point PRECISELY at which of the 4 sections to work on (e.g. «specificity was weak, try being more concrete on the house rules»). DO NOT repeat the score, DO NOT suggest copy-pasting the previous text, DO NOT write the sections yourself.",
   },
-  "context_prompt_editor:choosing_scenario": {
-    it: "Sta scegliendo quale dei tre scenari affrontare. Aiutalo a capire la differenza tra gli scenari, non a scrivere il prompt — quello viene dopo.",
-    en: "They're picking which of the three scenarios to tackle. Help them tell the scenarios apart — don't help with the rewritten prompt yet, that comes after.",
+  "block_picker:picking_blocks": {
+    it: "Sta scegliendo i 4 blocchi pre-scritti (uno per livello: progetto, codice, vincoli, esempi) per comporre un prompt ricco sullo scenario «app ristoranti / aggiungi login». NON dirgli quali blocchi scegliere e NON citare i blocchi per testo letterale — fagli capire cosa cercare in ogni livello (chi è l'utente nel progetto, dove vivono i file, cosa l'AI NON deve fare, quale pattern riusare).",
+    en: "They're picking the 4 pre-written blocks (one per level: project, code, constraints, examples) to compose a rich prompt on the «restaurant app / add login» scenario. DO NOT tell them which blocks to pick and DO NOT cite blocks by their literal text — help them understand what to look for in each level (who the project's user is, where the files live, what the AI must NOT do, which pattern to reuse).",
   },
-  "context_prompt_editor:scenario_login_writing": {
-    it: "Ha scelto lo scenario «login» (aggiungere l'autenticazione utenti) e sta scrivendo il prompt arricchito coi 4 livelli di contesto.",
-    en: "They picked the «login» scenario (add user authentication) and are now writing the enriched prompt with the 4 levels of context.",
-  },
-  "context_prompt_editor:scenario_notifications_writing": {
-    it: "Ha scelto lo scenario «notifications» (aggiungere notifiche email automatiche) e sta scrivendo il prompt arricchito coi 4 livelli di contesto.",
-    en: "They picked the «notifications» scenario (add automatic email notifications) and are now writing the enriched prompt with the 4 levels of context.",
-  },
-  "context_prompt_editor:scenario_stats_writing": {
-    it: "Ha scelto lo scenario «stats» (aggiungere una pagina statistiche) e sta scrivendo il prompt arricchito coi 4 livelli di contesto.",
-    en: "They picked the «stats» scenario (add a stats page) and are now writing the enriched prompt with the 4 levels of context.",
-  },
-  "context_prompt_editor:between_attempts": {
-    it: "Ha appena tentato un prompt arricchito e sta per riprovare. Trovi sotto il punteggio e il livello mancante del tentativo precedente — usali per indicare PRECISAMENTE quale dei 4 livelli rafforzare (progetto, codice, vincoli, esempi). NON ripetere il punteggio, NON suggerire di copiare/incollare il testo precedente.",
-    en: "They just attempted an enriched prompt and are about to retry. Below you'll find the previous attempt's score + missing layer — use them to point PRECISELY at which of the 4 levels to strengthen (project, code, constraints, examples). DO NOT repeat the score, DO NOT suggest copy-pasting the previous text.",
+  "block_picker:between_attempts": {
+    it: "Ha appena tentato una combinazione di blocchi e sta per riprovare. Trovi sotto il punteggio e il livello mancante (o null, se tutti e 4 i livelli erano coperti ma alcune scelte erano poco specifiche o fuori scenario). Usali per indicare PRECISAMENTE quale livello rafforzare. NON ripetere il punteggio, NON citare blocchi per id o per testo letterale, NON rivelare quali sono i blocchi «corretti».",
+    en: "They just attempted a combination of blocks and are about to retry. Below you'll find the score and the missing level (or null, if all 4 levels were covered but some choices were vague or off-scenario). Use them to point PRECISELY at which level to strengthen. DO NOT repeat the score, DO NOT cite blocks by id or by literal text, DO NOT reveal which blocks are «correct».",
   },
   "constraints_editor:between_attempts": {
     it: "Ha appena tentato i 3 vincoli e sta per riprovare. Trovi sotto il punteggio e il vincolo più debole del tentativo precedente (protective / process / style) — usalo per indicare PRECISAMENTE su quale dei 3 lavorare. NON ripetere il punteggio, NON suggerire di copiare/incollare i vincoli precedenti, NON scrivere tu i 3 vincoli.",

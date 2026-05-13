@@ -208,49 +208,25 @@ export interface LessonsCopy {
       editorTabLabel: string;
       sparkTabLabel: string;
     };
-    // Lesson 3 — Context-prompt editor widget (parallel to claudemdEditor
-    // but graded on the 4 levels of context — project / code / constraints /
-    // examples). Same animation effects, different rubric copy.
-    contextEditor: {
+    // Lesson 3 — Block picker widget (tap-to-add). The learner sees an
+    // empty starter prompt and a pool of 12 pre-written blocks; they tap
+    // 4 (one per level — project / code / constraints / examples) to
+    // compose a rich prompt. Scoring is deterministic server-side.
+    blockPicker: {
       intro: string;
-      // Shown under the disabled submit button so the user knows why it's
-      // locked: no scenario picked, or the rewritten prompt is below {min}
-      // / above {max} ({current} = the live length).
-      pickScenarioHint: string;
-      minLengthHint: string;
-      maxLengthHint: string;
-      // Briefing card (pre-scenario) — chrome strings. The actual project
-      // setting + existing-assets bullets live in the lesson JSON
-      // (content/<lang>/mindset/03-context-matters.v3.json) and are
-      // resolved per scenario at render time.
-      briefingTitle: string;
-      briefingExistingHeader: string;
-      briefingTaskTemplate: string; // "Ora ti chiedo di scrivere il prompt RICCO per «{task}»."
-      // When the learner has a real project_description in their profile,
-      // we prepend a "Il tuo progetto è X. Per esercitarti oggi usiamo:"
-      // line above the briefing so the briefing reads as a stepping
-      // stone, not a competing world. {project} = compressed user
-      // project. When the user is exploring (no project), the briefing
-      // shows without this prefix.
-      briefingProjectPrefixTemplate: string;
-      briefingCollapseLabel: string;
-      briefingExpandLabel: string;
-      selectScenarioLabel: string;
       emptyPromptLabel: string;
-      // Sub-label clarifying the empty box is a read-only example.
-      emptyPromptSubtitle: string;
-      // Mobile-only collapsed CTA on the empty box ("tap to expand").
-      emptyPromptExpandLabel: string;
       richPromptLabel: string;
-      // Eyebrow + arrow helper shown above the editable box until the
-      // user focuses it for the first time.
-      writeHereLabel: string;
-      // Multi-line placeholder shown in the rich-prompt textarea before the
-      // user types. Encodes the 4 levels as a soft scaffold; whitespace is
-      // significant — the textarea uses `whitespace-pre-line` to preserve
-      // the line breaks so the user sees the structure.
-      richPromptPlaceholder: string;
-      totalCharCounterTemplate: string;
+      // Placeholder inside the composed-prompt card before any block is
+      // selected.
+      composedPlaceholder: string;
+      poolLabel: string;
+      // "{covered} / {total} livelli" counter rendered above the composed
+      // prompt.
+      levelsCounterTemplate: string;
+      // Submit hint when not yet 4/4 covered. {missing} is the joined
+      // list of missing level labels (uses levelLabelsAccusative when set).
+      submitHintIncomplete: string;
+      poolHelper: string;
       attemptCounterTemplate: string;
       submitCta: string;
       submitting: string;
@@ -262,12 +238,18 @@ export interface LessonsCopy {
       apiError: string;
       rateLimitError: string;
       invalidInputError: string;
-      dailyQuotaExhausted: string;
-      editorTabLabel: string;
-      sparkTabLabel: string;
-      // Localised labels for the 4 dimension bars shown in Spark's panel
-      // after evaluation. Keys map 1:1 to ContextLayer.
-      layerLabels: {
+      // Localised labels for the 4 levels — used as chips above each
+      // selected block ([PROGETTO] / [CODICE] / [VINCOLI] / [ESEMPI]).
+      levelLabels: {
+        project: string;
+        code: string;
+        constraints: string;
+        examples: string;
+      };
+      // Optional accusative variant of levelLabels — used to inflect the
+      // "manca: …" / "missing: …" submitHintIncomplete. Falls back to
+      // levelLabels when absent.
+      levelLabelsAccusative?: {
         project: string;
         code: string;
         constraints: string;
@@ -798,44 +780,33 @@ const it: LessonsCopy = {
       editorTabLabel: "Editor",
       sparkTabLabel: "Spark",
     },
-    contextEditor: {
-      intro: "Scegli uno scenario. A destra hai il prompt vuoto come riferimento. A sinistra trasformalo aggiungendo i 4 livelli di contesto.",
-      pickScenarioHint: "Per inviare, scegli prima uno dei tre scenari qui sopra.",
-      minLengthHint:
-        "Il prompt riscritto deve essere almeno {min} caratteri (ora: {current}) — aggiungi i 4 livelli di contesto.",
-      maxLengthHint:
-        "Hai superato i {max} caratteri — accorcia un po' e potrai inviare.",
-      briefingTitle: "Briefing del progetto",
-      briefingExistingHeader: "Cosa esiste già",
-      briefingTaskTemplate:
-        "Ora ti chiedo di scrivere il prompt RICCO per «{task}».",
-      briefingProjectPrefixTemplate:
-        "Il tuo progetto vero è «{project}». Per esercitarti, oggi usiamo questo scenario di esempio:",
-      briefingCollapseLabel: "Nascondi briefing",
-      briefingExpandLabel: "Mostra briefing",
-      selectScenarioLabel: "Scegli lo scenario",
-      emptyPromptLabel: "PROMPT VUOTO",
-      emptyPromptSubtitle: "(esempio, non modificabile)",
-      emptyPromptExpandLabel: "Tocca per espandere",
-      richPromptLabel: "IL TUO PROMPT",
-      writeHereLabel: "Scrivi qui sotto i 4 livelli",
-      richPromptPlaceholder: "Aggiungi i 4 livelli di contesto. Esempio:\n\n[1. PROGETTO]\nStiamo costruendo… (descrivi cosa)\n\n[2. CODICE/FILE]\nI file esistenti sono… / La struttura è…\n\n[3. VINCOLI]\nNON fare X. NON modificare Y.\n\n[4. ESEMPI]\nRiusa il pattern di [file simile esistente].",
-      totalCharCounterTemplate: "{current} / {max} caratteri",
+    blockPicker: {
+      intro: "Tocca quattro blocchi — uno per livello — per trasformare il prompt scarno in un prompt ricco.",
+      emptyPromptLabel: "PROMPT DI PARTENZA",
+      richPromptLabel: "IL TUO PROMPT RICCO",
+      composedPlaceholder: "I blocchi che tocchi appariranno qui, uno per livello.",
+      poolLabel: "BLOCCHI DISPONIBILI",
+      levelsCounterTemplate: "{covered} / {total} livelli",
+      submitHintIncomplete: "Per inviare servono tutti e quattro i livelli. Manca: {missing}.",
+      poolHelper: "Tocca un blocco per ogni livello.",
       attemptCounterTemplate: "Tentativo {current} / {max}",
       submitCta: "Invia a Spark",
       submitting: "Sto leggendo…",
       retryCta: "Riprova",
       finalCta: "Continua →",
-      awaitingPrompt: "Scegli uno scenario e scrivi il prompt ricco. Poi te lo commento.",
+      awaitingPrompt: "Tocca quattro blocchi — uno per livello — e poi te lo commento.",
       outOfAttempts: "Va bene così. Hai dato il massimo per oggi. Quello che hai imparato resta.",
       networkError: "Sono offline. Non è colpa tua. Riprova quando hai rete.",
       apiError: "Qualcosa non ha funzionato. Riprova tra poco.",
       rateLimitError: "Troppi tentativi ravvicinati. Dammi un momento.",
-      invalidInputError: "Quel testo non posso valutarlo. Riformulalo come prompt vero, con i 4 livelli di contesto.",
-      dailyQuotaExhausted: "Per oggi hai esaurito le valutazioni che posso farti. Torna domani — il tuo prompt lo tieni tu.",
-      editorTabLabel: "Editor",
-      sparkTabLabel: "Spark",
-      layerLabels: {
+      invalidInputError: "Selezione non valida. Tocca esattamente quattro blocchi — uno per livello.",
+      levelLabels: {
+        project: "PROGETTO",
+        code: "CODICE",
+        constraints: "VINCOLI",
+        examples: "ESEMPI",
+      },
+      levelLabelsAccusative: {
         project: "progetto",
         code: "codice",
         constraints: "vincoli",
@@ -1009,11 +980,11 @@ const it: LessonsCopy = {
           "Esempio per un'app come la mia",
           "Quali sono i miei strumenti?",
         ],
-        context_prompt_editor: [
-          "Cosa significa «contesto codice»?",
-          "Come faccio a essere specifico?",
-          "Esempio per il mio progetto",
-          "Cos'è un pattern?",
+        block_picker: [
+          "Cosa significa «strato»?",
+          "Come riconosco lo strato giusto?",
+          "Cosa cambia se sbaglio blocco?",
+          "Esempio di prompt ricco completo",
         ],
         constraints_editor: [
           "Cos'è uno schema di database?",
@@ -1352,44 +1323,33 @@ const en: LessonsCopy = {
       editorTabLabel: "Editor",
       sparkTabLabel: "Spark",
     },
-    contextEditor: {
-      intro: "Pick a scenario. The empty prompt is on the right as a reference. Transform it on the left by adding the 4 levels of context.",
-      pickScenarioHint: "To send, pick one of the three scenarios above first.",
-      minLengthHint:
-        "The rewritten prompt needs at least {min} characters (now: {current}) — add the 4 levels of context.",
-      maxLengthHint:
-        "You're over {max} characters — trim it a bit and you'll be able to send.",
-      briefingTitle: "Project briefing",
-      briefingExistingHeader: "What already exists",
-      briefingTaskTemplate:
-        "Now I'm asking you to write the RICH prompt for «{task}».",
-      briefingProjectPrefixTemplate:
-        "Your real project is \"{project}\". To practice, today we'll use this sample scenario:",
-      briefingCollapseLabel: "Hide briefing",
-      briefingExpandLabel: "Show briefing",
-      selectScenarioLabel: "Pick a scenario",
-      emptyPromptLabel: "EMPTY PROMPT",
-      emptyPromptSubtitle: "(example, read-only)",
-      emptyPromptExpandLabel: "Tap to expand",
-      richPromptLabel: "YOUR PROMPT",
-      writeHereLabel: "Write the 4 levels below",
-      richPromptPlaceholder: "Add the 4 levels of context. Example:\n\n[1. PROJECT]\nWe're building… (describe what)\n\n[2. CODE/FILES]\nThe existing files are… / The structure is…\n\n[3. CONSTRAINTS]\nDon't do X. Don't modify Y.\n\n[4. EXAMPLES]\nReuse the pattern in [similar existing file].",
-      totalCharCounterTemplate: "{current} / {max} chars",
+    blockPicker: {
+      intro: "Tap four blocks — one per level — to turn the thin prompt into a rich prompt.",
+      emptyPromptLabel: "STARTER PROMPT",
+      richPromptLabel: "YOUR RICH PROMPT",
+      composedPlaceholder: "The blocks you tap will appear here, one per level.",
+      poolLabel: "AVAILABLE BLOCKS",
+      levelsCounterTemplate: "{covered} / {total} levels",
+      submitHintIncomplete: "To send, you need all four levels. Missing: {missing}.",
+      poolHelper: "Tap one block per level.",
       attemptCounterTemplate: "Try {current} / {max}",
       submitCta: "Send to Spark",
       submitting: "Reading…",
       retryCta: "Retry",
       finalCta: "Continue →",
-      awaitingPrompt: "Pick a scenario and write the rich prompt. Then I'll comment.",
+      awaitingPrompt: "Tap four blocks — one per level — and then I'll comment.",
       outOfAttempts: "It's fine. You gave today your best. What you learned sticks.",
       networkError: "I'm offline. Not your fault. Try again when you're back.",
       apiError: "Something went wrong. Try again in a bit.",
       rateLimitError: "Too many tries too fast. Give me a moment.",
-      invalidInputError: "I can't grade that text. Rewrite it as a real prompt, with the 4 levels of context.",
-      dailyQuotaExhausted: "You've used all the evaluations I can give you today. Come back tomorrow — your prompt stays with you.",
-      editorTabLabel: "Editor",
-      sparkTabLabel: "Spark",
-      layerLabels: {
+      invalidInputError: "Invalid selection. Tap exactly four blocks — one per level.",
+      levelLabels: {
+        project: "PROJECT",
+        code: "CODE",
+        constraints: "CONSTRAINTS",
+        examples: "EXAMPLES",
+      },
+      levelLabelsAccusative: {
         project: "project",
         code: "code",
         constraints: "constraints",
@@ -1563,11 +1523,11 @@ const en: LessonsCopy = {
           "Example for an app like mine",
           "What are my tools?",
         ],
-        context_prompt_editor: [
-          "What does code context mean?",
-          "How do I get specific?",
-          "Example for my project",
-          "What's a pattern?",
+        block_picker: [
+          "What does «layer» mean?",
+          "How do I recognise the right layer?",
+          "What if I pick a wrong block?",
+          "Example of a complete rich prompt",
         ],
         constraints_editor: [
           "What's a database schema?",

@@ -176,7 +176,7 @@ export default async function LessonPage({ params }: PageProps) {
         consoleCopy: landingCopy.demo.console,
       },
       claudemdEditor: lessonsCopy.v3.claudemdEditor,
-      contextEditor: lessonsCopy.v3.contextEditor,
+      blockPicker: lessonsCopy.v3.blockPicker,
       constraintsEditor: lessonsCopy.v3.constraintsEditor,
       brokenSessionDebugger: lessonsCopy.v3.brokenSessionDebugger,
       promptArchitecture: lessonsCopy.v3.promptArchitecture,

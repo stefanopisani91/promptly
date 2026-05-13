@@ -580,7 +580,7 @@ export interface ChoiceStep extends StepBase {
 export type InteractiveWidgetType =
   | "lucia_prompt_loop"
   | "claudemd_editor"
-  | "context_prompt_editor"
+  | "block_picker"
   | "constraints_editor"
   | "broken_session_debugger"
   | "prompt_architecture";
@@ -629,58 +629,98 @@ export interface ClaudemdEditorConfig {
   };
 }
 
-// ─── Lesson 3 — Context prompt editor (Lezione3_Blueprint.md §13) ─────
+// ─── Lesson 3 — Block picker (Lezione3_QuickWin_V4_Blueprint.md) ──────
 //
-// Same family as ClaudemdEditorConfig but the editor is a single textarea
-// (the 4 levels of context are declared in the placeholder, not split into
-// sections) and the user picks a SCENARIO (e.g. "add login") rather than a
-// PROJECT — the scenario seeds the empty prompt the user has to enrich.
+// Tap-to-add widget: the user sees an empty "starter" prompt and a pool of
+// 12 pre-written blocks. They tap 4 (one per level — project / code /
+// constraints / examples) to compose a richer prompt. Scoring is purely
+// deterministic server-side — no AI call on submit — based on coverage of
+// the 4 levels + per-block quality (correct / generic / off_scenario).
+//
+// The shape is intentionally generic: scenarios is an array so a future
+// lesson can reuse the same widget with N scenarios. Lesson 3 ships a
+// single scenario ("App ristoranti / login") and the widget walks on
+// scenarios[0] without a scenario picker.
 
-export interface ContextScenarioOption {
-  // Stable key used by the evaluator + saved in stepState.
+export type BlockLevel = "project" | "code" | "constraints" | "examples";
+
+// Quality marker, hidden from the user. Drives the deterministic scoring:
+//   correct       → +15 (the canonical answer for this level)
+//   generic       → +5  (on-scenario but vague — fills the level slot)
+//   off_scenario  → -5  (out-of-context distractor — fills the slot but
+//                        signals the learner misread the scenario)
+export type BlockQuality = "correct" | "generic" | "off_scenario";
+
+export interface BlockOption {
+  // Stable id used by the evaluator and persisted in stepState.
+  // Convention: "<scenarioKey>.<level>.<quality>" (e.g. "login.project.correct").
+  id: string;
+  level: BlockLevel;
+  quality: BlockQuality;
+  // Block text shown on the card. Per-language (the JSON file is loaded
+  // by language, so this is already localised by the time it reaches us).
+  text: string;
+}
+
+export interface BlockPickerScenario {
   key: string;
   icon: string;
   title: string;
-  // Compact label shown on the card on narrow screens (the 3-up grid),
-  // where the full `title` would wrap badly. Optional — the card falls
-  // back to `title` when absent. The full `title` is still used at ≥sm.
   short_title?: string;
   description: string;
-  // The bare prompt the user is asked to enrich. Shown read-only on the
-  // left of the editor and forwarded to the rubric so it can grade the
-  // delta between empty and rich.
+  // The bare prompt shown as the "starting point" at the top of the
+  // composer (read-only). Forwarded to Spark Helper so it can reference
+  // the scenario when hinting.
   empty_prompt: string;
-  // Pre-scenario briefing (added 2026-05-13, SparkHelper_FixBundle_v1 §3.5).
-  // Concrete project context the learner can use as "ingredients" when
-  // writing the 4 levels of context. Shown above the editor after the
-  // scenario is picked, sent to the evaluator so plausible-but-out-of-
-  // briefing details still pass, and sent to Spark Helper so hints align.
+  // Optional briefing card shown above the picker — the "ingredients" the
+  // learner can recognise across the 12 blocks. Same shape as the legacy
+  // context editor's briefing so Spark Helper's context note works
+  // unchanged.
   briefing?: {
-    // Single-sentence project setting ("Immagina di lavorare su un'app
-    // di prenotazione ristoranti.").
     project_setting: string;
-    // 2-4 short bullets describing concrete assets that exist in the
-    // imaginary project (db tables, folders, style guides, etc.). These
-    // are the "ingredients" the learner can cite in the rich prompt.
     existing_assets: string[];
   };
+  // The 12 pre-written blocks. Validator enforces: exactly 12, with 3
+  // blocks per BlockLevel (one of each BlockQuality).
+  blocks: BlockOption[];
 }
 
-export interface ContextPromptEditorConfig {
-  scenarios: ContextScenarioOption[];
-  // Total min/max char budget for the rich prompt. The 4 levels are not
-  // counted separately — the rubric grades coverage, not section length.
-  min_chars: number;
-  max_chars: number;
-  // XP awarded by feedback case (mirrors ClaudemdEditorConfig.xp_by_case).
-  // `perfect` covers the score >= 95 bucket; `excellent` is 85-94.
+export interface BlockPickerConfig {
+  scenarios: BlockPickerScenario[];
+  // How many blocks the learner must select (1 per level). 4 on Lesson 3.
+  required_blocks: number;
+  // XP awarded by feedback case. 4 buckets (not 5 — there's no separate
+  // "perfect" tier because excellent already requires all-correct).
   xp_by_case: {
     incomplete: number;
     missing_one: number;
     good: number;
     excellent: number;
-    perfect: number;
   };
+}
+
+export interface BlockPickerEvaluation {
+  // Per-block detail (in selection order). points: +15 / +5 / -5.
+  perBlock: Array<{
+    blockId: string;
+    level: BlockLevel;
+    quality: BlockQuality;
+    points: number;
+  }>;
+  // Deduped list of covered levels (max 4).
+  levelsCovered: BlockLevel[];
+  // levelsCovered.length * 10 (max 40).
+  coverageBonus: number;
+  // clamp(0..100, coverageBonus + sum(perBlock.points)).
+  totalScore: number;
+  feedback_case: "excellent" | "good" | "missing_one" | "incomplete";
+  // Canned Spark reply for this feedback_case (server picks IT/EN).
+  // Persisted as state.lastReaction so the rentry doesn't regenerate it.
+  spark_reply: string;
+  // Optional pointer at the missing level (only set when exactly one
+  // level is uncovered AND levelsCovered.length === 3 — i.e. the user
+  // forgot one). Helps the UI render a precise "manca: CODICE" hint.
+  missing_level?: BlockLevel;
 }
 
 // ─── Lesson 4 — Constraints editor (Lezione4_Blueprint.md §13) ────────
@@ -835,8 +875,8 @@ export interface InteractiveStep extends StepBase {
   };
   // Lesson 2 — required when widget === "claudemd_editor".
   claudemd_config?: ClaudemdEditorConfig;
-  // Lesson 3 — required when widget === "context_prompt_editor".
-  context_config?: ContextPromptEditorConfig;
+  // Lesson 3 — required when widget === "block_picker".
+  block_config?: BlockPickerConfig;
   // Lesson 4 — required when widget === "constraints_editor".
   constraints_config?: ConstraintsEditorConfig;
   // Lesson 5 — required when widget === "broken_session_debugger".

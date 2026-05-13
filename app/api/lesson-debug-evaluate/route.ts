@@ -28,8 +28,8 @@ import { isUnlimited, limitsFromTier } from "@/lib/rate-limits/account-limits";
 //      when hit; the attempt is logged to spark_safety_log fire-and-
 //      forget for review.
 //
-// Mirrors lesson-constraints-evaluate / lesson-context-evaluate — same
-// defenses, different rubric and column.
+// Mirrors lesson-constraints-evaluate — same defenses, different rubric
+// and column.
 
 const MAX_RECOVERY_CHARS = 450; // 400 from JSON + 50 headroom
 const MIN_RECOVERY_CHARS = 50;

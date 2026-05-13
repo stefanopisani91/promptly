@@ -5,8 +5,8 @@
 // recognise the AI's overreach, recalibrate precisely, and add a
 // future-proof constraint.
 //
-// Mirrors constraints-evaluate.ts / context-evaluate.ts so the API
-// route, the editor and the queries layer stay symmetric.
+// Mirrors constraints-evaluate.ts so the API route, the editor and
+// the queries layer stay symmetric.
 
 import type { Lang } from "@/types";
 

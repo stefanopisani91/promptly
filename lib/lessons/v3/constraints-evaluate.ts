@@ -3,10 +3,10 @@
 // plus a 1-point system bonus (total 100). Each dimension matches one of
 // the three constraint types the user wrote (protective / process / style).
 //
-// Same shape as context-evaluate.ts and claudemd-evaluate.ts so the API
-// route, the editor and the queries layer stay symmetric. Differences:
-// the rubric scores per kind (not per layer of context) and the prompt
-// frames the disaster scenario the user has to prevent.
+// Same shape as claudemd-evaluate.ts so the API route, the editor and
+// the queries layer stay symmetric. Differences: the rubric scores per
+// kind (not per layer) and the prompt frames the disaster scenario the
+// user has to prevent.
 
 import type { Lang } from "@/types";
 

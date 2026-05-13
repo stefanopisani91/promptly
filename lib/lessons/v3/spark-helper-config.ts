@@ -26,7 +26,7 @@ import type { Lang } from "@/types";
 export const SPARK_HELPER_WIDGETS = [
   "lucia_prompt_loop",
   "claudemd_editor",
-  "context_prompt_editor",
+  "block_picker",
   "constraints_editor",
   "broken_session_debugger",
   "prompt_architecture",
@@ -54,9 +54,9 @@ const CONTEXT_NOTES: Record<SparkHelperWidgetKey, { it: string; en: string }> = 
     it: "L'utente sta scrivendo il suo primo CLAUDE.md su uno di tre progetti di esempio (un piccolo e-commerce, un'app per tracciare abitudini, o un sito vetrina/portfolio). Compila 4 sezioni: cosa stiamo costruendo, lo stack, le house rules (cosa l'AI NON deve fare), e come vuole lavorare con l'AI. Aiutalo a capire i termini (stack, house rules, workflow) e a essere concreto. Se fai esempi, usa un progetto inventato DIVERSO dai tre, oppure tienili generici — non scrivere mai tu le quattro sezioni al posto suo.",
     en: "The learner is writing their first CLAUDE.md against one of three sample projects (a small e-commerce, a habit-tracker app, or a portfolio/landing site). They fill 4 sections: what we're building, the stack, the house rules (what the AI must NOT do), and how they want to work with the AI. Help them understand the terms (stack, house rules, workflow) and how to be concrete. If you give examples, use a made-up project DIFFERENT from those three, or keep them generic — never write the four sections for them.",
   },
-  context_prompt_editor: {
-    it: "L'utente sceglie uno di tre scenari (aggiungere il login, aggiungere notifiche email, aggiungere una pagina di statistiche) e deve riscrivere un prompt scarno di una riga arricchendolo con i 4 livelli di contesto: progetto, codice/file, vincoli, esempi. Aiutalo a capire cosa significa ogni livello e come essere specifico (nomi di file, pattern da riusare, cosa NON fare). Se fai esempi, usa uno scenario DIVERSO dai tre, oppure tienilo astratto — non scrivere mai tu il prompt riscritto al posto suo.",
-    en: "The learner picks one of three scenarios (add login, add email notifications, add a stats page) and has to rewrite a thin one-line prompt by enriching it with the 4 levels of context: project, code/files, constraints, examples. Help them understand what each level means and how to be specific (file names, patterns to reuse, what NOT to do). If you give examples, use a scenario DIFFERENT from those three, or keep it abstract — never write the rewritten prompt for them.",
+  block_picker: {
+    it: "L'utente è sullo scenario «App di prenotazione ristoranti / aggiungi login» e deve scegliere 4 blocchi pre-scritti (uno per livello: progetto, codice, vincoli, esempi) per comporre un prompt ricco. I 12 blocchi disponibili hanno marker di qualità nascosti (correct / generic / off_scenario) — NON rivelare mai quali sono i blocchi «corretti», né elencare i blocchi per id o per testo letterale (sarebbe equivalente a un cheat). Aiutalo a capire cosa significa ogni livello (progetto = di cosa parla il progetto e chi lo usa; codice = dove vivono i file e cosa esiste già; vincoli = cosa l'AI NON deve fare; esempi = pattern da riusare) e come riconoscere il blocco più specifico per ogni livello. Se fai esempi, usa uno scenario DIVERSO (non «app ristoranti / login») e tieni i tuoi esempi astratti.",
+    en: "The learner is on the «Restaurant reservation app / add login» scenario and has to pick 4 pre-written blocks (one per level: project, code, constraints, examples) to compose a rich prompt. The 12 available blocks carry hidden quality markers (correct / generic / off_scenario) — NEVER reveal which blocks are «correct», and DO NOT list blocks by id or by literal text (that would be a cheat). Help them understand what each level means (project = what the project is about and who uses it; code = where the files live and what already exists; constraints = what the AI must NOT do; examples = patterns to reuse) and how to recognise the most specific block per level. If you give examples, use a DIFFERENT scenario (not «restaurant app / login») and keep your examples abstract.",
   },
   constraints_editor: {
     it: "L'utente vede un disastro fisso — un'AI che ha droppato una colonna del database durante un refactoring del flusso di autenticazione, dopo aver installato librerie che nessuno aveva chiesto — e deve scrivere 3 vincoli che l'avrebbero prevenuto: protettivo (cosa l'AI NON deve toccare), di processo (come deve lavorare con te, es. mostrare il diff prima), di stile (coerenza con quello che esiste). Aiutalo a capire cos'è uno «schema di database», la differenza tra protettivo/processo/stile, come si scrive una negazione efficace. Negli esempi usa un disastro inventato DIVERSO — mai quello della colonna del DB durante il refactoring di auth — e non scrivere mai tu i tre vincoli al posto suo.",
@@ -100,13 +100,7 @@ const HELPER_PHASES: Record<SparkHelperWidgetKey, ReadonlySet<string>> = {
     "writing_claudemd",
     "between_attempts",
   ]),
-  context_prompt_editor: new Set([
-    "choosing_scenario",
-    "scenario_login_writing",
-    "scenario_notifications_writing",
-    "scenario_stats_writing",
-    "between_attempts",
-  ]),
+  block_picker: new Set(["picking_blocks", "between_attempts"]),
   constraints_editor: new Set([
     "writing_constraints",
     "writing_protective",
