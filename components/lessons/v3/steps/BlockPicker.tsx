@@ -154,9 +154,40 @@ export function BlockPicker({
 
   const sessionStorageKey = `block_picker:${userId}:${step.id}`;
 
-  const [selectedIds, setSelectedIds] = useState<string[]>(() =>
-    hydrateSelectedIds(state?.selectedBlockIds, sessionStorageKey),
+  // Initial state must be server-coherent (no sessionStorage access) so
+  // the first client render matches the server HTML — otherwise the
+  // levels-covered counter triggers a hydration mismatch. The
+  // sessionStorage draft is merged in a useEffect on mount.
+  const [selectedIds, setSelectedIds] = useState<string[]>(
+    state?.selectedBlockIds ?? [],
   );
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const cached = window.sessionStorage.getItem(sessionStorageKey);
+      if (!cached) return;
+      const parsed = JSON.parse(cached) as unknown;
+      if (
+        !Array.isArray(parsed) ||
+        !parsed.every((x) => typeof x === "string")
+      ) {
+        return;
+      }
+      // Only override if the cache differs from server state — avoids
+      // a useless re-render on the common case.
+      const cachedIds = parsed as string[];
+      const serverIds = state?.selectedBlockIds ?? [];
+      const same =
+        cachedIds.length === serverIds.length &&
+        cachedIds.every((id, i) => id === serverIds[i]);
+      if (!same) setSelectedIds(cachedIds);
+    } catch {
+      /* ignore */
+    }
+    // Intentionally runs once on mount; sessionStorageKey is stable for
+    // the lifetime of this widget instance.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const [attemptCount, setAttemptCount] = useState(persisted?.attempts ?? 0);
   const [bestScore, setBestScore] = useState(persisted?.bestScore ?? 0);
@@ -673,29 +704,6 @@ function xpForResult(
   // path lives on top of `excellent` rather than as a 5th bucket).
   if (c === "excellent" && attempts === 1 && bestScore >= 100) return base + 50;
   return base;
-}
-
-function hydrateSelectedIds(
-  persisted: string[] | undefined,
-  sessionStorageKey: string,
-): string[] {
-  if (typeof window !== "undefined") {
-    try {
-      const cached = window.sessionStorage.getItem(sessionStorageKey);
-      if (cached) {
-        const parsed = JSON.parse(cached) as unknown;
-        if (
-          Array.isArray(parsed) &&
-          parsed.every((x) => typeof x === "string")
-        ) {
-          return parsed as string[];
-        }
-      }
-    } catch {
-      /* ignore */
-    }
-  }
-  return persisted ?? [];
 }
 
 function fireFireworks(): void {
