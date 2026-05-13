@@ -21,7 +21,7 @@
 //     user_progress.spark_helper_count + per-day cap (30/300/150, uncapped
 //     for qa·dev) on spark_usage_daily.helper_messages_count. Input ≤200
 //     chars, history clamped to the last few turns server-side, output
-//     capped at ~200 tokens. Counters bump only on a successful reply.
+//     capped at ~300 tokens. Counters bump only on a successful reply.
 //   • Fail-closed. If the counter columns don't exist yet (migration
 //     20260512120000 not applied), the read throws and the route returns
 //     503 — the feature stays dark rather than running uncapped.
@@ -170,6 +170,34 @@ interface RequestBody {
   // Optional client-provided per-widget phase (e.g. "recovery_question").
   // Server-side validated against an allowlist before being used.
   currentPhase?: unknown;
+  // Optional previous-attempt summary. Sent on between_attempts; the
+  // learner's TYPED text is intentionally NOT part of this — keeping the
+  // "Spark never sees what the learner typed" rule intact.
+  previousAttempt?: unknown;
+}
+
+// Bounds for the previousAttempt fields. Generous enough for a Spark line
+// (~200 chars in practice) but small enough to never balloon the prompt.
+const MAX_PREV_REPLY_CHARS = 240;
+const MAX_PREV_WEAKNESS_CHARS = 48;
+
+function sanitisePreviousAttempt(
+  raw: unknown,
+): { score: number; weakness: string | null; sparkReply: string | null } | null {
+  if (!raw || typeof raw !== "object") return null;
+  const obj = raw as Record<string, unknown>;
+  // Score: required and must be a finite 0-100 number. Clamp defensively.
+  if (typeof obj.score !== "number" || !Number.isFinite(obj.score)) return null;
+  const score = Math.max(0, Math.min(100, Math.round(obj.score)));
+  const weakness =
+    typeof obj.weakness === "string" && obj.weakness.trim().length > 0
+      ? obj.weakness.trim().slice(0, MAX_PREV_WEAKNESS_CHARS)
+      : null;
+  const sparkReply =
+    typeof obj.sparkReply === "string" && obj.sparkReply.trim().length > 0
+      ? obj.sparkReply.replace(/\s+/g, " ").trim().slice(0, MAX_PREV_REPLY_CHARS)
+      : null;
+  return { score, weakness, sparkReply };
 }
 
 interface HistoryTurn {
@@ -236,6 +264,14 @@ export async function POST(request: Request) {
     PHASE_KEY_RE.test(phaseCandidate) &&
     isSparkHelperPhase(widgetKey, phaseCandidate)
       ? phaseCandidate
+      : null;
+  // previousAttempt is only meaningful when the phase says "between_attempts".
+  // Dropping it on every other phase is defensive — the client shouldn't send
+  // it then anyway, but the server stays the source of truth on what reaches
+  // Spark.
+  const previousAttempt =
+    currentPhase === "between_attempts"
+      ? sanitisePreviousAttempt(body.previousAttempt)
       : null;
 
   const supabase = createClient();
@@ -373,6 +409,32 @@ export async function POST(request: Request) {
   }
   const lessonTitle = lesson.title;
 
+  // Lesson 3 — when the learner is on a specific scenario_*_writing phase
+  // (or between_attempts after picking a scenario), pluck the per-scenario
+  // briefing from the loaded lesson JSON and hand it to Spark so she can
+  // hint about the briefing's «ingredients» (the user expects this — they
+  // just read it in the widget). Server is the authority: never trust a
+  // client-supplied briefing string. Drops gracefully when the phase
+  // doesn't name a scenario (e.g. choosing_scenario or non-lesson-3
+  // widgets).
+  const scenarioBriefing = (() => {
+    if (
+      widgetKey !== "context_prompt_editor" ||
+      !currentPhase ||
+      !currentPhase.startsWith("scenario_") ||
+      !currentPhase.endsWith("_writing")
+    ) {
+      return null;
+    }
+    const scenarioKey = currentPhase.slice(
+      "scenario_".length,
+      currentPhase.length - "_writing".length,
+    );
+    const config = interactiveStep.context_config;
+    const scenario = config?.scenarios.find((s) => s.key === scenarioKey);
+    return scenario?.briefing ?? null;
+  })();
+
   // Safety pre-flight on the message AND any history (a jailbreak attempt
   // smuggled in via an earlier turn still gets logged). Fire-and-forget;
   // never blocks the reply.
@@ -402,6 +464,8 @@ export async function POST(request: Request) {
     phaseGuidance: currentPhase
       ? getHelperPhaseGuidance(widgetKey, currentPhase, lang)
       : null,
+    scenarioBriefing,
+    previousAttempt,
     history,
   });
 
@@ -410,9 +474,10 @@ export async function POST(request: Request) {
     sessionContext: helperContext,
     userMessage: message,
     // Spec: 3-4 sentences. The persona prescribes 2-4 by default and the
-    // helper rules reinforce "max 3-4"; 200 tokens is a hard ceiling that
-    // covers 4 sentences without inviting an essay.
-    maxOutputTokens: 200,
+    // helper rules reinforce "max 3-4"; 300 tokens is a hard ceiling that
+    // covers ~5 Italian sentences without inviting an essay. Raised from
+    // 200 after testing showed examples + analogies getting truncated.
+    maxOutputTokens: 300,
     temperature: 0.6,
   });
 

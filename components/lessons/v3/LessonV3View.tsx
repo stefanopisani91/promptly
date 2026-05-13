@@ -129,6 +129,13 @@ function quickWinFinalised(stepEntry: unknown): boolean {
  * they've already passed (e.g. coaching the pivot in lesson 5 after the
  * pivot has been confirmed). Returns null when no specific guidance
  * applies — Spark falls back to the per-widget context note alone.
+ *
+ * The cross-widget "between_attempts" phase shadows the regular phase as
+ * soon as the widget has a `lastEvaluation` stored (i.e. at least one
+ * submitted attempt) AND the step hasn't been finalised yet.
+ * prompt_architecture is excluded — it's a drag-and-drop puzzle without
+ * a `lastEvaluation` of the same shape, so the between_attempts pattern
+ * doesn't apply.
  */
 function helperPhaseFromState(
   widgetKey: string,
@@ -138,14 +145,28 @@ function helperPhaseFromState(
     typeof stepEntry === "object" && stepEntry !== null
       ? (stepEntry as Record<string, unknown>)
       : {};
+  const hasPreviousAttempt =
+    state.lastEvaluation !== undefined && state.lastEvaluation !== null;
+  const finalised = Boolean(state.result);
+
   switch (widgetKey) {
-    case "claudemd_editor":
+    case "lucia_prompt_loop":
+      if (hasPreviousAttempt && !finalised) return "between_attempts";
+      return "writing_lucia_prompt";
+    case "claudemd_editor": {
+      const selectedProject = state.selectedProject;
+      if (typeof selectedProject !== "string" || selectedProject.length === 0) {
+        return "awaiting_project_selection";
+      }
+      if (hasPreviousAttempt && !finalised) return "between_attempts";
       return "writing_claudemd";
+    }
     case "context_prompt_editor": {
       const scenario = state.selectedScenario;
       if (typeof scenario !== "string" || scenario.length === 0) {
         return "choosing_scenario";
       }
+      if (hasPreviousAttempt && !finalised) return "between_attempts";
       // Only the three canonical scenarios get a focused phase; any other
       // string is silently coerced to choosing_scenario so the server's
       // allowlist doesn't reject the call.
@@ -155,15 +176,115 @@ function helperPhaseFromState(
       return "choosing_scenario";
     }
     case "constraints_editor":
+      if (hasPreviousAttempt && !finalised) return "between_attempts";
       // We don't track which textarea is focused (would require pushing
       // focus state up from the editor for marginal benefit). Single
       // phase keeps the route happy and Spark still gets the per-widget
       // context note that covers the three constraint types.
       return "writing_constraints";
     case "broken_session_debugger":
-      return state.pivotConfirmed === true ? "recovery_question" : "pivot_question";
+      if (state.pivotConfirmed !== true) return "pivot_question";
+      if (hasPreviousAttempt && !finalised) return "between_attempts";
+      return "recovery_question";
     case "prompt_architecture":
       return state.generatedBlocks ? "after_generation" : "placing_pillars";
+    default:
+      return null;
+  }
+}
+
+/**
+ * Derive a previous-attempt summary (score, weakness key, Spark's previous
+ * reply) from the widget's persisted stepState. Only returned when the
+ * phase is `between_attempts`; otherwise the server drops it anyway.
+ *
+ * The TEXT of the user's previous attempt is intentionally NOT included —
+ * the "Spark never sees what the learner typed" rule stays in place. We
+ * pass score + weakness so Spark can say "your weak spot was X, try Y";
+ * we pass the previous spark_reply so Spark has a continuity hook.
+ */
+function previousAttemptFromState(
+  widgetKey: string,
+  stepEntry: unknown,
+): { score: number; weakness: string | null; sparkReply: string | null } | null {
+  const state =
+    typeof stepEntry === "object" && stepEntry !== null
+      ? (stepEntry as Record<string, unknown>)
+      : {};
+  const ev = state.lastEvaluation;
+  if (!ev || typeof ev !== "object") return null;
+  const evObj = ev as Record<string, unknown>;
+
+  // Each widget normalises its own evaluator output to the unified shape.
+  // Score: the route clamps to 0-100 again so it's safe to send raw.
+  // Weakness: a single string token from the evaluator's dimension keys.
+  // sparkReply: the previous evaluator's commentary, used only as a
+  // continuity hook (Spark is told not to repeat it verbatim).
+  switch (widgetKey) {
+    case "lucia_prompt_loop": {
+      // LuciaEvaluation has 4 score fields (chiarezza/contesto/obiettivo/
+      // protezione) and a `totale`. Spark gets the lowest-scoring dim
+      // as "weakness". The per-attempt commentary line is in
+      // state.lastReaction (canned), not on the evaluation itself.
+      const total = typeof evObj.totale === "number" ? evObj.totale : null;
+      if (total === null) return null;
+      const dims: Array<[string, number]> = [
+        ["chiarezza", evObj.chiarezza as number],
+        ["contesto", evObj.contesto as number],
+        ["obiettivo", evObj.obiettivo as number],
+        ["protezione", evObj.protezione as number],
+      ];
+      const validDims = dims.filter(([, v]) => typeof v === "number");
+      const weakness =
+        validDims.length > 0
+          ? validDims.reduce((a, b) => (a[1] <= b[1] ? a : b))[0]
+          : null;
+      const sparkReply =
+        typeof state.lastReaction === "string" ? state.lastReaction : null;
+      return { score: total, weakness, sparkReply };
+    }
+    case "claudemd_editor":
+    case "broken_session_debugger": {
+      // Both have `total`, `weakest_dimension`, `spark_reply`.
+      const total = typeof evObj.total === "number" ? evObj.total : null;
+      if (total === null) return null;
+      return {
+        score: total,
+        weakness:
+          typeof evObj.weakest_dimension === "string"
+            ? evObj.weakest_dimension
+            : null,
+        sparkReply:
+          typeof evObj.spark_reply === "string" ? evObj.spark_reply : null,
+      };
+    }
+    case "constraints_editor": {
+      const total = typeof evObj.total === "number" ? evObj.total : null;
+      if (total === null) return null;
+      return {
+        score: total,
+        weakness:
+          typeof evObj.weakest_constraint === "string"
+            ? evObj.weakest_constraint
+            : null,
+        sparkReply:
+          typeof evObj.spark_reply === "string" ? evObj.spark_reply : null,
+      };
+    }
+    case "context_prompt_editor": {
+      const total = typeof evObj.total === "number" ? evObj.total : null;
+      if (total === null) return null;
+      // ContextEvaluation has `missing_layer` (or null when all 4 levels
+      // are present, in which case there's no single weakness to point at).
+      const weakness =
+        typeof evObj.missing_layer === "string" ? evObj.missing_layer : null;
+      return {
+        score: total,
+        weakness,
+        sparkReply:
+          typeof evObj.spark_reply === "string" ? evObj.spark_reply : null,
+      };
+    }
     default:
       return null;
   }
@@ -198,6 +319,12 @@ interface Props {
   //     Code / …) for Spark's celebration line
   filenameSlug: string;
   preferredToolDisplay: string;
+  // ≤80-char compressed view of the user's real project (compressed
+  // first, raw-truncated fallback). Forwarded to ContextPromptEditor so
+  // the lesson-3 briefing card can prefix itself with "your real
+  // project is X; today we're using this sample scenario:". Null when
+  // the user is exploring.
+  userProjectShort: string | null;
 }
 
 export function LessonV3View({
@@ -214,6 +341,7 @@ export function LessonV3View({
   lang,
   filenameSlug,
   preferredToolDisplay,
+  userProjectShort,
 }: Props) {
   const totalSteps = lesson.steps.length;
   const safeInitialStep = Math.min(
@@ -320,6 +448,12 @@ export function LessonV3View({
   const helperPhase = helperWidget
     ? helperPhaseFromState(helperWidget, stepState[step.id])
     : null;
+  // Previous-attempt summary, only when the phase is between_attempts. The
+  // route drops it otherwise so the prompt stays minimal.
+  const helperPreviousAttempt =
+    helperWidget && helperPhase === "between_attempts"
+      ? previousAttemptFromState(helperWidget, stepState[step.id])
+      : null;
 
   function goBack() {
     if (stepIndex > 0) {
@@ -450,6 +584,7 @@ export function LessonV3View({
               steps: lesson.steps,
               filenameSlug,
               preferredToolDisplay,
+              userProjectShort,
               onArchetype: (key) => {
                 archetypeRef.current = key;
               },
@@ -509,6 +644,7 @@ export function LessonV3View({
                   widgetKey: helperWidget,
                   strings: strings.sparkHelper,
                   currentPhase: helperPhase,
+                  previousAttempt: helperPreviousAttempt,
                 }
               : undefined
           }
@@ -540,6 +676,8 @@ interface RenderContext {
   // download filename and Spark's celebration template.
   filenameSlug: string;
   preferredToolDisplay: string;
+  // Lesson 3 — passed through to ContextPromptEditor's briefing card.
+  userProjectShort: string | null;
   onArchetype: (key: string) => void;
   onChoicePick: (step: ChoiceStepType, optionKey: string) => void;
   goNext: () => void;
@@ -618,6 +756,7 @@ function renderStep(step: LessonV3Step, ctx: RenderContext) {
           <ContextPromptEditor
             step={step}
             userId={ctx.userId}
+            userProjectShort={ctx.userProjectShort}
             state={
               ctx.stepState[step.id] as
                 | {

@@ -219,6 +219,22 @@ export interface LessonsCopy {
       pickScenarioHint: string;
       minLengthHint: string;
       maxLengthHint: string;
+      // Briefing card (pre-scenario) — chrome strings. The actual project
+      // setting + existing-assets bullets live in the lesson JSON
+      // (content/<lang>/mindset/03-context-matters.v3.json) and are
+      // resolved per scenario at render time.
+      briefingTitle: string;
+      briefingExistingHeader: string;
+      briefingTaskTemplate: string; // "Ora ti chiedo di scrivere il prompt RICCO per «{task}»."
+      // When the learner has a real project_description in their profile,
+      // we prepend a "Il tuo progetto è X. Per esercitarti oggi usiamo:"
+      // line above the briefing so the briefing reads as a stepping
+      // stone, not a competing world. {project} = compressed user
+      // project. When the user is exploring (no project), the briefing
+      // shows without this prefix.
+      briefingProjectPrefixTemplate: string;
+      briefingCollapseLabel: string;
+      briefingExpandLabel: string;
       selectScenarioLabel: string;
       emptyPromptLabel: string;
       // Sub-label clarifying the empty box is a read-only example.
@@ -789,6 +805,14 @@ const it: LessonsCopy = {
         "Il prompt riscritto deve essere almeno {min} caratteri (ora: {current}) — aggiungi i 4 livelli di contesto.",
       maxLengthHint:
         "Hai superato i {max} caratteri — accorcia un po' e potrai inviare.",
+      briefingTitle: "Briefing del progetto",
+      briefingExistingHeader: "Cosa esiste già",
+      briefingTaskTemplate:
+        "Ora ti chiedo di scrivere il prompt RICCO per «{task}».",
+      briefingProjectPrefixTemplate:
+        "Il tuo progetto vero è «{project}». Per esercitarti, oggi usiamo questo scenario di esempio:",
+      briefingCollapseLabel: "Nascondi briefing",
+      briefingExpandLabel: "Mostra briefing",
       selectScenarioLabel: "Scegli lo scenario",
       emptyPromptLabel: "PROMPT VUOTO",
       emptyPromptSubtitle: "(esempio, non modificabile)",
@@ -973,6 +997,12 @@ const it: LessonsCopy = {
       quotaDailyHit: "Per oggi basta domande a me. Torna domani.",
       unavailable: "Questo aiuto non è ancora disponibile. Riprova più tardi.",
       suggestions: {
+        lucia_prompt_loop: [
+          "Cos'è il prompt loop?",
+          "Come parlo all'AI per fixare un bug?",
+          "Dammi un esempio di prompt",
+          "Cos'è una console del browser?",
+        ],
         claudemd_editor: [
           "Cos'è uno stack?",
           "Cosa metto nelle «house rules»?",
@@ -1329,6 +1359,14 @@ const en: LessonsCopy = {
         "The rewritten prompt needs at least {min} characters (now: {current}) — add the 4 levels of context.",
       maxLengthHint:
         "You're over {max} characters — trim it a bit and you'll be able to send.",
+      briefingTitle: "Project briefing",
+      briefingExistingHeader: "What already exists",
+      briefingTaskTemplate:
+        "Now I'm asking you to write the RICH prompt for «{task}».",
+      briefingProjectPrefixTemplate:
+        "Your real project is \"{project}\". To practice, today we'll use this sample scenario:",
+      briefingCollapseLabel: "Hide briefing",
+      briefingExpandLabel: "Show briefing",
       selectScenarioLabel: "Pick a scenario",
       emptyPromptLabel: "EMPTY PROMPT",
       emptyPromptSubtitle: "(example, read-only)",
@@ -1513,6 +1551,12 @@ const en: LessonsCopy = {
       quotaDailyHit: "Enough questions for me today. Come back tomorrow.",
       unavailable: "This help isn't available yet. Try again later.",
       suggestions: {
+        lucia_prompt_loop: [
+          "What is the prompt loop?",
+          "How do I talk to the AI to fix a bug?",
+          "Show me an example prompt",
+          "What is the browser console?",
+        ],
         claudemd_editor: [
           "What's a stack?",
           "What goes in the house rules?",

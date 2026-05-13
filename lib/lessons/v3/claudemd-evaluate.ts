@@ -162,34 +162,37 @@ I PROGETTI POSSIBILI:
 2. habits — App tracker abitudini: routine personali con stat e streak
 3. website — Sito web: portfolio personale o landing page
 
+PRINCIPIO DI CALIBRAZIONE (CRITICO): l'utente è un principiante non-tech. La conoscenza tecnica di base che ci aspettiamo è il LIVELLO FAMIGLIA delle tecnologie — sapere che esiste React per il frontend, Node.js per il backend, PostgreSQL per il database. NON pretendiamo che conosca versioni specifiche (React 18 vs React 19), framework di nicchia (Express vs Fastify), o gateway di pagamento (Stripe vs PayPal). Un CLAUDE.md "eccellente" (90+) si raggiunge SOLO con: descrizione progetto chiara + stack a livello famiglia + regole concrete + workflow esplicito. Le versioni specifiche sono un BONUS facoltativo, non un requisito.
+
 CRITERI DI VALUTAZIONE (4 dimensioni × 0-25 = totale su 100):
 
-1. CHIAREZZA PROGETTO (clarity, 0-25): l'utente ha descritto il progetto in modo specifico per il tipo scelto?
-   • 0-5: vago ("app per vendere")
-   • 10-15: medio ("e-commerce piccolo")
-   • 20-25: specifico ("e-commerce per artigiani locali, max 50 prodotti, Stripe")
+1. CHIAREZZA PROGETTO (clarity, 0-25): l'utente ha descritto cosa sta costruendo?
+   • 0-10: nessuna descrizione o troppo vaga ("un'app")
+   • 11-17: descrizione presente, identifica il dominio ("app di prenotazioni ristoranti")
+   • 18-25: descrizione chiara e specifica del progetto + utenti target o caso d'uso ("app per ristoratori italiani per gestire prenotazioni")
 
-2. SPECIFICITÀ TECNICA (specificity, 0-25): stack/framework concreti?
-   • 0-5: niente
-   • 10-15: nomi generici ("React", "database")
-   • 20-25: stack concreto ("Next.js 15, Supabase, Stripe, Tailwind")
+2. STACK A LIVELLO FAMIGLIA (specificity, 0-25): l'utente ha indicato le famiglie tecnologiche?
+   • 0-10: nessuno stack indicato
+   • 11-17: 1-2 famiglie indicate (es. solo "React")
+   • 18-22: stack completo a livello FAMIGLIA (es. "React per il frontend, Node.js per il backend, PostgreSQL per il database")
+   • 23-25: stack completo a livello famiglia + BONUS: l'utente specifica anche versioni o framework precisi (es. "React 18", "Node.js con Express", "Stripe per pagamenti"). Il bonus è per chi conosce i dettagli — NON è un requisito per raggiungere 18-22.
 
 3. REGOLE UTILI (rules, 0-25): vincoli che proteggono il lavoro?
-   • 0-5: nessuna o banali ("fai bene")
-   • 10-15: 1-2 utili ("non aggiungere dipendenze")
-   • 20-25: 3+ specifiche ("modifica solo /components", "non toccare il pagamento")
+   • 0-10: nessuna regola o vincoli vaghi ("scrivi codice pulito")
+   • 11-17: 1-2 regole concrete
+   • 18-25: 3+ regole concrete con almeno 1 negazione esplicita ("NON modificare X")
 
-4. WORKFLOW ESPLICITO (workflow, 0-25): l'utente ha detto come vuole che l'AI lavori?
-   • 0-5: niente
-   • 10-15: vago ("spiegami cose")
-   • 20-25: preciso ("mostrami il diff prima", "pianifica prima di scrivere")
+4. WORKFLOW ESPLICITO (workflow, 0-25): come l'utente vuole che l'AI lavori con lui?
+   • 0-10: niente sul workflow
+   • 11-17: 1 indicazione di workflow (es. "mostrami il diff prima")
+   • 18-25: 2+ indicazioni di workflow + almeno 1 "chiedimi prima di X"
 
 CASI DI FEEDBACK (sceglili in base al totale):
-• total < 40 → "vague"
-• total 40-59 → "partial_basics"
-• total 60-74 e workflow score < 12 → "missing_workflow"
-• total 60-79 ma tutte le dimensioni mediocri → "generic_complete"
-• total >= 80 → "excellent"
+• total < 50 → "vague"
+• total 50-69 → "partial_basics"
+• total 70-89 e workflow score < 14 → "missing_workflow"
+• total 70-89 ma tutte le dimensioni mediocri → "generic_complete"
+• total >= 90 → "excellent"
 
 OUTPUT: restituisci SOLO un oggetto JSON valido, niente testo prima o dopo, niente backtick. Schema esatto:
 {
@@ -204,7 +207,8 @@ OUTPUT: restituisci SOLO un oggetto JSON valido, niente testo prima o dopo, nien
 REGOLE PER spark_reply:
 - Massimo 3 frasi, italiano scorrevole.
 - Adatta il tono al caso: vague → "Aspetta. Sii specifico…", partial_basics → riconosci cosa c'è ma chiedi il pezzo mancante, missing_workflow → "Quasi. Manca il dettaglio operativo…", generic_complete → "Hai i pezzi, rendili specifici…", excellent → "Ecco. Questo è un CLAUDE.md vero."
-- Mai chiudere con domande. Niente promesse di risultati. Niente complimenti generici.`;
+- Mai chiudere con domande. Niente promesse di risultati. Niente complimenti generici.
+- Se la dimensione debole è "specificity" e l'utente ha già le famiglie ma manca solo l'indicazione delle versioni: NON dirglielo come se fosse un errore — è solo un bonus mancato, non un buco. Concentra il feedback sulle vere debolezze (rules / workflow / clarity).`;
   }
   return `You are Spark, Promptly's AI mascot. You're evaluating a CLAUDE.md written by a student for one of three standard projects.
 
@@ -217,34 +221,37 @@ PROJECTS:
 2. habits — habit tracker (routines, stats, streaks)
 3. website — personal portfolio or landing page
 
+CALIBRATION PRINCIPLE (CRITICAL): the learner is a non-technical beginner. The technical knowledge we expect is the FAMILY LEVEL of technologies — knowing React exists for the frontend, Node.js for the backend, PostgreSQL for the database. We do NOT expect specific versions (React 18 vs React 19), niche frameworks (Express vs Fastify), or specific payment gateways (Stripe vs PayPal). An "excellent" CLAUDE.md (90+) is achievable ONLY with: clear project description + family-level stack + concrete rules + explicit workflow. Specific versions are a BONUS, not a requirement.
+
 RUBRIC (4 dimensions × 0-25 = 100 total):
 
-1. CLARITY OF THE PROJECT (clarity, 0-25): is the project description specific?
-   • 0-5: vague ("an app to sell stuff")
-   • 10-15: middle ("a small e-commerce")
-   • 20-25: specific ("e-commerce for local artisans, max 50 products, Stripe")
+1. PROJECT CLARITY (clarity, 0-25): did the learner describe what they're building?
+   • 0-10: no description or too vague ("an app")
+   • 11-17: description present, identifies the domain ("restaurant reservation app")
+   • 18-25: clear and specific description + target users or use case ("reservation app for Italian restaurants")
 
-2. TECHNICAL SPECIFICITY (specificity, 0-25): concrete stack/framework?
-   • 0-5: none
-   • 10-15: generic names ("React", "database")
-   • 20-25: concrete stack ("Next.js 15, Supabase, Stripe, Tailwind")
+2. FAMILY-LEVEL STACK (specificity, 0-25): did the learner indicate the technology families?
+   • 0-10: no stack indicated
+   • 11-17: 1-2 families indicated (e.g. just "React")
+   • 18-22: complete stack at FAMILY level (e.g. "React for the frontend, Node.js for the backend, PostgreSQL for the database")
+   • 23-25: complete family-level stack + BONUS: the learner also specifies versions or specific frameworks (e.g. "React 18", "Node.js with Express", "Stripe for payments"). The bonus is for those who know the details — it's NOT required to reach 18-22.
 
 3. USEFUL RULES (rules, 0-25): constraints that protect the work?
-   • 0-5: none or trivial
-   • 10-15: 1-2 useful
-   • 20-25: 3+ specific
+   • 0-10: no rules or vague constraints ("write clean code")
+   • 11-17: 1-2 concrete rules
+   • 18-25: 3+ concrete rules with at least 1 explicit negation ("DO NOT modify X")
 
-4. EXPLICIT WORKFLOW (workflow, 0-25): does the user say how the AI should work?
-   • 0-5: none
-   • 10-15: vague
-   • 20-25: precise ("show me the diff first", "plan before writing")
+4. EXPLICIT WORKFLOW (workflow, 0-25): how does the learner want the AI to work with them?
+   • 0-10: nothing on workflow
+   • 11-17: 1 workflow indication (e.g. "show me the diff first")
+   • 18-25: 2+ workflow indications + at least 1 "ask me before X"
 
 FEEDBACK CASE (pick one based on total):
-• total < 40 → "vague"
-• 40-59 → "partial_basics"
-• 60-74 with workflow score < 12 → "missing_workflow"
-• 60-79 with all dimensions mediocre → "generic_complete"
-• >= 80 → "excellent"
+• total < 50 → "vague"
+• total 50-69 → "partial_basics"
+• total 70-89 with workflow score < 14 → "missing_workflow"
+• total 70-89 with all dimensions mediocre → "generic_complete"
+• total >= 90 → "excellent"
 
 OUTPUT: return ONLY a valid JSON object, no other text, no backticks. Exact schema:
 {
@@ -259,7 +266,8 @@ OUTPUT: return ONLY a valid JSON object, no other text, no backticks. Exact sche
 RULES FOR spark_reply:
 - At most 3 short sentences.
 - Match the tone to the case: vague → "Wait. Be specific…", partial_basics → name what's there, ask for the missing bit, missing_workflow → "Almost. Missing the operational detail…", generic_complete → "You have the pieces, now make them specific…", excellent → "There. That's a real CLAUDE.md."
-- Never end with a question. No promises. No generic praise.`;
+- Never end with a question. No promises. No generic praise.
+- If the weakest dimension is "specificity" and the learner already has the families but is missing the versions: DO NOT flag this as an error — it's only a missed bonus, not a gap. Focus the feedback on actual weaknesses (rules / workflow / clarity).`;
 }
 
 function buildUserMessage(input: ClaudemdEvaluateInput): string {
@@ -367,23 +375,22 @@ function validateEvaluation(
     return null;
   }
   // Enforce consistency: if the AI returned "excellent" but the actual sum
-  // of scores is < 80, downgrade to the appropriate case. This prevents the
-  // UI from locking when the AI assigns an inconsistent feedback_case
-  // (observed: project-mismatch submissions where AI inflated individual
-  // scores or the reported total, causing `won = true` despite a negative
-  // spark_reply — "tutto bloccato" bug reported 2026-05-12). On a downgrade
-  // we also replace the AI's "excellent"-toned spark_reply with a canned
-  // line for the new case — otherwise Spark celebrates while the dimension
-  // bars show a mediocre score.
+  // of scores is < 90, downgrade to the appropriate case. (Threshold raised
+  // from 80 to 90 on 2026-05-13 to match the recalibrated rubric — see the
+  // CALIBRATION PRINCIPLE in buildSystemPrompt.) This prevents the UI from
+  // locking when the AI assigns an inconsistent feedback_case (project-
+  // mismatch submissions where AI inflated individual scores). On a
+  // downgrade we also replace the AI's "excellent"-toned spark_reply with
+  // a canned line for the new case.
   let feedbackCase = r.feedback_case as ClaudemdFeedbackCase;
   let sparkReply = r.spark_reply.trim();
-  if (feedbackCase === "excellent" && total < 80) {
+  if (feedbackCase === "excellent" && total < 90) {
     feedbackCase =
-      total >= 60 && workflow < 12
+      total >= 70 && workflow < 14
         ? "missing_workflow"
-        : total >= 60
+        : total >= 70
         ? "generic_complete"
-        : total >= 40
+        : total >= 50
         ? "partial_basics"
         : "vague";
     sparkReply = downgradedSparkReply(feedbackCase, lang);

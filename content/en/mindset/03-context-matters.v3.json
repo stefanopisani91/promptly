@@ -228,7 +228,15 @@
             "title": "Add login",
             "short_title": "Login",
             "description": "User authentication system.",
-            "empty_prompt": "Add login to the app."
+            "empty_prompt": "Add login to the app.",
+            "briefing": {
+              "project_setting": "Imagine you're working on a restaurant reservation app.",
+              "existing_assets": [
+                "`users` table in Supabase with email, password_hash",
+                "/components/forms folder with other forms already built (signup, contact)",
+                "Shared style guide in /lib/design-tokens.ts"
+              ]
+            }
           },
           {
             "key": "notifications",
@@ -236,7 +244,15 @@
             "title": "Add email notifications",
             "short_title": "Notifications",
             "description": "Auto-send email on a key event.",
-            "empty_prompt": "When something happens, send an email."
+            "empty_prompt": "When something happens, send an email.",
+            "briefing": {
+              "project_setting": "Imagine you're working on a personal blog.",
+              "existing_assets": [
+                "`articles` table in Postgres with title, author, status",
+                "Email system already wired with Resend",
+                "Notification pattern already used in /lib/notifications/welcome.ts"
+              ]
+            }
           },
           {
             "key": "stats",
@@ -244,7 +260,15 @@
             "title": "Add stats page",
             "short_title": "Stats",
             "description": "Dashboard with user data charts.",
-            "empty_prompt": "Add a page with user stats."
+            "empty_prompt": "Add a page with user stats.",
+            "briefing": {
+              "project_setting": "Imagine you're working on a project-management SaaS.",
+              "existing_assets": [
+                "`tasks` table in Supabase with created_at, completed_at, user_id",
+                "/components/charts folder with an existing chart (LineChart)",
+                "Convention: format big numbers with `formatNumber()` from /lib/utils"
+              ]
+            }
           }
         ],
         "min_chars": 100,

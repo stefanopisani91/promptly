@@ -25,10 +25,11 @@
 // the side-by-side empty/rich layout.
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ChevronDown, Lock, Send, Sparkles } from "lucide-react";
+import { ChevronDown, ChevronUp, Lock, Send, Sparkles } from "lucide-react";
 import confetti from "canvas-confetti";
 import type {
   ContextPromptEditorConfig,
+  ContextScenarioOption,
   InteractiveStep as InteractiveStepType,
 } from "@/types";
 import { Spark } from "../Spark";
@@ -70,6 +71,14 @@ export interface ContextPromptEditorStrings {
   pickScenarioHint: string;
   minLengthHint: string;
   maxLengthHint: string;
+  // Briefing card chrome (pre-scenario). Briefing payload itself lives
+  // in scenario.briefing in the lesson JSON.
+  briefingTitle: string;
+  briefingExistingHeader: string;
+  briefingTaskTemplate: string; // "{task}" replaced with scenario title
+  briefingProjectPrefixTemplate: string; // "{project}" replaced with compressed project
+  briefingCollapseLabel: string;
+  briefingExpandLabel: string;
   selectScenarioLabel: string;
   emptyPromptLabel: string;
   // Sub-label appended under the empty box header — clarifies it's a
@@ -112,6 +121,12 @@ interface Props {
   // Authenticated user id, used to scope the sessionStorage draft so two
   // users on the same browser/device don't see each other's work.
   userId: string;
+  // ≤80-char compressed view of the user's real project, when they have
+  // one. Used to prepend a "your real project is X, today we're using
+  // this sample scenario:" line above the briefing card (mitigation #3
+  // from SparkHelper_FixBundle_v1 — keeps the briefing didactic + ties
+  // it back to the learner's world). Null when the user is exploring.
+  userProjectShort: string | null;
   strings: ContextPromptEditorStrings;
   state:
     | {
@@ -141,6 +156,7 @@ const MIN_DRAFT_CHARS = 100;
 export function ContextPromptEditor({
   step,
   userId,
+  userProjectShort,
   strings,
   state,
   onComplete,
@@ -190,6 +206,16 @@ export function ContextPromptEditor({
   // Tapping the header toggles the expansion. Ignored on desktop where
   // the box always shows full content side-by-side.
   const [emptyBoxExpanded, setEmptyBoxExpanded] = useState(false);
+  // Briefing card collapsible (per-scenario). Open by default the first
+  // time the learner picks a scenario — they need to read it. After
+  // their first edit/submit it stays open if they re-expand it; we
+  // never auto-collapse mid-flow.
+  const [briefingOpen, setBriefingOpen] = useState(true);
+  // Re-open the briefing every time the user picks a different scenario
+  // (the content changed, they should see it again).
+  useEffect(() => {
+    if (selectedScenario) setBriefingOpen(true);
+  }, [selectedScenario]);
 
   const sparkLine =
     evaluation?.spark_reply ?? strings.awaitingPrompt;
@@ -437,6 +463,16 @@ export function ContextPromptEditor({
           />
         </div>
 
+        {selectedScenarioData?.briefing && (
+          <BriefingCard
+            scenario={selectedScenarioData}
+            userProjectShort={userProjectShort}
+            open={briefingOpen}
+            onToggle={() => setBriefingOpen((v) => !v)}
+            strings={strings}
+          />
+        )}
+
         {/* Editor (LEFT, primary) + Empty (RIGHT, secondary) on desktop.
             On mobile the order flips: editor first (full width), empty
             second (collapsed by default). The visual hierarchy carries
@@ -630,6 +666,97 @@ export function ContextPromptEditor({
         </div>
       </div>
     </StepCard>
+  );
+}
+
+/**
+ * Pre-scenario briefing card. Shown once the learner picks a scenario:
+ * project setting + 2-4 concrete existing assets they can cite as the
+ * "ingredients" of the rich prompt. When the user has a real project
+ * description, a prefix line ties the briefing back to their world
+ * («your real project is X; today we're using this sample scenario»).
+ * Collapsible — open by default, kept open until the user collapses it.
+ */
+function BriefingCard({
+  scenario,
+  userProjectShort,
+  open,
+  onToggle,
+  strings,
+}: {
+  scenario: ContextScenarioOption;
+  userProjectShort: string | null;
+  open: boolean;
+  onToggle: () => void;
+  strings: ContextPromptEditorStrings;
+}) {
+  const briefing = scenario.briefing;
+  if (!briefing) return null;
+  const projectPrefix =
+    userProjectShort && userProjectShort.trim().length > 0
+      ? strings.briefingProjectPrefixTemplate.replace(
+          "{project}",
+          userProjectShort.trim(),
+        )
+      : null;
+  const taskLine = strings.briefingTaskTemplate.replace(
+    "{task}",
+    scenario.title,
+  );
+  return (
+    <div className="rounded-2xl border border-primary/30 bg-primary-light/40 p-4 sm:p-5">
+      <button
+        type="button"
+        onClick={onToggle}
+        className="flex w-full items-center justify-between gap-3 text-left"
+        aria-expanded={open}
+      >
+        <span className="flex items-center gap-2">
+          <span className="text-base" aria-hidden="true">
+            📋
+          </span>
+          <span className="font-heading text-sm font-semibold uppercase tracking-wider text-primary-deep">
+            {strings.briefingTitle}
+          </span>
+        </span>
+        <span className="flex items-center gap-1 text-xs text-text-muted">
+          <span className="hidden sm:inline">
+            {open ? strings.briefingCollapseLabel : strings.briefingExpandLabel}
+          </span>
+          {open ? (
+            <ChevronUp size={14} aria-hidden="true" />
+          ) : (
+            <ChevronDown size={14} aria-hidden="true" />
+          )}
+        </span>
+      </button>
+      {open && (
+        <div className="mt-3 flex flex-col gap-3 text-sm leading-relaxed text-text-primary">
+          {projectPrefix && (
+            <p className="italic text-text-secondary">{projectPrefix}</p>
+          )}
+          <p className="font-medium">{briefing.project_setting}</p>
+          <div>
+            <p className="eyebrow mb-1 text-text-muted">
+              {strings.briefingExistingHeader}
+            </p>
+            <ul className="flex flex-col gap-1 pl-1">
+              {briefing.existing_assets.map((asset, i) => (
+                <li key={i} className="flex gap-2">
+                  <span aria-hidden="true" className="text-primary-deep">
+                    •
+                  </span>
+                  <span>{asset}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <p className="mt-1 text-sm font-medium text-primary-deep">
+            {taskLine}
+          </p>
+        </div>
+      )}
+    </div>
   );
 }
 

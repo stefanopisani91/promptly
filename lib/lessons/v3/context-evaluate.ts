@@ -76,6 +76,78 @@ const SCENARIO_LABELS: Record<string, { it: string; en: string }> = {
   },
 };
 
+// Server-side mirror of the per-scenario briefing shipped in the lesson
+// JSON (content/<lang>/mindset/03-context-matters.v3.json). Used by
+// buildUserMessage so the evaluator knows which concrete assets exist
+// in the imaginary project and rewards the learner who actually cites
+// them (without penalising plausible alternative details). Keep in sync
+// with the JSON: this file is the *authority* for the evaluator and the
+// JSON is the *authority* for the UI, but both must say the same thing
+// or the rubric will not recognise the briefing's «ingredients».
+interface ScenarioBriefingPayload {
+  project_setting: string;
+  existing_assets: string[];
+}
+const SCENARIO_BRIEFINGS: Record<
+  string,
+  { it: ScenarioBriefingPayload; en: ScenarioBriefingPayload }
+> = {
+  login: {
+    it: {
+      project_setting: "Immagina di lavorare su un'app di prenotazione ristoranti.",
+      existing_assets: [
+        "Tabella `users` in Supabase con campi email, password_hash",
+        "Cartella /components/forms con altre form già fatte (registrazione, contatti)",
+        "Style guide condivisa in /lib/design-tokens.ts",
+      ],
+    },
+    en: {
+      project_setting: "Imagine you're working on a restaurant reservation app.",
+      existing_assets: [
+        "`users` table in Supabase with email, password_hash",
+        "/components/forms folder with other forms already built (signup, contact)",
+        "Shared style guide in /lib/design-tokens.ts",
+      ],
+    },
+  },
+  notifications: {
+    it: {
+      project_setting: "Immagina di lavorare su un blog personale.",
+      existing_assets: [
+        "Tabella `articles` in Postgres con titolo, autore, status",
+        "Sistema email già configurato con Resend",
+        "Pattern di notifica già usato in /lib/notifications/welcome.ts",
+      ],
+    },
+    en: {
+      project_setting: "Imagine you're working on a personal blog.",
+      existing_assets: [
+        "`articles` table in Postgres with title, author, status",
+        "Email system already wired with Resend",
+        "Notification pattern already used in /lib/notifications/welcome.ts",
+      ],
+    },
+  },
+  stats: {
+    it: {
+      project_setting: "Immagina di lavorare su una SaaS di gestione progetti.",
+      existing_assets: [
+        "Tabella `tasks` in Supabase con created_at, completed_at, user_id",
+        "Cartella /components/charts con un grafico già fatto (LineChart)",
+        "Convenzione: i numeri grandi vanno formattati con `formatNumber()` da /lib/utils",
+      ],
+    },
+    en: {
+      project_setting: "Imagine you're working on a project-management SaaS.",
+      existing_assets: [
+        "`tasks` table in Supabase with created_at, completed_at, user_id",
+        "/components/charts folder with an existing chart (LineChart)",
+        "Convention: format big numbers with `formatNumber()` from /lib/utils",
+      ],
+    },
+  },
+};
+
 export async function evaluateContext(
   input: ContextEvaluateInput,
 ): Promise<ContextEvaluateResult> {
@@ -275,10 +347,24 @@ function buildUserMessage(input: ContextEvaluateInput): string {
   const scenarioDescription = labels
     ? labels[input.lang]
     : `Custom scenario (${input.scenarioKey})`;
+  const briefing = SCENARIO_BRIEFINGS[input.scenarioKey]?.[input.lang] ?? null;
   const lines: string[] = [];
   lines.push(`Scenario: ${input.scenarioKey} — ${scenarioDescription}`);
   lines.push(`Empty prompt (the baseline the user is enriching):`);
   lines.push(`«${input.emptyPrompt}»`);
+  if (briefing) {
+    lines.push("");
+    lines.push(
+      input.lang === "it"
+        ? "Briefing del progetto fittizio mostrato all'utente PRIMA dell'editor (sono gli «ingredienti» che dovrebbe citare nel prompt ricco; un utente bravo li riusa con i nomi esatti, ma anche dettagli plausibili inventati sono validi se specifici):"
+        : "Project briefing the learner saw BEFORE the editor (these are the «ingredients» they should cite in their rich prompt; a strong learner reuses the exact names, but plausible invented details count too if they're specific):",
+    );
+    lines.push(`- ${briefing.project_setting}`);
+    for (const asset of briefing.existing_assets) {
+      lines.push(`- ${asset}`);
+    }
+  }
+  lines.push("");
   lines.push(`Attempt: ${input.attempt}`);
   if (input.preferredTool)
     lines.push(`User's preferred tool: ${input.preferredTool}`);

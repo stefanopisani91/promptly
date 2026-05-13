@@ -82,11 +82,18 @@ interface Props {
   // `currentPhase` is the (optional) per-widget phase computed by the
   // parent from the widget's persisted state — see LessonV3View's
   // `helperPhase`. POSTed to the route so Spark can focus on the right
-  // sub-task (e.g. recovery vs pivot in lesson 5).
+  // sub-task (e.g. recovery vs pivot in lesson 5). `previousAttempt` is
+  // only meaningful on `currentPhase === "between_attempts"`; the route
+  // drops it otherwise.
   helper?: {
     widgetKey: string;
     strings: SparkHelperStrings;
     currentPhase?: string | null;
+    previousAttempt?: {
+      score: number;
+      weakness: string | null;
+      sparkReply: string | null;
+    } | null;
   };
   onClose: () => void;
   onMessageSent: (newRemaining: number) => void;
@@ -257,6 +264,7 @@ export function SparkChat({
               message: trimmed,
               history: priorHistory,
               currentPhase: helper.currentPhase ?? null,
+              previousAttempt: helper.previousAttempt ?? null,
             }),
           })
         : await fetch("/api/spark-chat", {

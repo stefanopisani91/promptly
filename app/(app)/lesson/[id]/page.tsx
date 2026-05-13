@@ -206,6 +206,20 @@ export default async function LessonPage({ params }: PageProps) {
       return lang === "it" ? "il tuo tool" : "your tool";
     })();
 
+    // userProjectShort: ≤80-char compressed view of the learner's real
+    // project, used by Lesson 3's briefing card to anchor the sample
+    // scenario back to their world. Prefer the onboarding-compressed
+    // version when present; fall back to a raw-truncated description.
+    const userProjectShort = (() => {
+      const compressed = profile.project_description_compressed?.trim();
+      if (compressed && compressed.length > 0) return compressed;
+      const raw = profile.project_description?.trim();
+      if (raw && raw.length > 0) {
+        return raw.length <= 80 ? raw : raw.slice(0, 80).trimEnd() + "…";
+      }
+      return null;
+    })();
+
     return (
       <LessonV3View
         lesson={personalisedLesson}
@@ -221,6 +235,7 @@ export default async function LessonPage({ params }: PageProps) {
         lang={lang}
         filenameSlug={filenameSlug}
         preferredToolDisplay={preferredToolDisplay}
+        userProjectShort={userProjectShort}
       />
     );
   }

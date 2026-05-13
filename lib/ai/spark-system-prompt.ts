@@ -813,6 +813,37 @@ export interface SparkHelperContext {
    */
   phaseGuidance?: string | null;
   /**
+   * Optional summary of the learner's previous attempt at the current
+   * quick-win. Sent when `currentPhase === "between_attempts"` so Spark
+   * can refer to the weak dimension by name without scaffolding the
+   * answer on top of the user's previous text. The TEXT of the previous
+   * attempt is intentionally NOT included — we keep the "Spark never
+   * sees what the learner typed" rule. Provided fields:
+   *   - score: 0-100, normalised total from the evaluator
+   *   - weakness: raw dimension key from the evaluator (e.g.
+   *     "specificity", "missing_one:code", "protective"). Spark can
+   *     interpret it via the per-widget context note.
+   *   - sparkReply: Spark's commentary from that previous attempt
+   *     (already a Spark voice line, useful for continuity but Spark
+   *     should NOT repeat it verbatim).
+   */
+  previousAttempt?: {
+    score: number;
+    weakness: string | null;
+    sparkReply: string | null;
+  } | null;
+  /**
+   * Lesson 3 only — the scenario-specific briefing the learner has been
+   * shown in the widget. Server resolves it from the loaded lesson JSON
+   * so Spark hint examples cite the same "ingredients" the learner can
+   * see ("tabella users", "/components/forms", ...). Null when the phase
+   * doesn't name a scenario or the widget isn't context_prompt_editor.
+   */
+  scenarioBriefing?: {
+    project_setting: string;
+    existing_assets: string[];
+  } | null;
+  /**
    * Recent helper turns, oldest→newest, ALREADY clamped by the caller (the
    * route keeps only the last few and bounds each one's length). Folded into
    * this block as plain text — requestSparkReply only takes a single user
@@ -824,7 +855,29 @@ export interface SparkHelperContext {
 // ── Per-widget phase prose, IT/EN. Keyed by `${widget}:${phase}`. Empty
 // when no specific guidance applies. Spark sees these as "you're at step X
 // of this exercise — focus on Y, not Z".
+//
+// The cross-widget `between_attempts` shadow phase is special: when active,
+// the route splices the previousAttempt block (score + weakness + Spark's
+// previous reply) into the per-call context, and the prose tells Spark to
+// refer to the weak dimension specifically without repeating the score and
+// without scaffolding the next answer on top of the previous one.
 const PHASE_GUIDANCE: Record<string, { it: string; en: string }> = {
+  "lucia_prompt_loop:writing_lucia_prompt": {
+    it: "Sta scrivendo il primo prompt del corso, sul sito di Lucia (FrigoMagico) che ha 3 bug da sistemare in un solo prompt. Aiutalo coi termini (prompt loop, console, CSS, ecc.) e con la struttura di un buon prompt-bug-fix. NON elencare i 3 bug del sito.",
+    en: "They're writing the first prompt of the course, on Lucia's site (FrigoMagico) with 3 bugs to fix in a single prompt. Help with terms (prompt loop, console, CSS, etc.) and with the structure of a good bug-fix prompt. DO NOT list the 3 bugs of the site.",
+  },
+  "lucia_prompt_loop:between_attempts": {
+    it: "Ha appena tentato un prompt e sta per riprovare. Trovi sotto il punteggio e la dimensione debole del tentativo precedente — usali per indicare PRECISAMENTE su cosa lavorare (es. «chiarezza era debole, prova a essere più diretto»). NON ripetere il punteggio, NON suggerire di copiare/incollare il testo precedente, NON enumerare i 3 bug.",
+    en: "They just attempted a prompt and are about to retry. Below you'll find the previous attempt's score + weakest dimension — use them to point PRECISELY at what to work on (e.g. «clarity was weak, try being more direct»). DO NOT repeat the score, DO NOT suggest copy-pasting the previous text, DO NOT enumerate the 3 bugs.",
+  },
+  "claudemd_editor:awaiting_project_selection": {
+    it: "L'utente non ha ancora cliccato uno dei 3 progetti di esempio (e-commerce / habit-tracker / portfolio) — senza un progetto selezionato, l'editor del CLAUDE.md è bloccato. PRIMA dirgli di scegliere uno dei 3 progetti tra i bottoni in cima al widget, poi può tornare a chiederti aiuto su come scrivere le 4 sezioni.",
+    en: "The learner hasn't picked one of the 3 sample projects yet (e-commerce / habit-tracker / portfolio) — without a project selected the CLAUDE.md editor is locked. FIRST tell them to pick one of the 3 projects from the buttons at the top of the widget, THEN they can come back for help on the 4 sections.",
+  },
+  "claudemd_editor:between_attempts": {
+    it: "Ha appena tentato un CLAUDE.md e sta per riprovare. Trovi sotto il punteggio e la dimensione debole del tentativo precedente — usali per indicare PRECISAMENTE su quale delle 4 sezioni lavorare (es. «specificity era debole, prova a essere più concreto sulle house rules»). NON ripetere il punteggio, NON suggerire di copiare/incollare il testo precedente, NON scrivere tu le sezioni.",
+    en: "They just attempted a CLAUDE.md and are about to retry. Below you'll find the previous attempt's score + weakest dimension — use them to point PRECISELY at which of the 4 sections to work on (e.g. «specificity was weak, try being more concrete on the house rules»). DO NOT repeat the score, DO NOT suggest copy-pasting the previous text, DO NOT write the sections yourself.",
+  },
   "context_prompt_editor:choosing_scenario": {
     it: "Sta scegliendo quale dei tre scenari affrontare. Aiutalo a capire la differenza tra gli scenari, non a scrivere il prompt — quello viene dopo.",
     en: "They're picking which of the three scenarios to tackle. Help them tell the scenarios apart — don't help with the rewritten prompt yet, that comes after.",
@@ -840,6 +893,18 @@ const PHASE_GUIDANCE: Record<string, { it: string; en: string }> = {
   "context_prompt_editor:scenario_stats_writing": {
     it: "Ha scelto lo scenario «stats» (aggiungere una pagina statistiche) e sta scrivendo il prompt arricchito coi 4 livelli di contesto.",
     en: "They picked the «stats» scenario (add a stats page) and are now writing the enriched prompt with the 4 levels of context.",
+  },
+  "context_prompt_editor:between_attempts": {
+    it: "Ha appena tentato un prompt arricchito e sta per riprovare. Trovi sotto il punteggio e il livello mancante del tentativo precedente — usali per indicare PRECISAMENTE quale dei 4 livelli rafforzare (progetto, codice, vincoli, esempi). NON ripetere il punteggio, NON suggerire di copiare/incollare il testo precedente.",
+    en: "They just attempted an enriched prompt and are about to retry. Below you'll find the previous attempt's score + missing layer — use them to point PRECISELY at which of the 4 levels to strengthen (project, code, constraints, examples). DO NOT repeat the score, DO NOT suggest copy-pasting the previous text.",
+  },
+  "constraints_editor:between_attempts": {
+    it: "Ha appena tentato i 3 vincoli e sta per riprovare. Trovi sotto il punteggio e il vincolo più debole del tentativo precedente (protective / process / style) — usalo per indicare PRECISAMENTE su quale dei 3 lavorare. NON ripetere il punteggio, NON suggerire di copiare/incollare i vincoli precedenti, NON scrivere tu i 3 vincoli.",
+    en: "They just attempted the 3 constraints and are about to retry. Below you'll find the previous attempt's score + weakest constraint (protective / process / style) — use it to point PRECISELY at which of the 3 to work on. DO NOT repeat the score, DO NOT suggest copy-pasting the previous constraints, DO NOT write the 3 constraints yourself.",
+  },
+  "broken_session_debugger:between_attempts": {
+    it: "Ha appena tentato un messaggio di recupero e sta per riprovare. Trovi sotto il punteggio e la dimensione debole (recognition / recalibration / future_control) del tentativo precedente — usali per indicare PRECISAMENTE quale dei 3 elementi rafforzare. NON ripetere il punteggio, NON suggerire di copiare/incollare il testo precedente, NON scrivere tu il messaggio.",
+    en: "They just attempted a recovery message and are about to retry. Below you'll find the previous attempt's score + weakest dimension (recognition / recalibration / future_control) — use them to point PRECISELY at which of the 3 elements to strengthen. DO NOT repeat the score, DO NOT suggest copy-pasting the previous text, DO NOT write the message yourself.",
   },
   "broken_session_debugger:pivot_question": {
     it: "Sta scegliendo in quale dei 3 messaggi dell'AI andava fermata: deve trovare il «punto di sforamento». NON suggerire ancora come scrivere il messaggio di stop — quello viene dopo. Aiutalo solo su come leggere i 3 messaggi per riconoscere il pivot.",
@@ -920,13 +985,31 @@ export function sparkHelperContextIT(ctx: SparkHelperContext): string {
     ctx.phaseGuidance && ctx.phaseGuidance.trim().length > 0
       ? `\nGuida per questa fase: ${ctx.phaseGuidance.trim()}`
       : "";
+  const prev = (() => {
+    const p = ctx.previousAttempt;
+    if (!p) return "";
+    const parts: string[] = [`punteggio ${p.score}/100`];
+    if (p.weakness && p.weakness.trim().length > 0) {
+      parts.push(`punto debole: ${p.weakness.trim()}`);
+    }
+    if (p.sparkReply && p.sparkReply.trim().length > 0) {
+      parts.push(`commento della volta scorsa: «${p.sparkReply.trim()}»`);
+    }
+    return `\nTENTATIVO PRECEDENTE — ${parts.join(" · ")}`;
+  })();
+  const briefing = (() => {
+    const b = ctx.scenarioBriefing;
+    if (!b) return "";
+    const assets = b.existing_assets.map((a) => `  • ${a}`).join("\n");
+    return `\nBRIEFING VISTO DALL'UTENTE (gli «ingredienti» concreti dello scenario, citalo se aiuta):\n  Setting: ${b.project_setting}\n  Cosa esiste già:\n${assets}`;
+  })();
   const note =
     ctx.contextNote && ctx.contextNote.trim().length > 0
       ? `\n${ctx.contextNote.trim()}`
       : "";
   const history = helperHistoryBlockIT(ctx.history);
   return `CONTESTO — Aiuto contestuale dentro un esercizio (quick-win)
-L'utente sta facendo l'esercizio della lezione «${ctx.lessonTitle}». Sei qui SOLO per sbloccarlo su QUESTO esercizio: spiegare un termine, dare un esempio, aiutarlo a pensarci. Non sei la chat libera, non parli d'altro.${project}${tools}${phaseToken}${phaseProse}${note}${history}
+L'utente sta facendo l'esercizio della lezione «${ctx.lessonTitle}». Sei qui SOLO per sbloccarlo su QUESTO esercizio: spiegare un termine, dare un esempio, aiutarlo a pensarci. Non sei la chat libera, non parli d'altro.${project}${tools}${phaseToken}${phaseProse}${prev}${briefing}${note}${history}
 
 REGOLE FERREE (vincono su tutto il resto):
 1. Massimo 3-4 frasi. Asciutto. Niente elenchi lunghi, niente paragrafi.
@@ -936,7 +1019,8 @@ REGOLE FERREE (vincono su tutto il resto):
 5. Spieghi i termini con analogie semplici e concrete. Gli esempi che dai sono inventati e plausibili, MAI lo scenario specifico dell'esercizio.
 6. Non vedi cosa ha scritto nella casella dell'esercizio, e va bene così: non chiedere di vederlo, non fingere di averlo letto, non valutare la sua risposta.
 7. ESEMPI ADATTATI AL SUO PROGETTO: quando l'utente chiede un esempio «nel mio caso», «per il mio progetto», «adattato a me», «un esempio mio» — USA SEMPRE il progetto qui sopra. Citalo in modo naturale («per il tuo progetto X», «nel caso di X»), non come una formula. L'esempio deve essere plausibile per QUEL progetto ma NON deve essere la risposta del quick-win. Se il suo progetto è vago o sta esplorando, dillo apertamente («siccome non hai ancora un progetto definito, ti faccio un esempio generico») prima di dare l'esempio generico — non fingere di personalizzare quando non puoi.
-8. RISPETTA LA FASE: se sopra trovi una «Fase corrente del quick-win», focalizzati su quella fase. Non tornare su fasi già passate (es. se la fase dice «recovery_question», non parlare più del pivot — l'utente l'ha già scelto). Non anticipare fasi future.`;
+8. RISPETTA LA FASE: se sopra trovi una «Fase corrente del quick-win», focalizzati su quella fase. Non tornare su fasi già passate (es. se la fase dice «recovery_question», non parlare più del pivot — l'utente l'ha già scelto). Non anticipare fasi future.
+9. SE C'È UN TENTATIVO PRECEDENTE (riga «TENTATIVO PRECEDENTE — …»): usa il «punto debole» per indicare PRECISAMENTE cosa rinforzare al prossimo tentativo (es. «il punto debole era la specificità — prova a citare un file concreto»). NON ripetere il punteggio (l'utente l'ha già visto). NON fingere di aver letto il testo che ha scritto (non ce l'hai). NON commentare il «commento della volta scorsa» come se fosse cosa nuova — è solo un appiglio di continuità.`;
 }
 
 export function sparkHelperContextEN(ctx: SparkHelperContext): string {
@@ -958,13 +1042,31 @@ export function sparkHelperContextEN(ctx: SparkHelperContext): string {
     ctx.phaseGuidance && ctx.phaseGuidance.trim().length > 0
       ? `\nGuidance for this phase: ${ctx.phaseGuidance.trim()}`
       : "";
+  const prev = (() => {
+    const p = ctx.previousAttempt;
+    if (!p) return "";
+    const parts: string[] = [`score ${p.score}/100`];
+    if (p.weakness && p.weakness.trim().length > 0) {
+      parts.push(`weakest dimension: ${p.weakness.trim()}`);
+    }
+    if (p.sparkReply && p.sparkReply.trim().length > 0) {
+      parts.push(`last reply: "${p.sparkReply.trim()}"`);
+    }
+    return `\nPREVIOUS ATTEMPT — ${parts.join(" · ")}`;
+  })();
+  const briefing = (() => {
+    const b = ctx.scenarioBriefing;
+    if (!b) return "";
+    const assets = b.existing_assets.map((a) => `  • ${a}`).join("\n");
+    return `\nBRIEFING THE LEARNER SAW (concrete «ingredients» of the scenario; cite them when it helps):\n  Setting: ${b.project_setting}\n  Existing assets:\n${assets}`;
+  })();
   const note =
     ctx.contextNote && ctx.contextNote.trim().length > 0
       ? `\n${ctx.contextNote.trim()}`
       : "";
   const history = helperHistoryBlockEN(ctx.history);
   return `CONTEXT — Contextual help inside an exercise (quick-win)
-The learner is on the quick-win of the lesson "${ctx.lessonTitle}". You're here ONLY to unblock them on THIS exercise: explain a term, give an example, help them think it through. You're not the free chat, you don't talk about anything else.${project}${tools}${phaseToken}${phaseProse}${note}${history}
+The learner is on the quick-win of the lesson "${ctx.lessonTitle}". You're here ONLY to unblock them on THIS exercise: explain a term, give an example, help them think it through. You're not the free chat, you don't talk about anything else.${project}${tools}${phaseToken}${phaseProse}${prev}${briefing}${note}${history}
 
 HARD RULES (these win over everything else):
 1. Three to four sentences max. Plain. No long lists, no paragraphs.
@@ -974,5 +1076,6 @@ HARD RULES (these win over everything else):
 5. Explain terms with simple, concrete analogies. The examples you give are invented and plausible — NEVER the exercise's specific scenario.
 6. You can't see what they typed in the exercise box, and that's fine: don't ask to see it, don't pretend you read it, don't grade their answer.
 7. EXAMPLES FITTED TO THEIR PROJECT: when the learner asks for an example "in my case", "for my project", "adapted to me", "fitted to my project" — ALWAYS use the project above. Cite it naturally ("for your project X", "in the case of X"), not as a formula. The example must be plausible for THAT project but NOT the answer to the quick-win. If their project is vague or they're exploring, say so openly ("since you don't have a defined project yet, I'll give you a generic example") before giving the generic example — don't fake personalization when you can't.
-8. RESPECT THE PHASE: if a "Current quick-win phase" line is set above, focus on that phase. Don't go back to phases already passed (e.g. if the phase is "recovery_question", stop talking about the pivot — the learner already picked it). Don't anticipate future phases.`;
+8. RESPECT THE PHASE: if a "Current quick-win phase" line is set above, focus on that phase. Don't go back to phases already passed (e.g. if the phase is "recovery_question", stop talking about the pivot — the learner already picked it). Don't anticipate future phases.
+9. IF THERE IS A PREVIOUS ATTEMPT (line "PREVIOUS ATTEMPT — …"): use the "weakest dimension" to point PRECISELY at what to strengthen next attempt (e.g. "your weak spot was specificity — try citing a concrete file"). DO NOT repeat the score (they already saw it). DO NOT pretend to have read their previous text (you don't have it). DO NOT comment on "last reply" as if it were new — it's just a continuity anchor.`;
 }

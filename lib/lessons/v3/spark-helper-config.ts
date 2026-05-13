@@ -9,8 +9,10 @@
 //
 // What this file decides:
 //   - WHICH quick-wins get a Spark Helper at all (the allowlist). Lesson 1's
-//     Lucia loop is intentionally NOT here — it's also the public landing
-//     demo and stays helper-free.
+//     Lucia loop joined the list 2026-05-13 (SparkHelper_FixBundle_v1 §4).
+//     The public landing demo of Lucia stays helper-free because SparkHeader
+//     (which renders the Ask-Spark bubble) is only mounted inside the
+//     authenticated lesson page — not in the marketing surface.
 //   - The server-side "scenario brief + anti-leak" note per widget, fed into
 //     the helper's per-call context (see lib/ai/spark-system-prompt.ts).
 //
@@ -22,6 +24,7 @@ import type { Lang } from "@/types";
 
 /** Quick-win widget keys that expose a Spark Helper. */
 export const SPARK_HELPER_WIDGETS = [
+  "lucia_prompt_loop",
   "claudemd_editor",
   "context_prompt_editor",
   "constraints_editor",
@@ -43,6 +46,10 @@ export function isSparkHelperWidget(
 // hand over. Written in the second person ("the learner is doing…") because
 // it's spliced into Spark's per-call context.
 const CONTEXT_NOTES: Record<SparkHelperWidgetKey, { it: string; en: string }> = {
+  lucia_prompt_loop: {
+    it: "L'utente sta facendo il primo quick-win di Promptly: il sito di Lucia (FrigoMagico) ha 3 bug — una foto di un frigo storta nell'header, una sezione che esce dallo schermo su mobile (overflow), e un bottone «iscriviti» che non risponde al click. L'utente scrive UN solo prompt che indirizza tutti e 3 i bug insieme; il prompt viene valutato su 4 dimensioni (chiarezza, contesto, obiettivo, protezione). Aiutalo a capire cos'è il «prompt loop», come si parla a un'AI per descrivere un bug, cosa vede uno sviluppatore nella console del browser, come si mette una protezione («non toccare il backend, solo CSS»). NON elencare i 3 bug per nome (foto/overflow/bottone), né dare un prompt-modello che li menzioni tutti e tre. Se fai un esempio di prompt, usa un sito COMPLETAMENTE DIVERSO (non un sito vetrina di un'azienda alimentare) e un solo bug astratto.",
+    en: "The learner is on Promptly's very first quick-win: Lucia's site (FrigoMagico) has 3 bugs — a crooked fridge photo in the header, a section overflowing the viewport on mobile, and a «sign up» button that doesn't respond to clicks. They write ONE prompt that addresses all 3 bugs together; the prompt is graded on 4 dimensions (clarity, context, goal, protection). Help them understand what the «prompt loop» is, how to talk to an AI to describe a bug, what a developer sees in the browser console, how to add a protection («don't touch the backend, only CSS»). DO NOT list the 3 bugs by name (photo/overflow/button), and DO NOT give a model prompt that names all three. If you give a prompt example, use a COMPLETELY DIFFERENT site (not a food-company portfolio) and one abstract bug.",
+  },
   claudemd_editor: {
     it: "L'utente sta scrivendo il suo primo CLAUDE.md su uno di tre progetti di esempio (un piccolo e-commerce, un'app per tracciare abitudini, o un sito vetrina/portfolio). Compila 4 sezioni: cosa stiamo costruendo, lo stack, le house rules (cosa l'AI NON deve fare), e come vuole lavorare con l'AI. Aiutalo a capire i termini (stack, house rules, workflow) e a essere concreto. Se fai esempi, usa un progetto inventato DIVERSO dai tre, oppure tienili generici — non scrivere mai tu le quattro sezioni al posto suo.",
     en: "The learner is writing their first CLAUDE.md against one of three sample projects (a small e-commerce, a habit-tracker app, or a portfolio/landing site). They fill 4 sections: what we're building, the stack, the house rules (what the AI must NOT do), and how they want to work with the AI. Help them understand the terms (stack, house rules, workflow) and how to be concrete. If you give examples, use a made-up project DIFFERENT from those three, or keep them generic — never write the four sections for them.",
@@ -80,21 +87,38 @@ export function getHelperContextNote(
 // allowlist before splicing it into Spark's per-call context. The set is
 // kept small and stable per widget — adding a phase here is a deliberate
 // content change, not a runtime decision.
+// `between_attempts` is a cross-widget phase that shadows the regular phase
+// whenever the learner has at least one attempt-with-evaluation behind them
+// but hasn't yet finalised the quick-win — Spark uses it to refer to the
+// previous attempt's weak dimension without re-doing the explainer prose.
+// Not present on prompt_architecture (it's a drag-and-drop puzzle, no
+// per-attempt evaluator output of the same shape).
 const HELPER_PHASES: Record<SparkHelperWidgetKey, ReadonlySet<string>> = {
-  claudemd_editor: new Set(["writing_claudemd"]),
+  lucia_prompt_loop: new Set(["writing_lucia_prompt", "between_attempts"]),
+  claudemd_editor: new Set([
+    "awaiting_project_selection",
+    "writing_claudemd",
+    "between_attempts",
+  ]),
   context_prompt_editor: new Set([
     "choosing_scenario",
     "scenario_login_writing",
     "scenario_notifications_writing",
     "scenario_stats_writing",
+    "between_attempts",
   ]),
   constraints_editor: new Set([
     "writing_constraints",
     "writing_protective",
     "writing_process",
     "writing_style",
+    "between_attempts",
   ]),
-  broken_session_debugger: new Set(["pivot_question", "recovery_question"]),
+  broken_session_debugger: new Set([
+    "pivot_question",
+    "recovery_question",
+    "between_attempts",
+  ]),
   prompt_architecture: new Set(["placing_pillars", "after_generation"]),
 };
 

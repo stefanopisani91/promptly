@@ -228,7 +228,15 @@
             "title": "Aggiungi login",
             "short_title": "Login",
             "description": "Sistema di autenticazione utenti.",
-            "empty_prompt": "Aggiungi login all'app."
+            "empty_prompt": "Aggiungi login all'app.",
+            "briefing": {
+              "project_setting": "Immagina di lavorare su un'app di prenotazione ristoranti.",
+              "existing_assets": [
+                "Tabella `users` in Supabase con campi email, password_hash",
+                "Cartella /components/forms con altre form già fatte (registrazione, contatti)",
+                "Style guide condivisa in /lib/design-tokens.ts"
+              ]
+            }
           },
           {
             "key": "notifications",
@@ -236,7 +244,15 @@
             "title": "Aggiungi notifiche email",
             "short_title": "Notifiche",
             "description": "Email automatica quando succede un evento.",
-            "empty_prompt": "Quando succede qualcosa, manda email."
+            "empty_prompt": "Quando succede qualcosa, manda email.",
+            "briefing": {
+              "project_setting": "Immagina di lavorare su un blog personale.",
+              "existing_assets": [
+                "Tabella `articles` in Postgres con titolo, autore, status",
+                "Sistema email già configurato con Resend",
+                "Pattern di notifica già usato in /lib/notifications/welcome.ts"
+              ]
+            }
           },
           {
             "key": "stats",
@@ -244,7 +260,15 @@
             "title": "Aggiungi pagina statistiche",
             "short_title": "Statistiche",
             "description": "Dashboard con grafici dei dati utente.",
-            "empty_prompt": "Aggiungi una pagina con statistiche utente."
+            "empty_prompt": "Aggiungi una pagina con statistiche utente.",
+            "briefing": {
+              "project_setting": "Immagina di lavorare su una SaaS di gestione progetti.",
+              "existing_assets": [
+                "Tabella `tasks` in Supabase con created_at, completed_at, user_id",
+                "Cartella /components/charts con un grafico già fatto (LineChart)",
+                "Convenzione: i numeri grandi vanno formattati con `formatNumber()` da /lib/utils"
+              ]
+            }
           }
         ],
         "min_chars": 100,

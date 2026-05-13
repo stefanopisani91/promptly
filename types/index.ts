@@ -650,6 +650,20 @@ export interface ContextScenarioOption {
   // left of the editor and forwarded to the rubric so it can grade the
   // delta between empty and rich.
   empty_prompt: string;
+  // Pre-scenario briefing (added 2026-05-13, SparkHelper_FixBundle_v1 §3.5).
+  // Concrete project context the learner can use as "ingredients" when
+  // writing the 4 levels of context. Shown above the editor after the
+  // scenario is picked, sent to the evaluator so plausible-but-out-of-
+  // briefing details still pass, and sent to Spark Helper so hints align.
+  briefing?: {
+    // Single-sentence project setting ("Immagina di lavorare su un'app
+    // di prenotazione ristoranti.").
+    project_setting: string;
+    // 2-4 short bullets describing concrete assets that exist in the
+    // imaginary project (db tables, folders, style guides, etc.). These
+    // are the "ingredients" the learner can cite in the rich prompt.
+    existing_assets: string[];
+  };
 }
 
 export interface ContextPromptEditorConfig {
