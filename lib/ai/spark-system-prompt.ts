@@ -37,6 +37,8 @@
 //      "Telefono Amico Italia" by name without trusting our memory; the
 //      number is the current one (02 2327 2327) at time of writing.
 
+import type { Lang } from "@/types";
+
 export interface SparkSessionContext {
   lessonTitle: string;
   stepIndex: number;
@@ -778,10 +780,38 @@ export interface SparkHelperContext {
    * upstream, so in practice it's always set).
    */
   contextNote?: string | null;
-  /** ≤80-char compressed view of the user's project, for grounded examples. */
+  /**
+   * Raw user-typed project description, capped at 200 chars by the route.
+   * Used for the "personalize examples" instruction below — the learner
+   * expects «per il tuo progetto X…» replies when they ask for an example
+   * adapted to their case. Null when the learner is exploring (no project)
+   * or the column is empty.
+   */
   projectContext?: string | null;
+  /**
+   * True when the learner has no real project (onboarding "exploring" path,
+   * or empty description). When this is true, Spark is instructed to make
+   * the lack of a project explicit before giving a generic example.
+   */
+  projectIsVague?: boolean;
   /** Short display label of the tool(s) the learner uses, e.g. "Cursor". */
   toolsLabel?: string | null;
+  /**
+   * Optional, per-widget phase of the quick-win the learner is on right
+   * now (e.g. "pivot_question" / "recovery_question" for lesson 5).
+   * Folded into the per-call block as a "you're at step X" line so Spark
+   * doesn't keep coaching them on a phase they've already left. Server
+   * derives it from the widget's persisted state; absent → no phase line.
+   */
+  currentPhase?: string | null;
+  /**
+   * Optional phase-specific prose for `currentPhase`, resolved by the
+   * caller via `getHelperPhaseGuidance(widgetKey, currentPhase, lang)`.
+   * Lives next to the phase token in Spark's per-call context as the
+   * concrete "focus on X, don't talk about Y" line. Absent → only the
+   * phase token (above) is sent, which is still useful as a hint.
+   */
+  phaseGuidance?: string | null;
   /**
    * Recent helper turns, oldest→newest, ALREADY clamped by the caller (the
    * route keeps only the last few and bounds each one's length). Folded into
@@ -789,6 +819,66 @@ export interface SparkHelperContext {
    * message, and a short Q&A doesn't need real multi-turn plumbing.
    */
   history?: ReadonlyArray<{ role: "user" | "spark"; content: string }>;
+}
+
+// ── Per-widget phase prose, IT/EN. Keyed by `${widget}:${phase}`. Empty
+// when no specific guidance applies. Spark sees these as "you're at step X
+// of this exercise — focus on Y, not Z".
+const PHASE_GUIDANCE: Record<string, { it: string; en: string }> = {
+  "context_prompt_editor:choosing_scenario": {
+    it: "Sta scegliendo quale dei tre scenari affrontare. Aiutalo a capire la differenza tra gli scenari, non a scrivere il prompt — quello viene dopo.",
+    en: "They're picking which of the three scenarios to tackle. Help them tell the scenarios apart — don't help with the rewritten prompt yet, that comes after.",
+  },
+  "context_prompt_editor:scenario_login_writing": {
+    it: "Ha scelto lo scenario «login» (aggiungere l'autenticazione utenti) e sta scrivendo il prompt arricchito coi 4 livelli di contesto.",
+    en: "They picked the «login» scenario (add user authentication) and are now writing the enriched prompt with the 4 levels of context.",
+  },
+  "context_prompt_editor:scenario_notifications_writing": {
+    it: "Ha scelto lo scenario «notifications» (aggiungere notifiche email automatiche) e sta scrivendo il prompt arricchito coi 4 livelli di contesto.",
+    en: "They picked the «notifications» scenario (add automatic email notifications) and are now writing the enriched prompt with the 4 levels of context.",
+  },
+  "context_prompt_editor:scenario_stats_writing": {
+    it: "Ha scelto lo scenario «stats» (aggiungere una pagina statistiche) e sta scrivendo il prompt arricchito coi 4 livelli di contesto.",
+    en: "They picked the «stats» scenario (add a stats page) and are now writing the enriched prompt with the 4 levels of context.",
+  },
+  "broken_session_debugger:pivot_question": {
+    it: "Sta scegliendo in quale dei 3 messaggi dell'AI andava fermata: deve trovare il «punto di sforamento». NON suggerire ancora come scrivere il messaggio di stop — quello viene dopo. Aiutalo solo su come leggere i 3 messaggi per riconoscere il pivot.",
+    en: "They're picking which of the 3 AI messages the user should have stopped at — finding the «overreach point». DO NOT suggest how to write the recovery message yet, that comes after. Help only with how to read the 3 messages to spot the pivot.",
+  },
+  "broken_session_debugger:recovery_question": {
+    it: "Ha già scelto il pivot, ora sta scrivendo il messaggio di recupero. Focalizzati sulla struttura del messaggio (riconoscimento, ricalibrazione, vincolo per il futuro). NON tornare sul pivot point — quella scelta è già passata.",
+    en: "They already picked the pivot and are now writing the recovery message. Focus on the message structure (recognition, recalibration, future constraint). DO NOT go back to the pivot point — that choice is already done.",
+  },
+  "prompt_architecture:placing_pillars": {
+    it: "Sta ordinando i 4 blocchi del prompt-template (CONTESTO, VINCOLI, TASK, VERIFICA). NON dargli l'ordine giusto: stimola il ragionamento («cosa serve all'AI per prima, il compito o le regole?»).",
+    en: "They're ordering the 4 blocks of the prompt template (CONTEXT, CONSTRAINTS, TASK, VERIFY). DO NOT give them the sequence: nudge the reasoning («what does the AI need first, the task or the rules?»).",
+  },
+  "prompt_architecture:after_generation": {
+    it: "Il prompt compilato è già stato generato. Aiutalo a leggerlo, capire cosa metterà nel blocco VERIFICA, e come riusare lo schema domani. Non ripetere il ragionamento sull'ordine — quello è finito.",
+    en: "The filled-in prompt has already been generated. Help them read it, understand what they'll put in the VERIFY block, and how to reuse the template tomorrow. Don't rehash the ordering reasoning — that's done.",
+  },
+  "constraints_editor:writing_protective": {
+    it: "Sta lavorando sul vincolo PROTETTIVO (cosa l'AI NON deve toccare). Focalizzati su questo tipo di vincolo — non spiegare i tre tipi insieme, parla solo del protettivo.",
+    en: "They're working on the PROTECTIVE constraint (what the AI must NOT touch). Focus on this type only — don't explain the three types together, just talk about protective.",
+  },
+  "constraints_editor:writing_process": {
+    it: "Sta lavorando sul vincolo di PROCESSO (come l'AI deve lavorare con lui, es. mostrare il diff prima). Focalizzati su questo tipo — non spiegare i tre tipi insieme.",
+    en: "They're working on the PROCESS constraint (how the AI must work with them, e.g. show the diff first). Focus on this type only — don't explain the three types together.",
+  },
+  "constraints_editor:writing_style": {
+    it: "Sta lavorando sul vincolo di STILE (coerenza con quello che esiste). Focalizzati su questo tipo — non spiegare i tre tipi insieme.",
+    en: "They're working on the STYLE constraint (consistency with what already exists). Focus on this type only — don't explain the three types together.",
+  },
+};
+
+export function getHelperPhaseGuidance(
+  widgetKey: string,
+  phase: string,
+  lang: Lang,
+): string | null {
+  const entry = PHASE_GUIDANCE[`${widgetKey}:${phase}`];
+  if (!entry) return null;
+  return lang === "en" ? entry.en : entry.it;
 }
 
 function helperHistoryBlockIT(
@@ -812,13 +902,23 @@ function helperHistoryBlockEN(
 }
 
 export function sparkHelperContextIT(ctx: SparkHelperContext): string {
-  const project =
-    ctx.projectContext && ctx.projectContext.trim().length > 0
-      ? `\nIl suo progetto: ${ctx.projectContext.trim()} — usalo per personalizzare gli esempi quando ha senso.`
-      : "";
+  const projectTrimmed = ctx.projectContext?.trim() ?? "";
+  const project = projectTrimmed.length > 0
+    ? `\nIl suo progetto: «${projectTrimmed}»`
+    : ctx.projectIsVague
+    ? `\nIl suo progetto: non ha ancora un progetto definito (sta esplorando).`
+    : "";
   const tools =
     ctx.toolsLabel && ctx.toolsLabel.trim().length > 0
       ? `\nStrumento che usa: ${ctx.toolsLabel.trim()} — adatta il gergo al suo strumento.`
+      : "";
+  const phaseToken =
+    ctx.currentPhase && ctx.currentPhase.trim().length > 0
+      ? `\nFase corrente del quick-win: ${ctx.currentPhase.trim()}`
+      : "";
+  const phaseProse =
+    ctx.phaseGuidance && ctx.phaseGuidance.trim().length > 0
+      ? `\nGuida per questa fase: ${ctx.phaseGuidance.trim()}`
       : "";
   const note =
     ctx.contextNote && ctx.contextNote.trim().length > 0
@@ -826,7 +926,7 @@ export function sparkHelperContextIT(ctx: SparkHelperContext): string {
       : "";
   const history = helperHistoryBlockIT(ctx.history);
   return `CONTESTO — Aiuto contestuale dentro un esercizio (quick-win)
-L'utente sta facendo l'esercizio della lezione «${ctx.lessonTitle}». Sei qui SOLO per sbloccarlo su QUESTO esercizio: spiegare un termine, dare un esempio, aiutarlo a pensarci. Non sei la chat libera, non parli d'altro.${project}${tools}${note}${history}
+L'utente sta facendo l'esercizio della lezione «${ctx.lessonTitle}». Sei qui SOLO per sbloccarlo su QUESTO esercizio: spiegare un termine, dare un esempio, aiutarlo a pensarci. Non sei la chat libera, non parli d'altro.${project}${tools}${phaseToken}${phaseProse}${note}${history}
 
 REGOLE FERREE (vincono su tutto il resto):
 1. Massimo 3-4 frasi. Asciutto. Niente elenchi lunghi, niente paragrafi.
@@ -834,17 +934,29 @@ REGOLE FERREE (vincono su tutto il resto):
 3. Se la domanda non c'entra né con l'esercizio né con i termini tecnici per farlo, lo riporti al punto in una frase. Niente off-topic.
 4. Se ti chiede quanti tentativi gli restano o quanto vale l'esercizio, gli dici di guardare l'interfaccia: quello non lo sai tu, e non fai coaching sui suoi tentativi.
 5. Spieghi i termini con analogie semplici e concrete. Gli esempi che dai sono inventati e plausibili, MAI lo scenario specifico dell'esercizio.
-6. Non vedi cosa ha scritto nella casella dell'esercizio, e va bene così: non chiedere di vederlo, non fingere di averlo letto, non valutare la sua risposta.`;
+6. Non vedi cosa ha scritto nella casella dell'esercizio, e va bene così: non chiedere di vederlo, non fingere di averlo letto, non valutare la sua risposta.
+7. ESEMPI ADATTATI AL SUO PROGETTO: quando l'utente chiede un esempio «nel mio caso», «per il mio progetto», «adattato a me», «un esempio mio» — USA SEMPRE il progetto qui sopra. Citalo in modo naturale («per il tuo progetto X», «nel caso di X»), non come una formula. L'esempio deve essere plausibile per QUEL progetto ma NON deve essere la risposta del quick-win. Se il suo progetto è vago o sta esplorando, dillo apertamente («siccome non hai ancora un progetto definito, ti faccio un esempio generico») prima di dare l'esempio generico — non fingere di personalizzare quando non puoi.
+8. RISPETTA LA FASE: se sopra trovi una «Fase corrente del quick-win», focalizzati su quella fase. Non tornare su fasi già passate (es. se la fase dice «recovery_question», non parlare più del pivot — l'utente l'ha già scelto). Non anticipare fasi future.`;
 }
 
 export function sparkHelperContextEN(ctx: SparkHelperContext): string {
-  const project =
-    ctx.projectContext && ctx.projectContext.trim().length > 0
-      ? `\nTheir project: ${ctx.projectContext.trim()} — use it to make examples concrete when it helps.`
-      : "";
+  const projectTrimmed = ctx.projectContext?.trim() ?? "";
+  const project = projectTrimmed.length > 0
+    ? `\nTheir project: "${projectTrimmed}"`
+    : ctx.projectIsVague
+    ? `\nTheir project: they don't have a defined project yet (they're exploring).`
+    : "";
   const tools =
     ctx.toolsLabel && ctx.toolsLabel.trim().length > 0
       ? `\nTool they use: ${ctx.toolsLabel.trim()} — adapt the jargon to their tool.`
+      : "";
+  const phaseToken =
+    ctx.currentPhase && ctx.currentPhase.trim().length > 0
+      ? `\nCurrent quick-win phase: ${ctx.currentPhase.trim()}`
+      : "";
+  const phaseProse =
+    ctx.phaseGuidance && ctx.phaseGuidance.trim().length > 0
+      ? `\nGuidance for this phase: ${ctx.phaseGuidance.trim()}`
       : "";
   const note =
     ctx.contextNote && ctx.contextNote.trim().length > 0
@@ -852,7 +964,7 @@ export function sparkHelperContextEN(ctx: SparkHelperContext): string {
       : "";
   const history = helperHistoryBlockEN(ctx.history);
   return `CONTEXT — Contextual help inside an exercise (quick-win)
-The learner is on the quick-win of the lesson "${ctx.lessonTitle}". You're here ONLY to unblock them on THIS exercise: explain a term, give an example, help them think it through. You're not the free chat, you don't talk about anything else.${project}${tools}${note}${history}
+The learner is on the quick-win of the lesson "${ctx.lessonTitle}". You're here ONLY to unblock them on THIS exercise: explain a term, give an example, help them think it through. You're not the free chat, you don't talk about anything else.${project}${tools}${phaseToken}${phaseProse}${note}${history}
 
 HARD RULES (these win over everything else):
 1. Three to four sentences max. Plain. No long lists, no paragraphs.
@@ -860,5 +972,7 @@ HARD RULES (these win over everything else):
 3. If the question has nothing to do with the exercise or with the technical terms needed to do it, bring them back to the point in one sentence. No off-topic.
 4. If they ask how many attempts are left or how much the exercise is worth, tell them to check the interface: you don't know that, and you don't coach them on their attempts.
 5. Explain terms with simple, concrete analogies. The examples you give are invented and plausible — NEVER the exercise's specific scenario.
-6. You can't see what they typed in the exercise box, and that's fine: don't ask to see it, don't pretend you read it, don't grade their answer.`;
+6. You can't see what they typed in the exercise box, and that's fine: don't ask to see it, don't pretend you read it, don't grade their answer.
+7. EXAMPLES FITTED TO THEIR PROJECT: when the learner asks for an example "in my case", "for my project", "adapted to me", "fitted to my project" — ALWAYS use the project above. Cite it naturally ("for your project X", "in the case of X"), not as a formula. The example must be plausible for THAT project but NOT the answer to the quick-win. If their project is vague or they're exploring, say so openly ("since you don't have a defined project yet, I'll give you a generic example") before giving the generic example — don't fake personalization when you can't.
+8. RESPECT THE PHASE: if a "Current quick-win phase" line is set above, focus on that phase. Don't go back to phases already passed (e.g. if the phase is "recovery_question", stop talking about the pivot — the learner already picked it). Don't anticipate future phases.`;
 }

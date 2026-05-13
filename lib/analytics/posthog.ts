@@ -81,6 +81,13 @@ type AppEvent =
   | {
       name: "spark_helper_quota_hit";
       props: { widget: string; scope: "quick_win" | "daily" };
+    }
+  // Server-flagged: the learner asked for a project-fitted example and
+  // Spark's reply didn't cite the project. Heuristic — see
+  // app/api/spark-helper/route.ts. Used to monitor BUG 2 regressions.
+  | {
+      name: "spark_helper_missed_personalization";
+      props: { widget: string; lesson_id: string };
     };
 
 // Kept as a deprecated alias so any external imports keep compiling.

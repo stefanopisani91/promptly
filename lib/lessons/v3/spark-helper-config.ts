@@ -73,3 +73,34 @@ export function getHelperContextNote(
   const entry = CONTEXT_NOTES[widgetKey];
   return lang === "en" ? entry.en : entry.it;
 }
+
+// Per-widget allowlist of "current_phase" values the route is willing to
+// accept. The client computes the phase from the widget's persisted state
+// (LessonV3View.helperPhase) and POSTs it; the route validates against this
+// allowlist before splicing it into Spark's per-call context. The set is
+// kept small and stable per widget — adding a phase here is a deliberate
+// content change, not a runtime decision.
+const HELPER_PHASES: Record<SparkHelperWidgetKey, ReadonlySet<string>> = {
+  claudemd_editor: new Set(["writing_claudemd"]),
+  context_prompt_editor: new Set([
+    "choosing_scenario",
+    "scenario_login_writing",
+    "scenario_notifications_writing",
+    "scenario_stats_writing",
+  ]),
+  constraints_editor: new Set([
+    "writing_constraints",
+    "writing_protective",
+    "writing_process",
+    "writing_style",
+  ]),
+  broken_session_debugger: new Set(["pivot_question", "recovery_question"]),
+  prompt_architecture: new Set(["placing_pillars", "after_generation"]),
+};
+
+export function isSparkHelperPhase(
+  widgetKey: SparkHelperWidgetKey,
+  phase: string,
+): boolean {
+  return HELPER_PHASES[widgetKey].has(phase);
+}

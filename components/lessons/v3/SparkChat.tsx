@@ -79,7 +79,15 @@ interface Props {
   // When set, the panel runs in "helper mode" for the named quick-win
   // widget — routes to /api/spark-helper, shows the widget's chips, uses
   // the helper's own quota messages. Absent => normal lesson-wide chat.
-  helper?: { widgetKey: string; strings: SparkHelperStrings };
+  // `currentPhase` is the (optional) per-widget phase computed by the
+  // parent from the widget's persisted state — see LessonV3View's
+  // `helperPhase`. POSTed to the route so Spark can focus on the right
+  // sub-task (e.g. recovery vs pivot in lesson 5).
+  helper?: {
+    widgetKey: string;
+    strings: SparkHelperStrings;
+    currentPhase?: string | null;
+  };
   onClose: () => void;
   onMessageSent: (newRemaining: number) => void;
 }
@@ -248,6 +256,7 @@ export function SparkChat({
               widgetKey: helper.widgetKey,
               message: trimmed,
               history: priorHistory,
+              currentPhase: helper.currentPhase ?? null,
             }),
           })
         : await fetch("/api/spark-chat", {
@@ -298,7 +307,11 @@ export function SparkChat({
         setError(strings.apiError);
         return;
       }
-      const body = (await res.json()) as { reply?: string; remaining?: number };
+      const body = (await res.json()) as {
+        reply?: string;
+        remaining?: number;
+        missedPersonalization?: boolean;
+      };
       if (typeof body.reply !== "string") { setError(strings.apiError); return; }
       setMessages((prev) => [...prev, { role: "spark", content: body.reply! }]);
       if (helper) {
@@ -306,6 +319,14 @@ export function SparkChat({
           name: "spark_helper_message_sent",
           props: { widget: helper.widgetKey, from_suggestion: Boolean(opts?.fromChip) },
         });
+        // Server-flagged personalization miss (BUG 2 audit). Fire-and-forget;
+        // purely diagnostic, no user-visible effect.
+        if (body.missedPersonalization === true) {
+          track({
+            name: "spark_helper_missed_personalization",
+            props: { widget: helper.widgetKey, lesson_id: lessonId },
+          });
+        }
       } else if (typeof body.remaining === "number") {
         onMessageSent(body.remaining);
       }

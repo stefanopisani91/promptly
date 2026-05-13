@@ -989,13 +989,13 @@ const it: LessonsCopy = {
           "Cos'è uno schema di database?",
           "Differenza tra protettivo e di processo?",
           "Esempio nel mio caso",
-          "Come si scrive una negazione efficace?",
+          "Come dico «non fare X»?",
         ],
         broken_session_debugger: [
           "Cos'è OAuth?",
           "Cos'è un middleware?",
           "Come faccio rollback con l'AI?",
-          "Esempio di messaggio chirurgico",
+          "Dammi un esempio di risposta",
         ],
         prompt_architecture: [
           "Perché i vincoli prima del task?",
@@ -1529,13 +1529,13 @@ const en: LessonsCopy = {
           "What's a database schema?",
           "Protective vs. process — what's the difference?",
           "Example in my case",
-          "How do I write an effective negative constraint?",
+          "How do I say \"don't do X\"?",
         ],
         broken_session_debugger: [
           "What's OAuth?",
           "What's a middleware?",
           "How do I roll back with the AI?",
-          "Example of a surgical message",
+          "Show me an example response",
         ],
         prompt_architecture: [
           "Why constraints before the task?",

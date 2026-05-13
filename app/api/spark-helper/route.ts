@@ -48,6 +48,7 @@ import {
 } from "@/lib/supabase/queries";
 import { requestSparkReply } from "@/lib/ai/anthropic";
 import {
+  getHelperPhaseGuidance,
   SPARK_PERSONA_EN,
   SPARK_PERSONA_IT,
   sparkHelperContextEN,
@@ -56,6 +57,7 @@ import {
 import {
   getHelperContextNote,
   isSparkHelperWidget,
+  isSparkHelperPhase,
 } from "@/lib/lessons/v3/spark-helper-config";
 import { loadLessonById } from "@/lib/lessons/load";
 import { toolDisplayName } from "@/lib/onboarding/tools";
@@ -68,6 +70,60 @@ const MAX_HISTORY_TURNS = 6; // last 3 exchanges — bounds the prompt size
 const MAX_HISTORY_TURN_CHARS = 320; // each remembered turn, defensively clamped
 const LESSON_ID_RE = /^[a-z]+-\d{2}$/;
 const UNLIMITED_SENTINEL = 9_999;
+// The raw project_description Spark sees in the per-call block. Larger than
+// the 80-char compressed view used in spark-chat (which is cache-eligible
+// and token-sensitive): the helper context is rebuilt per call and lives
+// outside the prompt cache, so paying for a longer description is fine and
+// helps Spark actually cite project specifics in personalized examples.
+const MAX_PROJECT_CHARS = 200;
+const PHASE_KEY_RE = /^[a-z][a-z0-9_]{0,63}$/;
+
+// Heuristic for BUG 2 / mitigation: detect when the learner is asking
+// Spark Helper for an example fitted to their own project. Fires the
+// missed-personalization analytic only when this matches AND the reply
+// doesn't mention any significant project word — see below.
+const PERSONALIZED_EXAMPLE_PATTERNS: RegExp[] = [
+  /\besempi[oa]\b.*\b(mio|mi[ao]\s+(progetto|caso|app|sito)|nel\s+mio|adattat[oa]|per\s+me)\b/i,
+  /\b(nel\s+mio\s+caso|per\s+il\s+mio\s+(progetto|caso)|adattat[oa]\s+al\s+mio)\b/i,
+  /\bexample\b.*\b(my|mine|fitted\s+to\s+my|for\s+my|in\s+my\s+(case|project))\b/i,
+  /\b(in\s+my\s+case|for\s+my\s+project|fitted\s+to\s+my)\b/i,
+];
+
+function isAskingPersonalizedExample(message: string): boolean {
+  return PERSONALIZED_EXAMPLE_PATTERNS.some((p) => p.test(message));
+}
+
+// Best-effort: pick "significant" tokens from the project_description
+// (≥4 chars, not a generic stopword) and check if any appear in the
+// reply. Heuristic only — false positives/negatives expected, but it
+// gives an aggregate signal in PostHog so we can monitor drift.
+const PROJECT_STOPWORDS = new Set([
+  "anche", "come", "della", "delle", "degli", "dello", "essere",
+  "fare", "loro", "molto", "nostro", "nostri", "nostra", "ogni",
+  "quale", "quali", "quando", "quello", "quella", "questo", "questa",
+  "sono", "stato", "stessa", "stesso", "tutto", "tutta", "vista",
+  "voglio", "vuoi", "vuole", "with", "about", "after", "again", "their",
+  "would", "there", "where", "which", "while", "could", "should", "every",
+  "between", "before", "because", "create", "creating", "build", "building",
+]);
+
+function projectTokens(raw: string): string[] {
+  const out: string[] = [];
+  for (const t of raw.toLowerCase().split(/[^\p{L}\p{N}]+/u)) {
+    if (t.length < 4) continue;
+    if (PROJECT_STOPWORDS.has(t)) continue;
+    out.push(t);
+    if (out.length >= 12) break;
+  }
+  return out;
+}
+
+function replyCitesProject(reply: string, project: string): boolean {
+  const tokens = projectTokens(project);
+  if (tokens.length === 0) return true; // nothing to cite → no-op pass
+  const haystack = reply.toLowerCase();
+  return tokens.some((t) => haystack.includes(t));
+}
 
 // Same cheap pre-flight as spark-chat. Not a wall — Spark's persona is the
 // real defence — but a useful audit trail. False positives are fine: this
@@ -111,6 +167,9 @@ interface RequestBody {
   widgetKey?: unknown;
   message?: unknown;
   history?: unknown;
+  // Optional client-provided per-widget phase (e.g. "recovery_question").
+  // Server-side validated against an allowlist before being used.
+  currentPhase?: unknown;
 }
 
 interface HistoryTurn {
@@ -166,6 +225,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "message_too_long" }, { status: 413 });
   }
   const history = sanitiseHistory(body.history);
+  // Defensive sanitisation of the optional phase: must be a short ASCII
+  // snake_case token AND in the per-widget allowlist. Anything else is
+  // silently dropped (we don't fail the request — phase is purely
+  // additional context, not a security boundary).
+  const phaseCandidate =
+    typeof body.currentPhase === "string" ? body.currentPhase.trim() : "";
+  const currentPhase =
+    phaseCandidate.length > 0 &&
+    PHASE_KEY_RE.test(phaseCandidate) &&
+    isSparkHelperPhase(widgetKey, phaseCandidate)
+      ? phaseCandidate
+      : null;
 
   const supabase = createClient();
   const { data: userData } = await supabase.auth.getUser();
@@ -258,14 +329,24 @@ export async function POST(request: Request) {
 
   const compressedProject = profileRow?.project_description_compressed?.trim();
   const rawProject = profileRow?.project_description?.trim();
-  const projectContext =
-    compressedProject && compressedProject.length > 0
-      ? compressedProject
-      : rawProject
-      ? rawProject.length <= 80
+  // Prefer the raw description (up to ~200 chars) over the 80-char
+  // compressed view: spark-helper's per-call context isn't prompt-cached,
+  // so the few extra tokens are worth the concrete detail Spark needs to
+  // cite the project naturally in personalized examples.
+  const projectContext = (() => {
+    if (rawProject && rawProject.length > 0) {
+      return rawProject.length <= MAX_PROJECT_CHARS
         ? rawProject
-        : rawProject.slice(0, 80).trimEnd() + "…"
+        : rawProject.slice(0, MAX_PROJECT_CHARS).trimEnd() + "…";
+    }
+    return compressedProject && compressedProject.length > 0
+      ? compressedProject
       : null;
+  })();
+  // True when the learner has no real project (no raw and no compressed).
+  // The system prompt uses this to make the lack of a project explicit
+  // when giving generic examples — never fake personalization.
+  const projectIsVague = !projectContext;
 
   const toolsLabel = (() => {
     const preferred = profileRow?.preferred_tool;
@@ -315,7 +396,12 @@ export async function POST(request: Request) {
     lessonTitle,
     contextNote: getHelperContextNote(widgetKey, lang),
     projectContext,
+    projectIsVague,
     toolsLabel,
+    currentPhase,
+    phaseGuidance: currentPhase
+      ? getHelperPhaseGuidance(widgetKey, currentPhase, lang)
+      : null,
     history,
   });
 
@@ -362,12 +448,25 @@ export async function POST(request: Request) {
     ? UNLIMITED_SENTINEL
     : Math.max(0, dailyCap - (dailyUsed + 1));
 
+  // Heuristic personalization audit (BUG 2 mitigation). When (a) the
+  // learner clearly asked for a project-fitted example, (b) a real
+  // project description is available, and (c) the reply doesn't mention
+  // any significant project token, surface a flag the client uses to
+  // fire the PostHog `spark_helper_missed_personalization` event. We
+  // don't act on it server-side — it's purely an aggregate signal.
+  const missedPersonalization =
+    projectContext !== null &&
+    !projectIsVague &&
+    isAskingPersonalizedExample(message) &&
+    !replyCitesProject(result.reply, projectContext);
+
   return NextResponse.json({
     reply: result.reply,
     remaining: newRemaining,
     limit: isUnlimited(quickWinCap) ? UNLIMITED_SENTINEL : quickWinCap,
     dailyRemaining: newDailyRemaining,
     dailyLimit: isUnlimited(dailyCap) ? UNLIMITED_SENTINEL : dailyCap,
+    missedPersonalization,
   });
 }
 

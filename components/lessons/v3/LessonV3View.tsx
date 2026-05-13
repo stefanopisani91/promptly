@@ -120,6 +120,55 @@ function quickWinFinalised(stepEntry: unknown): boolean {
   );
 }
 
+/**
+ * Derive the per-widget "current_phase" sent to /api/spark-helper from the
+ * widget's persisted stepState. Each phase is a stable snake_case token
+ * server-side allowlisted in lib/lessons/v3/spark-helper-config.ts; the
+ * route validates it before splicing it into Spark's per-call context. The
+ * phase exists so Spark doesn't keep coaching the learner on a sub-task
+ * they've already passed (e.g. coaching the pivot in lesson 5 after the
+ * pivot has been confirmed). Returns null when no specific guidance
+ * applies — Spark falls back to the per-widget context note alone.
+ */
+function helperPhaseFromState(
+  widgetKey: string,
+  stepEntry: unknown,
+): string | null {
+  const state =
+    typeof stepEntry === "object" && stepEntry !== null
+      ? (stepEntry as Record<string, unknown>)
+      : {};
+  switch (widgetKey) {
+    case "claudemd_editor":
+      return "writing_claudemd";
+    case "context_prompt_editor": {
+      const scenario = state.selectedScenario;
+      if (typeof scenario !== "string" || scenario.length === 0) {
+        return "choosing_scenario";
+      }
+      // Only the three canonical scenarios get a focused phase; any other
+      // string is silently coerced to choosing_scenario so the server's
+      // allowlist doesn't reject the call.
+      if (scenario === "login" || scenario === "notifications" || scenario === "stats") {
+        return `scenario_${scenario}_writing`;
+      }
+      return "choosing_scenario";
+    }
+    case "constraints_editor":
+      // We don't track which textarea is focused (would require pushing
+      // focus state up from the editor for marginal benefit). Single
+      // phase keeps the route happy and Spark still gets the per-widget
+      // context note that covers the three constraint types.
+      return "writing_constraints";
+    case "broken_session_debugger":
+      return state.pivotConfirmed === true ? "recovery_question" : "pivot_question";
+    case "prompt_architecture":
+      return state.generatedBlocks ? "after_generation" : "placing_pillars";
+    default:
+      return null;
+  }
+}
+
 interface Props {
   lesson: LessonV3Content;
   pathHref: string;
@@ -264,6 +313,13 @@ export function LessonV3View({
     !quickWinFinalised(stepState[step.id])
       ? step.widget
       : null;
+  // Phase is derived live from the widget's persisted state — so reopening
+  // the Spark Helper after the learner confirms a pivot in lesson 5 lands
+  // Spark on the recovery phase, not the pivot one. Null when no widget is
+  // active or the widget has no phase distinction.
+  const helperPhase = helperWidget
+    ? helperPhaseFromState(helperWidget, stepState[step.id])
+    : null;
 
   function goBack() {
     if (stepIndex > 0) {
@@ -449,7 +505,11 @@ export function LessonV3View({
           // mode — routes to /api/spark-helper, shows the widget's chips.
           helper={
             helperWidget
-              ? { widgetKey: helperWidget, strings: strings.sparkHelper }
+              ? {
+                  widgetKey: helperWidget,
+                  strings: strings.sparkHelper,
+                  currentPhase: helperPhase,
+                }
               : undefined
           }
           onClose={() => {
