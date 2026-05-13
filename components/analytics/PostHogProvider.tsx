@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import posthog from "posthog-js";
 import { initPostHog, track } from "@/lib/analytics/posthog";
@@ -25,12 +25,41 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const landingFiredRef = useRef(false);
+  // PostHog (~90KB gzipped) viene inizializzato DOPO il first paint via
+  // requestIdleCallback — così non compete con le risorse critiche della
+  // landing. Fallback a setTimeout(2500ms) per Safari < 22 e simili.
+  // I pageview e gli eventi `landing_*` partono solo quando `ready` è true.
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    initPostHog();
+    if (typeof window === "undefined") return;
+    let cancelled = false;
+    let idleId: number | null = null;
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
+    const run = () => {
+      if (cancelled) return;
+      initPostHog();
+      setReady(true);
+    };
+
+    if (typeof window.requestIdleCallback === "function") {
+      idleId = window.requestIdleCallback(run, { timeout: 3000 });
+    } else {
+      timeoutId = setTimeout(run, 2500);
+    }
+
+    return () => {
+      cancelled = true;
+      if (idleId != null && typeof window.cancelIdleCallback === "function") {
+        window.cancelIdleCallback(idleId);
+      }
+      if (timeoutId != null) clearTimeout(timeoutId);
+    };
   }, []);
 
   useEffect(() => {
+    if (!ready) return;
     if (!pathname) return;
     if (typeof window === "undefined") return;
     if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) return;
@@ -39,9 +68,10 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
       pathname +
       (searchParams?.toString() ? `?${searchParams.toString()}` : "");
     posthog.capture("$pageview", { $current_url: url });
-  }, [pathname, searchParams]);
+  }, [ready, pathname, searchParams]);
 
   useEffect(() => {
+    if (!ready) return;
     if (landingFiredRef.current) return;
     if (typeof window === "undefined") return;
     if (!pathname) return;
@@ -56,7 +86,7 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
 
     landingFiredRef.current = true;
     track({ name: "landing_viewed", props: { lang, source } });
-  }, [pathname, searchParams]);
+  }, [ready, pathname, searchParams]);
 
   return <>{children}</>;
 }

@@ -1,32 +1,9 @@
-"use client";
-
-import { useEffect, useRef, useState } from "react";
-import { track } from "@/lib/analytics/posthog";
 import type { LandingCopy } from "@/lib/i18n/landing";
+import { Reveal } from "./Reveal";
+import { TrackOnView } from "./TrackOnView";
 
 interface Props {
   copy: LandingCopy["meetSpark"];
-}
-
-function useReveal(threshold = 0.18) {
-  const ref = useRef<HTMLElement | null>(null);
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setVisible(true);
-          obs.disconnect();
-        }
-      },
-      { threshold },
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, [threshold]);
-  return [ref, visible] as const;
 }
 
 /**
@@ -37,7 +14,6 @@ function useReveal(threshold = 0.18) {
  * Tutto il resto è plain text in text-secondary.
  */
 function renderSparkParagraph(text: string): React.ReactNode {
-  // Matcho prima i bold, poi dentro ogni segmento "non bold" matcho le quote.
   const boldParts = text.split(/(\*\*[^*]+\*\*)/g);
   return boldParts.flatMap((part, i) => {
     if (part.startsWith("**") && part.endsWith("**")) {
@@ -47,7 +23,6 @@ function renderSparkParagraph(text: string): React.ReactNode {
         </strong>
       );
     }
-    // Cerco quote in italiano «...»
     const quoteParts = part.split(/(«[^»]+»)/g);
     return quoteParts.map((qp, j) => {
       if (qp.startsWith("«") && qp.endsWith("»")) {
@@ -72,59 +47,23 @@ function renderSparkParagraph(text: string): React.ReactNode {
 }
 
 export function MeetSparkSection({ copy }: Props) {
-  const sectionRef = useRef<HTMLElement | null>(null);
-  const viewedRef = useRef(false);
-  const [contentRef, contentVisible] = useReveal(0.15);
-
-  useEffect(() => {
-    const node = sectionRef.current;
-    if (!node || viewedRef.current) return;
-    const obs = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting && !viewedRef.current) {
-            viewedRef.current = true;
-            track({ name: "landing_meet_spark_viewed" });
-            obs.disconnect();
-          }
-        }
-      },
-      { threshold: 0.35 },
-    );
-    obs.observe(node);
-    return () => obs.disconnect();
-  }, []);
-
   return (
     <section
-      ref={sectionRef}
       id="meet-spark"
       aria-labelledby="meet-spark-name"
       className="overflow-hidden border-y border-border py-16 sm:py-20 lg:py-24"
     >
+      <TrackOnView event="landing_meet_spark_viewed" threshold={0.35} />
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <div
-          ref={contentRef as React.RefObject<HTMLDivElement>}
-          className="grid grid-cols-1 items-center gap-8 lg:grid-cols-[minmax(260px,360px)_1fr] lg:gap-16"
-        >
-          {/* Portrait — placeholder mascotte. La caption "illustrazione da
-              commissionare" (copy.portraitCaption) NON viene renderizzata:
-              è una nota interna, non testo per gli utenti. Tornerà se serve
-              quando arriva l'illustrazione vera. */}
-          <div
-            className={`scroll-reveal meet-spark-portrait ${contentVisible ? "in-view" : ""}`}
-            aria-hidden="true"
-          >
-            <div className="meet-spark-body">
+        <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-[minmax(260px,360px)_1fr] lg:gap-16">
+          {/* Portrait — placeholder mascotte, decorativo. */}
+          <Reveal className="meet-spark-portrait" threshold={0.15}>
+            <div aria-hidden="true" className="meet-spark-body">
               <div className="meet-spark-highlight" />
             </div>
-          </div>
+          </Reveal>
 
-          {/* Body */}
-          <div
-            className={`scroll-reveal max-w-xl ${contentVisible ? "in-view" : ""}`}
-            style={{ transitionDelay: contentVisible ? "150ms" : "0ms" }}
-          >
+          <Reveal className="max-w-xl" threshold={0.15} delayMs={150}>
             <p className="font-mono text-xs font-medium uppercase tracking-[0.06em] text-text-muted">
               {copy.kicker}
             </p>
@@ -163,7 +102,7 @@ export function MeetSparkSection({ copy }: Props) {
                 </span>
               ))}
             </div>
-          </div>
+          </Reveal>
         </div>
       </div>
     </section>
