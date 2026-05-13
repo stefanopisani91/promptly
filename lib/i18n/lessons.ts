@@ -367,6 +367,10 @@ export interface LessonsCopy {
       // widgetKey -> up to 4 quick-question chips. Stable per widget —
       // must not change between clicks (a moving target confuses users).
       suggestions: Record<string, readonly string[]>;
+      // Inline link that appears under the latest reply once the chips
+      // collapse (after the first send) — lets the user pull them back.
+      showSuggestionsLabel: string;
+      hideSuggestionsLabel: string;
     };
     // Lesson-specific copy injected at server-render time. Lives here
     // because it's translated alongside the rest of the lesson UI; the
@@ -967,6 +971,8 @@ const it: LessonsCopy = {
         "Ne abbiamo già parlato parecchio. Prova a buttarti — ce la fai.",
       quotaDailyHit: "Per oggi basta domande a me. Torna domani.",
       unavailable: "Questo aiuto non è ancora disponibile. Riprova più tardi.",
+      showSuggestionsLabel: "Mostra suggerimenti",
+      hideSuggestionsLabel: "Nascondi suggerimenti",
       suggestions: {
         lucia_prompt_loop: [
           "Cos'è il prompt loop?",
@@ -1510,6 +1516,8 @@ const en: LessonsCopy = {
         "We've talked plenty already. Give it a shot — you've got this.",
       quotaDailyHit: "Enough questions for me today. Come back tomorrow.",
       unavailable: "This help isn't available yet. Try again later.",
+      showSuggestionsLabel: "Show suggestions",
+      hideSuggestionsLabel: "Hide suggestions",
       suggestions: {
         lucia_prompt_loop: [
           "What is the prompt loop?",

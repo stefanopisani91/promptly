@@ -35,6 +35,10 @@ export interface SparkHelperStrings {
   unavailable: string;
   // widgetKey -> up to 4 stable quick-question chips.
   suggestions: Record<string, readonly string[]>;
+  // Inline link that appears under the latest reply once the chips
+  // collapse (after the first send) — lets the user pull them back.
+  showSuggestionsLabel: string;
+  hideSuggestionsLabel: string;
 }
 
 export interface SparkChatStrings {
@@ -144,6 +148,27 @@ export function SparkChat({
       return [];
     }
   });
+  // User's explicit override on the chip visibility. Helper-mode only:
+  //   null  → derive from messages.length (collapsed iff there's history)
+  //   "show" → user pulled the chips back via the inline link
+  //   "hide" → user explicitly hid them again after expanding
+  // Persisted per-widget so re-opening the panel preserves the choice; a
+  // new lesson / widget key gets a fresh `null` because the storage key
+  // includes widgetKey.
+  const suggestionsPrefStorageKey = helper
+    ? `${historyStorageKey}:suggestions`
+    : null;
+  const [userSuggestionPref, setUserSuggestionPref] = useState<
+    "show" | "hide" | null
+  >(() => {
+    if (typeof window === "undefined" || !suggestionsPrefStorageKey) return null;
+    try {
+      const v = window.sessionStorage.getItem(suggestionsPrefStorageKey);
+      return v === "show" || v === "hide" ? v : null;
+    } catch {
+      return null;
+    }
+  });
   // Seed the textarea with `initialDraft` when present (e.g. Glossario
   // Vivo's "approfondisci" CTA). The seed runs once at mount; subsequent
   // changes to the prop don't replace what the user has typed.
@@ -230,6 +255,24 @@ export function SparkChat({
       /* sessionStorage may be disabled (private mode) — silent skip */
     }
   }, [messages, historyStorageKey]);
+
+  // Persist the chip-visibility override per widget so re-opening the
+  // panel within the same quick-win keeps the user's choice.
+  useEffect(() => {
+    if (typeof window === "undefined" || !suggestionsPrefStorageKey) return;
+    try {
+      if (userSuggestionPref === null) {
+        window.sessionStorage.removeItem(suggestionsPrefStorageKey);
+      } else {
+        window.sessionStorage.setItem(
+          suggestionsPrefStorageKey,
+          userSuggestionPref,
+        );
+      }
+    } catch {
+      /* private mode — silent skip */
+    }
+  }, [userSuggestionPref, suggestionsPrefStorageKey]);
 
   // Source of `text`: the textarea (send()) or a tapped chip (helper mode).
   async function sendText(
@@ -373,6 +416,15 @@ export function SparkChat({
   const chips = helper
     ? helper.strings.suggestions[helper.widgetKey] ?? []
     : [];
+  // Chip visibility resolves as: explicit user override wins; otherwise
+  // collapse as soon as there's any transcript (i.e. after the first chip
+  // tap or first send). Free-chat panels never collapse — chips are a
+  // helper-only affordance.
+  const chipsCollapsed =
+    helper && chips.length > 0
+      ? userSuggestionPref === "hide" ||
+        (userSuggestionPref === null && messages.length > 0)
+      : false;
 
   return (
     <div
@@ -568,21 +620,44 @@ export function SparkChat({
           <div className="flex shrink-0 flex-col gap-2 border-t border-border bg-surface px-4 py-3 sm:px-5" style={{ borderRadius: "0 0 28px 28px" }}>
             {/* Helper mode: the quick-question chips. Stable per widget,
                 always reachable (not just in the empty state) — tapping one
-                sends it like a typed message. */}
+                sends it like a typed message. Collapsed after the first
+                tap/send so the textarea + send button stay visible on
+                small screens; a discreet inline link pulls them back. */}
             {helper && chips.length > 0 && (
-              <div className="flex flex-wrap gap-1.5">
-                {chips.map((chip, i) => (
-                  <button
-                    key={chip}
-                    type="button"
-                    disabled={sending}
-                    onClick={() => void sendText(chip, { fromChip: true, chipIndex: i })}
-                    className="rounded-full border border-border bg-surface-muted/60 px-2.5 py-1 text-xs text-text-secondary transition-colors hover:bg-surface-muted disabled:opacity-50 disabled:hover:bg-surface-muted/60"
-                  >
-                    {chip}
-                  </button>
-                ))}
-              </div>
+              chipsCollapsed ? (
+                <button
+                  type="button"
+                  onClick={() => setUserSuggestionPref("show")}
+                  className="self-start px-0 py-1 text-sm text-stone-500 transition-colors hover:text-stone-700"
+                >
+                  + {helper.strings.showSuggestionsLabel}
+                </button>
+              ) : (
+                <div className="flex flex-col gap-1.5">
+                  <div className="flex flex-wrap gap-1.5">
+                    {chips.map((chip, i) => (
+                      <button
+                        key={chip}
+                        type="button"
+                        disabled={sending}
+                        onClick={() => void sendText(chip, { fromChip: true, chipIndex: i })}
+                        className="rounded-full border border-border bg-surface-muted/60 px-2.5 py-1 text-xs text-text-secondary transition-colors hover:bg-surface-muted disabled:opacity-50 disabled:hover:bg-surface-muted/60"
+                      >
+                        {chip}
+                      </button>
+                    ))}
+                  </div>
+                  {messages.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => setUserSuggestionPref("hide")}
+                      className="self-start px-0 py-1 text-sm text-stone-500 transition-colors hover:text-stone-700"
+                    >
+                      − {helper.strings.hideSuggestionsLabel}
+                    </button>
+                  )}
+                </div>
+              )
             )}
             <textarea
               ref={inputRef}
