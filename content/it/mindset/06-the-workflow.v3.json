@@ -255,7 +255,7 @@
       "type": "interactive",
       "spark_state": "listening",
       "widget": "prompt_architecture",
-      "intro": "Pronto? Trascina i 4 pilastri nello spazio sopra. Ricorda quello che ti ho appena insegnato — l'ordine giusto è quello controintuitivo. Quando ci arrivi, vedrai succedere una cosa.",
+      "intro": "Pronto? Tocca i 4 pilastri qui sotto e mettili in ordine nello spazio sopra. Ricorda quello che ti ho appena insegnato — l'ordine giusto è quello controintuitivo. Quando ci arrivi, vedrai succedere una cosa.",
       "max_attempts": 5,
       "prompt_architecture_config": {
         "canvas_title": "L'Architettura",

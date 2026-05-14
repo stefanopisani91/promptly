@@ -113,7 +113,7 @@ const HELPER_PHASES: Record<SparkHelperWidgetKey, ReadonlySet<string>> = {
     "recovery_question",
     "between_attempts",
   ]),
-  prompt_architecture: new Set(["placing_pillars", "after_generation"]),
+  prompt_architecture: new Set(["ordering_pillars", "after_evaluation"]),
 };
 
 export function isSparkHelperPhase(

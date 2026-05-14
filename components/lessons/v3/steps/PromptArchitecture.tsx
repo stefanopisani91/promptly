@@ -2,32 +2,43 @@
 
 // PROMPT_ARCHITECTURE — interactive widget for Lesson 6 (HERO ASSET).
 //
-// Drag-and-drop of 4 named pillars (CONTEXT / CONSTRAINTS / TASK /
-// VERIFICATION) into a vertical canvas. The correct order is hard-
-// coded as CORRECT_ORDER below — counter-intuitive: constraints come
-// BEFORE the task. On a perfect drop the pillars dissolve into a
-// personalised daily prompt the user can copy or download as .md.
+// Tap-to-add ordering puzzle. Four named pillars (CONTEXT /
+// CONSTRAINTS / TASK / VERIFICATION) must be placed into a vertical
+// column of 4 numbered slots, in the correct sequence. The correct
+// order is hard-coded as CORRECT_ORDER below — counter-intuitive:
+// constraints come BEFORE the task. On a perfect submit the pillars
+// dissolve into a personalised daily prompt the user can copy or
+// download as .md.
+//
+// Mobile-first: the widget used to be a horizontal drag-and-drop,
+// which broke on narrow viewports (cards clipping, slots squashed).
+// Re-built as tap-to-add (2025-05-14) using the BlockPicker pattern,
+// adapted to an ORDERING exercise (no distractors — all 4 pillars
+// are always used; the challenge is the sequence).
 //
 // Hero asset for the landing page: every gradient, shadow, and
 // micro-animation is intentional. Treat as a finished component.
 //
 // Flow (Lezione6_Blueprint §13):
-//   1. Bottom tray shows 4 pillars in default order. Canvas is empty.
-//   2. User drags pillars into the canvas; each drop snaps to the
-//      next available slot (top-down).
-//   3. Once all 4 are placed, we evaluate the order:
+//   1. 4 slots stacked vertically (positions 1-4). Empty on first
+//      paint with the position number visible.
+//   2. 4 pillars in a 2×2 grid below. Tapping a pillar appends it to
+//      the FIRST empty slot top-down. The tapped pillar stays in the
+//      grid at 30% opacity, disabled (no reflow).
+//   3. Tapping the × on a placed pillar empties that slot (leaves
+//      the hole — slot 2 stays slot 2). The pillar re-enables in the
+//      grid. Next tap fills the first empty slot top-down.
+//   4. When all 4 are placed, "Invia a Spark" enables. On submit:
 //      - perfect → fade pillars, typewriter the personalised prompt
-//      - partial (2/4 right) → highlight wrong ones in red, pulse
-//      - wrong (0-1 right) → blanket pulse, hint
-//   4. After 3 attempts we auto-reveal the correct order and run the
-//      transformation regardless.
-//   5. The generated prompt is fetched from /api/lesson-architecture-
+//      - partial (2/4 right) → highlight wrong ones in red, pulse,
+//        then send misplaced pillars back to the grid after 1.6s
+//      - wrong (0-1 right) → blanket pulse, reset all after 1.6s
+//   5. After max_attempts attempts we auto-reveal the correct order
+//      and run the transformation regardless (small consolation XP).
+//   6. The generated prompt is fetched from /api/lesson-architecture-
 //      prompt — Haiku takes the user's project_description and
 //      returns project-specific CONTEXT / CONSTRAINTS / VERIFICATION
 //      blocks. Falls back to a generic skeleton on API failure.
-//
-// Touch on iPhone is handled by @dnd-kit's PointerSensor + small
-// activation distance so a casual scroll doesn't initiate a drag.
 
 import {
   useCallback,
@@ -36,19 +47,7 @@ import {
   useRef,
   useState,
 } from "react";
-import {
-  DndContext,
-  DragOverlay,
-  PointerSensor,
-  TouchSensor,
-  closestCenter,
-  useSensor,
-  useSensors,
-  useDraggable,
-  useDroppable,
-  type DragEndEvent,
-  type DragStartEvent,
-} from "@dnd-kit/core";
+import { Send, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import type {
   InteractiveStep as InteractiveStepType,
@@ -88,6 +87,18 @@ export interface PromptArchitectureStrings {
   };
   taskPlaceholder: string;
   fallbackBlocks: GeneratedPromptBlocks;
+  // CTA on the new manual submit button (replaces the previous
+  // auto-evaluate). Disabled until all 4 slots are filled.
+  submitCta: string;
+  // Subtle helper line under the disabled submit button when not all
+  // 4 pillars have been placed yet. Tells the user why the button is
+  // locked.
+  submitDisabledHint: string;
+  // Aria + visible label for the position chip in an empty slot.
+  // Includes a `{n}` placeholder for the 1-based position.
+  slotEmptyLabelTemplate: string;
+  // Aria-label on the × button that empties a filled slot.
+  removePlacedLabel: string;
   copyCta: string;
   copiedToast: string;
   downloadCta: string;
@@ -160,7 +171,7 @@ const PILLAR_PALETTE: Record<
     symbolGradient: string;
     // Per-symbol optical scale. The triangle and diamond carry more
     // visual mass than the bullet/square at the same font-size, so we
-    // shrink them slightly to keep the row visually balanced.
+    // shrink them slightly to keep visually balanced.
     symbolScale: number;
   }
 > = {
@@ -230,7 +241,7 @@ export function PromptArchitecture({
 
   // ─── State ─────────────────────────────────────────────────────────
 
-  // Order placed in the canvas (top → bottom). null entries are empty
+  // Order placed in the column (top → bottom). null entries are empty
   // slots. Length always 4. Hydrates from persisted finalOrder so a
   // returning user sees their last result.
   const [placement, setPlacement] = useState<
@@ -240,28 +251,25 @@ export function PromptArchitecture({
       return [...state.finalOrder];
     return [null, null, null, null];
   });
-  // Display order in the bottom tray. We START with the canonical
-  // (non-randomised) order so SSR + client hydrate the same DOM —
-  // calling Math.random() during render would mismatch and trigger
-  // React's hydration error. We then shuffle once on mount (effect
-  // below), and again on every wrong/partial reset.
-  const [trayOrder, setTrayOrder] = useState<PromptArchitecturePillarKey[]>(
+
+  // Display order of the 2×2 grid. We START with the canonical (non-
+  // randomised) order so SSR + client hydrate the same DOM — calling
+  // Math.random() during render would mismatch and trigger React's
+  // hydration error. We then shuffle once on mount (effect below),
+  // and again on every wrong/partial reset.
+  const [gridOrder, setGridOrder] = useState<PromptArchitecturePillarKey[]>(
     () => config.pillars.map((p) => p.key),
   );
-
-  // Shuffle the tray ONCE on first client paint so the user doesn't
-  // see the canonical order. Wrapped in useEffect so it never runs on
-  // the server — the brief "flash" of canonical order is ~one frame
-  // and imperceptible in practice.
   useEffect(() => {
-    setTrayOrder(shuffleKeys(config.pillars.map((p) => p.key)));
-    // Intentionally empty deps — we only shuffle on mount. Subsequent
-    // shuffles are driven by the feedback-reset effect.
+    setGridOrder(shuffleKeys(config.pillars.map((p) => p.key)));
+    // Intentionally empty deps — shuffle only on mount. Subsequent
+    // shuffles are driven by the feedback-reset effect below.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   const [attemptCount, setAttemptCount] = useState(persisted?.attempts ?? 0);
   const [evaluating, setEvaluating] = useState(false);
-  const [revealed, setRevealed] = useState(false); // auto-reveal after 3 fails
+  const [revealed, setRevealed] = useState(false); // auto-reveal after max_attempts
   const [error, setError] = useState<string | null>(null);
   const [copyToastVisible, setCopyToastVisible] = useState(false);
   const [generatedBlocks, setGeneratedBlocks] =
@@ -273,12 +281,6 @@ export function PromptArchitecture({
     | { kind: "wrong" }
     | null
   >(persisted?.victory ? { kind: "perfect" } : null);
-  // Which pillar (if any) is currently being dragged. Set by
-  // DndContext's onDragStart so the empty slot under the cursor can
-  // glow in the dragged pillar's colour, and the staggered "invite"
-  // pulse on the other empty slots is suspended.
-  const [activeDragKey, setActiveDragKey] =
-    useState<PromptArchitecturePillarKey | null>(null);
   const submitInFlightRef = useRef(false);
 
   const exhausted = attemptCount >= step.max_attempts;
@@ -303,18 +305,11 @@ export function PromptArchitecture({
     // `feedback` to null after 1.6s, at which point we revert to the
     // baseline `awaitingPrompt` line.
     if (feedback?.kind === "wrong" || feedback?.kind === "partial") {
-      const idx = Math.min(
-        Math.max(0, attemptCount - 1),
-        feedback.kind === "wrong"
-          ? strings.wrongFeedbacks.length - 1
-          : strings.partialFeedbacks.length - 1,
-      );
       const arr =
         feedback.kind === "wrong"
           ? strings.wrongFeedbacks
           : strings.partialFeedbacks;
-      // Fallback to awaitingPrompt if the array is empty for any reason
-      // (defensive — content authoring should always provide entries).
+      const idx = Math.min(Math.max(0, attemptCount - 1), arr.length - 1);
       return arr[idx] ?? strings.awaitingPrompt;
     }
     return strings.awaitingPrompt;
@@ -328,39 +323,7 @@ export function PromptArchitecture({
     preferredToolDisplay,
   ]);
 
-  // ─── DnD setup ─────────────────────────────────────────────────────
-
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      // Small activation distance prevents tap-mistake drags.
-      activationConstraint: { distance: 6 },
-    }),
-    useSensor(TouchSensor, {
-      activationConstraint: { delay: 120, tolerance: 6 },
-    }),
-  );
-
-  // Pillars currently in the bottom tray. Display order follows the
-  // shuffled `trayOrder`; a key currently placed on the canvas is
-  // skipped. This guarantees the tray re-randomises between attempts
-  // (re-shuffled in the partial/wrong reset effect below) so the user
-  // can't just memorise visual positions.
-  const trayPillars = useMemo(() => {
-    const placed = new Set<PromptArchitecturePillarKey>();
-    placement.forEach((p) => {
-      if (p !== null) placed.add(p);
-    });
-    const lookup = new Map<PromptArchitecturePillarKey, PromptArchitecturePillar>(
-      config.pillars.map((p) => [p.key, p]),
-    );
-    const out: PromptArchitecturePillar[] = [];
-    for (const k of trayOrder) {
-      if (placed.has(k)) continue;
-      const pillar = lookup.get(k);
-      if (pillar) out.push(pillar);
-    }
-    return out;
-  }, [config.pillars, placement, trayOrder]);
+  // ─── Pillar lookup ─────────────────────────────────────────────────
 
   const pillarByKey = useMemo(() => {
     const m = new Map<PromptArchitecturePillarKey, PromptArchitecturePillar>();
@@ -368,120 +331,45 @@ export function PromptArchitecture({
     return m;
   }, [config.pillars]);
 
-  // Track the dragged pillar so the closest empty slot can glow in
-  // its palette colour. We resolve the key from the draggable id
-  // shape ("tray-<key>" / "canvas-<index>") — for canvas drags we
-  // look up the placement to find the underlying key.
-  const handleDragStart = useCallback(
-    (event: DragStartEvent) => {
-      const id = String(event.active.id);
-      if (id.startsWith("tray-")) {
-        setActiveDragKey(
-          id.slice("tray-".length) as PromptArchitecturePillarKey,
-        );
-        return;
-      }
-      if (id.startsWith("canvas-")) {
-        const idx = Number(id.slice("canvas-".length));
-        if (Number.isFinite(idx)) {
-          const key = placement[idx];
-          if (key) setActiveDragKey(key);
-        }
-      }
+  const placedSet = useMemo(() => {
+    const s = new Set<PromptArchitecturePillarKey>();
+    for (const k of placement) if (k !== null) s.add(k);
+    return s;
+  }, [placement]);
+
+  // ─── Tap handlers ──────────────────────────────────────────────────
+
+  const disabled = evaluating || won || exhausted || revealed;
+
+  const handleTapAvailable = useCallback(
+    (key: PromptArchitecturePillarKey) => {
+      if (disabled) return;
+      if (placedSet.has(key)) return; // already placed — no-op
+      setPlacement((prev) => {
+        const firstEmpty = prev.findIndex((p) => p === null);
+        if (firstEmpty < 0) return prev;
+        const next = [...prev];
+        next[firstEmpty] = key;
+        return next;
+      });
     },
-    [placement],
+    [disabled, placedSet],
   );
 
-  const handleDragCancel = useCallback(() => {
-    setActiveDragKey(null);
-  }, []);
-
-  const handleDragEnd = useCallback(
-    (event: DragEndEvent) => {
-      // Always release the active-drag tracker, even on rejected
-      // drops, so the pulse animation can resume.
-      setActiveDragKey(null);
-      if (won || exhausted || revealed) return;
-      const { active, over } = event;
-      if (!over) return;
-
-      const activeId = String(active.id);
-      // active id format: tray-<key> or canvas-<index>
-      // over id format:   slot-<index> or tray
-      const overId = String(over.id);
-
-      // Helper: given a key and a target slot index, place it (and
-      // displace the previous occupant back to the tray).
-      const placeAt = (key: PromptArchitecturePillarKey, index: number) => {
-        setPlacement((prev) => {
-          // Remove the key from its previous canvas slot if any.
-          const next: Array<PromptArchitecturePillarKey | null> = prev.map((p) =>
-            p === key ? null : p,
-          );
-          next[index] = key;
-          return next;
-        });
-      };
-
-      // ── 1. Drag from tray to a slot
-      if (activeId.startsWith("tray-") && overId.startsWith("slot-")) {
-        const key = activeId.slice("tray-".length) as PromptArchitecturePillarKey;
-        const slotIndex = Number(overId.slice("slot-".length));
-        if (
-          Number.isFinite(slotIndex) &&
-          slotIndex >= 0 &&
-          slotIndex < placement.length
-        ) {
-          placeAt(key, slotIndex);
-        }
-        return;
-      }
-
-      // ── 2. Drag from tray to canvas drop zone (no specific slot)
-      if (activeId.startsWith("tray-") && overId === "canvas") {
-        const key = activeId.slice("tray-".length) as PromptArchitecturePillarKey;
-        // Place into the first empty slot.
-        const emptyIdx = placement.findIndex((p) => p === null);
-        if (emptyIdx >= 0) placeAt(key, emptyIdx);
-        return;
-      }
-
-      // ── 3. Reorder within the canvas
-      if (activeId.startsWith("canvas-") && overId.startsWith("slot-")) {
-        const fromIdx = Number(activeId.slice("canvas-".length));
-        const toIdx = Number(overId.slice("slot-".length));
-        if (
-          fromIdx === toIdx ||
-          !Number.isFinite(fromIdx) ||
-          !Number.isFinite(toIdx)
-        )
-          return;
-        setPlacement((prev) => {
-          const next = [...prev];
-          const movingKey = next[fromIdx];
-          // Swap with whatever is at the target index (could be null
-          // or another pillar — both behaviours feel natural).
-          next[fromIdx] = next[toIdx];
-          next[toIdx] = movingKey;
-          return next;
-        });
-        return;
-      }
-
-      // ── 4. Drag from canvas BACK to tray (remove)
-      if (activeId.startsWith("canvas-") && overId === "tray") {
-        const fromIdx = Number(activeId.slice("canvas-".length));
-        if (Number.isFinite(fromIdx)) {
-          setPlacement((prev) => {
-            const next = [...prev];
-            next[fromIdx] = null;
-            return next;
-          });
-        }
-        return;
-      }
+  const handleRemovePlaced = useCallback(
+    (slotIndex: number) => {
+      if (disabled) return;
+      // Leaves the hole — slot 2 stays slot 2. The user must tap
+      // another pillar to refill it. Predictable + matches the
+      // sequence semantics (each slot is positional).
+      setPlacement((prev) => {
+        if (prev[slotIndex] === null) return prev;
+        const next = [...prev];
+        next[slotIndex] = null;
+        return next;
+      });
     },
-    [placement, won, exhausted, revealed],
+    [disabled],
   );
 
   // ─── Server call to generate the personalised prompt ──────────────
@@ -562,7 +450,7 @@ export function PromptArchitecture({
         setFeedback({ kind: "wrong" });
       }
 
-      // If this attempt was the third — auto-reveal.
+      // If this attempt was the last — auto-reveal.
       if (newAttempt >= step.max_attempts) {
         setRevealed(true);
         setPlacement([...CORRECT_ORDER]);
@@ -590,56 +478,24 @@ export function PromptArchitecture({
     fetchGeneratedBlocks,
   ]);
 
-  // Auto-evaluate 500ms after all 4 pillars are in place (matches
-  // blueprint UX). Skipped if already won/revealed/exhausted.
-  //
-  // Critical: the `feedback === null` gate prevents the effect from
-  // re-firing after a wrong/partial attempt. Without it, every state
-  // change inside `evaluate` (setAttemptCount, setFeedback) re-creates
-  // the `evaluate` callback (it lists attemptCount in deps), which
-  // re-runs this effect — and as long as the placement is still full
-  // (1.6s reset window), allPlaced/won/exhausted/revealed/evaluating
-  // all stay false and the effect schedules ANOTHER evaluate. Two
-  // re-fires later, attemptCount hits max_attempts and the widget
-  // auto-reveals after a single user placement. Bug observed
-  // 10 May 2026.
-  useEffect(() => {
-    if (
-      !allPlaced ||
-      won ||
-      exhausted ||
-      revealed ||
-      evaluating ||
-      feedback !== null
-    )
-      return;
-    const t = window.setTimeout(() => {
-      evaluate();
-    }, 500);
-    return () => window.clearTimeout(t);
-  }, [allPlaced, won, exhausted, revealed, evaluating, feedback, evaluate]);
-
   // ─── Reset placement after a wrong / partial attempt ──────────────
 
   // After 1.6s of feedback we send the misplaced pillars back to the
-  // tray so the user can try again. Correct positions stay locked.
-  // Tray order is re-shuffled at the same time so the user gets a
+  // grid so the user can try again. Correct positions stay locked.
+  // Grid order is re-shuffled at the same time so the user gets a
   // fresh random arrangement and doesn't lean on muscle memory.
   useEffect(() => {
-    if (!feedback || feedback.kind === "perfect") {
-      // No reset to schedule.
-      // (Wrong attempt with `attemptCount === step.max_attempts` was
-      // already auto-revealed in evaluate; no reset there either.)
-      return;
-    }
+    if (!feedback || feedback.kind === "perfect") return;
     if (revealed || exhausted) return;
     const t = window.setTimeout(() => {
       const correctIdx =
-        feedback.kind === "partial" ? feedback.correctIndices : new Set<number>();
+        feedback.kind === "partial"
+          ? feedback.correctIndices
+          : new Set<number>();
       setPlacement((prev) =>
         prev.map((p, i) => (correctIdx.has(i) ? p : null)),
       );
-      setTrayOrder(shuffleKeys(config.pillars.map((p) => p.key)));
+      setGridOrder(shuffleKeys(config.pillars.map((p) => p.key)));
       setFeedback(null);
     }, 1600);
     return () => window.clearTimeout(t);
@@ -676,14 +532,16 @@ export function PromptArchitecture({
   }
 
   const showFinalCta = won || exhausted || revealed;
+  // Only the manual submit reaches the "send" state — it's the user's
+  // explicit moment of commitment. Disabled until all 4 are placed.
+  const submitDisabled = disabled || !allPlaced;
 
   // ─── Render ────────────────────────────────────────────────────────
 
-  // `medium` (max-w-4xl) instead of `wide` (max-w-5xl): the canvas
-  // row is ~600px and the orange container + StepCard padding push
-  // the natural content to ~780px. max-w-5xl on desktop left ~230px
-  // of empty side-padding per side; max-w-4xl tightens it without
-  // squashing the prompt overlay shown after victory.
+  // `medium` (max-w-4xl) — the layout is intentionally a single
+  // narrow column even on desktop so the slots-then-grid reading
+  // order stays clear. `wide` (max-w-5xl) left the content floating
+  // in too much side space without improving readability.
   return (
     <StepCard medium>
       <div className="flex flex-col gap-6">
@@ -693,89 +551,70 @@ export function PromptArchitecture({
           </p>
         )}
 
-        <DndContext
-          // Stable id avoids the SSR/CSR hydration mismatch on dnd-kit's
-          // internal `DndDescribedBy-N` aria-describedby IDs. Without it,
-          // dnd-kit increments a module-level counter (server resets to 0
-          // per request, client persists across navigations), producing
-          // a hydration warning and — in some cases — a brief window
-          // where pointer listeners attach late.
-          id="prompt-architecture-dnd"
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragStart={handleDragStart}
-          onDragEnd={handleDragEnd}
-          onDragCancel={handleDragCancel}
-        >
-          <div className="flex flex-col gap-5 rounded-3xl border-2 border-orange-200/70 bg-stone-50 p-5 sm:p-8">
-            {/* Museum-quality headline (Bonus). Serif 2xl headline +
-                italic stone-500 sub. The previous mono eyebrow with
-                ✦ characters has been retired — the hierarchy reads
-                cleaner without the decorations. */}
-            <div className="flex flex-col items-center gap-2 pb-2 pt-1 text-center">
-              <h2 className="prompt-arch-title-serif text-2xl uppercase text-stone-700 sm:text-3xl">
-                {config.canvas_title}
-              </h2>
-              <p className="text-sm italic text-stone-500 sm:text-base">
-                {config.canvas_subtitle}
-              </p>
-            </div>
-
-            {/* Canvas */}
-            <Canvas
-              placement={placement}
-              pillarByKey={pillarByKey}
-              feedback={feedback}
-              emptyHint={config.empty_hint}
-              showGeneratedPrompt={Boolean(won && generatedBlocks)}
-              activeDragKey={activeDragKey}
-            />
-
-            {/* Generated prompt overlay (rendered when won) */}
-            <AnimatePresence>
-              {won && generatedBlocks && (
-                <GeneratedPrompt
-                  blocks={generatedBlocks}
-                  strings={strings}
-                  filenameSlug={filenameSlug}
-                  copyToastVisible={copyToastVisible}
-                  setCopyToastVisible={setCopyToastVisible}
-                />
-              )}
-            </AnimatePresence>
-
-            {/* Tray */}
-            {!won && !exhausted && !revealed && (
-              <PillarTray
-                pillars={trayPillars}
-                label={config.pillars_tray_label}
-              />
-            )}
-
-            <p className="text-right font-mono text-[11px] tabular-nums text-text-muted">
-              {counter}
+        <div className="flex flex-col gap-5 rounded-3xl border-2 border-orange-200/70 bg-stone-50 p-4 sm:p-6">
+          {/* Museum-quality headline. Serif 2xl + italic stone-500
+              sub. Preserved from the drag-and-drop predecessor. */}
+          <div className="flex flex-col items-center gap-2 pb-1 pt-1 text-center">
+            <h2 className="prompt-arch-title-serif text-2xl uppercase text-stone-700 sm:text-3xl">
+              {config.canvas_title}
+            </h2>
+            <p className="text-sm italic text-stone-500 sm:text-base">
+              {config.canvas_subtitle}
             </p>
           </div>
 
-          {/* DragOverlay — the floating clone that follows the pointer.
-              The original draggable stays in place (rendered with low
-              opacity as a ghost) so the tray/canvas layout doesn't
-              reflow as the flexbox redistributes space. Without this,
-              on narrow viewports the remaining 3 pillars compress
-              visibly while one is mid-drag. */}
-          <DragOverlay dropAnimation={null}>
-            {activeDragKey
-              ? (() => {
-                  const pillar = pillarByKey.get(activeDragKey);
-                  return pillar ? (
-                    <PillarCard pillar={pillar} feedback={null} isOverlay />
-                  ) : null;
-                })()
-              : null}
-          </DragOverlay>
-        </DndContext>
+          {/* SLOTS COLUMN — always 4, numbered. Filled slots animate
+              in via Framer Motion; empty slots show the position
+              number prominently so the user reads the column as a
+              numbered sequence (the whole point of the exercise). */}
+          {!won && !revealed && (
+            <SlotsColumn
+              placement={placement}
+              pillarByKey={pillarByKey}
+              feedback={feedback}
+              disabled={disabled}
+              strings={strings}
+              onRemove={handleRemovePlaced}
+            />
+          )}
 
-        {/* Spark dialogue */}
+          {/* GENERATED PROMPT — slides in after a perfect submit (or
+              after an auto-reveal). Replaces the slots column. */}
+          <AnimatePresence>
+            {won && generatedBlocks && (
+              <GeneratedPrompt
+                blocks={generatedBlocks}
+                strings={strings}
+                filenameSlug={filenameSlug}
+                copyToastVisible={copyToastVisible}
+                setCopyToastVisible={setCopyToastVisible}
+              />
+            )}
+          </AnimatePresence>
+
+          {/* PILLARS 2×2 — placed pillars stay rendered at 30%
+              opacity disabled (instead of being filtered out) so the
+              grid never reflows and the user reads it as a tally of
+              "still to place / already placed". */}
+          {!won && !revealed && (
+            <PillarsGrid
+              pillars={gridOrder
+                .map((k) => pillarByKey.get(k))
+                .filter((p): p is PromptArchitecturePillar => Boolean(p))}
+              placedSet={placedSet}
+              disabled={disabled}
+              feedback={feedback}
+              label={config.pillars_tray_label}
+              onTap={handleTapAvailable}
+            />
+          )}
+
+          <p className="text-right font-mono text-[11px] tabular-nums text-text-muted">
+            {counter}
+          </p>
+        </div>
+
+        {/* Spark dialogue + submit/finalize CTA */}
         <div className="flex flex-col gap-3 rounded-2xl border border-border bg-surface p-4 sm:p-5">
           <div className="flex items-start gap-3">
             <Spark
@@ -791,6 +630,25 @@ export function PromptArchitecture({
               </p>
             </div>
           </div>
+
+          {!won && !revealed && (
+            <div className="flex flex-col gap-2">
+              <button
+                type="button"
+                onClick={evaluate}
+                disabled={submitDisabled}
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-4 py-2.5 text-sm font-semibold text-white transition-all hover:bg-primary-hover active:scale-[0.97] disabled:opacity-50 disabled:active:scale-100"
+              >
+                {strings.submitCta}
+                {!evaluating && <Send size={14} aria-hidden="true" />}
+              </button>
+              {!allPlaced && !disabled && (
+                <p className="text-[11px] italic leading-relaxed text-text-muted">
+                  {strings.submitDisabledHint}
+                </p>
+              )}
+            </div>
+          )}
 
           {error && (
             <div
@@ -821,13 +679,13 @@ export function PromptArchitecture({
 
 // ─── Sub-components ───────────────────────────────────────────────────
 
-function Canvas({
+function SlotsColumn({
   placement,
   pillarByKey,
   feedback,
-  emptyHint,
-  showGeneratedPrompt,
-  activeDragKey,
+  disabled,
+  strings,
+  onRemove,
 }: {
   placement: Array<PromptArchitecturePillarKey | null>;
   pillarByKey: Map<PromptArchitecturePillarKey, PromptArchitecturePillar>;
@@ -836,75 +694,36 @@ function Canvas({
     | { kind: "partial"; correctIndices: Set<number> }
     | { kind: "wrong" }
     | null;
-  emptyHint: string;
-  showGeneratedPrompt: boolean;
-  activeDragKey: PromptArchitecturePillarKey | null;
+  disabled: boolean;
+  strings: PromptArchitectureStrings;
+  onRemove: (index: number) => void;
 }) {
-  const isEmpty = placement.every((p) => p === null);
-  const isDragInFlight = activeDragKey !== null;
-  // Wrap the canvas as a droppable so the user can drop into the
-  // general area even when no specific slot is highlighted (e.g.
-  // first drop on an empty canvas, off-target on touch). The dispatch
-  // handler resolves `over.id === "canvas"` to the first empty slot.
-  const { setNodeRef: setCanvasRef } = useDroppable({ id: "canvas" });
-
   return (
-    <div
-      ref={setCanvasRef}
-      className={`relative rounded-2xl border-[3px] border-dashed bg-amber-50/40 px-3 py-4 sm:px-6 sm:py-6 ${
-        isEmpty
-          ? "prompt-arch-canvas-idle border-orange-200"
-          : "border-orange-300"
-      } ${feedback?.kind === "perfect" ? "border-emerald-300/70" : ""}`}
-      aria-label="Spazio di costruzione del prompt"
-    >
-      {/* The 4 slots — always rendered so they stay droppable even on
-          an empty canvas. Layout is now a HORIZONTAL row of 4 fixed-
-          size slots (T3), matching the pillar geometry exactly so the
-          drop is "snap into place" not "vague drop zone". On phones
-          we shrink the gap so 4 × 100px slots + 3 × 6px gap fits a
-          ~330px viewport without horizontal scroll. */}
-      <div className="flex flex-row items-stretch justify-center gap-1.5 sm:gap-3">
-        {placement.map((key, i) => (
-          <CanvasSlot
-            key={i}
-            index={i}
-            pillarKey={key}
-            pillarByKey={pillarByKey}
-            feedback={feedback}
-            // Empty slots only pulse when ALL canvas slots are empty
-            // AND no drag is currently in flight. Mid-attempt
-            // (some pillars placed, others not) we keep the empty
-            // ones quiet so the focus stays on the pillars in play.
-            shouldPulse={isEmpty && !isDragInFlight}
-            activeDragKey={activeDragKey}
-          />
-        ))}
-      </div>
-
-      {/* Empty-state hint: absolute overlay so it doesn't block the
-          underlying droppable slots (pointer-events-none). Hidden the
-          moment the user drops the first pillar. The arrow ↓ from the
-          earlier vertical layout is gone — the hierarchy of "canvas
-          on top, pillar tray below" is enough on its own. */}
-      {isEmpty && !showGeneratedPrompt && (
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-6 text-center">
-          <p className="text-base italic text-stone-500 sm:text-lg">
-            {emptyHint}
-          </p>
-        </div>
-      )}
-    </div>
+    <ul className="flex flex-col gap-2.5">
+      {placement.map((key, i) => (
+        <Slot
+          key={i}
+          index={i}
+          pillarKey={key}
+          pillarByKey={pillarByKey}
+          feedback={feedback}
+          disabled={disabled}
+          strings={strings}
+          onRemove={onRemove}
+        />
+      ))}
+    </ul>
   );
 }
 
-function CanvasSlot({
+function Slot({
   index,
   pillarKey,
   pillarByKey,
   feedback,
-  shouldPulse,
-  activeDragKey,
+  disabled,
+  strings,
+  onRemove,
 }: {
   index: number;
   pillarKey: PromptArchitecturePillarKey | null;
@@ -914,219 +733,210 @@ function CanvasSlot({
     | { kind: "partial"; correctIndices: Set<number> }
     | { kind: "wrong" }
     | null;
-  // True when the empty-canvas invitation pulse should run on this
-  // slot. Set by the parent: true only when every slot is empty AND
-  // no drag is in flight. The 4 slots stagger via different classes.
-  shouldPulse: boolean;
-  // The pillar currently being dragged (if any). Drives the
-  // colour-matched glow on the slot under the cursor.
-  activeDragKey: PromptArchitecturePillarKey | null;
+  disabled: boolean;
+  strings: PromptArchitectureStrings;
+  onRemove: (index: number) => void;
 }) {
-  const { setNodeRef, isOver } = useDroppable({ id: `slot-${index}` });
+  const position = index + 1;
+  const emptyLabel = strings.slotEmptyLabelTemplate.replace(
+    "{n}",
+    String(position),
+  );
 
   if (!pillarKey) {
-    // Empty slot. Three visual states ranked by precedence:
-    //   1. Drag-over: colour-matched glow tinted with the dragged
-    //      pillar's hex (so the user previews "this colour will
-    //      land here").
-    //   2. Idle invitation: 4 slots pulse in sequence (every 0.6s)
-    //      to show they accept input, but only when all are empty
-    //      and no drag is active.
-    //   3. Resting: neutral dashed border.
-    const palette = activeDragKey ? PILLAR_PALETTE[activeDragKey] : null;
-    const overGlowStyle: React.CSSProperties | undefined =
-      isOver && palette
-        ? {
-            borderColor: palette.symbolHex,
-            backgroundColor: `${palette.symbolHex}14`, // ~8% alpha
-          }
-        : undefined;
-    const pulseClass =
-      shouldPulse
-        ? `prompt-arch-slot-pulse-${index + 1}`
-        : "";
     return (
-      <div
-        ref={setNodeRef}
-        style={overGlowStyle}
-        className={`flex h-[140px] w-[100px] items-center justify-center rounded-xl border-2 border-dashed bg-white/40 text-xs italic text-text-muted transition-colors sm:h-[200px] sm:w-[140px] ${
-          isOver && !palette ? "border-orange-400 bg-orange-50" : ""
-        } ${!isOver ? "border-stone-300/70" : ""} ${pulseClass}`}
-      >
-        {/* Empty slot — visuals only */}
-      </div>
+      <li>
+        <div
+          aria-label={emptyLabel}
+          className="flex min-h-[68px] items-center gap-3 rounded-xl border-2 border-dashed border-stone-300/80 bg-white/40 px-3 py-2 sm:min-h-[80px] sm:gap-4 sm:px-4 sm:py-3"
+        >
+          <span
+            aria-hidden="true"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-stone-100 font-mono text-sm font-semibold text-stone-500 sm:h-9 sm:w-9"
+          >
+            {position}
+          </span>
+          <p className="text-xs italic text-stone-400 sm:text-sm">
+            {emptyLabel}
+          </p>
+        </div>
+      </li>
     );
   }
 
   const pillar = pillarByKey.get(pillarKey);
   if (!pillar) return null;
+  const palette = PILLAR_PALETTE[pillarKey];
 
   const correctIdx =
     feedback?.kind === "partial" ? feedback.correctIndices : null;
   const isCorrect = correctIdx?.has(index);
   const isWrong =
-    correctIdx !== null && correctIdx !== undefined && !isCorrect;
+    feedback?.kind === "wrong" ||
+    (correctIdx !== null && correctIdx !== undefined && !isCorrect);
+  const isPerfect = feedback?.kind === "perfect";
+
+  const ringClass = isCorrect || isPerfect
+    ? "ring-2 ring-emerald-400 ring-offset-1 ring-offset-stone-50"
+    : isWrong
+      ? "prompt-arch-pillar-pulse-wrong"
+      : "";
 
   return (
-    <div
-      ref={setNodeRef}
-      className={`relative ${isOver ? "ring-2 ring-orange-300 ring-offset-2 ring-offset-stone-50 rounded-2xl" : ""}`}
+    <motion.li
+      layout
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -4 }}
+      transition={{ duration: 0.22, ease: "easeOut" }}
     >
-      <DraggablePillar
-        pillar={pillar}
-        location="canvas"
-        index={index}
-        feedback={
-          isCorrect ? "correct" : isWrong ? "wrong" : feedback?.kind === "wrong" ? "wrong" : null
+      <div
+        // CSS var consumed by .prompt-arch-pillar::before for the
+        // top-edge highlight. React types don't know about custom
+        // properties, hence the cast.
+        style={
+          {
+            ["--highlight-color" as string]: palette.symbolHex,
+          } as React.CSSProperties
         }
-      />
-    </div>
+        className={`prompt-arch-pillar flex min-h-[68px] items-center gap-3 rounded-xl border-2 px-3 py-2 sm:min-h-[80px] sm:gap-4 sm:px-4 sm:py-3 ${palette.cardBg} ${palette.cardBorder} ${ringClass}`}
+      >
+        <span
+          aria-hidden="true"
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/80 font-mono text-sm font-semibold text-stone-700 sm:h-9 sm:w-9"
+        >
+          {position}
+        </span>
+        <span
+          className="prompt-arch-symbol shrink-0 leading-none"
+          style={{
+            // See PillarTile below for the longhand-vs-shorthand
+            // explanation. Same gradient + text-clip trick, just at a
+            // smaller font-size for the inline slot context.
+            color: palette.symbolHex,
+            backgroundImage: palette.symbolGradient,
+            fontSize: `${Math.round(34 * palette.symbolScale)}px`,
+          }}
+        >
+          {pillar.icon}
+        </span>
+        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+          <span
+            className={`font-mono text-[11px] font-bold uppercase tracking-[0.14em] sm:text-[12px] ${palette.titleColor}`}
+          >
+            {pillar.title}
+          </span>
+          <span className="truncate text-[11px] italic text-stone-500 sm:text-[12px]">
+            {pillar.description}
+          </span>
+        </div>
+        {!disabled && (
+          <button
+            type="button"
+            onClick={() => onRemove(index)}
+            aria-label={strings.removePlacedLabel}
+            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-stone-500 transition-colors hover:bg-white/70 hover:text-stone-800"
+          >
+            <X size={14} aria-hidden="true" />
+          </button>
+        )}
+      </div>
+    </motion.li>
   );
 }
 
-function PillarTray({
+function PillarsGrid({
   pillars,
+  placedSet,
+  disabled,
+  feedback,
   label,
+  onTap,
 }: {
   pillars: PromptArchitecturePillar[];
+  placedSet: Set<PromptArchitecturePillarKey>;
+  disabled: boolean;
+  feedback:
+    | { kind: "perfect" }
+    | { kind: "partial"; correctIndices: Set<number> }
+    | { kind: "wrong" }
+    | null;
   label: string;
+  onTap: (key: PromptArchitecturePillarKey) => void;
 }) {
-  const { setNodeRef, isOver } = useDroppable({ id: "tray" });
+  // `auto-rows-fr` + `h-full` on the children pins all four tiles to
+  // the same height even when their descriptions wrap to different
+  // line counts. Same trick as BlockPicker's 2-column pool.
   return (
-    <div
-      ref={setNodeRef}
-      className={`flex flex-col gap-3 rounded-2xl border bg-white/60 p-3 transition-colors sm:p-4 ${
-        isOver
-          ? "border-orange-300 bg-orange-50/50"
-          : "border-stone-200/80"
-      }`}
-    >
+    <div className="flex flex-col gap-3 rounded-2xl border border-stone-200/80 bg-white/60 p-3 sm:p-4">
       <h3 className="text-center text-xs font-semibold uppercase tracking-[0.2em] text-stone-600 sm:text-sm">
         {label}
       </h3>
-      <div className="flex flex-row items-stretch justify-center gap-1.5 sm:gap-3">
-        {pillars.map((p) => (
-          <DraggablePillar
-            key={p.key}
-            pillar={p}
-            location="tray"
-            feedback={null}
-          />
-        ))}
-      </div>
+      <ul className="grid auto-rows-fr grid-cols-2 gap-2.5 sm:gap-3">
+        {pillars.map((p) => {
+          const isPlaced = placedSet.has(p.key);
+          return (
+            <li key={p.key} className="h-full">
+              <PillarTile
+                pillar={p}
+                isPlaced={isPlaced}
+                disabled={disabled || isPlaced}
+                feedback={feedback}
+                onTap={onTap}
+              />
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
 }
 
-function DraggablePillar({
+function PillarTile({
   pillar,
-  location,
-  index,
+  isPlaced,
+  disabled,
   feedback,
+  onTap,
 }: {
   pillar: PromptArchitecturePillar;
-  location: "tray" | "canvas";
-  index?: number;
-  feedback: "correct" | "wrong" | null;
-}) {
-  const id = location === "tray" ? `tray-${pillar.key}` : `canvas-${index}`;
-  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
-    id,
-  });
-
-  // PillarCard IS the draggable element — drag refs/listeners are
-  // attached directly to its outer div. Previously a thin wrapper div
-  // sat between dnd-kit's setNodeRef and the visible card; in some
-  // flex contexts the wrapper's bounding box drifted from the card's,
-  // and dnd-kit measured the wrapper for overlay positioning → the
-  // overlay clone appeared shifted (typically rightward) from where
-  // the cursor actually was. Bug observed 10 May 2026.
-  return (
-    <PillarCard
-      pillar={pillar}
-      feedback={feedback}
-      dragRef={setNodeRef}
-      dragListeners={listeners as Record<string, unknown> | undefined}
-      dragAttributes={attributes as unknown as Record<string, unknown>}
-      isDragging={isDragging}
-    />
-  );
-}
-
-// Pillar card. Renders in two roles:
-//   1. In-flow draggable: receives `dragRef` + listeners + attributes
-//      from <DraggablePillar>. Ghosts (opacity 0.2) while being dragged.
-//   2. Inside <DragOverlay> as the floating clone: pass `isOverlay`,
-//      no drag refs (the overlay handles its own positioning).
-// Geometry: 100×140 on phone, 140×200 from sm+. Stack: symbol top,
-// uppercase title centre, italic description bottom.
-function PillarCard({
-  pillar,
-  feedback,
-  isOverlay = false,
-  isDragging = false,
-  dragRef,
-  dragListeners,
-  dragAttributes,
-}: {
-  pillar: PromptArchitecturePillar;
-  feedback: "correct" | "wrong" | null;
-  isOverlay?: boolean;
-  isDragging?: boolean;
-  dragRef?: (node: HTMLElement | null) => void;
-  // Listeners + attributes from useDraggable. The exact types are
-  // intentionally loose (Record<string, unknown>) so we can spread
-  // without coupling to dnd-kit's internal types.
-  dragListeners?: Record<string, unknown>;
-  dragAttributes?: Record<string, unknown>;
+  isPlaced: boolean;
+  disabled: boolean;
+  feedback:
+    | { kind: "perfect" }
+    | { kind: "partial"; correctIndices: Set<number> }
+    | { kind: "wrong" }
+    | null;
+  onTap: (key: PromptArchitecturePillarKey) => void;
 }) {
   const palette = PILLAR_PALETTE[pillar.key];
-  const feedbackClass =
-    feedback === "correct"
-      ? "ring-2 ring-emerald-400 ring-offset-2"
-      : feedback === "wrong"
-        ? "prompt-arch-pillar-pulse-wrong"
-        : "";
+  // A placed tile sits at 30% opacity and ignores clicks. Visual cue
+  // that the pillar is "used" without removing it from the grid (no
+  // reflow). Tapping the × in the slot above re-enables it.
+  const placedClass = isPlaced
+    ? "opacity-30 grayscale-[20%] cursor-not-allowed"
+    : "hover:-translate-y-0.5 hover:shadow-md active:scale-[0.97]";
+
+  // Mid-feedback we suppress the hover lift so the page doesn't feel
+  // janky while the reset is being scheduled.
+  const interactiveClass = feedback ? "" : placedClass;
 
   return (
-    <div
-      ref={dragRef}
-      {...(dragListeners ?? {})}
-      {...(dragAttributes ?? {})}
-      role={dragRef ? "button" : undefined}
-      tabIndex={dragRef ? 0 : undefined}
-      aria-label={
-        dragRef ? `${pillar.title} — ${pillar.description}` : undefined
+    <button
+      type="button"
+      onClick={() => onTap(pillar.key)}
+      disabled={disabled}
+      aria-label={`${pillar.title} — ${pillar.description}`}
+      aria-pressed={isPlaced}
+      className={`prompt-arch-pillar relative flex h-full w-full flex-col items-center justify-between gap-2 rounded-2xl border-2 px-3 py-4 transition-all duration-200 sm:px-4 sm:py-5 ${palette.cardBg} ${palette.cardBorder} ${interactiveClass}`}
+      style={
+        {
+          ["--highlight-color" as string]: palette.symbolHex,
+        } as React.CSSProperties
       }
-      // Multi-layer shadow + hover lift come from `.prompt-arch-pillar`
-      // (globals.css). `is-dragging` swaps the shadow stack to its
-      // heaviest version — applied to the overlay clone for visual
-      // weight while flying.
-      className={`prompt-arch-pillar relative flex h-[140px] w-[100px] flex-col items-center justify-between rounded-2xl border-2 px-3 py-3 sm:h-[200px] sm:w-[140px] sm:px-4 sm:py-5 ${palette.cardBg} ${palette.cardBorder} ${feedbackClass} ${isOverlay ? "is-dragging" : ""}`}
-      style={{
-        // CSS var consumed by .prompt-arch-pillar::before for the
-        // top-edge highlight (Mod 3). React types don't know about
-        // custom properties, hence the cast.
-        ["--highlight-color" as string]: palette.symbolHex,
-        // In-flow drag state: dim the original to a ghost; cursor +
-        // touchAction tell the browser this is a draggable element.
-        ...(isDragging && {
-          opacity: 0.2,
-          cursor: "grabbing",
-          touchAction: "none",
-        }),
-        ...(dragRef &&
-          !isDragging && {
-            cursor: "grab",
-            touchAction: "none",
-          }),
-        // Subtle 2° tilt only on the overlay clone — the in-place
-        // ghost stays upright so it doesn't fight the layout.
-        ...(isOverlay && { transform: "rotate(2deg)" }),
-      }}
     >
       <span
-        className="prompt-arch-symbol"
+        className="prompt-arch-symbol leading-none"
         style={{
           // Diagonal gradient + solid colour fallback. The
           // `background-clip: text` + `-webkit-text-fill-color:
@@ -1134,8 +944,7 @@ function PillarCard({
           // (globals.css §.prompt-arch-symbol) so a browser that
           // can't clip to text falls through to the solid `color`
           // and renders the glyph normally — instead of a coloured
-          // rectangle (the bug observed when text-fill-color:
-          // transparent fired without background-clip taking effect).
+          // rectangle.
           //
           // Important: use `backgroundImage` (longhand), NOT
           // `background` (shorthand). The shorthand resets ALL
@@ -1147,7 +956,7 @@ function PillarCard({
           // leave the clip alone.
           color: palette.symbolHex,
           backgroundImage: palette.symbolGradient,
-          fontSize: `${Math.round(60 * palette.symbolScale)}px`,
+          fontSize: `${Math.round(48 * palette.symbolScale)}px`,
         }}
         aria-hidden="true"
       >
@@ -1158,10 +967,10 @@ function PillarCard({
       >
         {pillar.title}
       </span>
-      <p className="block text-center text-[10px] italic leading-tight text-stone-500 sm:text-xs">
+      <span className="block text-center text-[10px] italic leading-tight text-stone-500 sm:text-xs">
         {pillar.description}
-      </p>
-    </div>
+      </span>
+    </button>
   );
 }
 
@@ -1397,8 +1206,8 @@ function xpForResult(
 }
 
 // Fisher-Yates shuffle. Returns a NEW array; original is untouched.
-// Used to randomise the bottom tray on mount and on every reset, so
-// the user can't memorise positions from one attempt to the next.
+// Used to randomise the 2×2 grid on mount and on every reset, so the
+// user can't memorise positions from one attempt to the next.
 function shuffleKeys<T>(keys: readonly T[]): T[] {
   const out = [...keys];
   for (let i = out.length - 1; i > 0; i--) {

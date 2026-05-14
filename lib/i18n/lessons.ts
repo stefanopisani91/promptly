@@ -540,6 +540,16 @@ export interface LessonsCopy {
         constraints: string;
         verification: string;
       };
+      // Tap-to-add submit CTA. Disabled until all 4 slots are filled.
+      submitCta: string;
+      // Subtle helper line under the disabled submit ("place all 4
+      // pillars first").
+      submitDisabledHint: string;
+      // Empty-slot accessible label + visible hint. `{n}` = the
+      // 1-based slot position (1, 2, 3, 4).
+      slotEmptyLabelTemplate: string;
+      // Aria-label on the × button that empties a filled slot.
+      removePlacedLabel: string;
       // CTAs.
       copyCta: string;
       copiedToast: string;
@@ -892,7 +902,7 @@ const it: LessonsCopy = {
     },
     promptArchitecture: {
       attemptCounterTemplate: "Tentativo {current} / {max}",
-      awaitingPrompt: "Trascina i 4 pilastri nello spazio sopra. Ricorda l'ordine controintuitivo.",
+      awaitingPrompt: "Tocca i 4 pilastri qui sotto e mettili in ordine nei 4 slot sopra. Ricorda: è un ordine controintuitivo.",
       // 4 messaggi a indizio crescente. Indice 0 dopo il 1° tentativo,
       // 1 dopo il 2°, ecc. Il 5° tentativo, se sbagliato, scatena
       // l'auto-reveal e non legge da qui.
@@ -922,6 +932,10 @@ const it: LessonsCopy = {
         constraints: "NON modificare i file in /config senza chiedermi. NON aggiungere nuove dipendenze npm. Mostrami il diff prima di applicare modifiche al database.",
         verification: "Quando hai finito: runa i test esistenti, mostrami il diff, e confermami che le altre route continuano a funzionare.",
       },
+      submitCta: "Invia a Spark",
+      submitDisabledHint: "Componi tutti i 4 pilastri prima di inviare.",
+      slotEmptyLabelTemplate: "Posizione {n} — vuota",
+      removePlacedLabel: "Rimuovi pilastro",
       copyCta: "📋 Copia il prompt",
       copiedToast: "Copiato negli appunti",
       downloadCta: "⬇️ Scarica come .md",
@@ -1437,7 +1451,7 @@ const en: LessonsCopy = {
     },
     promptArchitecture: {
       attemptCounterTemplate: "Try {current} / {max}",
-      awaitingPrompt: "Drag the 4 pillars into the space above. Remember the counter-intuitive order.",
+      awaitingPrompt: "Tap the 4 pillars below and place them in order in the 4 slots above. Remember: it's a counter-intuitive order.",
       // 4 escalating hints. Index 0 after attempt 1, 1 after 2, etc.
       // The 5th wrong attempt triggers auto-reveal and never reads
       // from this array.
@@ -1467,6 +1481,10 @@ const en: LessonsCopy = {
         constraints: "DO NOT modify files in /config without asking me. DO NOT add new npm dependencies. Show me the diff before applying database changes.",
         verification: "When you're done: run the existing tests, show me the diff, and confirm the other routes still work.",
       },
+      submitCta: "Send to Spark",
+      submitDisabledHint: "Place all 4 pillars before sending.",
+      slotEmptyLabelTemplate: "Position {n} — empty",
+      removePlacedLabel: "Remove pillar",
       copyCta: "📋 Copy the prompt",
       copiedToast: "Copied to clipboard",
       downloadCta: "⬇️ Download as .md",

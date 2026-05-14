@@ -255,7 +255,7 @@
       "type": "interactive",
       "spark_state": "listening",
       "widget": "prompt_architecture",
-      "intro": "Ready? Drag the 4 pillars into the space above. Remember what I just taught you — the right order is the counter-intuitive one. When you get it, you'll see something happen.",
+      "intro": "Ready? Tap the 4 pillars below and place them in order in the space above. Remember what I just taught you — the right order is the counter-intuitive one. When you get it, you'll see something happen.",
       "max_attempts": 5,
       "prompt_architecture_config": {
         "canvas_title": "The Architecture",

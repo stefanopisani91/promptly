@@ -902,13 +902,13 @@ const PHASE_GUIDANCE: Record<string, { it: string; en: string }> = {
     it: "Ha già scelto il pivot, ora sta scrivendo il messaggio di recupero. Focalizzati sulla struttura del messaggio (riconoscimento, ricalibrazione, vincolo per il futuro). NON tornare sul pivot point — quella scelta è già passata.",
     en: "They already picked the pivot and are now writing the recovery message. Focus on the message structure (recognition, recalibration, future constraint). DO NOT go back to the pivot point — that choice is already done.",
   },
-  "prompt_architecture:placing_pillars": {
-    it: "Sta ordinando i 4 blocchi del prompt-template (CONTESTO, VINCOLI, TASK, VERIFICA). NON dargli l'ordine giusto: stimola il ragionamento («cosa serve all'AI per prima, il compito o le regole?»).",
-    en: "They're ordering the 4 blocks of the prompt template (CONTEXT, CONSTRAINTS, TASK, VERIFY). DO NOT give them the sequence: nudge the reasoning («what does the AI need first, the task or the rules?»).",
+  "prompt_architecture:ordering_pillars": {
+    it: "Sta ordinando i 4 pilastri del prompt-template (CONTESTO, VINCOLI, TASK, VERIFICA) toccandoli e mettendoli nei 4 slot in colonna. Tutti e 4 vanno usati: la sfida è la SEQUENZA, non la selezione. NON dargli l'ordine giusto: stimola il ragionamento («cosa serve all'AI per prima, il compito o le regole del gioco?»).",
+    en: "They're ordering the 4 pillars of the prompt template (CONTEXT, CONSTRAINTS, TASK, VERIFY) by tapping them into the 4 column slots. All 4 must be used: the challenge is the SEQUENCE, not the selection. DO NOT give them the order: nudge the reasoning («what does the AI need first, the task or the rules of the game?»).",
   },
-  "prompt_architecture:after_generation": {
-    it: "Il prompt compilato è già stato generato. Aiutalo a leggerlo, capire cosa metterà nel blocco VERIFICA, e come riusare lo schema domani. Non ripetere il ragionamento sull'ordine — quello è finito.",
-    en: "The filled-in prompt has already been generated. Help them read it, understand what they'll put in the VERIFY block, and how to reuse the template tomorrow. Don't rehash the ordering reasoning — that's done.",
+  "prompt_architecture:after_evaluation": {
+    it: "Ha già inviato l'ordine e il prompt compilato è stato generato (o l'ordine è stato svelato dopo i tentativi). Aiutalo a leggerlo, capire cosa metterà nel blocco VERIFICA, e come riusare lo schema domani. Non ripetere il ragionamento sull'ordine — quello è finito.",
+    en: "They've already submitted the order and the filled-in prompt is generated (or the order was revealed after the attempts). Help them read it, understand what they'll put in the VERIFY block, and how to reuse the template tomorrow. Don't rehash the ordering reasoning — that's done.",
   },
   "constraints_editor:writing_protective": {
     it: "Sta lavorando sul vincolo PROTETTIVO (cosa l'AI NON deve toccare). Focalizzati su questo tipo di vincolo — non spiegare i tre tipi insieme, parla solo del protettivo.",

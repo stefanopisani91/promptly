@@ -133,9 +133,10 @@ function quickWinFinalised(stepEntry: unknown): boolean {
  * The cross-widget "between_attempts" phase shadows the regular phase as
  * soon as the widget has a `lastEvaluation` stored (i.e. at least one
  * submitted attempt) AND the step hasn't been finalised yet.
- * prompt_architecture is excluded — it's a drag-and-drop puzzle without
- * a `lastEvaluation` of the same shape, so the between_attempts pattern
- * doesn't apply.
+ * prompt_architecture is excluded — it's a tap-to-add ordering puzzle
+ * without a `lastEvaluation` of the same shape, so the between_attempts
+ * pattern doesn't apply (its own phases ordering_pillars /
+ * after_evaluation cover the two states).
  */
 function helperPhaseFromState(
   widgetKey: string,
@@ -177,7 +178,7 @@ function helperPhaseFromState(
       if (hasPreviousAttempt && !finalised) return "between_attempts";
       return "recovery_question";
     case "prompt_architecture":
-      return state.generatedBlocks ? "after_generation" : "placing_pillars";
+      return state.generatedBlocks ? "after_evaluation" : "ordering_pillars";
     default:
       return null;
   }
