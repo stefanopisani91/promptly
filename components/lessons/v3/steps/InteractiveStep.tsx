@@ -48,13 +48,34 @@ export interface InteractiveStepStrings {
   // after a page reload while the persisted result is still around).
   awaitingPrompt: string;
   reactions: {
-    // Reactions Spark fires depending on outcome + attempt number. Same
-    // labels in both languages — caller picks IT or EN.
+    // Spark's lines after an evaluation. Two categories:
     //
-    // The four `*Retry` variants fire on attempt 2+ when the user is
-    // still in the same band as before — Spark acknowledges the retry
-    // ("ancora qui", "stessa cosa di prima") instead of repeating the
-    // first-try line verbatim. Coherent + encouraging across attempts.
+    // 1. SCRIPTED — celebrative + didactic moments where the wording is
+    //    too important to delegate to the AI. `allBugsHighScore` is the
+    //    victory cinematic; `thirdAttemptDirect` is the last-chance
+    //    reveal when the user is still at 0-1 bugs.
+    //
+    // 2. WEAKEST-DIM TEMPLATES — `weakChiarezza` / `weakContesto` /
+    //    `weakObiettivo` / `weakProtezione` carry a `{specific_advice}`
+    //    placeholder. `pickReaction` picks the dimension with the lowest
+    //    score and fills the placeholder with `ev.consiglio` (already
+    //    dimension-targeted by the AI evaluator). This replaces the
+    //    previous band-driven reactions (vague / photoOnly / twoBugs /
+    //    allBugsLowScore + their *Retry siblings) which gave two users
+    //    with very different weakness profiles the same generic line.
+    //    Refactor: BACKLOG URGENTE 2 — May 2026.
+    //
+    // The legacy keys are kept for `deriveReactionFromResult` (the
+    // no-`consiglio` fallback used on legacy persisted state, plus the
+    // rare case where the evaluator returns an empty `consiglio`).
+    weakChiarezza: string;
+    weakContesto: string;
+    weakObiettivo: string;
+    weakProtezione: string;
+    // Scripted celebrative + reveal lines.
+    allBugsHighScore: string;
+    thirdAttemptDirect: string;
+    // Legacy band-driven reactions — fallback only.
     vague: string;
     vagueRetry: string;
     photoOnly: string;
@@ -63,12 +84,10 @@ export interface InteractiveStepStrings {
     twoBugsRetry: string;
     allBugsLowScore: string;
     allBugsLowScoreRetry: string;
-    allBugsHighScore: string;
     finalEncouragePartial: string;
     finalEncourageFull: string;
     secondAttemptHintPhoto: string;
     secondAttemptHintImproved: string;
-    thirdAttemptDirect: string;
   };
   // Localised labels for the 4 dimension bars (chiarezza / contesto /
   // obiettivo / protezione). Same IT/EN word in most cases — caller
@@ -509,6 +528,26 @@ function deriveReactionFromResult(
   }
 }
 
+// Weakest-dim driven reaction picker. Two cases stay scripted:
+//   - Victory (≥ LUCIA_VICTORY_THRESHOLD + all 3 bugs) — the celebration
+//     cinematic shouldn't be delegated to the AI.
+//   - Last attempt with 0-1 bugs — the user is out of tries on the
+//     observation side; Spark's `thirdAttemptDirect` reveals the answer
+//     instead of giving a dimension hint.
+//
+// Everything else: identify the weakest of the 4 dimensions
+// (chiarezza / contesto / obiettivo / protezione), pick the matching
+// `weak<Dim>` template, and fill `{specific_advice}` with `ev.consiglio`
+// (the AI evaluator already targets its advice at the weak dimension).
+// This is the URGENTE 2 fix: previously the reaction was picked by
+// `bugs_menzionati.length` only, so a user with chiarezza 95 / contesto
+// 65 / obiettivo 70 / protezione 15 got the generic "the prompt is
+// vague" line — false, the prompt was precise but missing constraints.
+//
+// `consiglio` is always present in fresh evaluations (LuciaEvaluation
+// shape requires it), but we defensively fall back to the legacy
+// band-based path if it's empty — useful for stale state and for
+// surviving a hypothetical evaluator regression.
 function pickReaction(
   ev: LuciaEvaluation,
   attemptNumber: number,
@@ -517,32 +556,56 @@ function pickReaction(
 ): string {
   const r = strings.reactions;
   const isLast = attemptNumber >= maxAttempts;
-  // Attempt 2+ → user is on a retry. Spark acknowledges that ("you're
-  // still on the same problem") instead of replaying the first-try line.
-  // Reaction shape stays band-driven; the retry flag flips to a sibling
-  // string for the same band when one exists.
-  const isRetry = attemptNumber > 1;
   const bugCount = ev.bugs_menzionati.length;
 
-  // Victory: same line for any attempt (the celebration is identical).
-  if (ev.totale >= LUCIA_VICTORY_THRESHOLD && bugCount === 3) return r.allBugsHighScore;
-
-  // Last attempt with low coverage → direct reveal.
-  if (isLast && bugCount <= 1) return r.thirdAttemptDirect;
-
-  // Retry-aware band: pick the *Retry sibling when the user is back for round 2+.
-  if (isRetry) {
-    if (bugCount === 3) return r.allBugsLowScoreRetry;
-    if (bugCount === 2) return r.twoBugsRetry;
-    if (bugCount === 1) return r.photoOnlyRetry;
-    return r.vagueRetry;
+  // Scripted: victory celebration.
+  if (ev.totale >= LUCIA_VICTORY_THRESHOLD && bugCount === 3) {
+    return r.allBugsHighScore;
   }
 
-  // First attempt — original lines.
+  // Scripted: last-chance reveal when observation is still weak.
+  if (isLast && bugCount <= 1) {
+    return r.thirdAttemptDirect;
+  }
+
+  // Weakest-dim path with AI advice.
+  const advice = ev.consiglio?.trim();
+  if (advice && advice.length > 0) {
+    const weakest = pickWeakestDim(ev);
+    const template = r[weakest];
+    if (template) {
+      return template.replace("{specific_advice}", advice);
+    }
+  }
+
+  // Defensive fallback (no consiglio, no template) — degraded band-based path.
   if (bugCount === 3) return r.allBugsLowScore;
   if (bugCount === 2) return r.twoBugs;
   if (bugCount === 1) return r.photoOnly;
   return r.vague;
+}
+
+// Returns the i18n key of the `weak<Dim>` template matching the
+// dimension with the lowest score. Ties are broken by iteration order
+// (chiarezza → contesto → obiettivo → protezione) — `reduce` with `<=`
+// keeps the first minimum encountered, so on a 50/50/50/50 prompt we'd
+// surface chiarezza, which reads as the most natural "starting point"
+// for further work. Exported as `WeakDimKey` to keep the type union in
+// one place.
+type WeakDimKey =
+  | "weakChiarezza"
+  | "weakContesto"
+  | "weakObiettivo"
+  | "weakProtezione";
+
+function pickWeakestDim(ev: LuciaEvaluation): WeakDimKey {
+  const dims: Array<{ key: WeakDimKey; value: number }> = [
+    { key: "weakChiarezza", value: ev.chiarezza },
+    { key: "weakContesto", value: ev.contesto },
+    { key: "weakObiettivo", value: ev.obiettivo },
+    { key: "weakProtezione", value: ev.protezione },
+  ];
+  return dims.reduce((a, b) => (a.value <= b.value ? a : b)).key;
 }
 
 // ─── Dimension bars ──────────────────────────────────────────────────
@@ -551,6 +614,21 @@ function pickReaction(
 // 4 horizontal bars showing chiarezza / contesto / obiettivo / protezione
 // (each 0-100). The total below sums the weighted score the API
 // already returned so the user sees both the breakdown and the headline.
+//
+// Weakest-dim highlight (URGENTE 2, May 2026): the dimension with the
+// lowest score is rendered red + pulsing AND its label is bold-red,
+// matching the targeted advice Spark just gave in the bubble. Dims
+// scored ≥ 70 turn emerald (positive reinforcement on what's working).
+// Anything in between keeps the neutral primary orange.
+//
+// Soglie:
+//   - WEAKEST_THRESHOLD (50) — only highlight the lowest dim in red
+//     when it's a *real* weakness. If the lowest dim is already ≥ 50
+//     the user is doing fine across the board — no red pulse needed.
+//   - GOOD_THRESHOLD (70) — dims at this level are emerald.
+const WEAKEST_THRESHOLD = 50;
+const GOOD_THRESHOLD = 70;
+
 function DimensionBars({
   evaluation,
   labels,
@@ -564,24 +642,48 @@ function DimensionBars({
     { key: "obiettivo", value: evaluation.obiettivo },
     { key: "protezione", value: evaluation.protezione },
   ];
+  const minValue = Math.min(...dims.map((d) => d.value));
   return (
     <div className="mt-3 flex flex-col gap-1">
-      {dims.map((d) => (
-        <div key={d.key} className="flex items-center gap-2">
-          <span className="w-24 shrink-0 font-mono text-[10px] uppercase tracking-wider text-text-muted">
-            {labels[d.key]}
-          </span>
-          <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-surface-muted">
+      {dims.map((d) => {
+        const isWeakest = d.value === minValue && d.value < WEAKEST_THRESHOLD;
+        const isGood = d.value >= GOOD_THRESHOLD;
+        const fillColor = isWeakest
+          ? "bg-red-500"
+          : isGood
+          ? "bg-emerald-500"
+          : "bg-primary";
+        const labelColor = isWeakest
+          ? "text-red-700 font-semibold"
+          : "text-text-muted";
+        const valueColor = isWeakest
+          ? "text-red-700 font-semibold"
+          : "text-text-muted";
+        return (
+          <div key={d.key} className="flex items-center gap-2">
+            <span
+              className={`w-24 shrink-0 font-mono text-[10px] uppercase tracking-wider ${labelColor}`}
+            >
+              {labels[d.key]}
+            </span>
             <div
-              className="h-full bg-primary transition-all"
-              style={{ width: `${Math.min(100, Math.max(0, d.value))}%` }}
-            />
+              className={`h-1.5 flex-1 overflow-hidden rounded-full bg-surface-muted ${
+                isWeakest ? "animate-pulse" : ""
+              }`}
+            >
+              <div
+                className={`h-full transition-all ${fillColor}`}
+                style={{ width: `${Math.min(100, Math.max(0, d.value))}%` }}
+              />
+            </div>
+            <span
+              className={`w-7 text-right font-mono text-[10px] ${valueColor}`}
+            >
+              {d.value}
+            </span>
           </div>
-          <span className="w-7 text-right font-mono text-[10px] text-text-muted">
-            {d.value}
-          </span>
-        </div>
-      ))}
+        );
+      })}
       <p className="mt-1 text-right font-mono text-[10px] text-text-muted">
         Σ {evaluation.totale}/100
       </p>

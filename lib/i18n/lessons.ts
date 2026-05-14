@@ -131,6 +131,20 @@ export interface LessonsCopy {
       sparkTabLabel: string;
       siteTabLabel: string;
       reactions: {
+        // Weakest-dim templates (URGENTE 2, May 2026): one per dimension.
+        // Each carries a `{specific_advice}` placeholder that `pickReaction`
+        // replaces with `ev.consiglio` from the AI evaluator. The template
+        // gives the framing ("you have everything except X"), the AI advice
+        // gives the concrete pointer.
+        weakChiarezza: string;
+        weakContesto: string;
+        weakObiettivo: string;
+        weakProtezione: string;
+        // Scripted celebrative + reveal lines.
+        allBugsHighScore: string;
+        thirdAttemptDirect: string;
+        // Legacy band-driven reactions — kept as a fallback for empty
+        // `consiglio` and for `deriveReactionFromResult` on legacy state.
         vague: string;
         vagueRetry: string;
         photoOnly: string;
@@ -139,12 +153,10 @@ export interface LessonsCopy {
         twoBugsRetry: string;
         allBugsLowScore: string;
         allBugsLowScoreRetry: string;
-        allBugsHighScore: string;
         finalEncouragePartial: string;
         finalEncourageFull: string;
         secondAttemptHintPhoto: string;
         secondAttemptHintImproved: string;
-        thirdAttemptDirect: string;
       };
       // Localised labels for the 4 dimension bars shown under Spark's
       // line in Lesson 1's Lucia widget. Same keys as LuciaEvaluation.
@@ -742,6 +754,10 @@ const it: LessonsCopy = {
       sparkTabLabel: "Spark",
       siteTabLabel: "Sito",
       reactions: {
+        weakChiarezza: "Hai i pezzi giusti, ma il prompt suona ancora un po' confuso — è quello il punto debole. {specific_advice}",
+        weakContesto: "Hai un'idea chiara di cosa vuoi, ma manca contesto sul sito. {specific_advice}",
+        weakObiettivo: "Vedi cosa non funziona, ma non mi hai detto bene cosa vuoi che faccia. {specific_advice}",
+        weakProtezione: "Hai visto i problemi e mi hai detto cosa fare. Quello che manca è dirmi cosa NON toccare — è lì che casco da sola. {specific_advice}",
         vague: "Aspetta. Hai scritto qualcosa, ma posso solo tirare a indovinare. È come se mi chiedessi «cucinami qualcosa» senza dirmi cosa hai nel frigo. Guarda di nuovo il sito di Lucia: cosa vedi che non funziona?",
         vagueRetry: "Ehi, sei tornato. Il prompt però è ancora un po' troppo generico. Non ti scoraggiare — è normale al primo giro. Prova così: guarda il sito, scegli UN problema solo che vedi, e descrivimelo in due parole. Da lì costruiamo.",
         photoOnly: "Ok, qualcosa hai visto. Hai notato la foto rotta. L'ho sistemata — la vedi adesso? Ma c'è altro che non va. Continua a guardare con attenzione.",
@@ -1291,6 +1307,10 @@ const en: LessonsCopy = {
       sparkTabLabel: "Spark",
       siteTabLabel: "Site",
       reactions: {
+        weakChiarezza: "You've got the right pieces, but the prompt still reads a bit muddled — that's the weak spot. {specific_advice}",
+        weakContesto: "You have a clear idea of what you want, but the context on the site is thin. {specific_advice}",
+        weakObiettivo: "You can see what's wrong, but you didn't tell me clearly what you want done. {specific_advice}",
+        weakProtezione: "You spotted the problems and told me what to do. What's missing is telling me what NOT to touch — that's where I slip on my own. {specific_advice}",
         vague: "Wait. You wrote something, but I can only guess. It's like asking me to «cook something» without telling me what's in the fridge. Look at Lucia's site again — what's not working?",
         vagueRetry: "Hey, you're back. The prompt is still a bit too generic, though. Don't get discouraged — it's normal on the first run. Try this: look at the site, pick ONE problem you see, and describe it in two words. We build from there.",
         photoOnly: "Okay, you spotted something. You noticed the broken photo. I fixed it — see it now? But there's more. Keep looking carefully.",
