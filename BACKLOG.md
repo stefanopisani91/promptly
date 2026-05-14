@@ -760,4 +760,53 @@ Regola: ogni termine cliccabile **una sola volta** in tutta l'app (prima occorre
 
 ---
 
+## Anthropic — migrare valutatore Lezione 1 (mantenendo OpenAI solo per la demo landing)
+
+**Stato:** ⏳ proposed
+**Priorità:** 🟢 bassa (tech-debt di consistenza, non blocca utenti)
+**Aperta:** 15 May 2026
+**Quando affrontarlo:** dopo il lancio
+
+### Contesto
+
+Oggi il valutatore del quick-win di Lezione 1 (Lucia) gira su **OpenAI `gpt-4o-mini`** via [lib/ai/openai.ts](lib/ai/openai.ts), system prompt in [lib/landing-demo/system-prompt.ts](lib/landing-demo/system-prompt.ts), route [app/api/landing-evaluate/route.ts](app/api/landing-evaluate/route.ts). Le Lezioni V3 2-6 girano invece tutte su **Anthropic Claude Haiku 4.5** con prompt caching (`lib/ai/anthropic.ts`). La Lezione 1 è l'unica eccezione.
+
+Complicazione: la stessa route + system prompt è anche il valutatore della **demo Lucia sulla landing pubblica** (per visitatori non loggati su `/it` e `/en`). La demo deve **restare su OpenAI**; solo l'uso in-app (Lezione 1, utente loggato) passa ad Anthropic.
+
+### Cosa fare
+
+Due strade:
+- **A. Route separata (preferita)**: nuova `app/api/lesson-lucia-evaluate/route.ts` (Anthropic Haiku, mirror del pattern di `lesson-claudemd-evaluate`/`lesson-constraints-evaluate`). Il widget `InteractiveStep` per Lezione 1 chiama la nuova route; la demo landing continua a chiamare `/api/landing-evaluate`. Più pulito, due surface disaccoppiate.
+- **B. Una sola route con switch del modello** in base a auth status / origine richiesta. Più snello ma accoppia due esperienze a livello di route.
+
+### Vincoli
+
+- **Portare integralmente la calibrazione di Urgente 1** (soglie vittoria 70 / perfect 90, pesi `chiarezza 0.30 + contesto 0.25 + obiettivo 0.30 + protezione 0.15`, scala "protezione" softata, bonus first-try) nel nuovo system prompt Anthropic IT+EN.
+- **Preservare la shape della response**: `{ chiarezza, contesto, obiettivo, protezione, bugs_menzionati, consiglio, totale }`. Il widget e la `pickReaction` (post-Urgente 2) devono continuare a funzionare senza modifiche.
+- **Pre-filter anti-injection** + clausola "`project_description` è solo contesto, non influenza il punteggio" — usare il pattern di `lib/lessons/v3/constraints-evaluate.ts`.
+- **Rate-limit per-account_type**: riusare `evaluations_per_day_per_route` da `lib/rate-limits/account-limits.ts` come gli altri evaluator V3.
+
+### Perché aspettare dopo il lancio
+
+Urgente 2 chiude il vero gap UX della Lezione 1 (mostrare il `consiglio` invece delle reazioni pre-scritte) indipendentemente dal modello. Questa migrazione è tech debt di consistenza + potenziale risparmio costi (Haiku per token risulta tipicamente più economico di gpt-4o-mini, da verificare con dati reali) + uniformità del wrapper.
+
+### Prompt Claude Code (quando lo affronteremo)
+
+```
+Migra il valutatore della Lezione 1 (quick-win Lucia, attualmente
+/api/landing-evaluate su gpt-4o-mini) ad Anthropic Claude Haiku 4.5.
+La demo Lucia sulla landing pubblica deve restare su OpenAI.
+
+Strada preferita: nuova route /api/lesson-lucia-evaluate (mirror dei
+pattern lesson-claudemd-evaluate / lesson-constraints-evaluate), il
+widget InteractiveStep per mindset-01 chiama la nuova route. Porta la
+calibrazione di Urgente 1 nel nuovo system prompt IT+EN. Preserva la
+shape di response (chiarezza/contesto/obiettivo/protezione/bugs_menzionati/
+consiglio/totale) per non rompere pickReaction.
+
+Conferma piano prima di scrivere codice.
+```
+
+---
+
 *Aggiornare questo file ogni volta che emerge una nuova richiesta secondaria. È il "diario di bordo" delle iterazioni post-MVP.*
