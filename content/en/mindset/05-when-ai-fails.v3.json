@@ -91,15 +91,15 @@
       "options": [
         {
           "key": "ai_unreliable",
-          "label": "🛰️ The AI's. It made things up. It's unreliable."
+          "label": "The AI's. It made things up. It's unreliable."
         },
         {
           "key": "user_missing_constraint",
-          "label": "🖱️ Stefano's. He didn't say «only use existing, already-installed libraries»."
+          "label": "Stefano's. He didn't say «only use existing, already-installed libraries»."
         },
         {
           "key": "no_one",
-          "label": "💾 Nobody's. It happens, it's the nature of AI."
+          "label": "Nobody's. It happens, it's the nature of AI."
         }
       ],
       "vignettes": [
@@ -119,15 +119,15 @@
         "by_key": {
           "user_missing_constraint": [
             "Exactly. Stefano knew about Anthropic, knew about Promptly, but didn't close the loop with the prompt.",
-            "Is the AI unreliable? Yes, on what it doesn't know. But it's the PROMPT that tells it what NOT to invent. The 🛰️ shifts blame. The 💾 is resignation. The 🖱️ is control."
+            "Is the AI unreliable? Yes, on what it doesn't know. But it's the PROMPT that tells it what NOT to invent. «The AI's» shifts blame. «Nobody's» is resignation. «Stefano's» is control."
           ],
           "ai_unreliable": [
-            "I see why you thought that. And it's also true — the AI has a limit. But if you stop at 🛰️, every error becomes a wall.",
-            "🖱️ is the most powerful answer. Stefano could have written «only use existing libraries». Three words, a world of errors avoided."
+            "I see why you thought that. And it's also true — the AI has a limit. But if you stop at «it's the AI's fault», every error becomes a wall.",
+            "«Stefano's» is the most powerful answer. Stefano could have written «only use existing libraries». Three words, a world of errors avoided."
           ],
           "no_one": [
-            "💾 is resignation dressed up as acceptance.",
-            "Yes, it happens. But the right question isn't «whose fault is it», it's «how do I avoid it next time». 🖱️ gives you the lever."
+            "«Nobody's» is resignation dressed up as acceptance.",
+            "Yes, it happens. But the right question isn't «whose fault is it», it's «how do I avoid it next time». «Stefano's» gives you the lever."
           ]
         }
       },

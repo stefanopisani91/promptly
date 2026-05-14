@@ -91,15 +91,15 @@
       "options": [
         {
           "key": "ai_unreliable",
-          "label": "🛰️ Dell'AI. Ha inventato cose, è inaffidabile."
+          "label": "Dell'AI. Ha inventato cose, è inaffidabile."
         },
         {
           "key": "user_missing_constraint",
-          "label": "🖱️ Di Stefano. Non aveva specificato «usa solo librerie esistenti e già installate»."
+          "label": "Di Stefano. Non aveva specificato «usa solo librerie esistenti e già installate»."
         },
         {
           "key": "no_one",
-          "label": "💾 Di nessuno. Capita, è la natura dell'AI."
+          "label": "Di nessuno. Capita, è la natura dell'AI."
         }
       ],
       "vignettes": [
@@ -119,15 +119,15 @@
         "by_key": {
           "user_missing_constraint": [
             "Esatto. Stefano sapeva di Anthropic, sapeva di Promptly, ma non aveva chiuso il cerchio col prompt.",
-            "L'AI è inaffidabile? Sì, su quello che non sa. Ma è il PROMPT che le dice cosa NON deve inventare. La 🛰️ scarica responsabilità. La 💾 è rassegnazione. La 🖱️ è controllo."
+            "L'AI è inaffidabile? Sì, su quello che non sa. Ma è il PROMPT che le dice cosa NON deve inventare. «Dell'AI» scarica responsabilità. «Di nessuno» è rassegnazione. «Di Stefano» è controllo."
           ],
           "ai_unreliable": [
-            "Capisco perché hai pensato così. Ed è anche vero — l'AI ha un limite. Ma se ti fermi alla 🛰️, ogni errore diventa un muro.",
-            "La 🖱️ è la più potente. Stefano avrebbe potuto scrivere «usa solo librerie esistenti». Tre parole, un mondo di errori risparmiato."
+            "Capisco perché hai pensato così. Ed è anche vero — l'AI ha un limite. Ma se ti fermi a «è colpa dell'AI», ogni errore diventa un muro.",
+            "«Di Stefano» è la risposta più potente. Stefano avrebbe potuto scrivere «usa solo librerie esistenti». Tre parole, un mondo di errori risparmiato."
           ],
           "no_one": [
-            "La 💾 è rassegnazione travestita da accettazione.",
-            "Sì, capita. Ma la domanda giusta non è «di chi è la colpa», è «come lo evito la prossima volta». La 🖱️ ti dà la leva."
+            "«Di nessuno» è rassegnazione travestita da accettazione.",
+            "Sì, capita. Ma la domanda giusta non è «di chi è la colpa», è «come lo evito la prossima volta». «Di Stefano» ti dà la leva."
           ]
         }
       },

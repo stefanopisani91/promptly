@@ -94,10 +94,10 @@
       "spark_state": "listening",
       "prompt": "Which of these 4 phases do you think is the MOST neglected by beginner vibe coders?",
       "options": [
-        { "key": "setup", "label": "🛰️ Setup — they don't configure a CLAUDE.md." },
-        { "key": "context", "label": "🖱️ Kickoff — they dive in without giving the AI any info." },
-        { "key": "execution", "label": "💾 Execution — they write vague prompts." },
-        { "key": "verification", "label": "🔍 Verification — they don't check what the AI actually did." }
+        { "key": "setup", "label": "Setup — they don't configure a CLAUDE.md." },
+        { "key": "context", "label": "Kickoff — they dive in without giving the AI any info." },
+        { "key": "execution", "label": "Execution — they write vague prompts." },
+        { "key": "verification", "label": "Verification — they don't check what the AI actually did." }
       ],
       "vignettes": [
         { "short": "Think before clicking.", "full": "Think before clicking. One of these costs the most, and it's the one that gets skipped most." }
@@ -120,17 +120,17 @@
             "Now I'll show you how the 5 lessons you took distribute across the 4 phases. It's a map worth gold."
           ],
           "setup": [
-            "Good guess, but the most neglected of all is 🔍 — Verification.",
+            "Good guess, but the most neglected of all is Verification.",
             "Setup you'll do eventually anyway: without CLAUDE.md you realise immediately you're starting from zero each time. Verification, instead, looks optional, so it gets skipped. It isn't.",
             "Now I'll show you how the 5 lessons distribute across the 4 phases."
           ],
           "context": [
-            "Good guess, but the most neglected of all is 🔍 — Verification.",
+            "Good guess, but the most neglected of all is Verification.",
             "Kickoff you learn fast: if you don't give context up front, the AI does visible damage immediately. Verification, instead, looks optional, so it gets skipped. It isn't.",
             "Now I'll show you how the 5 lessons distribute across the 4 phases."
           ],
           "execution": [
-            "Good guess, but the most neglected of all is 🔍 — Verification.",
+            "Good guess, but the most neglected of all is Verification.",
             "Execution you sharpen by force. Verification gets skipped because it looks optional. It isn't.",
             "Now I'll show you how the 5 lessons distribute across the 4 phases."
           ]

@@ -94,10 +94,10 @@
       "spark_state": "listening",
       "prompt": "Secondo te, quale di queste 4 fasi è la PIÙ trascurata dai vibe coder principianti?",
       "options": [
-        { "key": "setup", "label": "🛰️ Setup — non configurano un CLAUDE.md." },
-        { "key": "context", "label": "🖱️ Avvio — si buttano senza dare info all'AI." },
-        { "key": "execution", "label": "💾 Esecuzione — scrivono prompt vaghi." },
-        { "key": "verification", "label": "🔍 Verifica — non controllano quello che l'AI ha fatto." }
+        { "key": "setup", "label": "Setup — non configurano un CLAUDE.md." },
+        { "key": "context", "label": "Avvio — si buttano senza dare info all'AI." },
+        { "key": "execution", "label": "Esecuzione — scrivono prompt vaghi." },
+        { "key": "verification", "label": "Verifica — non controllano quello che l'AI ha fatto." }
       ],
       "vignettes": [
         { "short": "Pensa prima di cliccare.", "full": "Pensa prima di cliccare. Una è quella che paga di più, ed è quella che salta più spesso." }
@@ -120,17 +120,17 @@
             "Adesso ti faccio vedere come le 5 lezioni che hai fatto si distribuiscono sulle 4 fasi. È una mappa che vale oro."
           ],
           "setup": [
-            "Buona scelta, ma la più trascurata in assoluto è la 🔍 — Verifica.",
+            "Buona scelta, ma la più trascurata in assoluto è la Verifica.",
             "Il setup lo fai per forza, prima o poi: senza CLAUDE.md ti rendi conto subito che parti da zero ogni volta. La verifica invece sembra opzionale, e per questo viene saltata. Non lo è.",
             "Adesso ti faccio vedere come le 5 lezioni si distribuiscono sulle 4 fasi."
           ],
           "context": [
-            "Buona scelta, ma la più trascurata in assoluto è la 🔍 — Verifica.",
+            "Buona scelta, ma la più trascurata in assoluto è la Verifica.",
             "L'avvio lo impari in fretta: se non dai contesto all'AI all'inizio, fa danni subito visibili. La verifica invece sembra opzionale, e per questo viene saltata. Non lo è.",
             "Adesso ti faccio vedere come le 5 lezioni si distribuiscono sulle 4 fasi."
           ],
           "execution": [
-            "Buona scelta, ma la più trascurata in assoluto è la 🔍 — Verifica.",
+            "Buona scelta, ma la più trascurata in assoluto è la Verifica.",
             "L'esecuzione la affini per forza. La verifica salta perché sembra opzionale. Non lo è.",
             "Adesso ti faccio vedere come le 5 lezioni si distribuiscono sulle 4 fasi."
           ]
