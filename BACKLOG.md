@@ -14,6 +14,105 @@
 
 ---
 
+## Urgente 0 — PostHog cattura eventi solo dal lato marketing (provider non montato sul lato app)
+
+**Stato:** ⏳ proposed
+**Priorità:** 🔴🔴 ALTISSIMA (sopra a tutti gli altri Urgenti in questa sezione)
+**Aperta:** 14 May 2026
+**Quando affrontarlo:** insieme all'attivazione del **banner dei cookie / consent UI** — vedi sotto perché i due lavori vanno fatti nello stesso passaggio.
+**Scope:**
+- [components/analytics/PostHogProvider.tsx](components/analytics/PostHogProvider.tsx) — provider lazy-init via `requestIdleCallback`
+- [app/(marketing)/[lang]/layout.tsx:112](app/(marketing)/[lang]/layout.tsx#L112) — UNICO mount point del provider in tutto il codebase
+- [lib/analytics/posthog.ts:99](lib/analytics/posthog.ts#L99) — guardia `if (!initialized) return` nel wrapper `track()`
+- Layout app autenticata che NON monta il provider: `app/(app)/layout.tsx` (dashboard, lesson, settings, admin, path)
+
+### Sintomo (a cosa serve sapere questa cosa)
+
+In produzione vediamo in PostHog solo gli eventi del lato **marketing** (landing page pubblica): `landing_viewed`, `landing_hero_*`, `landing_exercise_*`, `landing_faq_*`, `landing_tools_*`, `landing_closing_cta_*`, `landing_lang_switched`.
+
+**TUTTI gli eventi che partono dal lato app autenticata sono silenziosamente droppati.** In particolare:
+
+- `spark_helper_opened` / `_suggestion_clicked` / `_message_sent` / `_quota_hit` / `_missed_personalization` — emessi da [components/lessons/v3/SparkChat.tsx](components/lessons/v3/SparkChat.tsx) dentro le lezioni V3
+- `referral_link_activated` / `referral_link_copied` — emessi da `ReferralShareButton` nella dashboard
+- Tutta la tassonomia futura che vive dentro le lezioni: gli eventi `lesson_started`/`lesson_completed`/`exercise_attempt` predisposti in [lib/lessons/progress.ts:146-148](lib/lessons/progress.ts#L146-L148) (oggi commento "wiring in round successivo") quando saranno cablati partiranno muti se questo bug non è risolto
+
+### Causa esatta
+
+`PostHogProvider` (che chiama `initPostHog()` e poi cattura i pageview manuali) è montato in **un solo layout**, quello marketing:
+
+```
+app/(marketing)/[lang]/layout.tsx:112  <PostHogProvider> { children } </PostHogProvider>
+```
+
+Il wrapper `track()` ha una guardia che bail-out silenziosamente se PostHog non è stato inizializzato:
+
+```ts
+// lib/analytics/posthog.ts:97-101
+export function track(event: AppEvent) {
+  if (typeof window === "undefined") return;
+  if (!initialized) return;          // ← silenzioso, nessun warning
+  posthog.capture(event.name, event.props ?? {});
+}
+```
+
+Risultato: un componente sul lato app (es. SparkChat) importa `track` dal wrapper, lo chiama correttamente, ma `initialized` è `false` perché `initPostHog()` non è mai stato eseguito in quella tab → `posthog.capture` non viene mai chiamato. Nessun errore in console, nessuna traccia.
+
+### Perché farlo insieme al cookie banner (e non prima)
+
+1. Il cookie banner (GDPR/ePrivacy) richiede di **gateare l'init di PostHog dietro al consenso**. Va riscritto comunque `initPostHog()` per non partire prima dell'opt-in.
+2. Mentre riscriviamo l'init flow è il momento naturale per **decidere DOVE montare il provider**. Sceglierne lo scope sbagliato adesso → debito tecnico tra qualche settimana.
+3. Toccare un solo componente analitico in un solo passaggio = meno rischio di drift tra "dove è il provider" e "dove è il consent state".
+4. **Non bisogna esporre più dati senza consenso**. Lasciare il bug ora è in realtà conservativo (meno tracking sul lato app significa meno violazione potenziale finché il banner non c'è). Fixarlo prima del banner peggiorerebbe il rischio GDPR.
+
+### Fix da valutare quando si arriva qui
+
+**Opzione A — Single provider sul root layout** (più pulita)
+- Spostare `<PostHogProvider>` da `app/(marketing)/[lang]/layout.tsx` a `app/layout.tsx` (root). Il provider lazy-inizializza una sola volta per tab, copre marketing + app + auth.
+- Pro: zero duplicazione, un solo punto di gating del consent.
+- Contro: gestire la `lang` per gli eventi cross-surface (oggi PostHogProvider non legge `lang` direttamente, ma se serve attribution si può passare via context).
+
+**Opzione B — Due provider scope-separati** (più granulare)
+- Lasciare il provider marketing dov'è e aggiungerne uno parallelo in `app/(app)/layout.tsx`. La guardia `initialized` in [posthog.ts:5](lib/analytics/posthog.ts#L5) è già idempotente (singleton flag) quindi due mount funzionano.
+- Pro: permette consent UI differenziato (marketing senza login = banner; app loggata = già consensata in onboarding).
+- Contro: due punti di gating, due possibili divergenze.
+
+**Opzione C — Cookie-consent provider wrappa entrambi**
+- Quando arriva il banner si farà comunque un `<ConsentProvider>` che decide se rendere PostHog attivo. Quel provider sta sul root, e PostHog si attacca a lui. Naturalmente questa è la combinazione di A + nuovo livello di gating.
+
+### Test post-fix (verificare in produzione, su account loggato)
+
+1. Login → entra in una lezione V3 → apri Spark Helper → in PostHog deve apparire `spark_helper_opened` entro 30s.
+2. Clicca un suggerimento → `spark_helper_suggestion_clicked` deve apparire.
+3. Apri la dashboard → tocca "Condividi" sul referral card → `referral_link_copied` deve apparire.
+4. Visita la landing in modalità incognito (senza login) → `landing_viewed` deve continuare a funzionare (regression check).
+5. Aprire la dev console: `window.posthog?.config?.token` deve essere definito sia su `/dashboard` sia su `/it` (oggi solo la seconda).
+
+### Vincoli da rispettare
+
+- Mantenere `capture_pageview: false` + `capture_pageleave: true` — i pageview sono già fatti manualmente in [PostHogProvider.tsx:70](components/analytics/PostHogProvider.tsx#L70) per evitare doppi conteggi con il routing client-side di Next.js.
+- Il lazy init via `requestIdleCallback` (2.5s fallback) deve restare — è la garanzia che PostHog non blocchi LCP/INP.
+- Istanza EU (`https://eu.i.posthog.com`) obbligatoria per GDPR — già il default in [posthog.ts:14](lib/analytics/posthog.ts#L14).
+- Non aggiungere chiamate dirette a `posthog-js` fuori dal wrapper. Tutto il tracking deve continuare a passare da `track()` (convenzione di CLAUDE.md riga 218).
+
+### Prompt Claude Code (quando lo affronteremo)
+
+```
+Sto attivando il cookie banner / consent UI per GDPR. Contestualmente devo
+risolvere il bug PostHog descritto in BACKLOG.md "Urgente 0":
+PostHogProvider è montato solo in app/(marketing)/[lang]/layout.tsx, quindi
+TUTTI gli eventi dal lato app autenticata (spark_helper_*, referral_*, e i
+futuri lesson_*) vengono silenziosamente droppati dalla guardia
+`if (!initialized) return` in lib/analytics/posthog.ts:99.
+
+Decidi insieme a me l'opzione (A: provider sul root layout / B: due provider
+scope-separati / C: consent provider che wrappa entrambi) basandoti su come
+sto strutturando il cookie banner. Poi: implementa, aggiungi log dev-only
+quando track() viene chiamato pre-consent, e verifica con i 5 test del
+post-fix nella voce di backlog.
+```
+
+---
+
 ## Urgente 1 — Calibrare il Lucia widget perché l'utente arrivi più facilmente alla vittoria
 
 **Stato:** ✅ done (10 May 2026, commit `e173d5c`)
