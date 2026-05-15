@@ -13,7 +13,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowRight } from "lucide-react";
-import { Spark } from "@/components/lessons/v3/Spark";
+import { SparkSphere } from "@/components/promptly/SparkSphere";
 import { useReferralModal } from "@/components/promptly/ReferralModalProvider";
 import type { AuthCopy } from "@/lib/i18n/auth";
 
@@ -157,9 +157,8 @@ export function SparkCompanionCard({
           </p>
           {/* Bob animation wrapper */}
           <span className="animate-spark-bob">
-            <Spark
-              state="idle"
-              size={isHero ? 80 : 52}
+            <SparkSphere
+              size={isHero ? 96 : 64}
               ariaLabel={copy.sparkLabel}
             />
           </span>

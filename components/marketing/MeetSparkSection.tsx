@@ -1,4 +1,5 @@
 import type { LandingCopy } from "@/lib/i18n/landing";
+import { SparkSphere } from "@/components/promptly/SparkSphere";
 import { Reveal } from "./Reveal";
 import { TrackOnView } from "./TrackOnView";
 
@@ -57,10 +58,8 @@ export function MeetSparkSection({ copy }: Props) {
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-[minmax(260px,360px)_1fr] lg:gap-16">
           {/* Portrait — placeholder mascotte, decorativo. */}
-          <Reveal className="meet-spark-portrait" threshold={0.15}>
-            <div aria-hidden="true" className="meet-spark-body">
-              <div className="meet-spark-highlight" />
-            </div>
+          <Reveal threshold={0.15}>
+            <SparkSphere />
           </Reveal>
 
           <Reveal className="max-w-xl" threshold={0.15} delayMs={150}>
