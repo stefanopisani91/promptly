@@ -34,6 +34,11 @@ export function StreakFlame({ intensity = 0 }: Props) {
     <div
       aria-hidden
       className={`pointer-events-none absolute inset-0 z-0 select-none overflow-hidden transition-opacity duration-700 ${opacityClass}`}
+      // Neutralise the asset's stock purple/violet tint into a warm grey
+      // so the card chrome matches the editorial landing palette. Streak
+      // intensity is signalled by the orange/red number + the "X giorni 🔥"
+      // line — the decoration stays as a quiet background.
+      style={{ filter: "grayscale(100%) sepia(15%) brightness(0.95)" }}
     >
       <Lottie
         lottieRef={lottieRef}
