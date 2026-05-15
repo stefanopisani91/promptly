@@ -3,7 +3,7 @@ import type { ComponentType, SVGProps } from "react";
 import type { Lang } from "@/types";
 import type { LandingCopy } from "@/lib/i18n/landing";
 import { LangSwitcher } from "@/components/i18n/LangSwitcher";
-import { PromptlyWordmark } from "./PromptlyWordmark";
+import { PromptlyWordmark } from "@/components/promptly/PromptlyWordmark";
 
 interface Props {
   lang: Lang;
