@@ -1,7 +1,9 @@
-// Console errors block — sits as the bottom half of the unified left
-// vignette. Round 5: stripped down to ONLY the two error lines (red), no
-// `npm run dev` chatter, no header chrome. The simpler signal-to-noise
-// helps non-tech users spot the bug instantly.
+// Console errors block — sits as the bottom strip of the unified left
+// vignette. Editorial pass (May 2026): the dark "terminal" banda è stata
+// sostituita da una hairline-left rossa su sfondo neutro, in linea col
+// dialetto editoriale della landing. Restano solo le due righe d'errore
+// in mono micro per dare il segnale "qualcosa è rotto" senza più
+// chrome scuro che competeva col resto della sezione.
 
 import type { LuciaDemoCopy } from "@/lib/landing-demo/types";
 
@@ -13,9 +15,10 @@ export function LuciaConsole({ copy }: Props) {
   return (
     <div
       style={{
-        background: "var(--tool-bg)",
-        // Round 6 spec: vertical padding 12px (horizontal stays 20px).
-        padding: "12px 20px",
+        background: "var(--surface)",
+        padding: "12px 14px",
+        borderTop: "1px solid var(--border)",
+        borderLeft: "2px solid #c8521f",
         fontFamily: "var(--font-jetbrains), ui-monospace, monospace",
       }}
     >
@@ -23,10 +26,9 @@ export function LuciaConsole({ copy }: Props) {
         aria-label="terminal output"
         style={{
           margin: 0,
-          // Round 6 spec: 12px.
-          fontSize: 12,
-          lineHeight: 1.5,
-          color: "var(--tool-error)",
+          fontSize: 11,
+          lineHeight: 1.55,
+          color: "#c8521f",
           background: "transparent",
           whiteSpace: "pre-wrap",
           wordBreak: "break-word",

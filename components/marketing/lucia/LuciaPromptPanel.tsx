@@ -1,11 +1,16 @@
 "use client";
 
-// Right-card of the demo: code-editor look that morphs from "prompt editor"
-// (initial) to "result viewer" (cyberpunk-terminal score panel) once the
-// evaluation completes. Loosely adapted from the previous PromptEvaluator.tsx
-// but driven by the parent orchestrator (no internal state for the
-// evaluation itself — the orchestrator owns it so it can also drive the
-// homepage fix animations on the left).
+// Right-card of the demo: morphs from "prompt editor" (textarea) to
+// "evaluation card" (score + dimensions + Spark advice) once the API
+// returns. Editorial pass (May 2026): tutta la chrome stile IDE
+// (macOS dots, tab bar, status bar a 2 righe, action bar dark, neon glow
+// sul punteggio, scan-line + grid pattern di sfondo) è stata sostituita
+// con il linguaggio editoriale della landing — surface bianco, hairline
+// border, mono micro per i numeri di riga, bottone primary arancione
+// come quello dell'hero, score in heading sans, barre dimensione
+// hairline da 3px, consiglio in blockquote serif italic con uno Spark
+// placeholder mini accanto. La logica (cursor tracking, animated score,
+// honeypot, reduced motion, attempt cap) è invariata.
 
 import {
   useCallback,
@@ -13,15 +18,8 @@ import {
   useMemo,
   useRef,
   useState,
-  type CSSProperties,
 } from "react";
-import {
-  FileCode,
-  FileJson,
-  Loader2,
-  RotateCcw,
-  Terminal,
-} from "lucide-react";
+import { ArrowRight, Loader2, RotateCcw } from "lucide-react";
 import type {
   DimensionKey,
   LuciaDemoCopy,
@@ -41,24 +39,30 @@ const DIMENSION_ORDER: DimensionKey[] = [
   "protezione",
 ];
 
-// Cyberpunk dimension colours — diegetic to the "tool view" result panel
-// only. Kept as hex (not CSS variables) because they're concatenated with
-// alpha suffixes (e.g. `${c}80`) in inline glow/shadow strings, which
-// `var(--token)` can't satisfy. `obiettivo` mirrors `--tool-accent`,
-// `great`/`perfect` mirror `--tool-accent-victory` — keep them in sync.
+// Editorial palette — 4 accenti dalla design palette della landing
+// (CLAUDE.md § design system). Ogni dimensione ha un senso semantico:
+//   chiarezza → text-primary  (neutro, "voce piena")
+//   contesto  → streak-freeze (#38bdf8, "informativo")
+//   obiettivo → primary brand (#e8703f, "qui sei tu")
+//   protezione→ xp-gold       (#eab308, "fai attenzione")
+// Niente glow, niente alpha-suffix tricks — colori opachi diretti.
 const DIM_COLORS: Record<DimensionKey, string> = {
-  chiarezza: "#00f0ff",
-  contesto: "#ff00e5",
-  obiettivo: "#c5f432",
-  protezione: "#ffb800",
+  chiarezza: "#0a0a0a",
+  contesto: "#38bdf8",
+  obiettivo: "#e8703f",
+  protezione: "#eab308",
 };
 
+// Score band → colore del numero. Modulato sulla palette brand, niente
+// rainbow neon. Le band basse restano in text-secondary (segnale "non
+// abbastanza"); good salta al primary (siamo arrivati alla zona Promptly);
+// great/perfect intensificano in primary-deep.
 const BAND_COLORS: Record<ScoreBand, string> = {
-  review: "#ff6b4a",
-  improve: "#ffd700",
-  good: "#b8ff00",
-  great: "#00c853",
-  perfect: "#00c853",
+  review: "#525252",
+  improve: "#525252",
+  good: "#e8703f",
+  great: "#c8521f",
+  perfect: "#a23e12",
 };
 
 const ZERO_DIMS: Record<DimensionKey, number> = {
@@ -67,31 +71,6 @@ const ZERO_DIMS: Record<DimensionKey, number> = {
   obiettivo: 0,
   protezione: 0,
 };
-
-const TERMINAL_BAR_STYLE: CSSProperties = {
-  background: "var(--tool-bg-chrome)",
-  padding: "0.55rem 0.95rem",
-  display: "flex",
-  alignItems: "center",
-  gap: "0.5rem",
-  position: "relative",
-  zIndex: 2,
-};
-
-const DOTS_STYLE: CSSProperties = { display: "flex", gap: "0.4rem" };
-
-const dotStyle = (bg: string): CSSProperties => ({
-  width: 11,
-  height: 11,
-  borderRadius: "50%",
-  background: bg,
-});
-
-function getSeverityIcon(score: number): string {
-  if (score >= 75) return "✓";
-  if (score >= 50) return "•";
-  return "!";
-}
 
 function usePrefersReducedMotion(): boolean {
   const [prefers, setPrefers] = useState(false);
@@ -269,123 +248,38 @@ export function LuciaPromptPanel({
     <div
       aria-busy={isLoading}
       style={{
-        background: showResult
-          ? "var(--tool-bg-result)"
-          : "var(--tool-bg-elevated)",
-        borderRadius: "8px",
+        background: "var(--surface)",
+        borderRadius: "12px",
         overflow: "hidden",
-        boxShadow:
-          showResult && evaluation && evaluation.totale >= 75
-            ? `6px 6px 0 ${scoreColor}, 0 0 30px ${scoreColor}40`
-            : "6px 6px 0 var(--tool-bg)",
-        // Round 4 vignettazione: orange brand bar identifies V3 as "the
-        // user's tool" (Promptly's side), distinct from the lime-bordered
-        // Lucia + console vignettes on the left.
-        borderLeft: "4px solid var(--primary)",
+        border: "1px solid var(--border)",
         display: "flex",
         flexDirection: "column",
         position: "relative",
-        transition: "box-shadow 0.5s",
         flex: 1,
       }}
     >
-      {/* macOS chrome */}
-      <div style={TERMINAL_BAR_STYLE}>
-        <div style={DOTS_STYLE}>
-          <span style={dotStyle("var(--macos-red)")} />
-          <span style={dotStyle("var(--macos-yellow)")} />
-          <span style={dotStyle("var(--macos-green)")} />
-        </div>
+      {/* Optional micro-strip in cima per "tentativo precedente" — non
+          più una tab bar con file pill + indicator dot. Una sola riga di
+          contesto mono allineata a destra, visibile solo se rilevante. */}
+      {showPrevAttempt && (
         <div
           style={{
-            flex: 1,
-            textAlign: "center",
-            color: "var(--tool-text-faint)",
-            fontSize: "0.74rem",
-            fontFamily: "var(--font-jetbrains), ui-monospace, monospace",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "0.4rem",
+            padding: "0.5rem 0.85rem",
+            borderBottom: "1px solid var(--border)",
+            fontFamily:
+              "var(--font-jetbrains), ui-monospace, monospace",
+            fontSize: "0.68rem",
+            color: "var(--text-muted)",
+            textAlign: "right",
+            letterSpacing: "0.03em",
           }}
         >
-          <Terminal size={11} aria-hidden /> {copy.editor.windowTitle}
-        </div>
-      </div>
-
-      {/* Tab bar */}
-      <div
-        style={{
-          background: "var(--tool-bg-chrome)",
-          display: "flex",
-          alignItems: "center",
-          borderBottom: "1px solid var(--tool-divider)",
-          position: "relative",
-          zIndex: 2,
-        }}
-      >
-        <div
-          style={{
-            background: showResult
-              ? "var(--tool-bg-result)"
-              : "var(--tool-bg-elevated)",
-            padding: "0.5rem 0.95rem",
-            display: "flex",
-            alignItems: "center",
-            gap: "0.5rem",
-            fontFamily: "var(--font-jetbrains), ui-monospace, monospace",
-            fontSize: "0.75rem",
-            color: "var(--tool-text)",
-            borderTop: `2px solid ${
-              showResult ? scoreColor : "var(--primary)"
-            }`,
-            borderRight: "1px solid var(--tool-divider)",
-            transition: "all 0.3s",
-          }}
-        >
-          {showResult ? (
-            <FileJson size={13} color={scoreColor} aria-hidden />
-          ) : (
-            <FileCode size={13} color="var(--primary)" aria-hidden />
+          {copy.editor.previousAttempt.replace(
+            "{score}",
+            String(prevScore),
           )}
-          {showResult ? "result.json" : "prompt.md"}
-          <span
-            style={{
-              width: 6,
-              height: 6,
-              borderRadius: "50%",
-              background:
-                userPrompt || showResult
-                  ? showResult
-                    ? scoreColor
-                    : "var(--primary)"
-                  : "transparent",
-              marginLeft: "0.25rem",
-              boxShadow: showResult ? `0 0 8px ${scoreColor}` : "none",
-            }}
-            aria-hidden
-          />
         </div>
-
-        {showPrevAttempt && (
-          <div
-            style={{
-              flex: 1,
-              textAlign: "right",
-              paddingRight: "0.9rem",
-              fontFamily: "var(--font-jetbrains), ui-monospace, monospace",
-              fontSize: "0.66rem",
-              color: "var(--tool-text-faint)",
-              letterSpacing: "0.05em",
-            }}
-          >
-            {copy.editor.previousAttempt.replace(
-              "{score}",
-              String(prevScore),
-            )}
-          </div>
-        )}
-      </div>
+      )}
 
       {/* Honeypot — visually hidden but reachable to naive bots scraping forms */}
       <input
@@ -425,6 +319,7 @@ export function LuciaPromptPanel({
           isLoading={isLoading}
           lineNumbers={lineNumbers}
           cursorLine={cursorPos.line}
+          showFakeCaret={userPrompt.length === 0}
         />
       ) : (
         <ResultBody
@@ -438,90 +333,45 @@ export function LuciaPromptPanel({
         />
       )}
 
-      {/* Status bar */}
+      {/* Footer combinato: meta micro a sinistra + bottone primary a destra.
+          Sostituisce la coppia status-bar/action-bar dark con un'unica riga
+          editoriale su sfondo surface-muted, hairline top. */}
       <div
         style={{
-          background: "var(--tool-bg-chrome)",
-          padding: "0.4rem 0.95rem",
+          background: "var(--surface-muted)",
+          padding: "0.7rem 0.95rem",
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          fontFamily: "var(--font-jetbrains), ui-monospace, monospace",
-          fontSize: "0.68rem",
-          color: "var(--tool-text)",
-          borderTop: "1px solid var(--tool-divider)",
+          gap: "0.75rem",
+          borderTop: "1px solid var(--border)",
           flexWrap: "wrap",
-          gap: "0.5rem",
-          position: "relative",
-          zIndex: 2,
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            gap: "0.85rem",
-            alignItems: "center",
-          }}
-        >
-          <span style={{ color: showResult ? scoreColor : "var(--primary)" }}>
-            ●{" "}
-            {isLoading
-              ? copy.editor.statusEvaluating
-              : showResult
-                ? copy.editor.statusEvaluated
-                : copy.editor.statusReady}
-          </span>
-          {showEditor && !isLoading && (
-            <span>
-              Ln {cursorPos.line}, Col {cursorPos.col}
-            </span>
-          )}
-          {showResult && evaluation && (
-            <span>score: {evaluation.totale}/100</span>
-          )}
-        </div>
-        <div
-          style={{
-            display: "flex",
-            gap: "0.85rem",
-            color: "var(--tool-text-muted)",
-          }}
-        >
-          <span>
-            {userPrompt.length} {copy.editor.charsLabel}
-          </span>
-          <span>{showResult ? "JSON" : "Markdown"}</span>
-        </div>
-      </div>
-
-      {/* Action bar */}
-      <div
-        style={{
-          background: "var(--tool-bg-action)",
-          padding: "0.8rem 0.95rem",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          gap: "0.5rem",
-          borderTop: "1px solid var(--tool-divider)",
-          position: "relative",
-          zIndex: 2,
         }}
       >
         <div
           role="status"
           aria-live="polite"
           style={{
-            fontFamily: "var(--font-jetbrains), ui-monospace, monospace",
-            fontSize: "0.68rem",
-            color: errorMessage ? "#fca5a5" : "transparent",
-            minHeight: "1.2em",
-            flex: 1,
+            fontFamily:
+              "var(--font-jetbrains), ui-monospace, monospace",
+            fontSize: "0.7rem",
+            color: errorMessage
+              ? "#c8521f"
+              : "var(--text-muted)",
+            flex: "1 1 auto",
             textAlign: "left",
-            paddingRight: "0.5rem",
+            letterSpacing: "0.02em",
+            minHeight: "1.2em",
           }}
         >
-          {errorMessage ?? "·"}
+          {errorMessage ??
+            (showEditor && !isLoading
+              ? `Ln ${cursorPos.line}, Col ${cursorPos.col} · ${userPrompt.length} ${copy.editor.charsLabel}`
+              : showResult && evaluation
+                ? `${copy.editor.statusEvaluated} · ${evaluation.totale}/100`
+                : isLoading
+                  ? copy.editor.statusEvaluating
+                  : copy.editor.statusReady)}
         </div>
 
         {!showResult ? (
@@ -532,38 +382,32 @@ export function LuciaPromptPanel({
             style={{
               display: "inline-flex",
               alignItems: "center",
-              gap: "0.5rem",
+              gap: "0.45rem",
               background: editButtonDisabled
-                ? "var(--tool-bg-card)"
+                ? "var(--surface-muted)"
                 : "var(--primary)",
-              color: editButtonDisabled
-                ? "var(--tool-text-muted)"
-                : "#ffffff",
-              border: "none",
-              padding: "0.55rem 1.2rem",
+              color: editButtonDisabled ? "var(--text-muted)" : "#ffffff",
+              border: editButtonDisabled
+                ? "1px solid var(--border)"
+                : "none",
+              padding: "0.55rem 1.1rem",
               borderRadius: "6px",
-              fontWeight: 700,
-              fontSize: "0.82rem",
+              fontWeight: 600,
+              fontSize: "0.85rem",
               cursor: editButtonDisabled ? "not-allowed" : "pointer",
-              fontFamily: "var(--font-jetbrains), ui-monospace, monospace",
-              transition: "transform 0.1s, background 0.2s",
-              boxShadow: editButtonDisabled
-                ? "none"
-                : "0 0 14px rgba(232, 112, 63, 0.5)",
+              fontFamily: "var(--font-jakarta), system-ui, sans-serif",
+              transition: "background 0.2s",
             }}
           >
             {isLoading ? (
               <>
-                <Loader2
-                  size={15}
-                  className="lucia-spin"
-                  aria-hidden
-                />{" "}
+                <Loader2 size={14} className="lucia-spin" aria-hidden />{" "}
                 {copy.editor.btnEvaluating}
               </>
             ) : (
               <>
-                <span aria-hidden>▶</span> {copy.editor.btnEvaluate}
+                {copy.editor.btnEvaluate}
+                <ArrowRight size={14} aria-hidden />
               </>
             )}
           </button>
@@ -574,16 +418,16 @@ export function LuciaPromptPanel({
             style={{
               display: "inline-flex",
               alignItems: "center",
-              gap: "0.5rem",
+              gap: "0.4rem",
               background: "transparent",
-              color: "var(--tool-text)",
-              border: "1.5px solid var(--tool-bg-card)",
-              padding: "0.5rem 1.1rem",
+              color: "var(--text-primary)",
+              border: "1px solid var(--border)",
+              padding: "0.5rem 1rem",
               borderRadius: "6px",
-              fontWeight: 600,
-              fontSize: "0.78rem",
+              fontWeight: 500,
+              fontSize: "0.8rem",
               cursor: "pointer",
-              fontFamily: "var(--font-jetbrains), ui-monospace, monospace",
+              fontFamily: "var(--font-jakarta), system-ui, sans-serif",
             }}
           >
             <RotateCcw size={13} aria-hidden /> {copy.editor.btnRetry}
@@ -618,9 +462,27 @@ export function LuciaPromptPanel({
             transform: translateX(0);
           }
         }
+        @keyframes lucia-caret-blink {
+          0%,
+          55% {
+            opacity: 1;
+          }
+          55.01%,
+          100% {
+            opacity: 0;
+          }
+        }
+        .lucia-fake-caret {
+          animation: lucia-caret-blink 1.1s linear infinite;
+          will-change: opacity;
+        }
         @media (prefers-reduced-motion: reduce) {
           .lucia-spin {
             animation: none;
+          }
+          .lucia-fake-caret {
+            animation: none;
+            opacity: 1;
           }
         }
       `}</style>
@@ -642,6 +504,7 @@ function EditorBody({
   isLoading,
   lineNumbers,
   cursorLine,
+  showFakeCaret,
 }: {
   copy: LuciaDemoCopy["editor"];
   userPrompt: string;
@@ -657,22 +520,26 @@ function EditorBody({
   isLoading: boolean;
   lineNumbers: number[];
   cursorLine: number;
+  /** Render a blinking fake caret at line 1 / col 1 of the textarea —
+   * sostituisce il placeholder testuale ed è l'unico "vieni qui" dentro
+   * al campo finché l'utente non lo focalizza o digita. */
+  showFakeCaret: boolean;
 }) {
   return (
-    <div style={{ display: "flex", flex: 1 }}>
+    <div style={{ display: "flex", flex: 1, background: "var(--surface)" }}>
       <div
         aria-hidden
         style={{
-          background: "var(--tool-bg-elevated)",
+          background: "var(--surface)",
           padding: "0.85rem 0.55rem 0.85rem 0.95rem",
           fontFamily: "var(--font-jetbrains), ui-monospace, monospace",
           fontSize: "0.78rem",
           lineHeight: 1.55,
-          color: "var(--tool-text-muted)",
+          color: "var(--text-muted)",
           textAlign: "right",
           userSelect: "none",
           minWidth: "2.5rem",
-          borderRight: "1px solid var(--tool-bg-chrome)",
+          borderRight: "1px solid var(--border)",
         }}
       >
         {lineNumbers.map((n) => (
@@ -681,46 +548,65 @@ function EditorBody({
             style={{
               color:
                 n === cursorLine
-                  ? "var(--tool-text)"
-                  : "var(--tool-text-subtle)",
+                  ? "var(--text-secondary)"
+                  : "var(--text-muted)",
             }}
           >
             {n}
           </div>
         ))}
       </div>
-      <textarea
-        value={userPrompt}
-        onChange={(e) => onChange(e.target.value, e)}
-        onKeyUp={onCursor}
-        onClick={onCursor}
-        onFocus={(e) => {
-          onCursor(e);
-          onFirstFocus?.();
-        }}
-        placeholder={copy.placeholder}
-        disabled={isLoading}
-        spellCheck={false}
-        aria-label={copy.ariaTextarea}
-        maxLength={1500}
-        style={{
-          flex: 1,
-          minHeight: "240px",
-          padding: "0.85rem 0.95rem",
-          fontFamily: "var(--font-jetbrains), ui-monospace, monospace",
-          fontSize: "0.82rem",
-          lineHeight: 1.55,
-          border: "none",
-          outline: "none",
-          resize: "none",
-          background: "var(--tool-bg-elevated)",
-          color: "var(--tool-text)",
-          caretColor: "var(--primary)",
-          boxSizing: "border-box",
-          opacity: isLoading ? 0.5 : 1,
-          transition: "opacity 0.2s",
-        }}
-      />
+      <div style={{ position: "relative", flex: 1, display: "flex" }}>
+        {showFakeCaret && (
+          <span
+            aria-hidden
+            className="lucia-fake-caret"
+            style={{
+              position: "absolute",
+              top: "0.85rem",
+              left: "0.95rem",
+              width: 9,
+              height: "1.45em",
+              background: "var(--primary)",
+              borderRadius: 1,
+              pointerEvents: "none",
+              fontSize: "0.82rem",
+              zIndex: 1,
+            }}
+          />
+        )}
+        <textarea
+          value={userPrompt}
+          onChange={(e) => onChange(e.target.value, e)}
+          onKeyUp={onCursor}
+          onClick={onCursor}
+          onFocus={(e) => {
+            onCursor(e);
+            onFirstFocus?.();
+          }}
+          disabled={isLoading}
+          spellCheck={false}
+          aria-label={copy.ariaTextarea}
+          maxLength={1500}
+          style={{
+            flex: 1,
+            minHeight: "240px",
+            padding: "0.85rem 0.95rem",
+            fontFamily: "var(--font-jetbrains), ui-monospace, monospace",
+            fontSize: "0.82rem",
+            lineHeight: 1.55,
+            border: "none",
+            outline: "none",
+            resize: "none",
+            background: "var(--surface)",
+            color: "var(--text-primary)",
+            caretColor: showFakeCaret ? "transparent" : "var(--primary)",
+            boxSizing: "border-box",
+            opacity: isLoading ? 0.5 : 1,
+            transition: "opacity 0.2s",
+          }}
+        />
+      </div>
     </div>
   );
 }
@@ -753,255 +639,223 @@ function ResultBody({
       aria-label={copy.result.evalLabel}
       style={{
         flex: 1,
-        padding: "1.4rem 1.15rem",
-        position: "relative",
-        overflow: "hidden",
+        padding: "1.4rem 1.25rem 1.25rem",
+        background: "var(--surface)",
         minHeight: "320px",
       }}
     >
-      {/* Subtle terminal grid background */}
-      <div
-        aria-hidden
-        style={{
-          position: "absolute",
-          inset: 0,
-          backgroundImage:
-            "linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)",
-          backgroundSize: "24px 24px",
-          pointerEvents: "none",
-        }}
-      />
-      <div
-        aria-hidden
-        style={{
-          position: "absolute",
-          inset: 0,
-          background:
-            "repeating-linear-gradient(0deg, transparent 0, transparent 2px, rgba(255,255,255,0.015) 2px, rgba(255,255,255,0.015) 3px)",
-          pointerEvents: "none",
-        }}
-      />
-
-      <div style={{ position: "relative", zIndex: 2 }}>
-        {/* Score header */}
-        <div style={{ textAlign: "center", marginBottom: "1.15rem" }}>
-          <div
-            style={{
-              fontFamily: "var(--font-jetbrains), ui-monospace, monospace",
-              fontSize: "0.62rem",
-              color: "var(--tool-text-muted)",
-              letterSpacing: "0.25em",
-            }}
-          >
-            {"// "}
-            {copy.result.evalLabel}
-          </div>
-          <div
-            role="meter"
-            aria-label={copy.editor.ariaScore}
-            aria-valuenow={evaluation.totale}
-            aria-valuemin={0}
-            aria-valuemax={100}
-            style={{
-              fontFamily: "var(--font-jakarta), system-ui, sans-serif",
-              fontSize: "clamp(3.2rem, 12vw, 5.4rem)",
-              fontWeight: 700,
-              lineHeight: 1,
-              color: scoreColor,
-              textShadow: `0 0 18px ${scoreColor}cc, 0 0 36px ${scoreColor}66, 0 0 60px ${scoreColor}33`,
-              margin: "0.3rem 0 0.15rem 0",
-              letterSpacing: "-0.02em",
-            }}
-          >
-            {animatedScore}
-          </div>
-          <div
-            style={{
-              fontFamily: "var(--font-jetbrains), ui-monospace, monospace",
-              fontSize: "0.7rem",
-              color: "var(--tool-text-muted)",
-              letterSpacing: "0.2em",
-            }}
-          >
-            / 100 ·{" "}
-            <span
-              style={{
-                color: scoreColor,
-                textShadow: `0 0 6px ${scoreColor}80`,
-              }}
-            >
-              {scoreLabel}
-            </span>
-          </div>
-        </div>
-
-        <div
-          aria-hidden
-          style={{
-            height: 1,
-            background: `linear-gradient(90deg, transparent, ${scoreColor}, transparent)`,
-            boxShadow: `0 0 8px ${scoreColor}80`,
-            margin: "1rem 0",
-          }}
-        />
-
-        {/* Dimensions */}
-        <div>
-          {DIMENSION_ORDER.map((key, i) => {
-            const dimMeta = copy.result.dimensions[key];
-            const c = DIM_COLORS[key];
-            const v = animatedDims[key];
-            const finalV = evaluation[key];
-            const sev = getSeverityIcon(finalV);
-            return (
-              <div
-                key={key}
-                style={{
-                  marginBottom: "0.7rem",
-                  fontFamily:
-                    "var(--font-jetbrains), ui-monospace, monospace",
-                  opacity: reducedMotion ? 1 : 0,
-                  animation: reducedMotion
-                    ? undefined
-                    : `lucia-eval-fade 0.5s ease-out ${
-                        0.2 + i * 0.12
-                      }s forwards`,
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "baseline",
-                    marginBottom: "0.22rem",
-                    fontSize: "0.74rem",
-                  }}
-                >
-                  <span>
-                    <span aria-hidden style={{ color: "var(--tool-text-muted)" }}>
-                      {"> "}
-                    </span>
-                    <span
-                      style={{
-                        color: c,
-                        textShadow: `0 0 6px ${c}80`,
-                        fontWeight: 600,
-                      }}
-                    >
-                      {dimMeta.label}
-                    </span>
-                    <span
-                      aria-hidden
-                      style={{
-                        color: "var(--tool-text-subtle)",
-                        marginLeft: "0.45rem",
-                        fontSize: "0.68rem",
-                      }}
-                    >
-                      {"// "}
-                      {dimMeta.desc}
-                    </span>
-                  </span>
-                  <span
-                    style={{
-                      color: c,
-                      fontWeight: 700,
-                      textShadow: `0 0 6px ${c}80`,
-                      fontSize: "0.76rem",
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: "0.4rem",
-                    }}
-                  >
-                    <span aria-hidden>{sev}</span>
-                    {String(v).padStart(3, "0")}
-                  </span>
-                </div>
-                <div
-                  role="progressbar"
-                  aria-label={`${copy.editor.ariaBar}: ${dimMeta.label}`}
-                  aria-valuenow={finalV}
-                  aria-valuemin={0}
-                  aria-valuemax={100}
-                  style={{
-                    height: 5,
-                    background: "var(--tool-bg)",
-                    borderRadius: 2,
-                    overflow: "hidden",
-                    border: `1px solid ${c}40`,
-                    boxShadow: `inset 0 0 4px ${c}20`,
-                  }}
-                >
-                  <div
-                    aria-hidden
-                    style={{
-                      width: `${finalV}%`,
-                      height: "100%",
-                      background: c,
-                      boxShadow: `0 0 8px ${c}, 0 0 16px ${c}80`,
-                      transformOrigin: "left",
-                      animation: reducedMotion
-                        ? undefined
-                        : `lucia-eval-grow 0.9s cubic-bezier(0.4, 0, 0.2, 1) ${
-                            0.4 + i * 0.12
-                          }s both`,
-                    }}
-                  />
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        <div
-          aria-hidden
-          style={{
-            height: 1,
-            background:
-              "linear-gradient(90deg, transparent, #00F0FF80, transparent)",
-            boxShadow: "0 0 6px #00F0FF40",
-            margin: "1rem 0 0.75rem 0",
-          }}
-        />
-
-        {/* Advice */}
+      {/* Score header — niente glow, niente scan-line. Kicker mono +
+          numero in heading sans peso 500 + label band in mono micro. */}
+      <div style={{ textAlign: "center", marginBottom: "1.15rem" }}>
         <div
           style={{
             fontFamily: "var(--font-jetbrains), ui-monospace, monospace",
-            opacity: reducedMotion ? 1 : 0,
-            animation: reducedMotion
-              ? undefined
-              : "lucia-eval-fade 0.5s ease-out 1s forwards",
+            fontSize: "0.66rem",
+            color: "var(--text-muted)",
+            letterSpacing: "0.18em",
+            textTransform: "uppercase",
           }}
         >
+          {"// "}
+          {copy.result.evalLabel}
+        </div>
+        <div
+          role="meter"
+          aria-label={copy.editor.ariaScore}
+          aria-valuenow={evaluation.totale}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          style={{
+            fontFamily: "var(--font-jakarta), system-ui, sans-serif",
+            fontSize: "clamp(3rem, 10vw, 4.6rem)",
+            fontWeight: 600,
+            lineHeight: 1,
+            color: scoreColor,
+            margin: "0.45rem 0 0.25rem 0",
+            letterSpacing: "-0.025em",
+          }}
+        >
+          {animatedScore}
+        </div>
+        <div
+          style={{
+            fontFamily: "var(--font-jetbrains), ui-monospace, monospace",
+            fontSize: "0.72rem",
+            color: "var(--text-muted)",
+            letterSpacing: "0.12em",
+          }}
+        >
+          / 100 ·{" "}
+          <span style={{ color: scoreColor, fontWeight: 600 }}>
+            {scoreLabel}
+          </span>
+        </div>
+      </div>
+
+      <div
+        aria-hidden
+        style={{
+          height: 1,
+          background: "var(--border)",
+          margin: "0.85rem 0 1rem",
+        }}
+      />
+
+      {/* Dimensions — hairline 3px, palette landing, niente neon glow */}
+      <div>
+        {DIMENSION_ORDER.map((key, i) => {
+          const dimMeta = copy.result.dimensions[key];
+          const c = DIM_COLORS[key];
+          const v = animatedDims[key];
+          const finalV = evaluation[key];
+          return (
+            <div
+              key={key}
+              style={{
+                marginBottom: "0.7rem",
+                opacity: reducedMotion ? 1 : 0,
+                animation: reducedMotion
+                  ? undefined
+                  : `lucia-eval-fade 0.5s ease-out ${
+                      0.2 + i * 0.12
+                    }s forwards`,
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "baseline",
+                  marginBottom: "0.25rem",
+                  fontSize: "0.82rem",
+                  fontFamily: "var(--font-jakarta), system-ui, sans-serif",
+                }}
+              >
+                <span>
+                  <span
+                    style={{
+                      color: "var(--text-primary)",
+                      fontWeight: 500,
+                    }}
+                  >
+                    {dimMeta.label.charAt(0).toUpperCase() +
+                      dimMeta.label.slice(1)}
+                  </span>
+                  <span
+                    style={{
+                      color: "var(--text-muted)",
+                      marginLeft: "0.5rem",
+                      fontSize: "0.72rem",
+                    }}
+                  >
+                    {dimMeta.desc}
+                  </span>
+                </span>
+                <span
+                  style={{
+                    color: "var(--text-secondary)",
+                    fontFamily:
+                      "var(--font-jetbrains), ui-monospace, monospace",
+                    fontSize: "0.76rem",
+                  }}
+                >
+                  {v}
+                </span>
+              </div>
+              <div
+                role="progressbar"
+                aria-label={`${copy.editor.ariaBar}: ${dimMeta.label}`}
+                aria-valuenow={finalV}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                style={{
+                  height: 3,
+                  background: "var(--surface-muted)",
+                  borderRadius: 2,
+                  overflow: "hidden",
+                }}
+              >
+                <div
+                  aria-hidden
+                  style={{
+                    width: `${finalV}%`,
+                    height: "100%",
+                    background: c,
+                    transformOrigin: "left",
+                    animation: reducedMotion
+                      ? undefined
+                      : `lucia-eval-grow 0.9s cubic-bezier(0.4, 0, 0.2, 1) ${
+                          0.4 + i * 0.12
+                        }s both`,
+                  }}
+                />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <div
+        aria-hidden
+        style={{
+          height: 1,
+          background: "var(--border)",
+          margin: "1.1rem 0 0.85rem",
+        }}
+      />
+
+      {/* Advice — Spark mini placeholder a sinistra (eredita
+          .meet-spark-portrait dalla landing) + blockquote serif italic
+          con hairline-left arancione a destra. È la voce di Spark
+          editoriale, non più una notifica neon. */}
+      <div
+        style={{
+          display: "flex",
+          gap: "12px",
+          alignItems: "flex-start",
+          opacity: reducedMotion ? 1 : 0,
+          animation: reducedMotion
+            ? undefined
+            : "lucia-eval-fade 0.5s ease-out 1s forwards",
+        }}
+      >
+        <div
+          aria-hidden="true"
+          className="meet-spark-portrait lucia-spark-mini"
+        >
+          <div aria-hidden="true" className="meet-spark-body">
+            <div className="meet-spark-highlight" />
+          </div>
+        </div>
+        <div style={{ flex: 1, minWidth: 0 }}>
           <div
             aria-hidden
             style={{
-              color: "var(--tool-text-muted)",
+              fontFamily:
+                "var(--font-jetbrains), ui-monospace, monospace",
               fontSize: "0.66rem",
-              letterSpacing: "0.18em",
-              marginBottom: "0.35rem",
+              color: "var(--text-muted)",
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+              marginBottom: "0.4rem",
             }}
           >
-            {"// "}
             {copy.result.adviceLabel}
           </div>
-          <div
+          <p
             style={{
-              padding: "0.7rem 0.85rem",
-              background: "rgba(197, 244, 50, 0.06)",
-              border: "1px solid rgba(197, 244, 50, 0.25)",
-              borderLeft: "2px solid var(--tool-accent)",
-              borderRadius: "4px",
-              color: "#d7dce3",
-              fontSize: "0.76rem",
+              margin: 0,
+              padding: "0 0 0 12px",
+              borderLeft: "2px solid var(--primary)",
+              fontFamily: "var(--font-jakarta), system-ui, sans-serif",
+              fontStyle: "italic",
+              fontSize: "0.92rem",
               lineHeight: 1.55,
-              boxShadow:
-                "0 0 12px rgba(197, 244, 50, 0.08), inset 0 0 12px rgba(197, 244, 50, 0.03)",
+              color: "var(--text-primary)",
             }}
           >
             {evaluation.consiglio}
-          </div>
+          </p>
         </div>
       </div>
     </div>

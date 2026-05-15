@@ -23,10 +23,8 @@ import type {
   LuciaEvaluation,
 } from "@/lib/landing-demo/types";
 import { NO_BUGS_FIXED, deriveOutcome } from "@/lib/landing-demo/types";
-import type { Lang, SparkState } from "@/types";
-import { Spark } from "@/components/lessons/v3/Spark";
+import type { Lang } from "@/types";
 import { LuciaHomepage } from "./LuciaHomepage";
-import { LuciaConsole } from "./LuciaConsole";
 import {
   LuciaPromptPanel,
   type PanelPhase,
@@ -302,99 +300,83 @@ export function LuciaDemo({ copy, lang, isLoggedIn = false }: Props) {
 
   const message = phase === "result" ? buildMessage(copy, outcome, evaluation) : null;
 
-  // Spark narrator — drives mascot state + bubble copy from the same demo
-  // phases the rest of the UI reacts to. Kept declarative so it stays
-  // readable as we add more outcomes.
-  const sparkNarration = resolveSparkNarration(
-    copy.spark,
-    phase,
-    outcome,
-    attemptCount,
-    victoryLocked,
-  );
-
   return (
     <section
       id="prompt-evaluator"
       aria-labelledby="lucia-demo-title"
       className="relative overflow-hidden py-16 sm:py-20 lg:py-24"
     >
-      <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
-        {/* Spark narrator — mobile-first: Spark on top, bubble below.
-            Desktop: same stack but slightly larger. The bubble has a
-            tail pointing up to Spark and uses the same "thought-bubble"
-            language as inside the lesson view (italic, surface card). */}
-        <div className="mb-6 flex flex-col items-center gap-2.5">
-          <Spark
-            state={sparkNarration.state}
-            size={154}
-            ariaLabel={copy.spark.label}
-          />
-          <p
-            role="status"
-            aria-live="polite"
-            className="relative max-w-xs rounded-2xl border border-border bg-surface px-4 py-2 text-sm italic leading-snug text-text-secondary shadow-sm sm:max-w-sm sm:text-base"
-          >
-            <span
-              aria-hidden
-              className="absolute -top-1.5 left-1/2 h-3 w-3 -translate-x-1/2 rotate-45 border-l border-t border-border bg-surface"
-            />
-            {sparkNarration.message}
-          </p>
-        </div>
-
-        <div className="inline-flex items-center gap-2 rounded-full bg-text-primary px-3 py-1 text-xs font-semibold uppercase tracking-[0.05em] text-tool-accent">
+      {/* Bolla nera contenuta: il fondo cream della landing resta visibile
+          ai lati (sopra e sotto), la demo è isolata in un blocco scuro con
+          angoli arrotondati che funge da "scena" — non più full-bleed che
+          tagliava la pagina, ma un'isola di concentrazione. */}
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <div
+          className="rounded-3xl px-4 py-12 sm:px-10 sm:py-16 lg:px-14 lg:py-20"
+          style={{ background: "var(--text-primary)" }}
+        >
+      <div className="mx-auto max-w-3xl text-center">
+        {/* Editorial header su fondo nero — kicker mono in grigio chiaro,
+            titolo cream con highlight arancione rinforzato, sub in grigio
+            morbido. Le card interne (Lucia + prompt panel) restano bianche
+            e spiccano sul nero, è il momento narrativo "ora ti faccio
+            provare una cosa" che la bolla scura comunica meglio. */}
+        <p className="font-mono text-xs font-medium uppercase tracking-[0.06em] text-text-muted">
+          {"// "}
           {copy.badge}
-        </div>
+        </p>
         <h2
           id="lucia-demo-title"
-          className="mt-4 font-heading text-3xl font-bold leading-tight text-text-primary text-balance sm:text-4xl"
+          className="mt-3 font-heading text-3xl font-bold leading-tight tracking-[-0.025em] text-balance sm:text-4xl lg:text-5xl"
+          style={{ color: "#fafafa" }}
         >
-          {copy.title}
-          <br />
-          <em className="not-italic text-primary-deep">{copy.titleEm}</em>
+          {copy.title}{" "}
+          <em
+            className="not-italic"
+            style={{
+              backgroundImage:
+                "linear-gradient(transparent 62%, rgba(232,112,63,0.4) 62%)",
+            }}
+          >
+            {copy.titleEm}
+          </em>
         </h2>
-        <p className="mx-auto mt-3 max-w-xl text-base text-text-secondary sm:text-lg">
+        <p
+          className="mx-auto mt-4 max-w-xl text-base leading-relaxed sm:text-lg"
+          style={{ color: "#d4d4d4" }}
+        >
           {copy.subtitle}
         </p>
       </div>
 
-      <div className="relative mx-auto mt-10 grid max-w-5xl grid-cols-1 items-center gap-5 px-4 sm:px-6 md:grid-cols-2">
-        {/* LEFT — UNIFIED vignette: browser address bar + cream site preview
-            on top + dark console below, all inside ONE card with a single
-            lime border-left running top to bottom (Cursor / VS Code feel). */}
+      <div className="relative mx-auto mt-10 grid max-w-5xl grid-cols-1 items-center gap-5 md:grid-cols-2">
+        {/* LEFT — vignette diegetica con cornice editoriale: browser chrome
+            sobrio + sito di Lucia + console hairline-left rossa. Niente
+            shadow brutalist, niente bordo lime laterale: una sola hairline
+            border coerente col resto della landing.
+            La victory non cambia più il colore della cornice — il segnale
+            di "tutto a posto" arriva dai 3 bug-fix interni al sito di
+            Lucia (foto, overflow, bottone) che è la sequenza cinematica
+            che già funziona meglio. */}
         <div
           aria-label={copy.homepage.addressBar}
           style={{
-            background: "var(--tool-bg)",
-            borderRadius: "16px",
+            background: "var(--surface)",
+            borderRadius: "12px",
             overflow: "hidden",
-            boxShadow: "0 4px 24px rgba(0, 0, 0, 0.10)",
-            borderLeft: `4px solid ${
-              victoryLocked
-                ? "var(--tool-accent-victory)"
-                : "var(--tool-accent-bright)"
-            }`,
+            border: "1px solid var(--border)",
             display: "flex",
             flexDirection: "column",
-            transition: "border-color 0.6s",
           }}
         >
           <BrowserChrome address={copy.homepage.addressBar} />
-          {/* Preview area — cream cartoon site */}
-          <div style={{ background: "#F8F5F0", flex: "0 0 auto" }}>
+          {/* Preview area — cream cartoon site (resta diegetica: è il
+              sito di Lucia, non parte della landing). Flex 1 così la card
+              di sinistra cresce per match-are l'altezza del pannello prompt
+              di destra senza la striscia console sotto. */}
+          <div style={{ background: "#F8F5F0", flex: 1 }}>
             <LuciaHomepage copy={copy.homepage} fixed={fixedBugs} />
           </div>
-          {/* Thin divider between preview and console */}
-          <div
-            aria-hidden
-            style={{
-              height: 1,
-              background: "rgba(255, 255, 255, 0.1)",
-            }}
-          />
-          {/* Console area — dark mono, only the 2 error lines */}
-          <LuciaConsole copy={copy.console} />
         </div>
 
         {/* RIGHT COLUMN — V3 editor / result panel: dark, square corners,
@@ -414,7 +396,7 @@ export function LuciaDemo({ copy, lang, isLoggedIn = false }: Props) {
                   right: 0,
                   textAlign: "center",
                   fontSize: "0.72rem",
-                  color: "var(--text-secondary)",
+                  color: "#d4d4d4",
                   fontStyle: "italic",
                 }}
               >
@@ -451,12 +433,17 @@ export function LuciaDemo({ copy, lang, isLoggedIn = false }: Props) {
 
       {/* GDPR + AI Act inline disclosure — always visible, sits right under
           the demo cards. Tiny but mandatory: tells the user that the prompt
-          goes to OpenAI and not to include personal data, per Art. 13 GDPR. */}
-      <p className="mx-auto mt-5 max-w-3xl px-4 text-center text-xs text-text-muted sm:px-6">
+          goes to OpenAI and not to include personal data, per Art. 13 GDPR.
+          Su fondo nero i colori sono schiariti per restare leggibili. */}
+      <p
+        className="mx-auto mt-5 max-w-3xl text-center text-xs"
+        style={{ color: "#a3a3a3" }}
+      >
         {copy.disclosure.text}{" "}
         <a
           href={`/${lang}/privacy`}
-          className="underline decoration-dotted underline-offset-2 hover:text-text-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          className="underline decoration-dotted underline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          style={{ color: "#d4d4d4" }}
         >
           {copy.disclosure.linkLabel}
         </a>
@@ -464,14 +451,15 @@ export function LuciaDemo({ copy, lang, isLoggedIn = false }: Props) {
       </p>
 
       {/* Below-the-demo: dynamic message OR final CTA card */}
-      <div className="mx-auto mt-6 max-w-3xl px-4 sm:px-6">
+      <div className="mx-auto mt-6 max-w-3xl">
         {showFinalCard && evaluation ? (
           <FinalCard copy={copy} lang={lang} score={evaluation.totale} />
         ) : message ? (
           <p
             role="status"
-            className="text-center text-base text-text-secondary sm:text-lg"
+            className="text-center text-base sm:text-lg"
             style={{
+              color: "#d4d4d4",
               opacity: 0,
               animation: "lucia-fade-in 0.5s ease-out 0.2s forwards",
             }}
@@ -479,7 +467,10 @@ export function LuciaDemo({ copy, lang, isLoggedIn = false }: Props) {
             {message}
           </p>
         ) : (
-          <p className="text-center text-sm text-text-muted">
+          <p
+            className="text-center text-sm"
+            style={{ color: "#a3a3a3" }}
+          >
             {copy.footer}
           </p>
         )}
@@ -497,6 +488,8 @@ export function LuciaDemo({ copy, lang, isLoggedIn = false }: Props) {
           }
         }
       `}</style>
+        </div>
+      </div>
     </section>
   );
 }
@@ -506,43 +499,44 @@ export function LuciaDemo({ copy, lang, isLoggedIn = false }: Props) {
 // ---------------------------------------------------------------------------
 
 function BrowserChrome({ address }: { address: string }) {
-  // Round 5: replace the old "Code editor — index.html" label with a real
-  // browser-style address pill. macOS dots stay on the left; the pill sits
-  // slightly left of centre (Safari/Chrome pattern). No padlock, no https://.
+  // Editorial pass: chrome di browser sobrio. Sfondo neutro, 3 dots grigi
+  // (non più rosso/giallo/verde macOS — l'eco della "tool view" sparisce),
+  // pill address in mono micro. È ancora chiaramente "un browser", ma
+  // disegnato col linguaggio della landing.
   return (
     <div
       style={{
-        background: "#1a1a1a",
+        background: "var(--surface-muted)",
         padding: "0.55rem 0.95rem",
         display: "flex",
         alignItems: "center",
         gap: "0.85rem",
-        borderBottom: "1px solid var(--tool-divider-soft)",
+        borderBottom: "1px solid var(--border)",
       }}
     >
       <div style={{ display: "flex", gap: "0.4rem", flex: "0 0 auto" }}>
         <span
           style={{
-            width: 11,
-            height: 11,
+            width: 9,
+            height: 9,
             borderRadius: "50%",
-            background: "var(--macos-red)",
+            background: "#d4d4d4",
           }}
         />
         <span
           style={{
-            width: 11,
-            height: 11,
+            width: 9,
+            height: 9,
             borderRadius: "50%",
-            background: "var(--macos-yellow)",
+            background: "#d4d4d4",
           }}
         />
         <span
           style={{
-            width: 11,
-            height: 11,
+            width: 9,
+            height: 9,
             borderRadius: "50%",
-            background: "var(--macos-green)",
+            background: "#d4d4d4",
           }}
         />
       </div>
@@ -550,13 +544,13 @@ function BrowserChrome({ address }: { address: string }) {
         style={{
           flex: "0 1 320px",
           maxWidth: "60%",
-          padding: "6px 16px",
-          background: "#faf7f2",
-          border: "1px solid rgba(0, 0, 0, 0.1)",
+          padding: "5px 14px",
+          background: "var(--surface)",
+          border: "1px solid var(--border)",
           borderRadius: 999,
           fontFamily: "var(--font-jetbrains), ui-monospace, monospace",
-          fontSize: 12,
-          color: "#444444",
+          fontSize: 11,
+          color: "var(--text-secondary)",
           textAlign: "center",
           lineHeight: 1.2,
           letterSpacing: "0.01em",
@@ -580,13 +574,15 @@ function FinalCard({
   lang: Lang;
   score: number;
 }) {
+  // Su fondo nero la card resta bianca per spiccare come "celebrazione".
+  // Il border default (var(--border) #e5e5e5) su nero quasi sparisce, quindi
+  // lo togliamo e lasciamo la card pulita.
   return (
     <div
       role="region"
       aria-label="Demo complete"
-      className="mx-auto rounded-2xl border bg-surface px-6 py-7 text-center shadow-sm"
+      className="mx-auto rounded-2xl bg-surface px-6 py-7 text-center shadow-sm"
       style={{
-        borderColor: "var(--border)",
         opacity: 0,
         animation: "lucia-fade-in 0.5s ease-out forwards",
       }}
@@ -614,15 +610,18 @@ function LimitPanel({
   copy: LuciaDemoCopy;
   lang: Lang;
 }) {
+  // Editorial pass: era una card scura con boxShadow brutalist (`6px 6px 0`)
+  // — coerente con la vecchia tool-view. Ora la section è già full-bleed
+  // nera, quindi la card edge "tentativi esauriti" diventa bianca pulita
+  // come la FinalCard: spicca, non si confonde col fondo, e parla la
+  // stessa lingua delle due card sopra.
   return (
     <div
       role="region"
       aria-label={copy.messages.limitTitle}
       style={{
-        background: "var(--tool-bg-result)",
+        background: "var(--surface)",
         borderRadius: "12px",
-        boxShadow: "6px 6px 0 var(--tool-bg)",
-        border: "2px solid var(--tool-bg)",
         padding: "2rem 1.5rem",
         display: "flex",
         flexDirection: "column",
@@ -636,7 +635,7 @@ function LimitPanel({
       <p
         className="font-heading"
         style={{
-          color: "#ffffff",
+          color: "var(--text-primary)",
           fontSize: "1.5rem",
           fontWeight: 700,
           margin: 0,
@@ -646,7 +645,7 @@ function LimitPanel({
       </p>
       <p
         style={{
-          color: "var(--tool-text)",
+          color: "var(--text-secondary)",
           fontSize: "0.95rem",
           lineHeight: 1.55,
           margin: 0,
@@ -676,60 +675,6 @@ function LimitPanel({
       </a>
     </div>
   );
-}
-
-// Spark narrator — translates (phase, outcome, attemptCount) into the
-// mascot state + the line she says above the demo. Pure function, no
-// effects, no DOM. Matches the rule from PROMPTLY.md: Spark must always
-// have a state defined for every UI moment.
-function resolveSparkNarration(
-  spark: LuciaDemoCopy["spark"],
-  phase: PanelPhase,
-  outcome: DemoOutcome | null,
-  attemptCount: number,
-  victoryLocked: boolean,
-): { state: SparkState; message: string } {
-  if (phase === "limit") {
-    return { state: "sad", message: spark.limit };
-  }
-  if (phase === "evaluating") {
-    return { state: "thinking", message: spark.thinking };
-  }
-  if (phase === "result" && outcome) {
-    if (outcome.victory) {
-      return { state: "happy", message: spark.victory };
-    }
-    if (outcome.messageKey === "scoreLow") {
-      return { state: "sad", message: spark.low };
-    }
-    // Pick a partial-* sibling that matches the actual outcome — one
-    // generic `partial` for 4 different states felt incoherent (e.g.
-    // user with a high-score 88 and 2 bugs fixed on the homepage was
-    // told "manca qualcosa, rileggi gli errori" while the home was
-    // already largely repaired). Now Spark's line tracks the visual.
-    const partialMessage =
-      outcome.messageKey === "scoreMidOnePhotoOnly"
-        ? spark.partialPhotoOnly
-        : outcome.messageKey === "scoreMidPartialOneLeft"
-          ? spark.partialOneLeft
-          : outcome.messageKey === "scoreMidAllBugs"
-            ? spark.partialMidAllBugs
-            : outcome.messageKey === "scoreHighPartial"
-              ? spark.partialHighIncomplete
-              : spark.partial;
-    return { state: "idle", message: partialMessage };
-  }
-  // Default editing state — Spark is patient and watching.
-  // After at least one attempt without victory she stays in "listening"
-  // mode (leaning forward) to communicate continuity, but the message
-  // resets to ready-for-next-try (was incorrectly the result-panel line
-  // `spark.partial`, which produced "Quasi. Manca qualcosa." even after
-  // the user had moved past the result and was writing fresh — bug
-  // observed 10 May 2026).
-  if (attemptCount > 0 && !victoryLocked) {
-    return { state: "listening", message: spark.editingAfterAttempt };
-  }
-  return { state: "idle", message: spark.intro };
 }
 
 function buildMessage(

@@ -79,8 +79,8 @@ export function LuciaHomepage({ copy, fixed }: Props) {
 // ---------------------------------------------------------------------------
 
 function KitchenHeader({ ariaLabel }: { ariaLabel: string }) {
-  // Round 6: shrink to compact the left vignette.
-  // max-height 140 → 100, margin 24 → 16. Asset path + filter unchanged.
+  // Compatto ~20% rispetto alla versione precedente per match-are
+  // l'altezza target dei due card (LuciaHomepage e prompt panel di destra).
   return (
     // SVG vector — already optimised, no need for next/image's raster pipeline.
     // eslint-disable-next-line @next/next/no-img-element
@@ -90,9 +90,9 @@ function KitchenHeader({ ariaLabel }: { ariaLabel: string }) {
       className="lucia-header-illustration"
       style={{
         display: "block",
-        maxHeight: 100,
+        maxHeight: 68,
         width: "auto",
-        margin: "16px auto",
+        margin: "10px auto",
         filter: "saturate(0.85)",
       }}
     />
@@ -162,11 +162,10 @@ function Hero({
     <section
       style={{
         display: "grid",
-        // Photo column 110px (Round 6 spec).
-        gridTemplateColumns: "minmax(0, 110px) minmax(0, 1fr)",
-        gap: "0.85rem",
-        // Vertical paddings reduced ~30% (Round 6 spec).
-        padding: "0.6rem 1rem 0.5rem",
+        // Photo column ridotta a 88 per accorciare la card del ~20%.
+        gridTemplateColumns: "minmax(0, 88px) minmax(0, 1fr)",
+        gap: "0.75rem",
+        padding: "0.45rem 1rem 0.35rem",
         alignItems: "center",
       }}
     >
@@ -222,9 +221,9 @@ function PhotoSlot({
     <div
       style={{
         position: "relative",
-        // Round 6 spec: 110x110.
-        width: 110,
-        height: 110,
+        // 88x88 — ridotto da 110 per accorciare la card del ~20%.
+        width: 88,
+        height: 88,
         borderRadius: 8,
         overflow: "hidden",
         background: fixed ? "transparent" : "#E5E5E5",
@@ -341,11 +340,12 @@ function ProjectAndCtaRow({
   ctaFixed: boolean;
 }) {
   return (
-    // Round 6: stacked vertical layout — title box (full width) on top,
+    // Stacked vertical layout — title box (full width) on top,
     // DOWNLOAD button below, right-aligned. The two no longer overlap.
+    // Paddings ridotti rispetto a Round 6 per accorciare la card del ~20%.
     <section
       style={{
-        margin: "0.3rem 1rem 0.85rem",
+        margin: "0.2rem 1rem 0.6rem",
         display: "flex",
         flexDirection: "column",
       }}
@@ -353,7 +353,7 @@ function ProjectAndCtaRow({
       <div
         style={{
           width: "100%",
-          padding: "16px 20px",
+          padding: "12px 16px",
           background: "#FFFFFF",
           border: `1px solid ${BORDER_LIGHT}`,
           borderRadius: 8,
@@ -390,7 +390,7 @@ function ProjectAndCtaRow({
 
       <div
         style={{
-          marginTop: 16,
+          marginTop: 12,
           display: "flex",
           justifyContent: "flex-end",
           paddingRight: 4,
@@ -405,7 +405,7 @@ function ProjectAndCtaRow({
             display: "inline-flex",
             alignItems: "center",
             justifyContent: "center",
-            padding: "16px 40px",
+            padding: "12px 32px",
             borderRadius: 999,
             fontFamily: "var(--font-fredoka), system-ui, sans-serif",
             fontSize: 14,

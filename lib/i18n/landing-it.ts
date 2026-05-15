@@ -269,9 +269,8 @@ export const landingCopyIt: LandingCopy = {
       empty: "Scrivi qualcosa prima di valutare.",
     },
     disclosure: {
-      text:
-        "Il prompt che invii viene elaborato da un'IA (OpenAI, USA) per generare la valutazione. Non inserire dati personali.",
-      linkLabel: "Privacy Policy",
+      text: "Il tuo prompt è elaborato da OpenAI (USA). Non inserire dati personali.",
+      linkLabel: "Privacy",
     },
     spark: {
       label: "Spark, la tua compagna",

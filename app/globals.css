@@ -1521,6 +1521,16 @@ h6 {
   background: rgba(255, 255, 255, 0.45);
   filter: blur(1px);
 }
+/* Mini variante usata nel ResultBody della demo Lucia accanto al
+   "Suggerimento di Spark". Eredita tutta l'estetica del portrait di
+   MeetSpark (blob + occhi + highlight) — qui scaliamo solo la dimensione
+   e blocchiamo lo shrink dentro al flex. */
+.meet-spark-portrait.lucia-spark-mini {
+  max-width: 52px;
+  width: 52px;
+  flex: 0 0 52px;
+  margin: 0;
+}
 
 /* ════════════════════════════════════════════════════════════════
    FAQ editorial accordion — toggle + / − tipografico

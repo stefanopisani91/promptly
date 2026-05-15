@@ -266,9 +266,8 @@ export const landingCopyEn: LandingCopy = {
       empty: "Write something before evaluating.",
     },
     disclosure: {
-      text:
-        "The prompt you submit is processed by an AI (OpenAI, US) to generate the evaluation. Don't include personal data.",
-      linkLabel: "Privacy Policy",
+      text: "Your prompt is processed by OpenAI (US). Don't include personal data.",
+      linkLabel: "Privacy",
     },
     spark: {
       label: "Spark, your companion",
