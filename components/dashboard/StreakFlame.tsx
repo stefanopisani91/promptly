@@ -46,7 +46,7 @@ export function StreakFlame({ intensity = 0 }: Props) {
         loop
         autoplay
         rendererSettings={{ preserveAspectRatio: "xMidYMax slice" }}
-        className="absolute inset-x-0 bottom-0 h-[150%] w-full translate-y-[22%]"
+        className="absolute inset-x-0 bottom-0 h-[150%] w-full translate-y-[22%] md:left-1/2 md:right-auto md:h-[128%] md:w-auto md:aspect-square md:translate-y-[12%] md:-translate-x-1/2"
       />
     </div>
   );
