@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
@@ -9,6 +8,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getUserProfile } from "@/lib/supabase/queries";
 import { LangSwitcher } from "@/components/i18n/LangSwitcher";
 import { ProfileMenu } from "@/components/dashboard/ProfileMenu";
+import { PromptlyWordmark } from "@/components/promptly/PromptlyWordmark";
 
 export default async function AppLayout({ children }: { children: ReactNode }) {
   const supabase = createClient();
@@ -33,16 +33,9 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
         <Link
           href="/dashboard"
           aria-label="Promptly"
-          className="flex items-center"
+          className="inline-flex items-center"
         >
-          <Image
-            src="/brand/logo-horizontal.svg"
-            alt="Promptly"
-            width={140}
-            height={32}
-            priority
-            className="h-6 w-auto md:h-8"
-          />
+          <PromptlyWordmark size="xl" />
         </Link>
         <div className="flex items-center gap-2 md:gap-3">
           <LangSwitcher fallback={lang} ariaLabel={copy.shell.langToggleLabel} />

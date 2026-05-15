@@ -4,8 +4,8 @@
  * Composizione: testo "Promptly" in Plus Jakarta Sans 700 (font-heading)
  * + dot circolare arancione 6×6px sollevato di 2px dal baseline.
  * Componente cross-app (cartella promptly/): usato dal MarketingHeader e
- * MarketingFooter, e disponibile per qualunque altra surface in-app dove
- * la tipografia parli al posto del logo SVG raster.
+ * MarketingFooter sulla landing e dall'header dell'AppLayout autenticato —
+ * un'unica firma di brand per tutte le surface in-app.
  *
  * NB: non sostituisce il logo SVG ufficiale (`/brand/logo-horizontal.svg`)
  * — quello resta utile per OG image, favicon, press kit, social cards.
