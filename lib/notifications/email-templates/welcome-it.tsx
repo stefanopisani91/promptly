@@ -53,16 +53,24 @@ export function WelcomeEmailIt({ name, ctaUrl }: WelcomeEmailProps) {
             padding: "32px",
           }}
         >
-          <Img
-            src={`${SITE_URL}/brand/logo-horizontal.png`}
-            width={180}
-            height={50}
-            alt="Promptly"
-            style={{
-              display: "block",
-              margin: "0 auto 32px",
-            }}
-          />
+          <Section style={{ textAlign: "center", marginBottom: 32 }}>
+            <div
+              style={{
+                backgroundColor: "#ffffff",
+                padding: "16px 24px",
+                borderRadius: 8,
+                display: "inline-block",
+              }}
+            >
+              <Img
+                src={`${SITE_URL}/brand/logo-horizontal.png`}
+                width={180}
+                height={50}
+                alt="Promptly"
+                style={{ display: "block" }}
+              />
+            </div>
+          </Section>
 
           <Section>
             <Text style={{ fontSize: 16, lineHeight: "24px", margin: 0 }}>
