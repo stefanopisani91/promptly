@@ -9,7 +9,7 @@ import { SITE_URL } from "@/lib/site";
 import { WelcomeEmailIt } from "./email-templates/welcome-it";
 import { WelcomeEmailEn } from "./email-templates/welcome-en";
 
-const FALLBACK_FROM = "Promptly <onboarding@resend.dev>";
+const FALLBACK_FROM = "Promptly <welcome@send.learnpromptly.app>";
 
 let cachedClient: Resend | null = null;
 
@@ -68,6 +68,7 @@ export async function sendWelcomeEmail({
     const { data, error } = await resend.emails.send({
       from: fromAddress(),
       to,
+      replyTo: "stepcloud3@icloud.com",
       subject,
       html,
       text,

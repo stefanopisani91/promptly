@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "check-spark": "tsx scripts/check-spark-tokens.ts"
+    "check-spark": "tsx scripts/check-spark-tokens.ts",
+    "generate-wordmark": "tsx scripts/generate-wordmark-png.ts"
   },
   "dependencies": {
     "@dicebear/collection": "^9.4.2",
@@ -37,7 +38,9 @@
     "eslint": "^8",
     "eslint-config-next": "14.2.35",
     "eslint-plugin-jsx-a11y": "^6.10.2",
+    "playwright": "^1.60.0",
     "postcss": "^8",
+    "sharp": "^0.34.5",
     "tailwindcss": "^3.4.1",
     "tsx": "^4.21.0",
     "typescript": "^5"
