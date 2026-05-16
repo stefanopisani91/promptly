@@ -37,7 +37,7 @@ Promptly insegna il **vibe coding**: costruire software descrivendo a parole cos
 - **UI:** Tailwind + shadcn/ui (`components/ui/` è la base shadcn — non modificarla direttamente). Animazioni: CSS keyframes in `app/globals.css` come default; `framer-motion`, `lottie-react`, `canvas-confetti` dove serve; `@dnd-kit` per il drag-and-drop (widget lezione 6).
 - **Backend:** Supabase (Postgres + Auth). `middleware.ts` fa solo il refresh della sessione.
 - **AI:** Anthropic Claude Haiku 4.5 (`claude-haiku-4-5-20251001`) per la chat di Spark e per gli evaluator delle lezioni V3 2-6 — client in `lib/ai/anthropic.ts`, system prompt prompt-cached. OpenAI `gpt-4o-mini` per la demo Lucia / quick-win lezione 1 e per il commento V2 `open_question` — client in `lib/ai/openai.ts`. (`docs/archive/PROMPTLY.md` cita anche DeepSeek per i futuri Path 3-5: non è ancora wired.)
-- **Email:** Resend (`lib/notifications/email-templates/`). Welcome email attiva; reminder streak pianificato.
+- **Email:** Resend (`lib/notifications/email-templates/`). Welcome email attiva dal dominio verificato `send.learnpromptly.app` (sender `welcome@`, replyTo `stepcloud3@icloud.com`); reminder streak pianificato.
 - **Notifiche push:** Web Push (PWA install). Cron di reminder pianificato.
 - **Analytics:** PostHog (istanza EU) via il wrapper `lib/analytics/posthog.ts`.
 - **Hosting:** Netlify, deploy automatico da `main` (se il webhook salta: pannello Netlify → Trigger deploy → Clear cache and deploy site).
@@ -189,7 +189,7 @@ Regole di comportamento dei widget (da rispettare per ogni widget nuovo — dett
 - **LearningMap.** Mappa verticale in `components/promptly/map/` (dati in `lib/map/`): 5 zone bioma per Path 1-5, nodi cliccabili per lezione, robot cursor sull'ultima lezione completata, bonus path come stelle laterali (oggi quasi tutte locked).
 - **Bonus path.** 8 percorsi laterali in `lib/bonus-paths.ts` con condizioni di sblocco (soglia XP, achievement_path, streak, referral, AND composito — logica in `lib/unlock.ts`). Visibili sulla mappa; contenuto delle lezioni non scritto.
 - **Referral.** Codice univoco per utente (`lib/referral.ts`), link `…/signup?ref=…`, XP al referrer e bonus al referee alla conversione, sblocca una bonus path. La conversione è tracciabile, lo share no.
-- **Notifiche.** Push via Web Push (subscription in `users.push_subscription`), email via Resend. Welcome email attiva; reminder streak pianificato (cron).
+- **Notifiche.** Push via Web Push (subscription in `users.push_subscription`), email via Resend dal dominio verificato `send.learnpromptly.app`. Welcome email attiva; reminder streak pianificato (cron).
 - **Analytics.** Solo via `lib/analytics/posthog.ts`. Eventi standard: `signup_*`, `lesson_started/completed`, `streak_*`, `paywall_viewed`, `landing_*`, `map_*`, `level_up`, `referral_*`, ecc.
 
 ---

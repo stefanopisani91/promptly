@@ -364,10 +364,49 @@ La welcome email arriva (quindi l'invio precedente al render funziona).
 
 ## 2. 🎨 Branding nelle email (welcome + reminder futuri)
 
-**Stato:** 🚧 in progress (welcome ✅ done 29 April 2026 · reminder ⏳ pending)
+**Stato:** 🚧 in progress (welcome ✅ done · sender + dark-mode fix ✅ done 16 May 2026 · reminder ⏳ pending)
 **Priorità:** 🟡 media
 
-### Welcome email — ✅ done (29 April 2026, commit `42cf521`)
+### Welcome email — capitolo chiuso (16 May 2026)
+
+Tre cambi consecutivi shippati in un trittico di commit:
+
+**1. Sender migrato al dominio verificato** (commit `2372d73`)
+
+- `from:` `Promptly <welcome@send.learnpromptly.app>` (era `Promptly <onboarding@resend.dev>`, indirizzo shared di test di Resend con deliverability fragile e DKIM/SPF non allineati al brand).
+- `replyTo: "stepcloud3@icloud.com"` aggiunto inline su `resend.emails.send` in [lib/notifications/email.ts:71](lib/notifications/email.ts#L71). Le risposte alla welcome ora arrivano alla mailbox del fondatore invece di bouncare sul mittente Resend.
+- `.env.example` aggiornato con `RESEND_FROM_EMAIL=Promptly <welcome@send.learnpromptly.app>` + commento sopra che annota la verifica DKIM/SPF/DMARC del dominio `send.learnpromptly.app` su Resend (16 May 2026).
+- Nota SDK: Resend v6 espone il campo come `replyTo` (camelCase) nei typing TS; sul wire-protocol viaggia come header `Reply-To`. Diverso solo nel naming TS, identico nel comportamento.
+
+**2. Logo rasterizzato dal `PromptlyWordmark` — sostituisce `public/brand/logo-horizontal.png`** (stesso commit `2372d73`)
+
+Il PNG che la welcome serve come `<Img>` è ora la rasterizzazione di [components/promptly/PromptlyWordmark.tsx](components/promptly/PromptlyWordmark.tsx) — stesso wordmark dell'header app loggato e della landing — al posto del lockup mark+wordmark all-caps del SVG `assets/logo-horizontal.svg`. Brand coerente tra surface in-app ed email.
+
+Pipeline: [scripts/generate-wordmark-png.ts](scripts/generate-wordmark-png.ts) (Playwright headless Chromium + sharp, registrato come `npm run generate-wordmark`) renderizza un HTML standalone con Plus Jakarta Sans 700 caricato da Google Fonts, fa `element.screenshot({ omitBackground: true })` e scrive `public/brand/logo-horizontal.png` (RGBA 349 × 92 px, 6.59 KB). Da rilanciare ogni volta che il wordmark cambia tipografia/spacing/colore. Lo SVG ufficiale `assets/logo-horizontal.svg` resta intatto per OG image / favicon / press kit.
+
+Colore testo nel PNG: `#1F2937` (combacia con il fill del wordmark nel SVG ufficiale). NON è il valore reale del token `--text-primary` light theme (`#0a0a0a`, [app/globals.css:36](app/globals.css#L36)) — scelta consapevole per allinearsi all'identità del logo SVG storico. Se in futuro si vorrà uniformare al token, cambiare `TEXT_COLOR` in `scripts/generate-wordmark-png.ts:22` e rigenerare.
+
+**3. Dark-mode fix per Gmail mobile** (commit `0708fd0`)
+
+Sintomo: il PNG con testo `#1F2937` veniva invertito da Gmail mobile dark mode → wordmark quasi invisibile su background scuro.
+
+Fix: in entrambi i template ([welcome-it.tsx](lib/notifications/email-templates/welcome-it.tsx), [welcome-en.tsx](lib/notifications/email-templates/welcome-en.tsx)) l'`<Img>` del logo è ora wrappato in un `<Section style={{ textAlign: "center", marginBottom: 32 }}>` che contiene un `<div>` con `backgroundColor: "#ffffff"` inline (forzato — niente classi CSS perché molti client le strippano), `padding: "16px 24px"`, `borderRadius: 8`, `display: "inline-block"`. Il bianco esplicito non viene invertito dai client che fanno dark-mode color shifting. Risultato: pill bianca ~228×82 px centrata, wordmark sempre leggibile. Lo spazio inferiore di 32px è migrato dall'`<Img>` al Section.
+
+**Verifica post-deploy (Netlify ↔ `main`):**
+
+```bash
+curl -I https://learnpromptly.app/brand/logo-horizontal.png
+# atteso: 200 OK · content-type: image/png · content-length: ~6750
+```
+
+Mandare poi una welcome di test creando un account nuovo e controllare:
+- Mittente visualizzato: `Promptly <welcome@send.learnpromptly.app>`.
+- "Rispondi" → destinatario `stepcloud3@icloud.com`.
+- Render del logo: pill bianca con wordmark nitido su Gmail mobile (light + dark), Apple Mail iOS/macOS, Outlook web.
+
+---
+
+### Welcome email — header logo (29 April 2026, commit `42cf521`)
 
 Implementato in `lib/notifications/email-templates/welcome-it.tsx` e
 `welcome-en.tsx`: sostituito il wordmark testuale arancione "Promptly" con
