@@ -10,8 +10,12 @@ export function initPostHog() {
   if (!key) return;
 
   posthog.init(key, {
-    api_host:
-      process.env.NEXT_PUBLIC_POSTHOG_HOST ?? "https://eu.i.posthog.com",
+    // Reverse-proxy via next.config.mjs rewrites — bypassa filtri DNS
+    // (Fortinet & co.) che bloccherebbero eu.i.posthog.com.
+    api_host: "/ingest",
+    // I link generati dal dashboard PostHog (es. "vedi sessione")
+    // devono comunque puntare al dominio reale, non al proxy.
+    ui_host: "https://eu.posthog.com",
     capture_pageview: false,
     capture_pageleave: true,
     persistence: "localStorage+cookie",
