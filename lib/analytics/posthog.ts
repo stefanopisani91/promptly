@@ -21,6 +21,10 @@ export function initPostHog() {
     // e droppa client-side ogni evento finché non c'è un identify() — che
     // nel codice Promptly non viene mai chiamato. Vedi diagnosi 17/05.
     person_profiles: "always",
+    // I rewrites Netlify corrompono i body binari: `gzip-js` lato client
+    // arriva a PostHog come "invalid GZIP data" → 400. Forziamo JSON
+    // plain. Overhead bandwidth trascurabile sotto il milione di eventi.
+    disable_compression: true,
     capture_pageview: false,
     capture_pageleave: true,
     persistence: "localStorage+cookie",
