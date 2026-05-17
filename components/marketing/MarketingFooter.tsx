@@ -4,6 +4,7 @@ import type { Lang } from "@/types";
 import type { LandingCopy } from "@/lib/i18n/landing";
 import { LangSwitcher } from "@/components/i18n/LangSwitcher";
 import { PromptlyWordmark } from "@/components/promptly/PromptlyWordmark";
+import { IubendaLegalLinks } from "@/components/legal/IubendaLegalLinks";
 
 interface Props {
   lang: Lang;
@@ -52,7 +53,12 @@ const SOCIAL_ICON = {
  * - Separazione dal contenuto: solo hairline border-top (rispiro pulito)
  */
 export function MarketingFooter({ lang, copy }: Props) {
-  const cols = [copy.columns.product, copy.columns.resources, copy.columns.legal];
+  // La legal column è renderizzata da `IubendaLegalLinks` con link
+  // overlay iubenda (Privacy / Cookie / T&C) + i due link gestiti dal
+  // banner cookie (preferenze + Notice at Collection). La voce
+  // `copy.columns.legal` resta nelle stringhe i18n ma non viene più
+  // usata qui — può essere rimossa dal type quando si farà pulizia.
+  const cols = [copy.columns.product, copy.columns.resources];
 
   return (
     <footer className="mt-16 border-t border-border">
@@ -87,6 +93,7 @@ export function MarketingFooter({ lang, copy }: Props) {
               </ul>
             </div>
           ))}
+          <IubendaLegalLinks lang={lang} />
         </div>
 
         {/* Social row — accounts are placeholders until launch. The links

@@ -6,8 +6,14 @@ import {
   Fredoka,
 } from "next/font/google";
 import { cookies, headers } from "next/headers";
+import Script from "next/script";
 import { SITE_URL } from "@/lib/site";
 import "./globals.css";
+
+// iubenda — Privacy Controls and Cookie Solution (banner cookie).
+// Widget pre-configurato sull'account learnpromptly.app (piano Advanced).
+const IUBENDA_CS_WIDGET_URL =
+  "https://embeds.iubenda.com/widgets/1004186d-e370-4a88-b653-8472d85bab0d.js";
 
 type Lang = "en" | "it";
 
@@ -90,7 +96,34 @@ export default function RootLayout({
       lang={lang}
       className={`${inter.variable} ${jakarta.variable} ${jetbrains.variable} ${fredoka.variable}`}
     >
-      <body>{children}</body>
+      <head>
+        {/* iubenda banner cookie. Caricato prima dell'idratazione perché
+            il consenso deve essere espresso il prima possibile e PostHog è
+            gated su questa scelta (vedi PostHogProvider). */}
+        <Script
+          id="iubenda-cs-configuration"
+          src={IUBENDA_CS_WIDGET_URL}
+          strategy="beforeInteractive"
+        />
+      </head>
+      <body>
+        {children}
+        {/* iubenda loader: trasforma i link con classe `iubenda-embed` in
+            overlay-modali sopra il sito (Privacy Policy / Cookie Policy /
+            T&C), invece di redirectare a iubenda.com. */}
+        <Script id="iubenda-loader" strategy="afterInteractive">
+          {`(function (w,d) {
+            var loader = function () {
+              var s = d.createElement("script"), tag = d.getElementsByTagName("script")[0];
+              s.src = "https://cdn.iubenda.com/iubenda.js";
+              tag.parentNode.insertBefore(s, tag);
+            };
+            if (w.addEventListener) { w.addEventListener("load", loader, false); }
+            else if (w.attachEvent) { w.attachEvent("onload", loader); }
+            else { w.onload = loader; }
+          })(window, document);`}
+        </Script>
+      </body>
     </html>
   );
 }

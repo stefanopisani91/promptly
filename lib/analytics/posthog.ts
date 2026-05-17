@@ -19,6 +19,83 @@ export function initPostHog() {
   initialized = true;
 }
 
+// Iubenda — Cookie Solution: gating del consenso analytics.
+//
+// IL WIDGET DI PROMPTLY (account learnpromptly.app, embed
+// 1004186d-e370-4a88-b653-8472d85bab0d) usa il mapping custom:
+//   1 = Necessarie · 2 = Funzionalità · 4 = Misurazione
+// Notare che NON c'è una categoria con id `3` — il widget salta
+// quel numero. La default iubenda invece sarebbe 1/2/3/4/5 con
+// Misurazione=3. Verifica empirica: il cookie `_iub_cs-*` salvato
+// dopo "Accetta tutto" contiene `"purposes":{"1":true,"2":true,"4":true}`.
+const IUBENDA_MEASUREMENT_PURPOSE = 4;
+
+type IubendaCookieValue = {
+  timestamp?: string;
+  version?: string;
+  purposes?: Record<string, boolean>;
+  id?: number;
+};
+
+/**
+ * Stato del consenso analytics secondo iubenda.
+ * - `true`  → consenso esplicito per la categoria Misurazione (o, se la
+ *             categoria non esiste nel widget, almeno un altro purpose true)
+ * - `false` → preferenza espressa con Misurazione disattivata
+ * - `null`  → utente non ha ancora scelto (nessun cookie `_iub_cs-*`)
+ *
+ * Implementazione: leggiamo direttamente il cookie `_iub_cs-*` invece di
+ * chiamare `_iub.cs.api.isConsentGiven()`. Motivo: in iubenda v2 quell'API
+ * ritorna `false` anche PRIMA che l'utente abbia scelto, indistinguibile
+ * da un rifiuto esplicito. Il cookie invece esiste **solo** dopo una scelta
+ * dell'utente — è quindi una source of truth più affidabile per il gating.
+ */
+export function hasIubendaAnalyticsConsent(): boolean | null {
+  if (typeof window === "undefined" || typeof document === "undefined") {
+    return null;
+  }
+  const cookies = document.cookie.split("; ");
+  const csCookie = cookies.find((c) => c.startsWith("_iub_cs-"));
+  if (!csCookie) return null;
+  try {
+    const eqIdx = csCookie.indexOf("=");
+    const raw = decodeURIComponent(csCookie.substring(eqIdx + 1));
+    const parsed = JSON.parse(raw) as IubendaCookieValue;
+    const purposes = parsed?.purposes;
+    if (!purposes || typeof purposes !== "object") return null;
+    // Cerca prima la categoria Misurazione esplicita.
+    const measurement =
+      purposes[IUBENDA_MEASUREMENT_PURPOSE] ??
+      purposes[String(IUBENDA_MEASUREMENT_PURPOSE)];
+    if (typeof measurement === "boolean") return measurement;
+    // Fallback: se la categoria Misurazione non esiste nel widget,
+    // consideriamo consenso analytics dato quando almeno una categoria
+    // non-necessaria è true (= utente ha "accettato qualcosa", non solo
+    // rifiutato tutto).
+    const nonNecessary = Object.entries(purposes).filter(
+      ([k]) => k !== "1",
+    );
+    if (nonNecessary.length === 0) return false;
+    return nonNecessary.some(([, v]) => v === true);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Disattiva PostHog quando l'utente revoca il consenso. Sicuro da
+ * chiamare anche se PostHog non è ancora inizializzato (no-op).
+ */
+export function optOutPostHog() {
+  if (typeof window === "undefined" || !initialized) return;
+  try {
+    posthog.opt_out_capturing();
+    posthog.reset();
+  } catch {
+    // posthog può throware se non completamente inizializzato — ignoriamo.
+  }
+}
+
 type AppEvent =
   // Landing
   | { name: "landing_viewed"; props?: { lang?: string; source?: string } }
