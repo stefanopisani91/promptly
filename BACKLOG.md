@@ -137,6 +137,47 @@ post-fix nella voce di backlog.
 
 ---
 
+## Urgente 0.1 — Reverse-proxy PostHog + catena di 3 bug post-deploy
+
+**Stato:** ✅ done (17 May 2026, commit `057f63f`)
+**Priorità:** 🔴 alta
+**Aperta:** 17 May 2026 · Chiusa: 17 May 2026
+**Si attacca a:** [Urgente 0](#urgente-0--posthog-cattura-eventi-solo-dal-lato-marketing-provider-non-montato-sul-lato-app) — risolto la mattina. Nel pomeriggio è emerso che gli eventi non arrivavano dietro filtri DNS aziendali (FortiGuard rileva `eu.i.posthog.com` come tracker e MITM-ta la TLS), e abbiamo deciso di mettere un reverse-proxy. Il deploy del proxy ha sbloccato 2 bug latenti che hanno richiesto fix successivi.
+**Scope:**
+- [next.config.mjs](next.config.mjs) — 3 rewrites `/ingest/static/*`, `/ingest/decide`, `/ingest/:path*` verso `eu.i.posthog.com` / `eu-assets.i.posthog.com` + `skipTrailingSlashRedirect` + `skipMiddlewareUrlNormalize` (richiesti da PostHog per il pattern)
+- [lib/analytics/posthog.ts](lib/analytics/posthog.ts) — 3 config aggiunte a `posthog.init()`:
+  - `api_host: "/ingest"` + `ui_host: "https://eu.posthog.com"`
+  - `person_profiles: "always"` — override del `defaultIdentifiedOnly: true` server-side
+  - `disable_compression: true` — workaround per la corruzione del body gzip
+- [scripts/test-posthog-full-trace.mjs](scripts/test-posthog-full-trace.mjs) — script Playwright diagnostico per future regressioni (header documenta uso e limiti — la bot-blocklist di `posthog-js` esclude HeadlessChrome, quindi il vero flow eventi va verificato col browser reale)
+- `.env.example` — rimossa `NEXT_PUBLIC_POSTHOG_HOST` (ora hardcoded a `/ingest`)
+
+### Risoluzione
+
+**Tre commit a catena, ciascuno scopre il bug successivo:**
+
+1. **[`2e05961`](https://github.com/stefanopisani91/promptly/commit/2e05961) — Reverse-proxy via Next.js rewrites.** Le richieste passano da `learnpromptly.app/ingest/*` invece che direttamente a `eu.i.posthog.com`: Fortinet & co. vedono solo il nostro dominio e non bloccano. Verifica curl da rete filtrata: HTTP 200 con cert valido, remote IP AWS Frankfurt (PostHog EU). **Sintomo residuo dopo questo deploy: ancora 0 POST su `/ingest/e/`.**
+
+2. **[`4ed7d82`](https://github.com/stefanopisani91/promptly/commit/4ed7d82) — `person_profiles: "always"` per superare `defaultIdentifiedOnly`.** Il remote config `/ingest/array/<token>/config.js` contiene `"defaultIdentifiedOnly":true`: PostHog Cloud sopprime gli eventi anonymous finché non c'è `posthog.identify()` (mai chiamato in Promptly). L'override client-side `person_profiles: "always"` forza la cattura per tutti, anonimi inclusi (essenziale per il funnel landing). Verifica deploy: stringa `person_profiles:"always"` presente nel bundle. **Sintomo residuo: in DevTools Network adesso compaiono i POST verso `/ingest/e/?...&compression=gzip-js`, ma tornano `400 Bad Request`.**
+
+3. **[`057f63f`](https://github.com/stefanopisani91/promptly/commit/057f63f) — `disable_compression: true` per evitare la corruzione body gzip.** Posthog-js comprime il body POST con `gzip-js`; il rewrite Netlify processa il body come text/UTF-8 e corrompe i byte binari; PostHog riceve gzip illeggibile e risponde `400 "failed to decode request: invalid GZIP data"`. Disattivando la compression il body parte come JSON plain (text-safe, passa intatto). Trade-off bandwidth ~+30-40% per evento, trascurabile sotto il milione di eventi/mese.
+
+**Verifica end-to-end (17 May 2026, ~23:10 UTC, Chrome incognito su learnpromptly.app/it):**
+- Network filtro `ingest`: 2 GET (config + surveys) **200**, ≥2 POST `/ingest/e/?ip=0&_=...&ver=1.372.3` (senza `compression=gzip-js` nel querystring) → **200 OK** ✅
+- PostHog → Web analytics quick-start: `$pageview` ✅, `$pageleave` ✅, scroll depth ✅
+- PostHog → Activity → Live events: feed popolato con `landing_viewed`, `$pageview` entro 5-10s dall'apertura della pagina ✅
+- Zero richieste dirette a `*.posthog.com` (rewrites OK) ✅
+
+### Note tecniche emerse durante la diagnosi
+
+- **Bot blocklist nascosta in posthog-js v1.260+**: in `dist/module.js` c'è una lista che include `headlesschrome`, `chrome-lighthouse`, `playwright` ecc. Anche con UA custom il SDK ti scarta come bot. Lo script `test-posthog-full-trace.mjs` ne è limitato — copre init/proxy/consent/CSP ma NON il flow POST eventi. Per quello: browser reale in incognito.
+- **Quick-start checklist NON è real-time**: i ✅ verdi mostrano se PostHog ha visto eventi negli ultimi giorni, non in questo momento. Per debug usa Activity → Live events.
+- **`defaultIdentifiedOnly` è server-side, opaco dal client**: si setta in `Project Settings → Product Analytics → Person profiles` (la voce è denominata "Capture only identified users" / "Default identified mode" a seconda della versione UI). Override client-side via `person_profiles: "always"` è più resiliente: vive nel codice, sopravvive ai rename del dashboard.
+- **Netlify proxy + body binario = corruzione**: pattern noto per i rewrites verso upstream che usano gzip-on-the-wire. Stesso problema può colpire altri SDK se aggiungiamo proxy paths in futuro.
+- **Settings PostHog dashboard non-essenziali**: il Quick-start mostra warning su "Authorized URLs" (compilato col dominio `learnpromptly.app` ✅) e "Reverse proxy" (lascia in warning — il pannello "Set up reverse proxy" è per il PostHog Managed RP, non riconosce il nostro setup custom via Next.js rewrites).
+
+---
+
 ## Urgente 1 — Calibrare il Lucia widget perché l'utente arrivi più facilmente alla vittoria
 
 **Stato:** ✅ done (10 May 2026, commit `e173d5c`)
