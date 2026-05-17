@@ -9,6 +9,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getUserProfile } from "@/lib/supabase/queries";
 import { toolDisplayName } from "@/lib/onboarding/tools";
 import { ProfilePromisesPanel } from "@/components/settings/ProfilePromisesPanel";
+import { PrivacyDataPanel } from "@/components/settings/PrivacyDataPanel";
 import { restartOnboarding } from "@/app/(auth)/onboarding/actions";
 
 export const dynamic = "force-dynamic";
@@ -130,6 +131,19 @@ export default async function SettingsProfilePage() {
             ],
           }}
           initialPromises={profile.promises}
+        />
+
+        <PrivacyDataPanel
+          lang={lang}
+          userEmail={profile.email}
+          copy={{
+            heading: settings.sections.privacy,
+            lead: settings.privacy.lead,
+            cookiePreferences: settings.privacy.cookiePreferences,
+            deleteAccount: settings.privacy.deleteAccount,
+            deleteDisclaimer: settings.privacy.deleteDisclaimer,
+            modal: settings.deleteModal,
+          }}
         />
 
         <Section title={settings.sections.account}>

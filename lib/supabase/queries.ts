@@ -1241,3 +1241,30 @@ export async function markGlossaryTermSeen(
     .eq("id", userId);
   if (writeErr) throw writeErr;
 }
+
+// ─── account_deletions_log — GDPR art. 17 compliance audit ──────────
+//
+// Append-only log che registra ogni cancellazione account self-service.
+// Scrivibile solo via service role (la tabella ha RLS attiva senza
+// policy → ogni accesso anon/auth è negato). Chiamata da
+// `app/api/account/delete/route.ts` PRIMA della cancellazione effettiva
+// dell'utente — se la log fallisce abortiamo, così non resta uno stato
+// in cui un utente viene cancellato senza traccia di compliance.
+//
+// Tipiamo il client come `unknown` perché la tabella non è ancora nei
+// types Database generati (ricostruisci con `npx supabase gen types` se
+// vuoi che lo sia). Cast contenuto qui dentro.
+
+export async function logAccountDeletion(
+  serviceClient: unknown,
+  params: { email: string; ip: string | null },
+): Promise<void> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (serviceClient as any)
+    .from("account_deletions_log")
+    .insert({
+      email: params.email,
+      ip: params.ip,
+    });
+  if (error) throw error;
+}

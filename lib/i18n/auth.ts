@@ -165,6 +165,7 @@ export interface AuthCopy {
       profile: string;
       promises: string;
       account: string;
+      privacy: string;
     };
     fields: {
       name: string;
@@ -194,6 +195,28 @@ export interface AuthCopy {
     };
     promisesLead: string;
     fallbackBadge: string;
+    // GDPR — sezione "Privacy & Dati": gestione preferenze cookie iubenda
+    // + hard delete account (art. 17 diritto all'oblio). Pannello in
+    // [components/settings/PrivacyDataPanel.tsx].
+    privacy: {
+      lead: string;
+      cookiePreferences: string;
+      deleteAccount: string;
+      deleteDisclaimer: string;
+    };
+    deleteModal: {
+      title: string;
+      // 3 bullet che spiegano cosa si perde + 1 frase di chiusura.
+      bullets: readonly [string, string, string];
+      irreversibleNote: string;
+      emailConfirmLabel: string;
+      cancel: string;
+      confirm: string;
+      pendingLabel: string;
+      successMessage: string;
+      errorMessage: string;
+      rateLimitMessage: string;
+    };
   };
 }
 
@@ -379,6 +402,7 @@ const it: AuthCopy = {
       profile: "Profilazione",
       promises: "Le promesse di Spark",
       account: "Account",
+      privacy: "Privacy & Dati",
     },
     fields: {
       name: "Nome",
@@ -409,6 +433,32 @@ const it: AuthCopy = {
     promisesLead:
       "Tre promesse che Spark ti ha fatto a fine onboarding. Servono per ricordarti perché hai cominciato.",
     fallbackBadge: "Set di emergenza",
+    privacy: {
+      lead: "Gestisci le tue preferenze sulla privacy e i tuoi dati personali.",
+      cookiePreferences: "Gestisci preferenze cookie",
+      deleteAccount: "Elimina account",
+      deleteDisclaimer: "Questa azione è permanente e non reversibile.",
+    },
+    deleteModal: {
+      title: "Sei sicuro di voler eliminare il tuo account?",
+      bullets: [
+        "Tutti i tuoi progressi nelle lezioni saranno persi",
+        "I tuoi XP, livello e archetipo saranno cancellati",
+        "Le tue conversazioni con Spark saranno eliminate",
+      ],
+      irreversibleNote:
+        "Questa azione è permanente e non può essere annullata.",
+      emailConfirmLabel: "Per confermare, digita la tua email:",
+      cancel: "Annulla",
+      confirm: "Conferma eliminazione",
+      pendingLabel: "Eliminazione in corso…",
+      successMessage:
+        "Il tuo account è stato eliminato. Grazie per aver provato Promptly.",
+      errorMessage:
+        "Errore tecnico durante la cancellazione. Contatta supporto.",
+      rateLimitMessage:
+        "Troppi tentativi. Riprova tra un'ora o contatta supporto.",
+    },
   },
 };
 
@@ -594,6 +644,7 @@ const en: AuthCopy = {
       profile: "Profile",
       promises: "Spark's promises",
       account: "Account",
+      privacy: "Privacy & Data",
     },
     fields: {
       name: "Name",
@@ -623,6 +674,30 @@ const en: AuthCopy = {
     promisesLead:
       "Three promises Spark made at the end of onboarding. They exist to remind you why you started.",
     fallbackBadge: "Fallback set",
+    privacy: {
+      lead: "Manage your privacy preferences and personal data.",
+      cookiePreferences: "Manage cookie preferences",
+      deleteAccount: "Delete account",
+      deleteDisclaimer: "This action is permanent and irreversible.",
+    },
+    deleteModal: {
+      title: "Are you sure you want to delete your account?",
+      bullets: [
+        "All your lesson progress will be lost",
+        "Your XP, level, and archetype will be erased",
+        "Your conversations with Spark will be deleted",
+      ],
+      irreversibleNote: "This action is permanent and cannot be undone.",
+      emailConfirmLabel: "To confirm, type your email:",
+      cancel: "Cancel",
+      confirm: "Confirm deletion",
+      pendingLabel: "Deleting…",
+      successMessage:
+        "Your account has been deleted. Thank you for trying Promptly.",
+      errorMessage: "Technical error during deletion. Please contact support.",
+      rateLimitMessage:
+        "Too many attempts. Try again in an hour or contact support.",
+    },
   },
 };
 
