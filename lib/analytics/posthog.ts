@@ -16,6 +16,11 @@ export function initPostHog() {
     // I link generati dal dashboard PostHog (es. "vedi sessione")
     // devono comunque puntare al dominio reale, non al proxy.
     ui_host: "https://eu.posthog.com",
+    // Cattura eventi anche dei visitatori anonimi (landing, exercise demo,
+    // ecc.). Senza questo, PostHog Cloud applica `defaultIdentifiedOnly`
+    // e droppa client-side ogni evento finché non c'è un identify() — che
+    // nel codice Promptly non viene mai chiamato. Vedi diagnosi 17/05.
+    person_profiles: "always",
     capture_pageview: false,
     capture_pageleave: true,
     persistence: "localStorage+cookie",
