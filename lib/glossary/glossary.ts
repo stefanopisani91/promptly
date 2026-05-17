@@ -1,6 +1,6 @@
 // Glossario Vivo — dizionario dei 12 termini cliccabili di Path 1.
 //
-// Vedi Glossario_Vivo_Blueprint.md per la spec completa. Tre regole:
+// Tre regole:
 //   1. Definizioni in stile Spark (asciutto, prima persona implicita,
 //      analogia o esempio concreto, max 4 frasi, niente Wikipedia).
 //   2. Niente gergo tecnico non spiegato dentro la definizione.

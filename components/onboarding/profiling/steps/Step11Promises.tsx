@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import type { ProfilePromises } from "@/types";
 import type { ProfilingCopy } from "@/lib/i18n/profiling";
-import { Spark } from "@/components/lessons/v3/Spark";
+import { SparkSphere } from "@/components/promptly/SparkSphere";
 import { cn } from "@/lib/utils";
 import { PrimaryCta } from "../PrimaryCta";
 import { SparkLine } from "../SparkLine";
@@ -79,7 +79,7 @@ export function Step11Promises({
               aria-hidden={!visible}
             >
               <span className="shrink-0 pt-0.5">
-                <Spark state="happy" size={36} />
+                <SparkSphere state="happy" size={36} />
               </span>
               <span className="flex flex-col gap-1.5">
                 <span className="text-xs font-semibold uppercase tracking-[0.2em] text-text-muted">

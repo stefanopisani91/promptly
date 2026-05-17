@@ -17,7 +17,7 @@ import { NO_BUGS_FIXED, deriveOutcome } from "@/lib/landing-demo/types";
 import { LuciaHomepage } from "@/components/marketing/lucia/LuciaHomepage";
 import { LuciaConsole } from "@/components/marketing/lucia/LuciaConsole";
 import { Fireworks } from "@/components/marketing/Fireworks";
-import { Spark } from "../Spark";
+import { SparkSphere } from "@/components/promptly/SparkSphere";
 import { StepCard } from "../StepCard";
 
 // Single source of truth for victory thresholds in the Lucia widget.
@@ -390,7 +390,7 @@ export function InteractiveStep({
           {/* RIGHT — Spark dialogue panel. */}
           <div className="flex flex-col gap-3 rounded-2xl border border-border bg-surface p-4 sm:p-5">
             <div className="flex items-start gap-3">
-              <Spark
+              <SparkSphere
                 state={
                   won
                     ? "happy"
@@ -453,7 +453,7 @@ export function InteractiveStep({
                     className="flex items-start gap-2 rounded-xl border border-error/30 bg-error/5 px-3 py-2"
                     role="status"
                   >
-                    <Spark state="sad" size={28} />
+                    <SparkSphere state="sad" size={28} />
                     <p className="text-xs leading-relaxed text-text-primary">
                       {error}
                     </p>

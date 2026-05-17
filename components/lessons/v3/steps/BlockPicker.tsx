@@ -38,7 +38,7 @@ import type {
   BlockPickerEvaluation,
   InteractiveStep as InteractiveStepType,
 } from "@/types";
-import { Spark } from "../Spark";
+import { SparkSphere } from "@/components/promptly/SparkSphere";
 import { StepCard } from "../StepCard";
 import { fireConfetti } from "@/lib/confetti";
 import type { InteractiveStepResult } from "./InteractiveStep";
@@ -566,7 +566,7 @@ export function BlockPicker({
         {/* Spark dialogue panel */}
         <div className="flex flex-col gap-3 rounded-2xl border border-border bg-surface p-4 sm:p-5">
           <div className="flex items-start gap-3">
-            <Spark
+            <SparkSphere
               state={
                 won
                   ? "happy"
@@ -618,7 +618,7 @@ export function BlockPicker({
                   className="flex items-start gap-2 rounded-xl border border-error/30 bg-error/5 px-3 py-2"
                   role="status"
                 >
-                  <Spark state="sad" size={28} />
+                  <SparkSphere state="sad" size={28} />
                   <p className="text-xs leading-relaxed text-text-primary">
                     {error}
                   </p>

@@ -8,7 +8,7 @@
 
 import { useState, useTransition } from "react";
 import type { ProfilePromises } from "@/types";
-import { Spark } from "@/components/lessons/v3/Spark";
+import { SparkSphere } from "@/components/promptly/SparkSphere";
 import { regeneratePromisesFromProfile } from "@/app/(auth)/onboarding/actions";
 import { cn } from "@/lib/utils";
 
@@ -91,7 +91,7 @@ export function ProfilePromisesPanel({ id, copy, initialPromises }: Props) {
                 className="flex items-start gap-3 rounded-xl border border-border bg-background px-4 py-3"
               >
                 <span className="shrink-0 pt-0.5">
-                  <Spark state="happy" size={28} />
+                  <SparkSphere state="happy" size={28} />
                 </span>
                 <span className="flex flex-col gap-1">
                   <span className="text-xs font-semibold uppercase tracking-[0.2em] text-text-muted">

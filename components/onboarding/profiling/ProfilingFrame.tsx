@@ -11,7 +11,7 @@
 // re-fires on every remount.
 
 import type { CSSProperties, ReactNode } from "react";
-import { Spark } from "@/components/lessons/v3/Spark";
+import { SparkSphere } from "@/components/promptly/SparkSphere";
 import type { SparkState } from "@/types";
 import type { StepDirection } from "./types";
 
@@ -149,10 +149,10 @@ function SparkResponsive({ state }: { state: SparkState }) {
   return (
     <>
       <span className="lg:hidden">
-        <Spark state={state} size={84} ariaLabel="Spark" />
+        <SparkSphere state={state} size={84} ariaLabel="Spark" />
       </span>
       <span className="hidden lg:inline-flex">
-        <Spark state={state} size={200} ariaLabel="Spark" />
+        <SparkSphere state={state} size={200} ariaLabel="Spark" />
       </span>
     </>
   );

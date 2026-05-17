@@ -13,7 +13,7 @@ import Link from "next/link";
 import { ArrowRight, ChevronLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { LessonDirectionContext, type NavDirection } from "./LessonDirectionContext";
-import { Spark } from "./Spark";
+import { SparkSphere } from "@/components/promptly/SparkSphere";
 import {
   completeLessonAction,
   saveLessonProgressAction,
@@ -1049,7 +1049,7 @@ function CompletionCard({
     <div className="mx-auto w-full max-w-2xl rounded-3xl border border-success/30 bg-success-light p-6 text-center sm:p-10">
       <div className="flex flex-col items-center">
         <div className="completion-spark-pop">
-          <Spark state="happy" size={64} />
+          <SparkSphere state="happy" size={64} />
         </div>
         <div className="completion-xp-fade mt-4">
           {isReplayNoGain ? (

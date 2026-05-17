@@ -342,9 +342,9 @@ export interface LessonsCopy {
       hintExamples: string[];
     };
     // Glossario Vivo — strings consumed by the GlossaryProvider /
-    // GlossaryPopover (see Glossario_Vivo_Blueprint.md). The dictionary
-    // entries themselves live in lib/glossary/glossary.ts (IT+EN per term);
-    // these are the chrome around the popover.
+    // GlossaryPopover. The dictionary entries themselves live in
+    // lib/glossary/glossary.ts (IT+EN per term); these are the chrome
+    // around the popover.
     glossary: {
       // Header eyebrow ("Spark spiega" / "Spark explains")
       popoverEyebrow: string;

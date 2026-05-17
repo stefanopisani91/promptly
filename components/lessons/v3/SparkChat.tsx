@@ -15,7 +15,7 @@ import { useEffect, useRef, useState } from "react";
 import { Send, X } from "lucide-react";
 import type { PathSlug } from "@/types";
 import { track } from "@/lib/analytics/posthog";
-import { Spark } from "./Spark";
+import { SparkSphere } from "@/components/promptly/SparkSphere";
 
 // "Helper mode": when the panel is opened on a V3 quick-win step it talks
 // to /api/spark-helper instead of /api/spark-chat — a tutor scoped to that
@@ -528,7 +528,7 @@ export function SparkChat({
           {isEmpty && isExhausted ? (
             /* Quota esaurita senza storico — nessuna chat da mostrare */
             <div className="flex flex-1 flex-col items-center justify-center gap-4 py-4 text-center">
-              <Spark state="sad" size={56} ariaLabel="Spark" />
+              <SparkSphere state="sad" size={56} ariaLabel="Spark" />
               <p className="font-heading text-lg font-semibold text-text-primary">
                 Nessuna conversazione
               </p>
@@ -542,7 +542,7 @@ export function SparkChat({
                below so they stay reachable after the first message). */
             <div className="flex flex-1 flex-col items-center justify-center gap-5 py-4 text-center">
               <div style={{ animation: "completion-spark-pop 380ms cubic-bezier(0.34,1.56,0.64,1) both" }}>
-                <Spark state="happy" size={72} ariaLabel="Spark" />
+                <SparkSphere state="happy" size={72} ariaLabel="Spark" />
               </div>
               <div style={{ animation: "completion-fade-up 300ms ease-out 160ms both" }}>
                 <p className="font-heading text-2xl font-bold leading-tight text-text-primary">
@@ -594,7 +594,7 @@ export function SparkChat({
 
               {sending && (
                 <div className="flex items-center gap-2">
-                  <Spark state="thinking" size={24} />
+                  <SparkSphere state="thinking" size={24} />
                   <p className="text-xs italic text-text-muted">{strings.sending}</p>
                 </div>
               )}
@@ -611,7 +611,7 @@ export function SparkChat({
         {isExhausted ? (
           /* Quota esaurita — banner sola lettura senza Spark (già nel body) */
           <div className="flex shrink-0 items-center justify-center gap-2 border-t border-border bg-surface-muted/40 px-4 py-3 sm:px-5" style={{ borderRadius: "0 0 28px 28px" }}>
-            {helper && <Spark state="happy" size={24} ariaLabel="Spark" />}
+            {helper && <SparkSphere state="happy" size={24} ariaLabel="Spark" />}
             <p className="text-xs italic text-text-secondary">
               {exhaustedMessage}
             </p>

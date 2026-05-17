@@ -10,7 +10,7 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import type { SparkState, Vignette } from "@/types";
-import { Spark } from "./Spark";
+import { SparkSphere } from "@/components/promptly/SparkSphere";
 import { VignetteCloud } from "./VignetteCloud";
 import { AskSparkBubble } from "./AskSparkBubble";
 
@@ -94,10 +94,10 @@ export function SparkHeader({
               component's `size` prop is fixed-px, so we render two and
               toggle visibility — cheaper than a runtime media-query. */}
           <span className="relative z-[2] md:hidden">
-            <Spark state={sparkState} size={84} />
+            <SparkSphere state={sparkState} size={84} />
           </span>
           <span className="relative z-[2] hidden md:inline-flex">
-            <Spark state={sparkState} size={84} />
+            <SparkSphere state={sparkState} size={84} />
           </span>
           {vignettes.length > 0 && (
             <VignetteCloud

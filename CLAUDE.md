@@ -39,7 +39,9 @@ Promptly insegna il **vibe coding**: costruire software descrivendo a parole cos
 - **AI:** Anthropic Claude Haiku 4.5 (`claude-haiku-4-5-20251001`) per la chat di Spark e per gli evaluator delle lezioni V3 2-6 — client in `lib/ai/anthropic.ts`, system prompt prompt-cached. OpenAI `gpt-4o-mini` per la demo Lucia / quick-win lezione 1 e per il commento V2 `open_question` — client in `lib/ai/openai.ts`. (`docs/archive/PROMPTLY.md` cita anche DeepSeek per i futuri Path 3-5: non è ancora wired.)
 - **Email:** Resend (`lib/notifications/email-templates/`). Welcome email attiva dal dominio verificato `send.learnpromptly.app` (sender `welcome@`, replyTo `stepcloud3@icloud.com`); reminder streak pianificato.
 - **Notifiche push:** Web Push (PWA install). Cron di reminder pianificato.
-- **Analytics:** PostHog (istanza EU) via il wrapper `lib/analytics/posthog.ts`.
+- **Analytics:** PostHog (istanza EU) via il wrapper `lib/analytics/posthog.ts`. **Gated sul consenso iubenda categoria 4 (Misurazione)**: `initPostHog()` parte solo dopo "Accetta tutto" / "Accetta Misurazione" dal banner cookie; su revoca dal pannello preferenze chiama `posthog.opt_out_capturing()` + `reset()`. `PostHogProvider` montato su `app/layout.tsx` (root) tramite Suspense — copre marketing, app, auth in un solo punto.
+- **Legal / Cookie banner:** iubenda (account `learnpromptly.app`, piano Advanced). Banner cookie integrato in `app/layout.tsx` via `<Script>` (Web Component `<tb-banner-wrapper>` con shadow DOM, brandizzato Promptly dalla dashboard iubenda). Link Privacy / Cookie / T&C nel footer marketing tramite `components/legal/IubendaLegalLinks.tsx` come overlay sopra il sito (no redirect). Policy ID: `64451899` (IT) e `23626902` (EN). Per modificare lo style del banner usa CSS variables dalla dashboard iubenda, non CSS locale (shadow DOM).
+- **GDPR self-service nel profilo** (`/settings/profile`, pannello "Privacy & Dati" sotto "Le promesse di Spark"): (a) link "Gestisci preferenze cookie" → riapre il pannello iubenda (art. 7 — revoca facile come dare consenso); (b) "Elimina account" → modal con typed-email confirmation → `POST /api/account/delete` → `auth.admin.deleteUser` via service role + CASCADE su tutte le tabelle user-bound + log compliance in `public.account_deletions_log` (art. 17 diritto all'oblio). Rate-limit 5 chiamate/ora per IP in `lib/rate-limits/ip-rate-limiter.ts`.
 - **Hosting:** Netlify, deploy automatico da `main` (se il webhook salta: pannello Netlify → Trigger deploy → Clear cache and deploy site).
 
 ---
@@ -231,10 +233,8 @@ In root (attuali):
 | `BACKLOG.md` | Voci urgenti aperte (es. correlare le reazioni di Spark ai punteggi reali; ruotare i secret finiti in git history) + backlog post-launch. |
 | `SECURITY-BACKLOG.md` | Igiene operativa di secrets e auth (rotazione chiavi, scoping `OPENAI_API_KEY`, rate-limit per-utente su `/api/comment-answer`, ecc.). |
 | `LESSON-GUIDELINES.md` | Regole quick-win V3 (sezione iniziale — attuali) + decisioni di stile + workflow per scrivere lezioni. Lo schema V1/V2 più in basso è storico. |
-| `Glossario_Vivo_Blueprint.md` | Blueprint storico del Glossario Vivo; la verità di runtime è in `lib/glossary/` e `components/glossary/`. |
 | `Behavioral_Testing_Agent_Brief_v1.1.md` | Brief per l'agente di testing comportamentale (Playwright MCP): profili utente, scenari, formato report. |
 | `GUIDA-DOMINIO.md` | Note personali di Stefano, gitignored. |
-| `CLAUDE.draft.md` | Bozza di lavoro, non un riferimento — ignorabile. |
 
 In `docs/archive/` (spec storiche — utili per il contesto di design e la cronologia delle decisioni, **non** per lo stato attuale; vedi `docs/archive/README.md`):
 
@@ -243,8 +243,6 @@ In `docs/archive/` (spec storiche — utili per il contesto di design e la crono
 | `PROMPTLY.md` | Vision, business model freemium, razionale del design system (palette, "tool view"), taxonomy degli eventi PostHog. |
 | `LANDING.md` | Brief landing di aprile 2026 + nota sul redesign editoriale di maggio 2026 (target, tono, pricing nascosto, bilinguismo, performance restano validi). |
 | `DASHBOARD_V2.md` | Design della mappa visiva: zone bioma, sistema livelli/robot, catalogo e sblocco delle bonus path, referral. |
-| `AUTH.md` | Flusso auth (magic link + Google OAuth + callback + link scaduto) e copy delle schermate. (L'onboarding lì è a 3 step; oggi sono 12.) |
-| `LESSONS.md` | Spec del sistema lezioni in formato V1. |
 
 ---
 

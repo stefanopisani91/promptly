@@ -16,7 +16,7 @@
 import { useEffect, useState } from "react";
 import type { InputStep as InputStepType } from "@/types";
 import { StepCard } from "../StepCard";
-import { Spark } from "../Spark";
+import { SparkSphere } from "@/components/promptly/SparkSphere";
 
 export interface InputStepStrings {
   submitCta: string;
@@ -126,7 +126,7 @@ export function InputStep({ step, lessonId, state, onChange, strings }: Props) {
                 className="flex items-start gap-2 rounded-xl border border-error/30 bg-error/5 px-3 py-2"
                 role="status"
               >
-                <Spark state="sad" size={28} />
+                <SparkSphere state="sad" size={28} />
                 <p className="text-xs leading-relaxed text-text-primary">
                   {error === "network" ? strings.networkError : strings.apiError}
                 </p>
@@ -153,7 +153,7 @@ export function InputStep({ step, lessonId, state, onChange, strings }: Props) {
             {/* Spark bubble — left */}
             <div className="spark-reply-in flex items-start gap-3">
               <div className="shrink-0 mt-1">
-                <Spark state="happy" size={36} />
+                <SparkSphere state="happy" size={36} />
               </div>
               <div className="max-w-[85%] rounded-2xl rounded-tl-sm border border-primary/20 bg-primary-light/60 px-4 py-3">
                 <p className="text-sm font-medium uppercase tracking-wider text-primary-deep mb-1">

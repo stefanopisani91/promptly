@@ -7,7 +7,7 @@
 > - **Decisioni di stile** (lunghezza, tono, citazioni, esempi, errori da evitare — §2, §6, §7) — attuali per chi scrive lezioni.
 > - **Schema V2 e workflow di autoraggio** (§3.b, §5, §11) e **schema V1** (§3.a) — storici: il formato attivo è V3 (`steps[]` card-step). Per lo schema V3 e il dispatch V1/V2/V3 vedi `CLAUDE.md` § "Formato delle lezioni" e `types/index.ts`.
 >
-> Contesto generale del progetto: `CLAUDE.md`. Spec storica del sistema lezioni: `docs/archive/LESSONS.md`.
+> Contesto generale del progetto: `CLAUDE.md`.
 >
 > Versione 2.0 — 2 May 2026.
 
@@ -776,7 +776,7 @@ Vincoli di stile da tenere a mente: niente regole forzate, niente metafore ecces
 | `CLAUDE.md` | Contesto operativo del progetto, schema lezioni V3 attuale |
 | `LESSON-GUIDELINES.md` (questo file) | Regole quick-win V3 + decisioni di stile + workflow di scrittura |
 | `BACKLOG.md` | Backlog post-launch (la riscrittura lezioni è la voce 4) |
-| `docs/archive/LESSONS.md`, `docs/archive/PROMPTLY.md` | Spec storiche (sistema lezioni V1, vision/design originali) |
+| `docs/archive/PROMPTLY.md` | Spec storica (vision/design originali) |
 | `/content/it/mindset/04-break-it-down.json` | Fixture stilistica V1 — registro e tono di scrittura |
 | `/content/it/mindset/01-what-is-vibe-coding.v3.json` | Lezione V3 di riferimento per lo schema `steps[]` |
 | `/public/brand/lessons/<id>.svg` | Icone delle lezioni, già pronte |

@@ -1211,7 +1211,7 @@ export async function logUsageEvent(
   if (error) throw error;
 }
 
-// ─── Glossario Vivo (Glossario_Vivo_Blueprint.md) ───────────────────────
+// ─── Glossario Vivo ─────────────────────────────────────────────────────
 //
 // Idempotent: appends `termId` to users.glossary_seen iff not already
 // present. Read-then-write covers Postgres' lack of array_append unique
