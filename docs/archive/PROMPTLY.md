@@ -1090,8 +1090,8 @@ Main home.
 - Daily goal: radio (Trivial / Easy / Pro)
 - Notifications: push toggle, email toggle, time display
 - Billing (if Pro): plan, next renewal, "Manage in Stripe" link, cancel
-- Privacy: GDPR consent for AI evaluation toggle (required for Path 3-5 use)
-- Danger zone: delete account
+- Privacy: GDPR consent for AI evaluation toggle (required for Path 3-5 use) — *parzialmente coperto: il consenso analytics (PostHog cat. Misurazione iubenda) è gestito dal banner cookie + dal link "Gestisci preferenze cookie" in `/settings/profile`. Il toggle dedicato per la valutazione AI Pro arriverà quando il Path 3-5 sarà attivato.*
+- Danger zone: delete account — ✅ **shipped 2026-05-17** (commit `39809bf`). Pannello "Privacy & Dati" in `/settings/profile` con typed-email confirmation modal; endpoint `app/api/account/delete/route.ts` esegue hard delete via `auth.admin.deleteUser` + CASCADE su tutte le tabelle user-bound; log compliance in `public.account_deletions_log` (GDPR art. 17). Rate-limit 5 chiamate/ora per IP.
 
 ---
 

@@ -180,25 +180,48 @@ chiave.
 
 ---
 
-## 6. 🟢 Privacy policy — disclosure OpenAI (US)
+## 6. 🟡 Privacy policy — disclosure OpenAI / Anthropic / Supabase / Resend
 
-**Stato:** ⏳ pending
-**Priorità:** 🟢 bassa (diventa 🟡 prima del lancio pubblico V2)
+**Stato:** 🚧 parzialmente risolto (17 May 2026) — banner cookie iubenda + privacy policy generata sono live, ma serve verificare manualmente sulla dashboard iubenda che TUTTI i data processor effettivi siano elencati.
+**Priorità:** 🟡 media (era 🟢 bassa quando il problema era "manca la policy"; ora è "verifica che la policy generata copra tutti i processor").
 
 ### Contesto
 
-Le risposte degli utenti agli `open_question` delle lezioni V2 vengono
-inviate a OpenAI (server US) per ottenere il commento via GPT-4o mini.
-Il GDPR richiede di disclosure questo trasferimento dati al data
-processor estero.
+Le risposte degli utenti vengono inviate a diversi processor esteri:
+- **OpenAI** (USA) — risposte aperte V2 + demo Lucia + quick-win lezione 1 (gpt-4o-mini)
+- **Anthropic** (USA) — chat Spark + evaluator V3 lezioni 2-6 (Claude Haiku 4.5)
+- **Supabase** (DB in EU, ma org in USA) — auth, progress, XP, streak
+- **Resend** (USA) — welcome email + future reminder
+- **PostHog** (istanza EU, org in USA) — analytics, gated sul consenso
+- **DeepSeek** (Cina) — pianificato per Path 3-5, non ancora wired
 
-### Cosa fare prima che la V2 sia in produzione visibile agli utenti
+Il GDPR richiede di disclosure questi trasferimenti.
 
-1. Aggiungere alla privacy policy una sezione "Data processors" / "Trasferimenti extra-UE":
-   - OpenAI (USA) — riceve le risposte aperte alle lezioni V2 per generare commenti via GPT-4o mini.
-   - Eventualmente DeepSeek (Cina) quando attivata per Path 3-5.
-2. Aggiornare la consent flow al primo uso di una lezione V2 (banner one-time): "Le tue risposte vengono inviate a OpenAI per generare il commento. Continui?"
-3. Considerare se serve un opt-out: lezione fruibile anche senza il commento AI (gli `open_question` restano in pagina ma niente chiamata API).
+### Cosa è già fatto (17 May 2026, commit `2417743`)
+
+- ✅ **Banner cookie iubenda live in produzione** (account `learnpromptly.app`, piano Advanced). Vedi BACKLOG.md "Urgente 0".
+- ✅ **Privacy Policy + Cookie Policy + T&C generate da iubenda** e linkate dal footer marketing in IT (policy `64451899`) e EN (`23626902`).
+- ✅ **PostHog gated sul consenso** (categoria Misurazione = id 4 nel widget). Nessun analytics pre-consenso.
+
+### Cosa resta da verificare (10 minuti sulla dashboard iubenda)
+
+Loggarsi su iubenda → seleziona learnpromptly.app → Privacy Policy → "Servizi attivati" e confermare che siano presenti almeno:
+1. **OpenAI** — per il commento alle risposte V2 + demo Lucia + quick-win lezione 1
+2. **Anthropic Claude** — per la chat Spark e gli evaluator V3 (lezioni 2-6)
+3. **Supabase** — per database + auth
+4. **Resend** — per le email transazionali (welcome attiva, reminder pianificata)
+5. **PostHog** — per gli analytics (già nella Cookie Policy via categoria Misurazione, controllare che sia anche nella Privacy Policy)
+6. Se mancano, aggiungerli dal catalogo iubenda. Iubenda genera automaticamente il testo legale.
+
+### Cosa resta da fare quando si attiverà DeepSeek (Path 3-5, Pro tier)
+
+- Aggiungere DeepSeek alla privacy policy iubenda (data processor in Cina — richiede menzione specifica).
+- Considerare se per gli utenti Pro serve un consenso esplicito aggiuntivo al primo prompt verso DeepSeek (one-time modal). DeepSeek non è attualmente ancora wired (vedi CLAUDE.md), quindi non è urgente.
+
+### Cosa NON serve più
+
+- ~~Aggiornare la consent flow al primo uso di una lezione V2 (banner one-time)~~ — sostituito dal banner cookie iubenda che cattura il consenso una volta sola per visita.
+- ~~Considerare un opt-out alternativo (lezione fruibile senza commento AI)~~ — l'utente può negare la categoria Misurazione e continuare; l'AI delle lezioni resta funzionale perché è "Necessario" / "Funzionalità", non Marketing/Tracking.
 
 ---
 

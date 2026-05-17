@@ -16,15 +16,39 @@
 
 ## Urgente 0 — PostHog cattura eventi solo dal lato marketing (provider non montato sul lato app)
 
-**Stato:** ⏳ proposed
+**Stato:** ✅ done (17 May 2026, commit `2417743`)
 **Priorità:** 🔴🔴 ALTISSIMA (sopra a tutti gli altri Urgenti in questa sezione)
-**Aperta:** 14 May 2026
-**Quando affrontarlo:** insieme all'attivazione del **banner dei cookie / consent UI** — vedi sotto perché i due lavori vanno fatti nello stesso passaggio.
+**Aperta:** 14 May 2026 · Chiusa: 17 May 2026
+**Affrontato insieme a:** attivazione banner cookie iubenda (come previsto).
 **Scope:**
-- [components/analytics/PostHogProvider.tsx](components/analytics/PostHogProvider.tsx) — provider lazy-init via `requestIdleCallback`
-- [app/(marketing)/[lang]/layout.tsx:112](app/(marketing)/[lang]/layout.tsx#L112) — UNICO mount point del provider in tutto il codebase
-- [lib/analytics/posthog.ts:99](lib/analytics/posthog.ts#L99) — guardia `if (!initialized) return` nel wrapper `track()`
-- Layout app autenticata che NON monta il provider: `app/(app)/layout.tsx` (dashboard, lesson, settings, admin, path)
+- [components/analytics/PostHogProvider.tsx](components/analytics/PostHogProvider.tsx) — provider riscritto: rimosso `requestIdleCallback`, sostituito con polling continuo del cookie iubenda (gating consenso)
+- [app/layout.tsx](app/layout.tsx) — root layout: aggiunti `<Script>` iubenda CS widget (`beforeInteractive`) e loader (`afterInteractive`)
+- [app/(app)/layout.tsx](app/(app)/layout.tsx) + [app/(auth)/layout.tsx](app/(auth)/layout.tsx) — ora wrappati con `<Suspense><PostHogProvider>` (risolve il drop degli eventi lato app/auth)
+- [lib/analytics/posthog.ts](lib/analytics/posthog.ts) — aggiunte `hasIubendaAnalyticsConsent()` (legge cookie `_iub_cs-*`) e `optOutPostHog()`
+
+### Risoluzione
+
+Implementato **Opzione B** del piano (provider scope-separati su marketing/(app)/(auth) layouts) + **Opzione C** (gating consenso) in un singolo passaggio.
+
+**Tre fix combinati in [commit `2417743`](https://github.com/stefanopisani91/promptly/commit/2417743):**
+
+1. **Banner cookie iubenda** integrato nel root layout (account `learnpromptly.app`, piano Advanced, widget `1004186d-e370-4a88-b653-8472d85bab0d`). Web Component `<tb-banner-wrapper>` brandizzato Promptly dalla dashboard iubenda — copre tutte le pagine pubbliche e autenticate.
+2. **Footer Privacy/Cookie/T&C + widget preferenze** in `MarketingFooter` via nuovo `components/legal/IubendaLegalLinks.tsx`. Link IT (policy `64451899`) + EN (`23626902`) come overlay sopra il sito (no redirect a iubenda.com).
+3. **Gating PostHog su consenso iubenda v2.** Riscritto a partire da zero: i nomi degli eventi DOM v1 (`iubenda_consent_given_purposes` ecc.) non sono più emessi dal core v2, quindi non si possono ascoltare. Sostituito con polling del cookie `_iub_cs-*` (lettura sincrona ogni 1s + listener `storage` cross-tab), che è source-of-truth del consenso e copre sia first-time che revoca. Categoria Misurazione nel widget Promptly = id `4` (no id `3`, gap di numerazione custom del widget).
+
+**Bug originale risolto:** `PostHogProvider` ora montato anche su `(app)` e `(auth)` layouts. Gli eventi `lesson_*`, `spark_helper_*`, `referral_*` non vengono più droppati.
+
+**Verifica in produzione (17 May 2026, 10:51-10:55 UTC, learnpromptly.app):**
+- Pre-consenso: 0 chiamate `eu.i.posthog.com`, 0 cookie `ph_*` ✅
+- Post "Accetta tutto": cookie `ph_phc_tKgs9MsR2SK8NHSvHXvMAKVTZYx2mWCZo7HMUnyBQg9f_posthog` settato, `POST eu.i.posthog.com/e/?ver=1.372.3&compression=gzip-js` → **status 200 OK** ✅
+- Revoca dal pannello preferenze: `posthog.reset()` chiamato (`$last_posthog_reset` timestamp coincide), nuovo `distinct_id` generato ✅
+- Footer link IT + EN aprono overlay iubenda sopra `learnpromptly.app` (no redirect), policy ID corretti per lingua ✅
+
+**Note tecniche emerse durante l'implementazione:**
+- iubenda v2 ha refattorizzato l'API JavaScript: `_iub.cs.api.isConsentGiven(purpose)` ritorna `false` anche pre-scelta utente (indistinguibile da rifiuto esplicito). Leggere direttamente il cookie `_iub_cs-*` è più affidabile.
+- Categorie del widget Promptly: `1=Necessarie · 2=Funzionalità · 4=Misurazione` (no `3`). Se in futuro modifichi la config iubenda, ricontrolla `IUBENDA_MEASUREMENT_PURPOSE` in [lib/analytics/posthog.ts:30](lib/analytics/posthog.ts#L30).
+- Banner iubenda è un Web Component con shadow DOM (`<tb-banner-wrapper>`) — i selettori CSS standard non lo trovano. Per restyling usa CSS custom properties dalla dashboard iubenda, non CSS locale.
+- Latenza gating: ~1s dal click "Accetta" all'init PostHog (intervallo del polling).
 
 ### Sintomo (a cosa serve sapere questa cosa)
 
@@ -241,7 +265,7 @@ Stessa procedura del punto 2.
 
 **4. (Opzionale) Aggiornare gli script di test che usano queste password**
 
-Se hai script in `scripts/` o `qa-reports/` che hanno hardcodate le password vecchie, aggiornali con le nuove. Recupera i valori vecchi dalla git history (vedi sopra) e cercali nei file locali con `grep -r <vecchio_valore> .`.
+Se hai script in `scripts/` che hanno hardcodate le password vecchie, aggiornali con le nuove. Recupera i valori vecchi dalla git history (vedi sopra) e cercali nei file locali con `grep -r <vecchio_valore> .`.
 
 ### Cosa NON serve fare (overkill)
 
@@ -267,9 +291,9 @@ Per il futuro, evitare di approvare comandi `curl` con secret inline tra i patte
 
 ## Urgente 2 — Reazioni di Spark devono correlare con i punteggi reali delle 4 dimensioni
 
-**Stato:** ⏳ proposed
+**Stato:** 🚧 in progress — fix shippato il **15 May 2026, commit `af8ba81`** ("opzione completa": weakest-dim driven `pickReaction` + 4 template `weak*` IT+EN + `DimensionBars` con highlight rossa pulsante < 50 / verde ≥ 70). Test approfondito ancora da fare — bug osservati al primo giro, vedi [Urgente 4](#urgente-4--sessione-di-test-approfondita-del-widget-lucia-lezione-1-post-fix-urgente-2). Non chiudere come ✅ done finché Urgente 4 non rientra.
 **Priorità:** 🔴 alta
-**Aperta:** 9 May 2026
+**Aperta:** 9 May 2026 · Shippata (parziale): 15 May 2026
 **Scope:** [components/lessons/v3/steps/InteractiveStep.tsx](components/lessons/v3/steps/InteractiveStep.tsx) — `pickReaction` + i18n strings
 
 ### Problema osservato
@@ -315,6 +339,101 @@ Esempio di template targeted:
 ### Quando affrontarlo
 
 Ideale: insieme alla calibrazione del scoring (URGENTE 1). Le due fix si rinforzano — abbassare la soglia di vittoria + dare un consiglio mirato è la combinazione che trasforma un widget "punitivo" in uno "didattico".
+
+---
+
+## Urgente 4 — Sessione di test approfondita del widget Lucia (Lezione 1) post-fix Urgente 2
+
+**Stato:** ⏳ proposed
+**Priorità:** 🔴 alta (chiude il loop su un fix appena shippato in produzione)
+**Aperta:** 15 May 2026
+**Trigger:** dopo il deploy del commit `af8ba81` su Netlify, Stefano ha notato bug al primo test rapido. Serve una sessione di test sistematica prima di considerare Urgente 2 chiuso.
+**Scope:** [components/lessons/v3/steps/InteractiveStep.tsx](components/lessons/v3/steps/InteractiveStep.tsx) + [lib/i18n/lessons.ts](lib/i18n/lessons.ts) (sezione `v3.interactiveStep.reactions`) + [lib/landing-demo/system-prompt.ts](lib/landing-demo/system-prompt.ts) (per la coerenza del campo `consiglio`).
+
+### Bug osservati (DA COMPILARE durante la sessione)
+
+> Spazio per Stefano per annotare i bug specifici via via che emergono. Per ognuno: descrizione (1-2 frasi), profilo che lo riproduce, screenshot/excerpt opzionale.
+
+- _(vuoto)_
+
+### Checklist di test da percorrere
+
+Da fare in produzione (su `https://learnpromptly.app/`) con account loggato sulla Lezione 1, sia IT che EN, sia desktop che iPhone (≤ 375px).
+
+**1. I 3 profili-bersaglio della calibrazione (vedi Urgente 1)**
+
+| Profilo | Input atteso | Esito atteso |
+|---|---|---|
+| Beginner-vago | 1 bug, niente vincoli | `bestScore ~40`, NON vincente. Spark deve segnalare la dim più debole con consiglio AI ancorato (non frase generica). |
+| Intermedio-onesto | 3 bug, 1-2 vincoli generici | `bestScore 70-80`, **vittoria** ✓. Però se score < 70 deve ancora vedere weakest-dim. Caso del 9 May: chiarezza 95 / contesto 65 / obiettivo 70 / protezione 15 → template `weakProtezione` + barra protezione rossa pulsante + le altre verdi. |
+| Advanced | 3 bug + 3+ vincoli operativi + spiegazione | `bestScore 95-100`, **perfect** ✨. `allBugsHighScore` scriptato + fuochi d'artificio. |
+
+**2. Coordinazione testo / bars (regola d'oro del fix)**
+
+- La dimensione citata da Spark nella reaction text DEVE corrispondere alla barra che pulsa rossa.
+- Se sono incoerenti (Spark parla di protezione ma la barra rossa è "contesto", o viceversa) → fallback band-based si è attivato silenziosamente → bug.
+
+**3. Casi scriptati che NON devono finire nel weakest-dim path**
+
+- Vittoria piena (≥ 70 + 3 bug) → solo `allBugsHighScore`, MAI un `weak*` template.
+- Ultimo tentativo (3°) con 0-1 bug → solo `thirdAttemptDirect`, MAI un `weak*` template.
+
+**4. Coerenza del consiglio AI**
+
+- Il `consiglio` non deve dire "aggiungi un vincolo" quando l'utente ne ha già 3+.
+- Il `consiglio` non deve dire "guarda meglio il sito" quando l'utente ha già menzionato tutti e 3 i bug.
+- Se il consiglio dice una cosa **diversa** da quella che la cornice del template anticipa (es. template `weakProtezione` dice "non mi hai detto cosa NON toccare" ma consiglio AI dice "aggiungi più chiarezza al prompt") → potenziale incoerenza tra la dim più bassa e ciò di cui il valutatore ha deciso di parlare.
+
+**5. Persistenza al rientro**
+
+- Completa un attempt → naviga indietro/avanti tra gli step → ritorna sul quick-win.
+- La reaction text mostrata DEVE essere identica a quella dell'ultimo submit (salvata in `state.lastReaction`).
+- Le dimension bars DEVONO mostrare gli stessi numeri e gli stessi colori (highlight della weakest mantenuto).
+
+**6. Edge case visivi**
+
+- Tutte e 4 le dim < 50 → la sola con valore minimo è rossa (no doppi rossi).
+- Tutte e 4 le dim ≥ 70 → nessuna rossa, tutte verdi.
+- Tutte e 4 le dim uguali (es. 50/50/50/50) → `chiarezza` weakest per default (tie-breaking iteration order). Visivamente: `chiarezza` rossa, le altre 3 neutre (arancioni) — verificare che non si rompa nulla.
+- Dim weakest = 50 esatto → non rossa (soglia è `< 50`, non `≤ 50`). Confermare.
+
+**7. Mobile (iPhone 375px)**
+
+- Spark text + dim bars devono restare leggibili senza scroll orizzontale.
+- `animate-pulse` non deve far "saltare" il layout (height fissa della bar 1.5).
+- `prefers-reduced-motion: reduce` → la pulse deve fermarsi (verificare: Tailwind `animate-pulse` di default NON rispetta reduced-motion — potrebbe servire override in `globals.css`).
+
+**8. Locale switch**
+
+- Account in IT → leggere reaction e consiglio in italiano.
+- Account in EN → leggere reaction e consiglio in inglese.
+- Switch lingua mid-flow → cosa succede al `lastReaction` persistito? Non riusato in lingua sbagliata, spero.
+
+### Come riprodurre rapidamente i 3 profili (script di prompt-ricetta)
+
+**Profilo Beginner-vago (IT)**:
+> «c'è qualcosa di rotto nel sito di lucia, aggiusta»
+
+**Profilo Intermedio-onesto (IT)** (il caso del 9 May che ha dato 69):
+> «sulla homepage di lucia ci sono tre problemi: la foto del frigo è storta, una sezione esce dallo schermo su mobile, e il bottone iscriviti non si vede. sistemali.»
+
+**Profilo Advanced (IT)**:
+> «sulla homepage di lucia ci sono 3 bug visibili: (1) foto del frigo ruotata nell'header, (2) sezione progetto in overflow orizzontale su mobile, (3) bottone Download invisibile (text-white su sfondo bianco). Sistema solo questi 3 senza toccare altro. Vincoli: NON modificare il framework, NON aggiungere dipendenze npm, NON cambiare le classi CSS già esistenti, preserva tipografia e palette. Mostrami solo il diff e spiegami in 2 frasi cosa hai cambiato e perché.»
+
+### Quando concludere Urgente 2
+
+Quando questa sessione produce **0 bug aperti** sui 3 profili-bersaglio + i 5 edge case visivi. Solo allora Urgente 2 passa a ✅ done.
+
+### Prompt Claude Code (se servisse partire un'altra sessione)
+
+```
+Sto chiudendo Urgente 2 (fix Spark reactions weakest-dim, shipped in commit af8ba81).
+Apri BACKLOG.md voce "Urgente 4" — c'è la checklist completa di test + i bug
+osservati da Stefano. Aiutami a riprodurli localmente (dev server) e a
+diagnosticarli: per ognuno, isola se è un bug del `pickReaction` (logica),
+del template i18n (testo), del `DimensionBars` (visual), o del consiglio AI
+(server). Non scrivere codice di fix finché non abbiamo la diagnosi.
+```
 
 ---
 
@@ -621,7 +740,7 @@ nuovo standard è:
 - **File paralleli**: `<order>-<slug>.v2.json` accanto al file V1, finché il renderer V2 non è in produzione.
 - **API key**: `.env.example` contiene `OPENAI_API_KEY` + `OPENAI_MODEL=gpt-4o-mini` (da riempire).
 
-Nota: la riscrittura è poi passata da V2 a **V3** (`steps[]` card-step). Per il formato attuale vedi `CLAUDE.md` § "Formato delle lezioni" e `LESSON-GUIDELINES.md`. Spec storica V1/V2: `docs/archive/LESSONS.md`.
+Nota: la riscrittura è poi passata da V2 a **V3** (`steps[]` card-step). Per il formato attuale vedi `CLAUDE.md` § "Formato delle lezioni" e `LESSON-GUIDELINES.md`.
 
 ### Stato V2
 
@@ -638,8 +757,7 @@ dalle V2 una a una. Restano in produzione finché la V2 non viene wired.
 ### Il renderer V2 è una voce di codice separata
 
 Il renderer e i tipi V3 sono già implementati (`components/lessons/v3/`,
-`types/index.ts`, `lib/lessons/load.ts`). Spec storica della pipeline V1/V2:
-`docs/archive/LESSONS.md`.
+`types/index.ts`, `lib/lessons/load.ts`).
 
 ### File di riferimento
 
@@ -765,7 +883,7 @@ Documentazione: https://supabase.com/docs/guides/auth/password-security#password
 **Stato:** ⏳ proposed
 **Priorità:** 🟡 media (alto impatto su engagement con Spark + onboarding al lessico)
 **Aperta:** 8 May 2026
-**Spec completa:** [`Glossario_Vivo_Blueprint.md`](Glossario_Vivo_Blueprint.md) (root)
+**Implementazione:** `lib/glossary/` (dizionario + parser `[[term:...]]`) e `components/glossary/` (`GlossaryTerm`, `GlossaryPopover`, `GlossaryProvider`, `RichText`).
 
 ### Contesto
 
