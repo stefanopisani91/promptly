@@ -77,6 +77,7 @@ esposizione storica.
 | `RESEND_API_KEY` | mai (creata Apr 2026) | Oct 2026 |
 | `GOOGLE_OAUTH_CLIENT_SECRET` | mai (creata Apr 2026) | Oct 2026 |
 | `OPENAI_API_KEY` | nuova (creata 2 May 2026) | 2 Nov 2026 |
+| GitHub PAT classic "Mac mini M4" | 18 May 2026 | 28 Feb 2027 |
 
 ### Fix automatico
 
