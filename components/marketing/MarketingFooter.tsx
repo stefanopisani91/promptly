@@ -16,33 +16,39 @@ interface Props {
 // stroke-only, currentColor, ~16px target.
 type SvgProps = SVGProps<SVGSVGElement>;
 
-const TwitterGlyph: ComponentType<SvgProps> = (props) => (
+const InstagramGlyph: ComponentType<SvgProps> = (props) => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" {...props}>
-    <path d="M4 4l7.5 9.5M20 4l-7.5 9.5M4 20l7.5-9.5M20 20l-7.5-9.5" />
+    <rect x="3" y="3" width="18" height="18" rx="5" />
+    <circle cx="12" cy="12" r="4" />
+    <circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" />
   </svg>
 );
 
-const LinkedinGlyph: ComponentType<SvgProps> = (props) => (
+const TikTokGlyph: ComponentType<SvgProps> = (props) => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" {...props}>
-    <rect x="3" y="3" width="18" height="18" rx="2.5" />
-    <path d="M7 10v7" />
-    <circle cx="7" cy="7.2" r="0.6" fill="currentColor" />
-    <path d="M11 17v-4a2.5 2.5 0 0 1 5 0v4" />
-    <path d="M11 17v-7" />
+    <path d="M14 4v10.5a3.5 3.5 0 1 1-3.5-3.5" />
+    <path d="M14 4c0 2.8 2.2 5 5 5" />
   </svg>
 );
 
-const GithubGlyph: ComponentType<SvgProps> = (props) => (
+const YouTubeGlyph: ComponentType<SvgProps> = (props) => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" {...props}>
-    <path d="M9 19c-4 1.5-4-2.5-6-3" />
-    <path d="M15 22v-3.9a3.4 3.4 0 0 0-.9-2.6c2.9-.3 5.9-1.4 5.9-6.4a4.9 4.9 0 0 0-1.4-3.4 4.6 4.6 0 0 0-.1-3.4s-1.1-.3-3.6 1.4a12.4 12.4 0 0 0-6.4 0C5.9 1.9 4.8 2.2 4.8 2.2a4.6 4.6 0 0 0-.1 3.4 4.9 4.9 0 0 0-1.4 3.4c0 4.9 3 6 5.9 6.4a3.4 3.4 0 0 0-.9 2.6V22" />
+    <rect x="2.5" y="6" width="19" height="12" rx="3" />
+    <path d="M10.5 9.5l4 2.5-4 2.5z" fill="currentColor" stroke="none" />
+  </svg>
+);
+
+const FacebookGlyph: ComponentType<SvgProps> = (props) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="M14 22v-8h2.5l.5-3H14V9a1.5 1.5 0 0 1 1.5-1.5H17V5h-2a4 4 0 0 0-4 4v2H8.5v3H11v8" />
   </svg>
 );
 
 const SOCIAL_ICON = {
-  twitter: TwitterGlyph,
-  linkedin: LinkedinGlyph,
-  github: GithubGlyph,
+  instagram: InstagramGlyph,
+  tiktok: TikTokGlyph,
+  youtube: YouTubeGlyph,
+  facebook: FacebookGlyph,
 } as const;
 
 /**
@@ -96,9 +102,7 @@ export function MarketingFooter({ lang, copy }: Props) {
           <IubendaLegalLinks lang={lang} />
         </div>
 
-        {/* Social row — accounts are placeholders until launch. The links
-            still work as soon as the handles go live; until then they
-            404 visibly which is preferable to silently breaking. */}
+        {/* Social row — handles archiviati in public/brand/social-handles.md */}
         <div className="mt-10 flex flex-col gap-3 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-between">
           <p className="font-mono text-[11px] text-text-muted">{copy.rights}</p>
           <div className="flex items-center gap-3">

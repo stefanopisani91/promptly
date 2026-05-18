@@ -404,13 +404,26 @@ export const landingCopyEn: LandingCopy = {
     },
     socialHeading: "Follow",
     socialLinks: [
-      { label: "X / Twitter", href: "https://x.com/promptly_app", platform: "twitter" },
       {
-        label: "LinkedIn",
-        href: "https://www.linkedin.com/company/learnpromptly",
-        platform: "linkedin",
+        label: "Instagram",
+        href: "https://www.instagram.com/learnpromptly.app/",
+        platform: "instagram",
       },
-      { label: "GitHub", href: "https://github.com/stefanopisani91", platform: "github" },
+      {
+        label: "TikTok",
+        href: "https://www.tiktok.com/@learnpromptly.app",
+        platform: "tiktok",
+      },
+      {
+        label: "YouTube",
+        href: "https://www.youtube.com/@LearnPromptlyApp",
+        platform: "youtube",
+      },
+      {
+        label: "Facebook",
+        href: "https://www.facebook.com/Learnpromptly",
+        platform: "facebook",
+      },
     ],
     rights: "© 2026 Promptly · All rights reserved",
     builtWith: "Built with ❤ in Italy",

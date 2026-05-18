@@ -406,18 +406,27 @@ export const landingCopyIt: LandingCopy = {
       },
     },
     socialHeading: "Seguici",
-    // Social URLs are placeholders today — user confirmed accounts are
-    // coming "shortly". Link rel="noopener" + aria-label make them safe
-    // even before the targets are live; broken links fail visibly which
-    // is what we want during launch week.
     socialLinks: [
-      { label: "X / Twitter", href: "https://x.com/promptly_app", platform: "twitter" },
       {
-        label: "LinkedIn",
-        href: "https://www.linkedin.com/company/learnpromptly",
-        platform: "linkedin",
+        label: "Instagram",
+        href: "https://www.instagram.com/learnpromptly.app/",
+        platform: "instagram",
       },
-      { label: "GitHub", href: "https://github.com/stefanopisani91", platform: "github" },
+      {
+        label: "TikTok",
+        href: "https://www.tiktok.com/@learnpromptly.app",
+        platform: "tiktok",
+      },
+      {
+        label: "YouTube",
+        href: "https://www.youtube.com/@LearnPromptlyApp",
+        platform: "youtube",
+      },
+      {
+        label: "Facebook",
+        href: "https://www.facebook.com/Learnpromptly",
+        platform: "facebook",
+      },
     ],
     rights: "© 2026 Promptly · Tutti i diritti riservati",
     builtWith: "Costruito con ❤ in Italia",

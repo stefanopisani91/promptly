@@ -136,7 +136,7 @@ export interface LandingCopy {
     socialLinks: {
       label: string; // visible name + aria-label
       href: string;
-      platform: "twitter" | "linkedin" | "github";
+      platform: "instagram" | "tiktok" | "youtube" | "facebook";
     }[];
     rights: string;
     builtWith: string;
