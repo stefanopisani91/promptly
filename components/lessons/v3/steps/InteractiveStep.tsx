@@ -232,13 +232,13 @@ export function InteractiveStep({
       const next = deriveOutcome(ev.totale, ev.bugs_menzionati);
       setEvaluation(ev);
 
-      // Always merge in newly fixed bugs — don't undo earlier fixes if the
-      // new attempt mentioned fewer bugs.
-      setFixedBugs((prev) => ({
-        foto: prev.foto || next.fixed.foto,
-        overflow: prev.overflow || next.fixed.overflow,
-        bottone: prev.bottone || next.fixed.bottone,
-      }));
+      // Each attempt defines its own preview state. Override (not merge
+      // OR) so the user sees the homepage reset to "broken" when a new
+      // prompt regresses, instead of carrying over fixes from earlier
+      // tries — the merge made the exercise lose its bite (bug reported
+      // 18 May 2026). Persistence across mounts is unaffected: the saved
+      // snapshot only writes at `handleFinalize` via `finalFixed`.
+      setFixedBugs(next.fixed);
 
       const newAttempt = attemptCount + 1;
       setAttemptCount(newAttempt);

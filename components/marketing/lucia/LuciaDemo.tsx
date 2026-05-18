@@ -273,14 +273,21 @@ export function LuciaDemo({ copy, lang, isLoggedIn = false }: Props) {
     setErrorMessage(null);
     setShowFireworks(false);
     setShowFinalCard(false);
+    // Preview: reset only when the user is *retrying* a non-winning
+    // attempt. If they already won this session (`victoryLocked`), keep
+    // the homepage fixed — it's their trophy. Mount-time persistence
+    // (SS_VICTORY_KEY) is unaffected: a user leaving and returning after
+    // a win still sees the fixed preview.
+    if (!victoryLocked) {
+      setFixedBugs(NO_BUGS_FIXED);
+      persistFixed(NO_BUGS_FIXED, false);
+    }
     if (attemptCount >= HARD_LIMIT) {
       setPhase("limit");
     } else {
       setPhase("editing");
     }
-    // Note: fixedBugs intentionally NOT reset — homepage keeps its current
-    // state (or stays victory-locked) until the next evaluation.
-  }, [attemptCount, clearAnimTimeouts, evaluation]);
+  }, [attemptCount, clearAnimTimeouts, evaluation, victoryLocked, persistFixed]);
 
   // If the user lands at limit straight from a previous session, surface
   // the limit screen on first entry to editing phase.

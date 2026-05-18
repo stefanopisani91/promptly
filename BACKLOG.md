@@ -478,6 +478,59 @@ del template i18n (testo), del `DimensionBars` (visual), o del consiglio AI
 
 ---
 
+## Urgente 5 — Bug preview FrigoMagico non si resetta + system prompt IT troppo stretto
+
+**Stato:** 🚧 in progress (codice shippato in locale 18 May 2026, test manuali da completare prima di mergiare su `main`)
+**Priorità:** 🔴 alta (rompe la pedagogia della demo)
+**Aperta:** 18 May 2026 (durante la sessione agentica di Urgente 4)
+
+### Bug osservati
+
+**B1 — preview non si resetta su retry (landing + Lez 1)**
+- Landing: prompt vincente → preview si aggiusta → click "Riprova" → preview restava aggiustato invece di tornare allo stato rotto.
+- Lez 1: stesso sintomo via meccanica diversa — `setFixedBugs((prev) => ({ foto: prev.foto || next.fixed.foto, ... }))` faceva merge OR, accumulando i fix tra tentativi. Un secondo prompt che non menzionava più la foto comunque la lasciava aggiustata.
+
+**B2 — calibrazione system prompt IT troppo stretta sul matching semantico**
+- Prompt-test "intermedio-onesto" («la foto del frigo è storta, una sezione esce dallo schermo su mobile, il bottone iscriviti non si vede») riceveva score 35 (banda "DA RIVEDERE") in IT. Lo stesso prompt in EN prendeva 60-66 (banda "BUONO").
+- Causa: le definizioni IT di `foto`/`overflow`/`bottone` nel system prompt usavano solo terminologia tecnica ("foto rotta", "non sta nel contenitore"). Descrizioni in linguaggio comune ("storta", "esce dallo schermo su mobile") non venivano riconosciute → `bugs_menzionati = []` → niente `BONUS_ALL_3_BUGS` → score crolla.
+- Contraddice la pedagogia di Lez 1 (premiare l'osservazione anche imprecisa).
+
+### Fix shippati (locale, da testare prima di push)
+
+- [components/marketing/lucia/LuciaDemo.tsx:280-289](components/marketing/lucia/LuciaDemo.tsx#L280-L289) — `handleReset` ora resetta `fixedBugs` a `NO_BUGS_FIXED` + persistFixed con `victory=false`, **solo se `!victoryLocked`**. La vittoria sticky in `SS_VICTORY_KEY` resta intatta → rientro post-vittoria preservato.
+- [components/lessons/v3/steps/InteractiveStep.tsx:235-241](components/lessons/v3/steps/InteractiveStep.tsx#L235-L241) — sostituito il merge OR con `setFixedBugs(next.fixed)` (override). Ogni tentativo definisce il suo output. La persistenza al rientro passa per `finalFixed` scritto in `handleFinalize` ([:298](components/lessons/v3/steps/InteractiveStep.tsx#L298)) — intoccato.
+- [lib/landing-demo/system-prompt.ts:152-173](lib/landing-demo/system-prompt.ts#L152-L173) — definizioni IT di `foto`/`overflow`/`bottone` allargate con varianti in linguaggio comune (foto: storta/ruotata/girata/inclinata/messa male; overflow: esce dallo schermo/non sta nel telefono/tagliato sul mobile/scroll orizzontale; bottone: scompare). Aggiunti esempi corrispondenti. Pesi `computeTotale`, bonus, soglie, pre-filter anti-injection, clausola sicurezza, formato JSON — **tutti intatti**. System prompt EN non toccato (era già pari come definizione strutturale).
+
+### Test manuali da fare (prima di mergiare su `main`)
+
+> Tutti su `npm run dev` localmente. Usare finestra incognito tra test per evitare il cap `localStorage.lucia_demo_attempts_v1` (3 attempts/sessione).
+
+| # | Test | Prompt / azione | Atteso |
+|---|---|---|---|
+| 1 | Calibrazione IT (B2) | Sulla landing `/it`: prompt intermedio del brief Urgente 4 | Score 60-80 (era 35) |
+| 2 | Preview reset on retry (B1, landing) | Prompt vincente → click "riprova" | Preview torna allo stato rotto |
+| 3 | Victory persistente al rientro (vincolo critico) | Dopo TEST 2, ricarica F5 | Preview resta fixato (`SS_VICTORY_KEY=1` lo forza al mount) |
+| 4 | Override merge Lez 1 (B1, lez 1) | Dentro `/lesson/01-what-is-vibe-coding`: 1° prompt solo sulla foto → 2° prompt solo sul bottone | La foto torna rotta nel 2° tentativo, solo il bottone fixato |
+| 5 | Victory persistente Lez 1 | Vincere la lez 1 → uscire dalla lezione → rientrare allo step Lucia | Preview resta fixato (`finalFixed` da step state) |
+
+### Test bloccati dal rate-limit IP che restano da completare in produzione
+
+Dalla sessione agentica del 18 May (vedi `lucia-test-report-2026-05-18.md`): 4 run end-to-end non eseguiti perché il rate-limit `5/ora per IP` si è esaurito durante la sessione. Da rifare a IP fresca:
+- Run 11 (EN desktop advanced), Run 12 (EN mobile advanced) — atteso 95-100 PERFETTO
+- Edge E1 end-to-end (prompt injection IT) — verifica che il pre-filter blocchi a 400 senza chiamare OpenAI
+- Edge E4 (lingua mista), Edge E5 (prompt iper-corto)
+
+### Quando concludere
+
+- [ ] TEST 1-5 passati in dev locale
+- [ ] Push su `main` (Netlify deploy auto)
+- [ ] Ri-eseguire i 4 run bloccati in produzione su IP fresca (≥ 1h dopo l'ultima esecuzione)
+- [ ] Validare che il drift IT/EN (G1 nel report) cala a < 10pt sul profilo intermedio
+
+Quando i 4 punti sopra sono tutti spuntati → questa voce passa a ✅ done e Urgente 4 si chiude.
+
+---
+
 ## 1. 🐛 Fix server-side exception su /dashboard post-onboarding
 
 **Stato:** ✅ done (29 April 2026, commit `09d78a2`)

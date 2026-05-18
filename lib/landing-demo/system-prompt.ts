@@ -149,21 +149,31 @@ REGOLE IMPORTANTI:
   se la descrizione è chiaramente quel bug.
   Valori possibili (esattamente queste stringhe minuscole): "foto", "overflow", "bottone".
 
-  - "foto" = qualunque riferimento a foto/immagine/avatar/profilo che non si carica
-    o è rotta. Esempi che CONTANO: "la foto non si vede", "l'immagine è rotta",
-    "errore 404 sulla foto", "il profilo non ha l'immagine".
+  - "foto" = qualunque riferimento a foto/immagine/avatar/profilo che non si carica,
+    è rotta, storta, ruotata, girata, inclinata, o "messa male". Conta sia il
+    linguaggio tecnico (404, broken, non carica) sia il linguaggio comune che
+    descrive l'effetto visivo (storta, girata, inclinata, ruotata). Esempi che
+    CONTANO: "la foto non si vede", "l'immagine è rotta", "errore 404 sulla foto",
+    "il profilo non ha l'immagine", "la foto è storta", "la foto del frigo è
+    ruotata", "l'immagine è inclinata", "la foto è messa male".
 
   - "overflow" = qualunque descrizione di testo/contenuto che fuoriesce, sfora,
-    non sta nel suo contenitore, o è tagliato. Esempi che CONTANO: "il testo
-    esce dal box", "il titolo sfora", "il testo va fuori dal contenitore",
-    "overflow del titolo", "il testo è tagliato a destra", "il testo non sta dentro".
+    non sta nel suo contenitore, è tagliato, esce dallo schermo, non sta nel
+    telefono, viene tagliato sul mobile, o causa scroll orizzontale. Vale sia
+    il linguaggio tecnico (overflow, fuoriesce dal box) sia quello visivo da
+    utente mobile ("non sta sul telefono", "esce dallo schermo"). Esempi che
+    CONTANO: "il testo esce dal box", "il titolo sfora", "il testo va fuori
+    dal contenitore", "overflow del titolo", "il testo è tagliato a destra",
+    "il testo non sta dentro", "la sezione esce dallo schermo su mobile",
+    "non sta nel telefono", "scrolla in orizzontale", "tagliato sul mobile".
 
   - "bottone" = qualunque problema di un pulsante/CTA/capsula che non si vede,
-    non si legge, è invisibile o illeggibile. Esempi che CONTANO: "il bottone
-    è invisibile", "il pulsante è bianco su bianco", "la CTA è illeggibile",
-    "non si vede il bottone Download", "il bottone non si legge". Anche se l'utente
-    nomina male il bottone (es. "Prenota" invece di "DOWNLOAD") conta lo stesso —
-    è un beginner che descrive cosa vede.
+    scompare, non si legge, è invisibile o illeggibile. Esempi che CONTANO:
+    "il bottone è invisibile", "il pulsante è bianco su bianco", "la CTA è
+    illeggibile", "non si vede il bottone Download", "il bottone non si legge",
+    "il bottone scompare". Anche se l'utente nomina male il bottone (es.
+    "Prenota" / "Iscriviti" invece di "DOWNLOAD") conta lo stesso — è un
+    beginner che descrive cosa vede.
 
   NON includere un bug se l'utente ne parla in modo VAGO ("ci sono dei bug" senza
   dettaglio). Se non ne menziona nessuno specificamente, restituisci [].
