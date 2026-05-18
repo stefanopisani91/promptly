@@ -1,10 +1,10 @@
-import Image from "next/image";
 import Link from "next/link";
 import { Suspense, type ReactNode } from "react";
 import { resolveLangFromRequest } from "@/lib/i18n/server-lang";
 import { getAuthCopy } from "@/lib/i18n/auth";
 import { LangSwitcher } from "@/components/i18n/LangSwitcher";
 import { PostHogProvider } from "@/components/analytics/PostHogProvider";
+import { PromptlyWordmark } from "@/components/promptly/PromptlyWordmark";
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
   const lang = resolveLangFromRequest();
@@ -20,16 +20,9 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
             <Link
               href={`/${lang}`}
               aria-label={copy.shell.backHomeLabel}
-              className="flex items-center"
+              className="inline-flex items-center"
             >
-              <Image
-                src="/brand/logo-horizontal.svg"
-                alt="Promptly"
-                width={140}
-                height={32}
-                priority
-                className="h-7 w-auto sm:h-8"
-              />
+              <PromptlyWordmark size="xl" />
             </Link>
             <LangSwitcher fallback={lang} ariaLabel={copy.shell.langToggleLabel} />
           </header>
