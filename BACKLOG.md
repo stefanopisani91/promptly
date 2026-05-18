@@ -972,6 +972,47 @@ Documentazione: https://supabase.com/docs/guides/auth/password-security#password
 
 ---
 
+## Email signup confirmation — migrare da template Supabase a Resend via Auth Hook
+
+**Stato:** ⏳ proposed
+**Priorità:** 🟡 media (qualità di brand, non blocca)
+**Aperta:** 18 May 2026
+
+### Contesto
+
+Oggi l'email "Confirm signup" è gestita da Supabase Auth, con template
+HTML custom configurato in Supabase Dashboard → Authentication → Email
+Templates (template aggiornato 18 maggio 2026 con brand Promptly minimo,
+fix color-scheme light-only, pattern table bgcolor per pill logo).
+
+Limiti residui del template Supabase:
+- Monolingua (oggi IT only). Utenti EN ricevono comunque l'IT.
+- No @react-email components, no pipeline condivisa con welcome-*.tsx.
+- No accesso ai dati profilo (es. nome) — Supabase non li espone al
+  template renderer.
+
+### Cosa fare
+
+Migrare a Supabase Auth Hook "send-email-hook": Supabase chiama un
+webhook custom in Promptly al signup, l'invio passa a Resend con
+react-email templates bilingui (`confirm-signup-it.tsx` +
+`confirm-signup-en.tsx`, fratelli di `welcome-*.tsx`).
+
+Pro: brand consistency totale sul funnel di onboarding, bilinguismo
+nativo, accesso ai dati profilo nel template (saluto personalizzato).
+Contro: nuovo endpoint = nuovo punto di failure. Serve gestire un
+shared secret per validare le richieste in arrivo da Supabase.
+
+### Tempo stimato
+
+2-3 ore.
+
+### Riferimenti
+
+https://supabase.com/docs/guides/auth/auth-hooks/send-email-hook
+
+---
+
 ## 📖 Glossario Vivo — termini cliccabili che attivano Spark
 
 **Stato:** ⏳ proposed
