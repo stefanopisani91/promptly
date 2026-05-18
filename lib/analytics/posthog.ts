@@ -187,5 +187,6 @@ export type LandingEvent = AppEvent;
 export function track(event: AppEvent) {
   if (typeof window === "undefined") return;
   if (!initialized) return;
+  if (posthog.has_opted_out_capturing()) return; // explicit opt-out gate (GDPR belt-and-suspenders)
   posthog.capture(event.name, event.props ?? {});
 }
