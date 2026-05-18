@@ -31,7 +31,10 @@ const COLORS = {
 export function WelcomeEmailEn({ name, ctaUrl }: WelcomeEmailProps) {
   return (
     <Html lang="en">
-      <Head />
+      <Head>
+        <meta name="color-scheme" content="light only" />
+        <meta name="supported-color-schemes" content="light" />
+      </Head>
       <Preview>Welcome to Promptly — start today, even just 5 minutes.</Preview>
       <Body
         style={{
@@ -54,22 +57,32 @@ export function WelcomeEmailEn({ name, ctaUrl }: WelcomeEmailProps) {
           }}
         >
           <Section style={{ textAlign: "center", marginBottom: 32 }}>
-            <div
+            <table
+              role="presentation"
+              cellPadding={0}
+              cellSpacing={0}
+              border={0}
+              align="center"
+              bgcolor="#ffffff"
               style={{
                 backgroundColor: "#ffffff",
-                padding: "16px 24px",
                 borderRadius: 8,
-                display: "inline-block",
               }}
             >
-              <Img
-                src={`${SITE_URL}/brand/logo-horizontal.png`}
-                width={180}
-                height={50}
-                alt="Promptly"
-                style={{ display: "block" }}
-              />
-            </div>
+              <tbody>
+                <tr>
+                  <td style={{ padding: "16px 24px" }}>
+                    <Img
+                      src={`${SITE_URL}/brand/logo-horizontal.png`}
+                      width={180}
+                      height={50}
+                      alt="Promptly"
+                      style={{ display: "block" }}
+                    />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </Section>
 
           <Section>
