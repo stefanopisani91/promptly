@@ -32,6 +32,21 @@
   --streak-fire: #dc2626;
   --streak-freeze: #38bdf8;
 
+  /* Prompt anatomy builder (Path 2 Lesson 1) — one accent per ingredient
+     of the prompt anatomy + 3 feedback bands. Picked from the existing
+     palette so the lesson stays "Focused Academy" calm, not Duolingo
+     candy: context = trust-blue (foundations), task = brand orange
+     (action), constraints = green (guardrails — reuses --success),
+     format = soft violet (shape). Band colours mirror semantic
+     success/warning/danger to avoid yet another scale to keep in sync. */
+  --anatomy-context: #3b82f6;
+  --anatomy-task: var(--primary);
+  --anatomy-constraints: #16a34a;
+  --anatomy-format: #8b5cf6;
+  --anatomy-band-good: var(--success);
+  --anatomy-band-weak: var(--warning);
+  --anatomy-band-trap: #dc2626;
+
   /* Text — slightly cooler to match neutral background */
   --text-primary: #0a0a0a;
   --text-secondary: #525252;
@@ -1574,4 +1589,137 @@ h6 {
   background-image: radial-gradient(circle at 30% 0%,
     rgba(232, 112, 63, 0.08) 0%,
     rgba(232, 112, 63, 0) 70%);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   Prompt anatomy builder (Path 2 Lesson 1) — micro-animations
+   All transforms have a prefers-reduced-motion fallback that
+   immediately settles in the end state.
+   ════════════════════════════════════════════════════════════════ */
+.anatomy-screen {
+  animation: anatomy-screen-enter 280ms ease-out both;
+}
+@keyframes anatomy-screen-enter {
+  from {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+.anatomy-progress-segment {
+  transition: background-color 280ms ease-out, box-shadow 200ms ease-out;
+}
+.anatomy-option-tile {
+  transition:
+    transform 150ms ease-out,
+    border-color 180ms ease-out,
+    background-color 180ms ease-out;
+}
+.anatomy-coaching {
+  animation: anatomy-coaching-in 220ms ease-out both;
+}
+@keyframes anatomy-coaching-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.anatomy-checklist-pop {
+  animation: anatomy-checklist-pop 260ms ease-out both;
+}
+@keyframes anatomy-checklist-pop {
+  0% {
+    transform: scale(0.7);
+    opacity: 0.5;
+  }
+  60% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.anatomy-prompt-stitch {
+  animation: anatomy-prompt-stitch 360ms ease-out both;
+}
+@keyframes anatomy-prompt-stitch {
+  from {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.anatomy-chip {
+  animation: anatomy-chip-in 240ms ease-out both;
+}
+@keyframes anatomy-chip-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.anatomy-verdict-sheet {
+  animation: anatomy-verdict-rise 320ms ease-out both;
+}
+@keyframes anatomy-verdict-rise {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.anatomy-dim-fill {
+  transition: width 480ms ease-out;
+}
+.anatomy-xp-badge {
+  animation: anatomy-xp-badge 480ms ease-out both;
+}
+@keyframes anatomy-xp-badge {
+  0% {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.12);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .anatomy-screen,
+  .anatomy-coaching,
+  .anatomy-checklist-pop,
+  .anatomy-prompt-stitch,
+  .anatomy-chip,
+  .anatomy-verdict-sheet,
+  .anatomy-xp-badge {
+    animation: none !important;
+  }
+  .anatomy-progress-segment,
+  .anatomy-option-tile,
+  .anatomy-dim-fill {
+    transition: none !important;
+  }
 }

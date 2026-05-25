@@ -52,11 +52,12 @@ da capo.
   L'autosave a sessionStorage scrive l'oggetto intero ad ogni
   keystroke (debounced via `useEffect`).
 
-**Stato attuale (9 May 2026):**
+**Stato attuale (25 May 2026):**
 - ✅ Lucia (lez 1): fix applicato — `setDraft("")` rimosso dal finally
 - ✅ Claudemd (lez 2): già conforme, sessionStorage + state hydration
 - ✅ Context (lez 3): già conforme, idem
 - ✅ Constraints (lez 4): già conforme, idem
+- ✅ Prompt anatomy builder (Path 2 · lez 1): nato conforme — `task` mai svuotato, sessionStorage chiave `prompt_anatomy_builder:<userId>:<stepId>`, ibrido tap (3 ingredienti) + textarea (task)
 
 ### 2. Lock anti-doppio-submit (sincrono)
 

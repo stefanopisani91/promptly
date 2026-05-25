@@ -271,7 +271,8 @@ function isLessonV3Step(value: unknown): value is LessonV3Step {
         b.widget !== "block_picker" &&
         b.widget !== "constraints_editor" &&
         b.widget !== "broken_session_debugger" &&
-        b.widget !== "prompt_architecture"
+        b.widget !== "prompt_architecture" &&
+        b.widget !== "prompt_anatomy_builder"
       ) {
         return false;
       }
@@ -586,6 +587,127 @@ function isLessonV3Step(value: unknown): value is LessonV3Step {
           }
         }
         if (seenPillars.size !== 4) return false;
+      }
+      if (b.widget === "prompt_anatomy_builder") {
+        // Path 2 Lesson 1 — anatomy builder. Validates the 4-ingredient
+        // config: scenario, all 4 ingredient specs, scoring bands,
+        // weights, assembly template, model answer, and xp_by_case.
+        const cfg = b.anatomy_config as
+          | Record<string, unknown>
+          | undefined;
+        if (!cfg || typeof cfg !== "object") return false;
+        const scenario = cfg.scenario as Record<string, unknown> | undefined;
+        if (
+          !scenario ||
+          typeof scenario.brief !== "string" ||
+          typeof scenario.vague_prompt !== "string" ||
+          typeof scenario.generic_output !== "string" ||
+          typeof scenario.spark_intro_line !== "string"
+        ) {
+          return false;
+        }
+        const ingredients = cfg.ingredients as Record<string, unknown> | undefined;
+        if (!ingredients) return false;
+        const ctxSpec = ingredients.context as Record<string, unknown> | undefined;
+        const taskSpec = ingredients.task as Record<string, unknown> | undefined;
+        const conSpec = ingredients.constraints as Record<string, unknown> | undefined;
+        const fmtSpec = ingredients.format as Record<string, unknown> | undefined;
+        if (!ctxSpec || !taskSpec || !conSpec || !fmtSpec) return false;
+        // Single-select ingredient specs.
+        for (const spec of [ctxSpec, fmtSpec]) {
+          if (typeof spec.question !== "string") return false;
+          if (!Array.isArray(spec.tiles) || spec.tiles.length < 2) return false;
+          for (const t of spec.tiles) {
+            if (typeof t !== "object" || t === null) return false;
+            const tile = t as Record<string, unknown>;
+            if (
+              typeof tile.id !== "string" ||
+              typeof tile.label !== "string" ||
+              (tile.band !== "specific" &&
+                tile.band !== "vague" &&
+                tile.band !== "trap")
+            ) {
+              return false;
+            }
+          }
+        }
+        // Task spec (free-text).
+        if (
+          typeof taskSpec.question !== "string" ||
+          typeof taskSpec.placeholder !== "string" ||
+          typeof taskSpec.min_chars !== "number" ||
+          typeof taskSpec.max_chars !== "number"
+        ) {
+          return false;
+        }
+        const hint = taskSpec.hint as Record<string, unknown> | undefined;
+        if (
+          !hint ||
+          !Array.isArray(hint.verbs) ||
+          !Array.isArray(hint.domain_terms) ||
+          !Array.isArray(hint.outcome_markers)
+        ) {
+          return false;
+        }
+        // Multi-select constraints spec.
+        if (
+          typeof conSpec.question !== "string" ||
+          typeof conSpec.select_count !== "number" ||
+          conSpec.select_count < 1 ||
+          !Array.isArray(conSpec.tiles) ||
+          conSpec.tiles.length < (conSpec.select_count as number)
+        ) {
+          return false;
+        }
+        for (const t of conSpec.tiles) {
+          if (typeof t !== "object" || t === null) return false;
+          const tile = t as Record<string, unknown>;
+          if (
+            typeof tile.id !== "string" ||
+            typeof tile.label !== "string" ||
+            (tile.weight !== "strong" &&
+              tile.weight !== "weak" &&
+              tile.weight !== "trap")
+          ) {
+            return false;
+          }
+        }
+        // Bands, weights, template, model answer, xp.
+        const bands = cfg.bands as Record<string, unknown> | undefined;
+        const weights = cfg.weights as Record<string, unknown> | undefined;
+        if (
+          !bands ||
+          typeof bands.specific !== "number" ||
+          typeof bands.vague !== "number" ||
+          typeof bands.trap !== "number"
+        ) {
+          return false;
+        }
+        if (
+          !weights ||
+          typeof weights.strong !== "number" ||
+          typeof weights.weak !== "number" ||
+          typeof weights.trap !== "number"
+        ) {
+          return false;
+        }
+        if (
+          typeof cfg.assembly_template !== "string" ||
+          typeof cfg.model_answer !== "string"
+        ) {
+          return false;
+        }
+        const xp = cfg.xp_by_case as Record<string, unknown> | undefined;
+        if (
+          !xp ||
+          typeof xp.vague !== "number" ||
+          typeof xp.missing_ingredients !== "number" ||
+          typeof xp.weak_task !== "number" ||
+          typeof xp.complete_calibrate !== "number" ||
+          typeof xp.excellent !== "number"
+        ) {
+          return false;
+        }
       }
       return true;
     }

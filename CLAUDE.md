@@ -85,6 +85,7 @@ app/
     ├── lesson-constraints-evaluate/ # Quick-win lezione 4 (Haiku)
     ├── lesson-debug-evaluate/       # Quick-win lezione 5 (Haiku)
     ├── lesson-architecture-prompt/  # Quick-win lezione 6 (Haiku)
+    ├── lesson-anatomy-evaluate/     # Quick-win Path 2 lezione 1 (Haiku)
     └── qa-login/                    # Bypass QA dev-only (gitignored secret)
 
 components/
@@ -162,16 +163,17 @@ Ogni step può avere `vignettes`: fino a 3 chip orbitanti attorno a Spark che si
 
 ### Quick-win widget (uno per lezione)
 
-Sono gli step `interactive`, alla fine di ogni lezione di Path 1, vissuti come "ho costruito qualcosa di mio":
+Sono gli step `interactive`, alla fine di ogni lezione, vissuti come "ho costruito qualcosa di mio":
 
-| Lez | Widget | Route API | Produce |
+| Path · Lez | Widget | Route API | Produce |
 |---|---|---|---|
-| 1 | `lucia_prompt_loop` | `/api/landing-evaluate` | Fix dei 3 bug del sito di Lucia |
-| 2 | `claudemd_editor` | `/api/lesson-claudemd-evaluate` | CLAUDE.md scaricabile |
-| 3 | `context_prompt_editor` | `/api/lesson-context-evaluate` | Prompt context-rich scaricabile |
-| 4 | `constraints_editor` | `/api/lesson-constraints-evaluate` | I 3 vincoli del progetto |
-| 5 | `broken_session_debugger` | `/api/lesson-debug-evaluate` | Messaggio di stop che salva una sessione |
-| 6 | `prompt_architecture` | `/api/lesson-architecture-prompt` | Prompt CONTESTO→VINCOLI→TASK→VERIFICA scaricabile |
+| Mindset · 1 | `lucia_prompt_loop` | `/api/landing-evaluate` | Fix dei 3 bug del sito di Lucia |
+| Mindset · 2 | `claudemd_editor` | `/api/lesson-claudemd-evaluate` | CLAUDE.md scaricabile |
+| Mindset · 3 | `context_prompt_editor` | `/api/lesson-context-evaluate` | Prompt context-rich scaricabile |
+| Mindset · 4 | `constraints_editor` | `/api/lesson-constraints-evaluate` | I 3 vincoli del progetto |
+| Mindset · 5 | `broken_session_debugger` | `/api/lesson-debug-evaluate` | Messaggio di stop che salva una sessione |
+| Mindset · 6 | `prompt_architecture` | `/api/lesson-architecture-prompt` | Prompt CONTESTO→VINCOLI→TASK→VERIFICA scaricabile |
+| Prompt · 1 | `prompt_anatomy_builder` | `/api/lesson-anatomy-evaluate` | Prompt a 4 ingredienti (CONTESTO·TASK·VINCOLI·FORMATO) copiabile/scaricabile |
 
 Regole di comportamento dei widget (da rispettare per ogni widget nuovo — dettagli in `LESSON-GUIDELINES.md` § V3):
 

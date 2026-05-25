@@ -33,6 +33,31 @@ const PRO_PATHS: ReadonlySet<PathSlug> = new Set<PathSlug>(["build", "debug", "s
 // dashboard still shows the full product surface.
 const COMING_SOON_PATHS: ReadonlySet<PathSlug> = new Set<PathSlug>(["prompt"]);
 
+// Individual lessons exempt from their path's coming-soon lock — for
+// previewing a single migrated V3 lesson on a path that's otherwise
+// hidden. The remaining lessons in the same path still render as
+// "coming soon" on the map. As lessons land in V3 their id moves out
+// of here; when the whole path is ready, drop the path from
+// COMING_SOON_PATHS and clear the exceptions for it.
+const COMING_SOON_LESSON_EXCEPTIONS: ReadonlySet<string> = new Set<string>([
+  "prompt-01",
+]);
+
+/**
+ * True iff this lesson should be treated as "still coming soon" given its
+ * path's gate AND the per-lesson exception list. Lessons in
+ * `COMING_SOON_LESSON_EXCEPTIONS` always return false — they're previewed
+ * even when their path is otherwise hidden.
+ */
+export function isLessonComingSoonGated(
+  pathSlug: PathSlug,
+  lessonId: string | null,
+): boolean {
+  if (!COMING_SOON_PATHS.has(pathSlug)) return false;
+  if (lessonId && COMING_SOON_LESSON_EXCEPTIONS.has(lessonId)) return false;
+  return true;
+}
+
 export type NodeState =
   | "completed"
   | "current"
@@ -278,8 +303,12 @@ export async function buildMapData(
       // Order matters: coming-soon wins over Pro/sequential because the
       // bioma is fully laid out (we want to show all 8 nodes), the
       // prerequisite is met, the lessons exist — only the launch date
-      // gates them.
-      if (isComingSoon) {
+      // gates them. Exception: lessons in COMING_SOON_LESSON_EXCEPTIONS
+      // bypass the path-level lock (used to preview a single migrated
+      // V3 lesson on an otherwise-hidden path).
+      const lessonExempt =
+        lessonId !== null && COMING_SOON_LESSON_EXCEPTIONS.has(lessonId);
+      if (isComingSoon && !lessonExempt) {
         state = "locked_coming_soon";
       } else if (isPro) {
         state = "locked_pro";

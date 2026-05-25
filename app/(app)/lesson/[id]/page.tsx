@@ -15,7 +15,7 @@ import {
   getUserProfile,
 } from "@/lib/supabase/queries";
 import { loadAvailableLessonsInPath, loadLessonById } from "@/lib/lessons/load";
-import { isComingSoonPath } from "@/lib/map/data";
+import { isLessonComingSoonGated } from "@/lib/map/data";
 import {
   getLessonNeighbors,
   isPathUnlocked,
@@ -82,8 +82,10 @@ export default async function LessonPage({ params }: PageProps) {
   // `COMING_SOON_PATHS` in lib/map/data.ts). Catch any deep-link or
   // stale bookmark that would otherwise serve the V1 fill-in-the-blank
   // surface we're hiding from the public; the dashboard reads
-  // `?locked=path2` and shows a toast.
-  if (isComingSoonPath(lesson.path_slug)) {
+  // `?locked=path2` and shows a toast. The per-lesson exception list
+  // (COMING_SOON_LESSON_EXCEPTIONS) lets a single migrated V3 lesson
+  // through — currently `prompt-01`.
+  if (isLessonComingSoonGated(lesson.path_slug, lesson.id)) {
     redirect("/dashboard?locked=path2");
   }
 
@@ -180,6 +182,7 @@ export default async function LessonPage({ params }: PageProps) {
       constraintsEditor: lessonsCopy.v3.constraintsEditor,
       brokenSessionDebugger: lessonsCopy.v3.brokenSessionDebugger,
       promptArchitecture: lessonsCopy.v3.promptArchitecture,
+      promptAnatomyBuilder: lessonsCopy.v3.promptAnatomyBuilder,
       chat: lessonsCopy.v3.chat,
       sparkHelper: lessonsCopy.v3.sparkHelper,
       glossary: lessonsCopy.v3.glossary,

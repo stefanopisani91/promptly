@@ -581,6 +581,95 @@ export interface LessonsCopy {
       // name/email get appended at runtime.
       filenamePrefix: string;
     };
+    // Path 2 Lesson 1 — prompt anatomy builder. Dispatched from
+    // LessonV3View when step.widget === "prompt_anatomy_builder".
+    // The screen questions + scenario copy live in the lesson JSON
+    // (anatomy_config). These strings cover only the widget chrome:
+    // CTAs, hints, error messages, dimension labels, eyebrows.
+    promptAnatomyBuilder: {
+      dimensionLabels: {
+        context: string;
+        task: string;
+        constraints: string;
+        format: string;
+      };
+      scenario: {
+        vaguePromptLabel: string;
+        genericOutputLabel: string;
+        startCta: string;
+        summaryToggleLabel: string;
+      };
+      // "{current} / {max}" template for the task textarea counter.
+      charCounterTemplate: string;
+      taskChecklist: {
+        verb: string;
+        object: string;
+        outcome: string;
+      };
+      // Per-ingredient screen — bottom CTA label + the hint shown
+      // underneath when the CTA is disabled (one per ingredient: the
+      // reason the CTA is locked is ingredient-specific).
+      continueCta: string;
+      cta_disabled_hint: {
+        context: string;
+        task: string;
+        constraints: string;
+        format: string;
+      };
+      // "Tentativo {current} / {max}" template used in the dots row.
+      attemptCounterTemplate: string;
+      // Review screen.
+      reviewEyebrow: string;
+      reviewSparkPrompt: string;
+      submitCta: string;
+      submitting: string;
+      assembled: {
+        copyCta: string;
+        copySuccessLabel: string;
+        downloadCta: string;
+        editChipTemplate: string;
+        dimensionLabels: {
+          context: string;
+          task: string;
+          constraints: string;
+          format: string;
+        };
+      };
+      // Verdict overlay.
+      verdict: {
+        continueCta: string;
+        retryCta: string;
+        xpEarnedTemplate: string;
+        dimensionLabels: {
+          context: string;
+          task: string;
+          constraints: string;
+          format: string;
+        };
+      };
+      // Constraints screen hint when the user tries to add a 3rd
+      // pick on a 2-pick screen.
+      constraintsCapHint: string;
+      // Eyebrow lines above each ingredient question — short uppercase
+      // ("INGREDIENTE 1 · CONTESTO" / "INGREDIENT 1 · CONTEXT").
+      questionEyebrows: {
+        context: string;
+        task: string;
+        constraints: string;
+        format: string;
+      };
+      // Aria-only template for the progress bar.
+      progressSrTemplate: string;
+      // Errors.
+      networkError: string;
+      apiError: string;
+      invalidInputError: string;
+      attemptsExceededError: string;
+      // Reveal block label after 3 failed attempts.
+      revealAnswerLabel: string;
+      // Final advance CTA on the review screen after won/exhausted.
+      finalCta: string;
+    };
   };
   outro: {
     title: string;
@@ -963,6 +1052,75 @@ const it: LessonsCopy = {
       markdownHeader: "# Il mio prompt giornaliero — Promptly Path 1",
       markdownFooter: "Generato con Promptly — learnpromptly.app · Workflow: CONTESTO → VINCOLI → TASK → VERIFICA",
       filenamePrefix: "prompt-giornaliero",
+    },
+    promptAnatomyBuilder: {
+      dimensionLabels: {
+        context: "Contesto",
+        task: "Task",
+        constraints: "Vincoli",
+        format: "Formato",
+      },
+      scenario: {
+        vaguePromptLabel: "Il prompt di partenza",
+        genericOutputLabel: "Cosa ha prodotto",
+        startCta: "Riscriviamolo",
+        summaryToggleLabel: "Lo scenario",
+      },
+      charCounterTemplate: "{current} / {max}",
+      taskChecklist: {
+        verb: "Un verbo d'azione",
+        object: "Un oggetto concreto",
+        outcome: "Un risultato osservabile",
+      },
+      continueCta: "Continua",
+      cta_disabled_hint: {
+        context: "Tocca una tessera per andare avanti.",
+        task: "Scrivi almeno 12 caratteri per andare avanti.",
+        constraints: "Scegline due — esattamente.",
+        format: "Tocca una tessera per andare avanti.",
+      },
+      attemptCounterTemplate: "Tentativo {current} / {max}",
+      reviewEyebrow: "Il tuo prompt",
+      reviewSparkPrompt: "Lo guardiamo insieme. Quando sei pronto, chiedimelo.",
+      submitCta: "Chiedi a Spark",
+      submitting: "Sto leggendo…",
+      assembled: {
+        copyCta: "Copia",
+        copySuccessLabel: "Copiato",
+        downloadCta: "Scarica .txt",
+        editChipTemplate: "Modifica {ingredient}",
+        dimensionLabels: {
+          context: "Contesto",
+          task: "Task",
+          constraints: "Vincoli",
+          format: "Formato",
+        },
+      },
+      verdict: {
+        continueCta: "Continua",
+        retryCta: "Riprova",
+        xpEarnedTemplate: "+{xp} XP",
+        dimensionLabels: {
+          context: "Contesto",
+          task: "Task",
+          constraints: "Vincoli",
+          format: "Formato",
+        },
+      },
+      constraintsCapHint: "Solo due. Togline una prima di aggiungere un'altra.",
+      questionEyebrows: {
+        context: "Ingrediente 1 · Contesto",
+        task: "Ingrediente 2 · Task",
+        constraints: "Ingrediente 3 · Vincoli",
+        format: "Ingrediente 4 · Formato",
+      },
+      progressSrTemplate: "Ingrediente {current} di {total}: {name}",
+      networkError: "Sono offline. Non è colpa tua. Riprova tra poco.",
+      apiError: "Qualcosa non ha funzionato. Riprova tra un attimo.",
+      invalidInputError: "Hmm, c'è qualcosa di strano nel tuo task. Riformulalo e riprova.",
+      attemptsExceededError: "Hai esaurito i tentativi per questa lezione.",
+      revealAnswerLabel: "Risposta-modello",
+      finalCta: "Vai avanti",
     },
     chat: {
       launcherLabel: "Chiedi a Spark",
@@ -1516,6 +1674,75 @@ const en: LessonsCopy = {
       markdownHeader: "# My daily prompt — Promptly Path 1",
       markdownFooter: "Generated with Promptly — learnpromptly.app · Workflow: CONTEXT → CONSTRAINTS → TASK → VERIFICATION",
       filenamePrefix: "daily-prompt",
+    },
+    promptAnatomyBuilder: {
+      dimensionLabels: {
+        context: "Context",
+        task: "Task",
+        constraints: "Constraints",
+        format: "Format",
+      },
+      scenario: {
+        vaguePromptLabel: "The starting prompt",
+        genericOutputLabel: "What it produced",
+        startCta: "Let's rewrite it",
+        summaryToggleLabel: "The scenario",
+      },
+      charCounterTemplate: "{current} / {max}",
+      taskChecklist: {
+        verb: "An action verb",
+        object: "A concrete object",
+        outcome: "An observable outcome",
+      },
+      continueCta: "Continue",
+      cta_disabled_hint: {
+        context: "Tap a tile to move on.",
+        task: "Write at least 12 characters to move on.",
+        constraints: "Pick exactly two.",
+        format: "Tap a tile to move on.",
+      },
+      attemptCounterTemplate: "Try {current} / {max}",
+      reviewEyebrow: "Your prompt",
+      reviewSparkPrompt: "We'll look at it together. When you're ready, ask me.",
+      submitCta: "Ask Spark",
+      submitting: "Reading…",
+      assembled: {
+        copyCta: "Copy",
+        copySuccessLabel: "Copied",
+        downloadCta: "Download .txt",
+        editChipTemplate: "Edit {ingredient}",
+        dimensionLabels: {
+          context: "Context",
+          task: "Task",
+          constraints: "Constraints",
+          format: "Format",
+        },
+      },
+      verdict: {
+        continueCta: "Continue",
+        retryCta: "Retry",
+        xpEarnedTemplate: "+{xp} XP",
+        dimensionLabels: {
+          context: "Context",
+          task: "Task",
+          constraints: "Constraints",
+          format: "Format",
+        },
+      },
+      constraintsCapHint: "Only two. Drop one before adding another.",
+      questionEyebrows: {
+        context: "Ingredient 1 · Context",
+        task: "Ingredient 2 · Task",
+        constraints: "Ingredient 3 · Constraints",
+        format: "Ingredient 4 · Format",
+      },
+      progressSrTemplate: "Ingredient {current} of {total}: {name}",
+      networkError: "I'm offline. Not your fault. Try again in a bit.",
+      apiError: "Something went wrong. Try again in a moment.",
+      invalidInputError: "Hmm, something looks off in your task. Reword and try again.",
+      attemptsExceededError: "You've used all the attempts for this lesson.",
+      revealAnswerLabel: "Model answer",
+      finalCta: "Move on",
     },
     chat: {
       launcherLabel: "Ask Spark",

@@ -1,0 +1,288 @@
+{
+  "id": "prompt-01",
+  "format_version": 3,
+  "path_slug": "prompt",
+  "order": 1,
+  "title": "Anatomy of a great prompt",
+  "map_title": "Prompt anatomy",
+  "subtitle": "Four ingredients. Drop one, and the AI invents it for you.",
+  "difficulty": "beginner",
+  "estimated_minutes": 5,
+  "base_xp": 100,
+  "difficulty_bonus_xp": 0,
+  "icon": "/brand/lessons/prompt-01.svg",
+  "cliffhanger": "Tomorrow: give the AI a role. The quality of everything shifts.",
+  "steps": [
+    {
+      "id": "intro-welcome",
+      "type": "text",
+      "spark_state": "idle",
+      "paragraphs": [
+        "You're back. And you're somewhere new.",
+        "Path 1 was about teaching you to **think**. How I execute, what [[term:contesto]]context[[/term]] is, why [[term:vincoli]]constraints[[/term]] save you. Now we change craft.",
+        "From here on we work on the message. The thing you actually type into the box. It's called a [[term:prompt]]prompt[[/term]], and it can be written well or badly — that's not an opinion."
+      ],
+      "vignettes": [
+        { "short": "You finished a whole Path.", "full": "You finished a whole Path. Few people get this far. I'm not saying it to flatter you, I'm saying it because it's a fact." },
+        { "short": "Now we write.", "full": "In Path 1 we thought. From now on we write. It's more hands-on and, I'll say it, more fun." }
+      ]
+    },
+    {
+      "id": "intro-problem",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "Most people treat a prompt like a Google search. Three words, enter, fingers crossed.",
+        "But I'm not a search engine. I don't give you back **the right page**: I build you **what you described**. If the description is thin, what you get is thin too.",
+        "A well-made prompt looks like something else. Two steps from now I'll tell you what."
+      ],
+      "vignettes": [
+        { "short": "Don't search. Describe.", "full": "On Google you search. With me you describe. It's a small distinction to say and a huge one to do." },
+        { "short": "Three words aren't enough.", "full": "Three words are enough to search. To build, no. Almost never." }
+      ]
+    },
+    {
+      "id": "lucia-cost",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "Let me show you what I mean. Lucia — the one with the site from Path 1 — writes me one day: «make me a contact page».",
+        "And I made her one. A title saying «Contact», three fields, a grey button. Technically correct. Useless.",
+        "I didn't know it was for her photography studio. I didn't know she wanted the requests sent to an email via Resend. I didn't know it had to match her style. I didn't ask: I invented it. Badly.",
+        "Result: Lucia rewrote the prompt three times. Forty minutes for a contact page. The problem wasn't me. It was the first message."
+      ],
+      "vignettes": [
+        { "short": "I invented it.", "full": "Everything you don't tell me, I make up. And when I make things up, I get your taste wrong almost every time." },
+        { "short": "Forty minutes.", "full": "Forty minutes for a contact page. It could have been written in one prompt, done right." }
+      ]
+    },
+    {
+      "id": "principle-brief",
+      "type": "principle",
+      "spark_state": "surprised",
+      "headline": "A prompt isn't a question.",
+      "emphasis": "It's a brief.",
+      "caption": "A brief is what you'd hand a sharp collaborator who just walked in: they know nothing about the project until you tell them. Treat me the same way.",
+      "vignettes": [
+        { "short": "Sharp, but just arrived.", "full": "I'm sharp, yes. But about you and your project, I know nothing. Every time I start from scratch." },
+        { "short": "The brief is yours.", "full": "You write the brief. I execute it. If the brief is clear, the rest follows on its own." }
+      ]
+    },
+    {
+      "id": "four-ingredients",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "A well-made brief has four ingredients. Always the same four.",
+        "**Context** — what you're building and where this piece fits in. **Task** — what I have to do, precisely. **Constraints** — the [[term:stack]]stack[[/term]], the libraries, and what I must NOT touch. **Format** — how you want the answer back: ready-to-paste code? a plan first? an explanation?",
+        "Four. Not seven, not two. And now I'll tell you something you'll like."
+      ],
+      "vignettes": [
+        { "short": "Always these four.", "full": "Context, task, constraints, format. The project changes — the ingredients don't." },
+        { "short": "Not a rigid checklist.", "full": "You don't have to use all four every time. But every time you should **know** which ones you're leaving out." }
+      ]
+    },
+    {
+      "id": "bridge-path1",
+      "type": "text",
+      "spark_state": "happy",
+      "paragraphs": [
+        "Two of these four you already know. We did them together in Path 1.",
+        "**Context** is Lesson 3 — the four layers: project, code, constraints, examples. **Constraints** is Lesson 4 — protective, process, style. I won't re-explain them. When they show up, you'll recognise them.",
+        "So in this lesson we focus on the two new ones: the **precise task** and the **output format**. They're the ones almost everyone forgets."
+      ],
+      "vignettes": [
+        { "short": "Halfway there already.", "full": "Two ingredients out of four you've already learned. You hadn't noticed, had you?" },
+        { "short": "The two forgotten ones.", "full": "Task and format. They're the two people always skip. Starting today, not you." }
+      ]
+    },
+    {
+      "id": "choice-best-prompt",
+      "type": "choice",
+      "spark_state": "listening",
+      "prompt": "Three people ask the AI the same thing. Which prompt do you expect to work best?",
+      "options": [
+        { "key": "polite", "label": "«Make me a reviews section for my site, done well.»" },
+        { "key": "complete", "label": "«Add a customer reviews section to my B&B landing page (Next.js, /components/sections already exists). Three static reviews with name, stars, text. Don't add libraries. Give me just the component, with one comment per block.»" },
+        { "key": "buzzwords", "label": "«Add a reviews section following best practices and making it professional and modern.»" }
+      ],
+      "vignettes": [
+        { "short": "Actually read them.", "full": "Read all three in full before you pick. One is polite, one is full of buzzwords, one is right." }
+      ]
+    },
+    {
+      "id": "choice-feedback",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "The right prompt was the second one.",
+        "It had all four ingredients: context (B&B, Next.js, /components/sections), precise task (three static reviews with name, stars, text), constraints (no libraries), format (just the component, one comment per block)."
+      ],
+      "paragraphs_by_choice": {
+        "source_step_id": "choice-best-prompt",
+        "by_key": {
+          "complete": [
+            "The right prompt was the second one. And you picked it.",
+            "It had all four ingredients: context (B&B, Next.js, /components/sections), precise task (three static reviews with name, stars, text), constraints (no libraries), format (just the component, one comment per block).",
+            "Means you've already got the eye for the four ingredients. Now I'll take them apart one by one."
+          ],
+          "polite": [
+            "The right prompt was the second one, not the first.",
+            "The first was **polite**. «Done well» isn't an instruction, it's a wish. I don't know what «done well» means for you: I make it up.",
+            "The second had all four ingredients — context, precise task, constraints, format. Let me take them apart one by one now."
+          ],
+          "buzzwords": [
+            "The right prompt was the second one, not the third.",
+            "The third sounded the most «professional», didn't it? That's the trap. «Best practices», «modern», «professional» don't mean anything concrete — I fill them in however I like.",
+            "The second had all four ingredients — context, precise task, constraints, format. Let me take them apart one by one now."
+          ]
+        }
+      },
+      "vignettes": [
+        { "short": "Wishes aren't instructions.", "full": "«Do well», «do it carefully», «make it professional»: those are wishes. Nice. Useless to me." },
+        { "short": "Buzzwords get filled by me.", "full": "The vaguer a word is, the more I fill it in from my own head. And my head isn't yours." }
+      ]
+    },
+    {
+      "id": "zoom-task",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "First new ingredient: the **task**. It seems the most obvious. It's the one written worst, most often.",
+        "«Add authentication» is not a task. It's a category. Inside it are a hundred decisions that — if you don't make them — I make.",
+        "«Implement Google login using Supabase Auth, and after login send the user to /dashboard» — **this** is a task. It has a verb, an object, an observable outcome.",
+        "The test: after reading the task, is there still something I'd have to decide? If yes, it's not a task yet. It's a title."
+      ],
+      "vignettes": [
+        { "short": "Verb, object, outcome.", "full": "A real task has a verb, an object, and an outcome you can see. If one is missing, it's vague." },
+        { "short": "Category vs task.", "full": "«Add authentication» is a category. «Google login, redirect to /dashboard» is a task. Feel the difference?" }
+      ]
+    },
+    {
+      "id": "zoom-format",
+      "type": "text",
+      "spark_state": "thinking",
+      "paragraphs": [
+        "Second new ingredient, and the most forgotten of them all: the **output format**. That is, **how** you want the answer back.",
+        "The exact same request can come back in wildly different shapes. Do you want ready-to-paste code? Do you want me to give you a plan first and wait for your go-ahead? Do you want a line-by-line explanation because you're learning? Three different answers to the same question.",
+        "If you don't say, I choose. And maybe I comment everything when you just wanted the code, or I dump three hundred lines on you when you wanted a plan first.",
+        "One line. «Give me a plan first, then wait.» It changes the whole session."
+      ],
+      "vignettes": [
+        { "short": "Same request, three answers.", "full": "The same thing I can give you as code, as a plan, or as an explanation. You decide, or I decide." },
+        { "short": "The ghost ingredient.", "full": "Format is the ingredient nobody writes. Writing it sets you apart right away." }
+      ]
+    },
+    {
+      "id": "principle-tradeoff",
+      "type": "principle",
+      "spark_state": "surprised",
+      "headline": "Every ingredient you drop,",
+      "emphasis": "the AI decides in your place.",
+      "caption": "And the decisions I make are exactly the ones you end up rewriting. There's a fifth element that amplifies all of this — giving me a role — but that's tomorrow's lesson.",
+      "vignettes": [
+        { "short": "The fifth element.", "full": "There's one thing that powers all four ingredients at once. It's called a «role». Tomorrow." },
+        { "short": "Rewriting my decisions.", "full": "Look at the times you've had to redo an output: almost always it was a decision I made because you didn't write it down." }
+      ]
+    },
+    {
+      "id": "exception-short",
+      "type": "text",
+      "spark_state": "listening",
+      "paragraphs": [
+        "One clarification, before we wrap. I'm not telling you to write a poem every time.",
+        "Short prompts work great when context is **already established**: inside an ongoing session, or when you have a [[term:claude-md]]CLAUDE.md[[/term]] keeping me up to date (you remember from Lesson 2). There, «move it to the right» is plenty.",
+        "Full anatomy is for when I open something new and non-trivial. The practical test stays the same: is there anything I'd have to invent? If yes, write it."
+      ],
+      "vignettes": [
+        { "short": "Depends where you are.", "full": "In an ongoing session a short prompt is fine — I already have the context. The problem is cold starts." },
+        { "short": "The CLAUDE.md works for you.", "full": "If you've got a good CLAUDE.md, part of the context is already written. The prompt can be shorter. You did the work earlier." }
+      ]
+    },
+    {
+      "id": "exercise-anatomy",
+      "type": "interactive",
+      "spark_state": "listening",
+      "widget": "prompt_anatomy_builder",
+      "intro": "Now it's on you. I'll give you a scenario and a vague prompt — the kind anyone would write. You rewrite it well, ingredient by ingredient. What you write you keep: it's the first piece of your prompt library.",
+      "max_attempts": 3,
+      "anatomy_config": {
+        "scenario": {
+          "brief": "A padel court booking app. It already exists, built on Next.js with Supabase. The page the manager sees when they log in is missing.",
+          "vague_prompt": "make me a dashboard for the manager",
+          "generic_output": "A generic dashboard: three boxes «Stat 1», «Stat 2», «Stat 3», a fake chart with random values, zero connection to padel.",
+          "spark_intro_line": "Technically it's a dashboard. But it isn't YOURS. Let's rewrite the prompt that produced it — one ingredient at a time."
+        },
+        "ingredients": {
+          "context": {
+            "question": "What are you building, and where does this piece fit?",
+            "tiles": [
+              { "id": "ctx-vague", "label": "A dashboard for my app", "band": "vague", "coaching": "Readable but vague — I'd fill the gaps in however I like." },
+              { "id": "ctx-specific", "label": "The manager dashboard of a padel court booking app on Next.js + Supabase", "band": "specific", "coaching": "Specific. Now I know exactly where you're plugging in." },
+              { "id": "ctx-trap", "label": "A modern and professional dashboard", "band": "trap", "coaching": "Sounds good and says nothing. That's the trap." }
+            ]
+          },
+          "task": {
+            "question": "What should the dashboard do? Be precise: verb, object, outcome.",
+            "placeholder": "E.g. show today's booking count and a chart of bookings per day for the last week…",
+            "min_chars": 25,
+            "max_chars": 400,
+            "hint": {
+              "verbs": ["show", "display", "add", "compute", "calculate", "generate", "create", "filter", "sort", "list"],
+              "domain_terms": ["booking", "bookings", "court", "courts", "manager", "chart", "dashboard"],
+              "outcome_markers": ["so that", "must", "in order to", "/dashboard", "/admin"]
+            }
+          },
+          "constraints": {
+            "question": "What must the AI NOT touch? Pick two.",
+            "select_count": 2,
+            "tiles": [
+              { "id": "con-lib", "label": "Don't add libraries beyond Recharts", "weight": "strong", "coaching": "Specific, protective. Cuts off any temptation to import half of npm." },
+              { "id": "con-plan", "label": "Show me a plan before writing code", "weight": "strong", "coaching": "Real process constraint. Forces me to stop and show you." },
+              { "id": "con-reuse", "label": "Reuse the components already in /components", "weight": "strong", "coaching": "Concrete project anchor. No new code duplicating what exists." },
+              { "id": "con-trap", "label": "Do clean, professional work", "weight": "trap", "coaching": "A wish, not a constraint. «Clean» I interpret myself, and badly." }
+            ]
+          },
+          "format": {
+            "question": "How do you want the answer back?",
+            "tiles": [
+              { "id": "fmt-specific", "label": "A plan first, then wait for my go-ahead", "band": "specific", "coaching": "You give me a check-in gate. Good." },
+              { "id": "fmt-vague", "label": "Code, please", "band": "vague", "coaching": "Ok but how much code? With or without comments? I decide." },
+              { "id": "fmt-trap", "label": "However you prefer", "band": "trap", "coaching": "«However you prefer» means however I prefer. You decide." }
+            ]
+          }
+        },
+        "bands": { "specific": 25, "vague": 13, "trap": 5 },
+        "weights": { "strong": 1.0, "weak": 0.5, "trap": 0.15 },
+        "assembly_template": "CONTEXT: {context}\nTASK: {task}\nCONSTRAINTS: {constraints}\nFORMAT: {format}",
+        "model_answer": "CONTEXT: The manager dashboard of a padel court booking app on Next.js + Supabase. It's the home after the manager's login.\nTASK: Show today's booking count and a chart of bookings per day for the last week, so the manager can see at a glance whether the week is holding.\nCONSTRAINTS: Don't add libraries beyond Recharts · Show me a plan before writing code\nFORMAT: A plan first, then wait for my go-ahead.",
+        "xp_by_case": {
+          "vague": 30,
+          "missing_ingredients": 55,
+          "weak_task": 70,
+          "complete_calibrate": 90,
+          "excellent": 130
+        }
+      },
+      "vignettes": [
+        { "short": "Four boxes, four ingredients.", "full": "One box per ingredient. Fill them all. If you leave one blank, I'll tell you." },
+        { "short": "Three tries. Use them well.", "full": "Three tries. On the second I'll tell you what's weak; on the third I'll spell it out." },
+        { "short": "This prompt is yours.", "full": "The prompt you assemble you take home. Reuse it on your next real project, changing the details." }
+      ]
+    },
+    {
+      "id": "outro",
+      "type": "text",
+      "spark_state": "happy",
+      "paragraphs": [
+        "First lesson of Path 2, done. Now you know what a prompt is made of inside — and you've got one of your own, written by you.",
+        "Tomorrow we add one thing, and it sounds like a small trick: I'll have you give me a **role**. «Act as a security expert», «you're a copywriter». The quality of what I give back shifts on the spot — and I'll explain why it isn't magic.",
+        "See you there."
+      ],
+      "vignettes": [
+        { "short": "You have a library now.", "full": "That prompt you just wrote is piece number one. You build from here." },
+        { "short": "Tomorrow, a real trick.", "full": "The role sounds like a small thing. It's among the most powerful I'll teach you. See you tomorrow." }
+      ]
+    }
+  ]
+}

@@ -67,6 +67,11 @@ import {
   type PromptArchitectureStrings,
   type GeneratedPromptBlocks,
 } from "./steps/PromptArchitecture";
+import {
+  PromptAnatomyBuilder,
+  type PromptAnatomyBuilderStrings,
+  type AnatomyStepStateShape,
+} from "./steps/prompt-anatomy/PromptAnatomyBuilder";
 import type { PromptArchitecturePillarKey } from "@/types";
 import {
   GlossaryProvider,
@@ -96,6 +101,7 @@ export interface LessonV3ViewStrings {
   constraintsEditor: ConstraintsEditorStrings;
   brokenSessionDebugger: BrokenSessionDebuggerStrings;
   promptArchitecture: PromptArchitectureStrings;
+  promptAnatomyBuilder: PromptAnatomyBuilderStrings;
   chat: import("./SparkChat").SparkChatStrings;
   // Spark Helper — copy for "helper mode" of the chat panel (the chips, the
   // intro line, the quota nudges). The type now lives in SparkChat.
@@ -833,6 +839,29 @@ function renderStep(step: LessonV3Step, ctx: RenderContext) {
             }
             onAdvance={ctx.goNext}
             strings={ctx.strings.brokenSessionDebugger}
+          />
+        );
+      }
+      if (step.widget === "prompt_anatomy_builder") {
+        return (
+          <PromptAnatomyBuilder
+            step={step}
+            userId={ctx.userId}
+            filenameSlug={ctx.filenameSlug}
+            state={ctx.stepState[step.id] as AnatomyStepStateShape | undefined}
+            onComplete={(result, extras) =>
+              ctx.updateStepState(step.id, {
+                result,
+                contextTileId: extras.contextTileId,
+                task: extras.task,
+                constraintTileIds: extras.constraintTileIds,
+                formatTileId: extras.formatTileId,
+                lastEvaluation: extras.lastEvaluation,
+                lastReaction: extras.lastReaction,
+              })
+            }
+            onAdvance={ctx.goNext}
+            strings={ctx.strings.promptAnatomyBuilder}
           />
         );
       }

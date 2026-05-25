@@ -583,7 +583,8 @@ export type InteractiveWidgetType =
   | "block_picker"
   | "constraints_editor"
   | "broken_session_debugger"
-  | "prompt_architecture";
+  | "prompt_architecture"
+  | "prompt_anatomy_builder";
 
 export interface ClaudemdProjectOption {
   // Stable key used by the evaluator + saved in stepState.
@@ -883,6 +884,141 @@ export interface InteractiveStep extends StepBase {
   broken_session_config?: BrokenSessionDebuggerConfig;
   // Lesson 6 — required when widget === "prompt_architecture".
   prompt_architecture_config?: PromptArchitectureConfig;
+  // Path 2 Lesson 1 — required when widget === "prompt_anatomy_builder".
+  anatomy_config?: PromptAnatomyConfig;
+}
+
+// ─── Prompt 1 — Prompt anatomy builder ────────────────────────────────
+//
+// Hybrid widget: Context / Constraints / Format are picked by tapping
+// pre-written tiles (zero typing); Task is the only free-text field —
+// the core skill the lesson trains. A 6-screen internal flow (intro →
+// ctx → task → constraints → format → review → verdict). Tile choices
+// score deterministically on the client; the Task is graded by Haiku.
+// On excellent the assembled prompt is copyable / downloadable as the
+// learner's "first prompt library piece".
+//
+// Companion blueprint: BLUEPRINT-widget-prompt-anatomy-builder.md.
+
+export type AnatomyDimension = "context" | "task" | "constraints" | "format";
+
+export type AnatomyTileBand = "specific" | "vague" | "trap";
+export type AnatomyConstraintWeight = "strong" | "weak" | "trap";
+
+export type AnatomyFeedbackCase =
+  | "vague"
+  | "missing_ingredients"
+  | "weak_task"
+  | "complete_calibrate"
+  | "excellent";
+
+export interface AnatomyOptionTile {
+  // Stable id used in scoring + persisted in stepState.
+  id: string;
+  // Tile copy shown to the learner.
+  label: string;
+  // Hidden quality marker — drives the deterministic score on the client.
+  // Present on context/format tiles. Constraints use `weight` instead.
+  band?: AnatomyTileBand;
+  // Per-constraint quality marker (multi-select widget).
+  weight?: AnatomyConstraintWeight;
+  // 1-line Spark micro-coaching surfaced under the tiles when picked.
+  // Optional on `constraints` (where the coaching is collective, not
+  // per-tile).
+  coaching?: string;
+}
+
+export interface AnatomyContextSpec {
+  question: string;
+  tiles: AnatomyOptionTile[];
+}
+
+export interface AnatomyTaskHintConfig {
+  // Verbs that count as "action verb" in the live checklist heuristic.
+  verbs: string[];
+  // Domain nouns from the scenario that count as "concrete object".
+  domain_terms: string[];
+  // Markers (substrings) that count as "observable outcome".
+  outcome_markers: string[];
+}
+
+export interface AnatomyTaskSpec {
+  question: string;
+  placeholder: string;
+  // Min trimmed length to unlock the "Continua" CTA.
+  min_chars: number;
+  // Hard cap for the textarea.
+  max_chars: number;
+  hint: AnatomyTaskHintConfig;
+}
+
+export interface AnatomyConstraintsSpec {
+  question: string;
+  // Number of tiles the learner must pick (default 2 for prompt-01).
+  select_count: number;
+  tiles: AnatomyOptionTile[];
+}
+
+export interface AnatomyFormatSpec {
+  question: string;
+  tiles: AnatomyOptionTile[];
+}
+
+export interface AnatomyIngredientsConfig {
+  context: AnatomyContextSpec;
+  task: AnatomyTaskSpec;
+  constraints: AnatomyConstraintsSpec;
+  format: AnatomyFormatSpec;
+}
+
+export interface AnatomyScenarioConfig {
+  // 1-2 sentence brief on the project the prompt is for.
+  brief: string;
+  // The bad prompt someone wrote against the scenario.
+  vague_prompt: string;
+  // Plain-text description of the generic output that prompt produced.
+  generic_output: string;
+  // Spark's framing line shown above the "Riscriviamolo" CTA.
+  spark_intro_line: string;
+}
+
+export interface PromptAnatomyConfig {
+  scenario: AnatomyScenarioConfig;
+  ingredients: AnatomyIngredientsConfig;
+  // Tile points per band (single-select tiles: context, format).
+  bands: { specific: number; vague: number; trap: number };
+  // Per-tile weights for the multi-select constraints screen. The screen
+  // score is `round(25 × (w1 + w2) / 2)` capped at 25.
+  weights: { strong: number; weak: number; trap: number };
+  // Template used to stitch the 4 picks into a single prompt. Tokens:
+  // `{context}`, `{task}`, `{constraints}`, `{format}`.
+  assembly_template: string;
+  // Model answer shown after 3 failed attempts (reveal path).
+  model_answer: string;
+  // XP awarded per feedback_case bucket. First-try bonus is hardcoded
+  // in the widget on top of this (CLAUDE.md §XP convention).
+  xp_by_case: Record<AnatomyFeedbackCase, number>;
+}
+
+export interface AnatomyEvaluation {
+  // Per-dimension scores out of 25. context / constraints / format come
+  // back identical to what the client sent (server clamps); task is the
+  // dimension Haiku judges.
+  scores: {
+    context: number;
+    task: number;
+    constraints: number;
+    format: number;
+  };
+  // Sum of all 4 — server-derived to prevent AI from inflating.
+  total: number;
+  strongest_dimension: AnatomyDimension;
+  weakest_dimension: AnatomyDimension;
+  // Server-derived from `total` + the special weak_task bucket — never
+  // trust the LLM's own classification.
+  feedback_case: AnatomyFeedbackCase;
+  // Canned/AI-shaped Spark reply matching the feedback_case.
+  spark_reply: string;
 }
 
 // ─── Lesson 6 — Prompt architecture (hero asset, Lezione6_Blueprint §13) ─
