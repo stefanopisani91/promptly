@@ -138,6 +138,11 @@ export interface MapCurrentLocation {
   pathSlug: PathSlug | null;
   lessonIndex: number | null; // 0-based
   isAtStart: boolean; // true when the user has zero progress anywhere
+  // True when the active lesson is a per-lesson exception on an
+  // otherwise-coming-soon path (e.g. prompt-01 previewed before Path 2
+  // launches). Lets the dashboard switch the ContinueCard framing from
+  // "resume" to "new lessons are out".
+  isFreshNewLesson: boolean;
 }
 
 export interface MapData {
@@ -231,17 +236,57 @@ export async function buildMapData(
   const bonusUnlockStates = checkAllBonusPathsFromSnapshot(snapshot);
 
   // Locate the user's current node — first incomplete lesson in the
-  // earliest non-completed unlocked path. Coming-soon paths are skipped
-  // so the "Continue" indicator never lands on a locked Path 2 node.
-  let current: MapCurrentLocation = { pathSlug: null, lessonIndex: null, isAtStart: false };
+  // earliest non-completed unlocked path. Coming-soon paths are
+  // normally skipped so the "Continue" indicator never lands on a
+  // locked Path 2 node — EXCEPT when an individual lesson on that
+  // coming-soon path is in COMING_SOON_LESSON_EXCEPTIONS. In that
+  // case the indicator lands on the first uncompleted exempt lesson
+  // (used to surface a single migrated V3 lesson on an otherwise-
+  // hidden path).
+  let current: MapCurrentLocation = {
+    pathSlug: null,
+    lessonIndex: null,
+    isAtStart: false,
+    isFreshNewLesson: false,
+  };
   for (const slug of PATH_ORDER) {
     if (!unlockedBySlug[slug]) continue;
     if (PRO_PATHS.has(slug)) continue;
-    if (COMING_SOON_PATHS.has(slug)) continue;
     const total = PATH_META[slug].totalLessons;
-    const completedCount = completedIdsBySlug[slug].size;
+    const completedSetForSlug = completedIdsBySlug[slug];
+    if (COMING_SOON_PATHS.has(slug)) {
+      // Coming-soon path — look ONLY for an exempt-and-uncompleted
+      // lesson. If none, skip the whole path as before.
+      const available = lessonsBySlug[slug];
+      let exemptIndex: number | null = null;
+      for (let i = 0; i < total; i++) {
+        const lesson = available[i];
+        const lessonId = lesson?.id;
+        if (!lessonId) continue;
+        if (!COMING_SOON_LESSON_EXCEPTIONS.has(lessonId)) continue;
+        if (completedSetForSlug.has(lessonId)) continue;
+        exemptIndex = i;
+        break;
+      }
+      if (exemptIndex !== null) {
+        current = {
+          pathSlug: slug,
+          lessonIndex: exemptIndex,
+          isAtStart: false,
+          isFreshNewLesson: true,
+        };
+        break;
+      }
+      continue;
+    }
+    const completedCount = completedSetForSlug.size;
     if (completedCount < total) {
-      current = { pathSlug: slug, lessonIndex: completedCount, isAtStart: false };
+      current = {
+        pathSlug: slug,
+        lessonIndex: completedCount,
+        isAtStart: false,
+        isFreshNewLesson: false,
+      };
       break;
     }
   }
@@ -266,6 +311,7 @@ export async function buildMapData(
           pathSlug: slug,
           lessonIndex: completedCount - 1,
           isAtStart: false,
+          isFreshNewLesson: false,
         };
         break;
       }
@@ -274,7 +320,12 @@ export async function buildMapData(
   // Edge: brand-new user with zero progress everywhere — show the START
   // indicator near mindset lesson 0.
   if (allProgress.length === 0) {
-    current = { pathSlug: "mindset", lessonIndex: 0, isAtStart: true };
+    current = {
+      pathSlug: "mindset",
+      lessonIndex: 0,
+      isAtStart: true,
+      isFreshNewLesson: false,
+    };
   }
 
   const paths: MapPathSection[] = PATH_ORDER.map((slug) => {

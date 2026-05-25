@@ -113,6 +113,15 @@ export interface AuthCopy {
       lessonNumberLabel: (n: number) => string;
       resumeCta: string;
       minutesLabel: string;
+      // Used when the active lesson is a freshly-released V3 lesson on
+      // an otherwise-coming-soon path (currently prompt-01 on Path 2).
+      // The card swaps the eyebrow to "NUOVO", surfaces a short
+      // "new lessons are out" subtitle, and changes the CTA from
+      // "Riprendi" to "Continua" — the user has never opened it so
+      // "resume" reads wrong.
+      freshEyebrow: string;
+      freshSubtitle: string;
+      freshCta: string;
     };
     dailyGoal: {
       eyebrow: string;
@@ -354,6 +363,9 @@ const it: AuthCopy = {
       lessonNumberLabel: (n: number) => `Lezione ${String(n).padStart(2, "0")}`,
       resumeCta: "Riprendi",
       minutesLabel: "min",
+      freshEyebrow: "NUOVO",
+      freshSubtitle: "Sono uscite nuove lezioni.",
+      freshCta: "Continua",
     },
     dailyGoal: {
       eyebrow: "OBIETTIVO DI OGGI",
@@ -596,6 +608,9 @@ const en: AuthCopy = {
       lessonNumberLabel: (n: number) => `Lesson ${String(n).padStart(2, "0")}`,
       resumeCta: "Resume",
       minutesLabel: "min",
+      freshEyebrow: "NEW",
+      freshSubtitle: "New lessons are out.",
+      freshCta: "Continue",
     },
     dailyGoal: {
       eyebrow: "TODAY'S GOAL",

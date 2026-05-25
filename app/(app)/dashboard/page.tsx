@@ -246,6 +246,7 @@ export default async function DashboardPage({
                     : 0
                 }
                 estimatedMinutes={activeNode.estimatedMinutes}
+                freshLesson={mapData.current.isFreshNewLesson}
               />
               <DailyGoalCard
                 copy={authCopy.dailyGoal}
